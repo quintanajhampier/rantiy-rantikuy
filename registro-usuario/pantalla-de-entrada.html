@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rantiy y Rantikuy - Ingreso Seguro</title>
+    <style>
+        /* Colores claros y vibrantes de Huanta - Sin negros intensos */
+        body { background-color: #f0fff4; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .contenedor { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(45, 106, 79, 0.1); width: 90%; max-width: 400px; text-align: center; border: 2px solid #4ade80; }
+        
+        h1 { color: #2d6a4f; margin-bottom: 5px; font-size: 24px; }
+        .eslogan { color: #ff8c00; font-weight: bold; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Caja de GPS Psicológica */
+        .alerta-gps { background: #e6fffa; border-left: 5px solid #4ade80; padding: 10px; margin-bottom: 20px; font-size: 12px; color: #065f46; text-align: left; }
+        
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e0e0e0; border-radius: 12px; outline: none; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: #ff8c00; }
+        
+        .terminos-box { background: #f9fafb; padding: 15px; border-radius: 12px; height: 100px; overflow-y: scroll; font-size: 11px; color: #4b5563; text-align: left; margin: 15px 0; border: 1px solid #eee; }
+        
+        .check-group { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #374151; text-align: left; cursor: pointer; }
+        
+        .btn-ingresar { background-color: #ff8c00; color: white; border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3); }
+    </style>
+</head>
+<body>
+
+<div class="contenedor">
+    <h1>Rantiy y Rantikuy</h1>
+    <div class="eslogan">Mercado Serio - Cero Estafas</div>
+
+    <div class="alerta-gps">
+        📍 <b>Seguridad de Huanta:</b> Esta app requiere GPS activo para validar que eres un usuario local y real. Las cuentas sin ubicación serán bloqueadas.
+    </div>
+
+    <input type="text" id="nombre" placeholder="Nombre y Apellido Completo" required>
+    <input type="tel" id="telefono" placeholder="Número de Teléfono Real (9xx...)" required>
+
+    <div class="terminos-box">
+        <b>REGLAS DEL IMPERIO:</b><br>
+        1. <b>Cero Estafas:</b> Cualquier intento de engaño resultará en expulsión inmediata y bloqueo de equipo (Hardware).<br>
+        2. <b>Supervisión:</b> El administrador tiene derecho a auditar chats si hay reportes de mal comportamiento.<br>
+        3. <b>Comisiones:</b> Se cobrará un porcentaje por venta realizada para el mantenimiento de la comunidad.<br>
+        4. <b>Respeto:</b> Insultos o falta de seriedad son motivo de baneo permanente.
+    </div>
+
+    <label class="check-group">
+        <input type="checkbox" id="acepto" required>
+        <span>Acepto los términos, el pago de comisiones y la supervisión del administrador por mi seguridad.</span>
+    </label>
+
+    <button onclick="validarYEntrar()" class="btn-ingresar">VERIFICAR E INGRESAR</button>
+</div>
+
+<script>
+function validarYEntrar() {
+    const nombre = document.getElementById('nombre').value;
+    const telefono = document.getElementById('telefono').value;
+    const acepto = document.getElementById('acepto').checked;
+
+    if (!nombre || !telefono || !acepto) {
+        alert("Por favor, completa todos los campos y acepta las reglas para proteger la comunidad.");
+        return;
+    }
+
+    // Activación obligatoria de GPS
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            alert("¡Identidad y GPS verificados! Bienvenido al imperio, " + nombre);
+            // Aquí rediriges al muro principal
+        },
+        (err) => {
+            alert("ERROR: No puedes entrar sin activar el GPS. Esta es una comunidad seria de Huanta.");
+        }
+    );
+}
+</script>
+
+</body>
+</html>
