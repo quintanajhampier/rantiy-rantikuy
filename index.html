@@ -3,281 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rantiy y Rantikuy - Huanta Elite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Rantiy y Rantikuy - Mercado Virtual 3D</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --verde-primario: #22c55e;
-            --verde-glow: #86efac;
-            --naranja-primario: #f97316;
-            --naranja-glow: #fdba74;
-            --fondo-app: #f8fafc;
-            --blanco-puro: #ffffff;
-            --texto-oscuro: #064e3b;
-            --sombra-suave: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --verde-neon: #22c55e; --naranja-fire: #ff8c00; --fondo: #f0fdf4;
+            --glass: rgba(255, 255, 255, 0.7); --sombra-3d: 0 20px 40px rgba(0,0,0,0.1);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
         body { 
-            background-color: var(--fondo-app); 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            margin: 0; 
-            color: var(--texto-oscuro);
-            padding-bottom: 100px;
+            background: radial-gradient(circle at top, #f0fdf4, #e2e8f0);
+            font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding-bottom: 110px;
+            color: #1e293b; overflow-x: hidden;
         }
 
-        /* HEADER ELITE */
+        /* LOGO 3D ANIMADO */
         .header {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+            background: var(--glass); backdrop-filter: blur(20px);
+            padding: 15px 25px; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .logo-3d-container { perspective: 1000px; }
+        .logo-3d {
+            width: 45px; height: 45px; background: linear-gradient(135deg, var(--verde-neon), #4ade80);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 900; font-size: 24px;
+            transform: rotateX(20deg) rotateY(-20deg);
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.1), -2px -2px 5px rgba(255,255,255,0.5) inset;
+            animation: floating3d 3s ease-in-out infinite;
+        }
+        @keyframes floating3d {
+            0%, 100% { transform: translateY(0) rotateX(20deg) rotateY(-20deg); }
+            50% { transform: translateY(-10px) rotateX(10deg) rotateY(10deg); }
         }
 
-        .brand-container { display: flex; align-items: center; gap: 12px; }
-        .app-logo {
-            width: 42px; height: 42px;
-            background: linear-gradient(135deg, var(--verde-primario), #4ade80);
-            border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 800; font-size: 22px;
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-        }
-        .brand-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+        .market-title { font-size: 20px; font-weight: 800; background: linear-gradient(90deg, #166534, var(--naranja-fire)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* NAVEGACIÓN DE RETROCESO */
-        .back-btn {
-            display: none;
-            background: var(--blanco-puro);
-            border: 1.5px solid #e2e8f0;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            color: var(--naranja-primario);
-            cursor: pointer;
-        }
-
-        /* BOTONES DE ACCIÓN (ESTILO PREMIUM) */
-        .btn-premium {
-            background: linear-gradient(135deg, var(--naranja-primario), #fb923c);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 10px 20px -5px rgba(249, 115, 22, 0.4);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .btn-premium:active { transform: scale(0.95); box-shadow: 0 5px 10px rgba(249, 115, 22, 0.2); }
-
-        /* TARJETAS DE OPCIONES (PUBLICAR) */
-        .option-card {
-            background: var(--blanco-puro);
-            border-radius: 24px;
-            padding: 24px;
-            margin-bottom: 16px;
-            border: 2px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: var(--sombra-suave);
-            transition: 0.3s;
-            cursor: pointer;
-        }
-        .option-card:active { border-color: var(--verde-primario); background: var(--verde-suave); }
-        .icon-wrapper {
-            width: 56px; height: 56px;
-            background: #f0fdf4;
-            border-radius: 18px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px;
-        }
-
-        /* FORMULARIO ESTRUCTURADO */
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 14px; opacity: 0.8; }
-        .custom-input {
-            width: 100%; padding: 16px;
-            background: #f1f5f9;
-            border: 2px solid transparent;
-            border-radius: 16px;
-            font-size: 16px;
-            font-family: inherit;
-            transition: 0.3s;
-        }
-        .custom-input:focus { background: white; border-color: var(--verde-primario); outline: none; }
-
-        /* PANTALLAS */
-        .view { display: none; padding: 20px; animation: slideUp 0.4s ease-out; }
+        /* VISTAS */
+        .view { display: none; padding: 20px; animation: superIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .view-active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes superIn { from { opacity: 0; transform: scale(0.9) translateY(40px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        /* NAV BAR INFERIOR (GLASS) */
-        .bottom-nav {
-            position: fixed; bottom: 0; width: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(15px);
-            display: flex; justify-content: space-around;
-            padding: 15px 0 30px;
-            border-top: 1px solid rgba(0,0,0,0.05);
-            z-index: 1000;
+        /* TARJETAS VIRTUALES 3D */
+        .product-card-3d {
+            background: var(--glass); border-radius: 30px; padding: 10px; margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.5); box-shadow: var(--sombra-3d);
+            transition: 0.4s; position: relative; overflow: hidden;
         }
-        .nav-link { 
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            font-size: 11px; font-weight: 700; color: #94a3b8; text-decoration: none;
+        .product-card-3d:hover { transform: translateY(-10px); }
+        
+        .product-img-box {
+            height: 220px; background: white; border-radius: 25px;
+            display: flex; align-items: center; justify-content: center; font-size: 70px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
         }
-        .active-nav { color: var(--verde-primario); }
+
+        .badge-live {
+            position: absolute; top: 20px; left: 20px; background: rgba(255,0,0,0.8);
+            color: white; padding: 5px 12px; border-radius: 10px; font-size: 10px; font-weight: 800;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* BOTONES INTERACTIVOS */
+        .btn-super {
+            width: 100%; padding: 18px; border-radius: 20px; border: none;
+            font-weight: 800; font-size: 16px; cursor: pointer;
+            background: linear-gradient(135deg, var(--naranja-fire), #fb923c);
+            color: white; box-shadow: 0 10px 25px rgba(249, 115, 22, 0.4);
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-super:active { transform: scale(0.95); }
+
+        /* GRID DE CATEGORÍAS MÁGICO */
+        .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .cat-bubble {
+            background: white; border-radius: 22px; padding: 15px 5px; text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03); border: 1.5px solid transparent;
+            transition: 0.3s; cursor: pointer;
+        }
+        .cat-bubble:active { border-color: var(--verde-neon); transform: scale(0.9); }
+        .cat-bubble span { font-size: 28px; display: block; margin-bottom: 5px; }
+        .cat-bubble label { font-size: 10px; font-weight: 800; color: #64748b; }
+
+        /* NAV BAR ESTILO "FLOATING ISLAND" */
+        .nav-island {
+            position: fixed; bottom: 20px; left: 5%; width: 90%;
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px);
+            border-radius: 25px; display: flex; justify-content: space-around;
+            padding: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); z-index: 2000;
+        }
+        .nav-item { color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .nav-active { color: var(--verde-neon); transform: scale(1.1); }
+
+        /* FORMULARIO DE LUJO */
+        .glass-input {
+            width: 100%; padding: 18px; background: rgba(255,255,255,0.6);
+            border: 2px solid transparent; border-radius: 20px; margin-bottom: 15px;
+            font-size: 16px; font-weight: 600; outline: none; transition: 0.3s;
+        }
+        .glass-input:focus { border-color: var(--verde-neon); background: white; box-shadow: 0 0 20px rgba(34, 197, 94, 0.1); }
+
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="brand-container" id="brand-ui">
-        <div class="app-logo">R</div>
-        <span class="brand-title">Rantiy y Rantikuy</span>
+    <div class="logo-3d-container">
+        <div class="logo-3d">R</div>
     </div>
-    <div class="back-btn" id="btn-retroceder" onclick="showView('home')">⬅ Volver</div>
+    <div class="market-title">MERCADO VIRTUAL 🚀</div>
+    <div style="font-size: 20px;" onclick="changeView('home')">🏠</div>
 </div>
 
-<div id="view-home" class="view view-active">
-    <div style="background: white; padding: 15px; border-radius: 20px; margin-bottom: 25px; box-shadow: var(--sombra-suave);">
-        <h3 style="margin:0 0 10px 0;">🔍 ¿Qué necesitas?</h3>
-        <input type="text" class="custom-input" placeholder="Zapatillas, comida, empleos...">
+<div id="v-home" class="view view-active">
+    <div style="margin-bottom:25px;">
+        <h1 style="font-weight:900; margin:0; font-size:28px;">¡Hola, Huanta! 👋</h1>
+        <p style="color:#64748b; font-weight:600;">¿Qué vamos a comprar hoy?</p>
     </div>
 
-    <div id="feed-huanta">
-        <div class="option-card" style="border-left: 6px solid var(--naranja-primario);">
-            <div style="flex:1;">
-                <span style="color:var(--naranja-primario); font-size:10px; font-weight:800;">PUBLICACIÓN VIP</span>
-                <h4 style="margin:5px 0;">Motos Torito - Repuestos</h4>
-                <div style="color:var(--verde-primario); font-weight:800; font-size:20px;">S/ 45.00</div>
+    <div class="product-card-3d">
+        <div class="badge-live">EN VIVO 🔴</div>
+        <div class="product-img-box">🎒</div>
+        <div style="padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0; font-weight:800;">Mochila Pro-Travel</h3>
+                <span style="font-size:22px; font-weight:900; color:var(--verde-neon);">S/ 85</span>
             </div>
-            <button class="btn-premium" style="width:auto; padding:10px 20px;">Ver</button>
+            <p style="color:#64748b; font-size:13px; margin:10px 0 20px 0;">Vendedor: @MercadoCentral_Huantino</p>
+            <button class="btn-super" onclick="alert('🛍️ Añadido al carrito virtual')">
+                ¡LO QUIERO YA! ⚡
+            </button>
         </div>
     </div>
 </div>
 
-<div id="view-publish" class="view">
-    <h2 style="text-align:center; font-weight:800;">Publicar en el Imperio</h2>
+<div id="v-publish" class="view">
+    <h2 style="font-weight:900; text-align:center;">Crear Nuevo Anuncio ✨</h2>
     
-    <div class="option-card" onclick="openForm('Venta')">
-        <div class="icon-wrapper">💰</div>
-        <div>
-            <div style="font-weight:800;">Vender Producto</div>
-            <div style="font-size:12px; color:#64748b;">Ropa, Comida, Tech, etc.</div>
-        </div>
+    <div class="cat-grid" style="margin-bottom:30px;">
+        <div class="cat-bubble" onclick="openForm('Venta', '🛍️')"><span>👟</span><label>VENTA</label></div>
+        <div class="cat-bubble" onclick="openForm('Comida', '🍽️')"><span>🍱</span><label>COMIDA</label></div>
+        <div class="cat-bubble" onclick="openForm('Taxi', '🚕')"><span>🚕</span><label>TAXI</label></div>
+        <div class="cat-bubble" onclick="openForm('Moto', '🏍️')"><span>🏍️</span><label>MOTO</label></div>
+        <div class="cat-bubble" onclick="openForm('Trabajo', '💼')"><span>💼</span><label>TRABAJO</label></div>
+        <div class="cat-bubble" onclick="openForm('Turismo', '📸')"><span>⛰️</span><label>TOUR</label></div>
     </div>
 
-    <div class="option-card" onclick="openForm('Empleo')">
-        <div class="icon-wrapper">💼</div>
-        <div>
-            <div style="font-weight:800;">Ofrecer Empleo</div>
-            <div style="font-size:12px; color:#64748b;">Busca trabajadores en Huanta.</div>
+    <div id="form-container" style="display:none;">
+        <div style="background:var(--glass); border-radius:30px; padding:25px; box-shadow: var(--sombra-3d);">
+            <h3 id="form-label" style="margin-top:0; font-weight:800;">Detalles</h3>
+            <input type="text" class="glass-input" placeholder="¿Qué nombre tendrá tu oferta?">
+            <input type="number" class="glass-input" placeholder="Precio (S/)">
+            <textarea class="glass-input" rows="3" placeholder="Describe tu magia aquí..."></textarea>
+            
+            <button class="btn-super" style="background:var(--verde-neon);" onclick="triggerCamera()">
+                📸 TOMAR FOTO 3D
+            </button>
+            <br>
+            <button class="btn-super" onclick="finish()">¡PUBLICAR AHORA! 🚀</button>
         </div>
     </div>
 </div>
 
-<div id="view-form" class="view">
-    <h2 id="form-header" style="font-weight:800;">Detalles</h2>
-    
-    <div class="input-group" id="media-upload">
-        <label>Foto Real (Cámara activa)</label>
-        <button class="btn-premium" style="background:#f1f5f9; color:var(--texto-oscuro); box-shadow:none; border:2.5px dashed var(--verde-primario);" onclick="startCamera()">
-            📸 TOCAR PARA TOMAR FOTO
-        </button>
-    </div>
-
-    <div class="input-group">
-        <label>Nombre del Producto / Puesto</label>
-        <input type="text" class="custom-input" id="item-name" placeholder="Ej: Zapatillas Adidas 42">
-    </div>
-
-    <div class="input-group">
-        <label>Precio o Sueldo Ofrecido (S/)</label>
-        <input type="number" class="custom-input" id="item-price" placeholder="0.00">
-    </div>
-
-    <div class="input-group">
-        <label>Descripción para el Muro</label>
-        <textarea class="custom-input" rows="3" placeholder="Escribe detalles importantes..."></textarea>
-    </div>
-
-    <button class="btn-premium" onclick="postToWall()">PUBLICAR AHORA</button>
-</div>
-
-<div id="view-chat" class="view">
-    <h2 style="font-weight:800;">💬 Chat Huanta</h2>
-    <div style="background:white; height:350px; border-radius:24px; padding:20px; overflow-y:auto; border:1px solid #e2e8f0; margin-bottom:15px;" id="chat-box">
-        <div style="background:#f0fdf4; padding:12px; border-radius:15px; font-size:13px; margin-bottom:10px;">
-            🛡️ <strong>Admin:</strong> Chat verificado por GPS. Prohibido estafas.
-        </div>
-    </div>
-    <div style="display:flex; gap:10px;">
-        <input type="text" class="custom-input" placeholder="Mensaje..." id="chat-msg">
-        <button class="btn-premium" style="width:70px;" onclick="sendMessage()">➡️</button>
-    </div>
-</div>
-
-<div class="bottom-nav">
-    <div class="nav-link active-nav" onclick="showView('home')"><span>🏠</span>Inicio</div>
-    <div class="nav-link" onclick="showView('publish')"><span>➕</span>Publicar</div>
-    <div class="nav-link" onclick="showView('chat')"><span>💬</span>Chat</div>
-    <div class="nav-link" onclick="alert('Próximamente: Perfil Pro')"><span>👤</span>Perfil</div>
+<div class="nav-island">
+    <div class="nav-item nav-active" onclick="changeView('home')"><span>🏠</span>INICIO</div>
+    <div class="nav-item" onclick="changeView('publish')"><span>✨</span>CREAR</div>
+    <div class="nav-item" onclick="alert('💬 Chat 3D en construcción')"><span>💬</span>CHATS</div>
+    <div class="nav-item" onclick="alert('👤 Perfil del Imperio')"><span>👑</span>ADMIN</div>
 </div>
 
 <script>
-    function showView(viewId) {
+    function changeView(id) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
-        document.getElementById('view-' + viewId).classList.add('view-active');
-
-        // Lógica de Header (Retroceso)
-        const isHome = viewId === 'home';
-        document.getElementById('brand-ui').style.display = isHome ? 'flex' : 'none';
-        document.getElementById('btn-retroceder').style.display = isHome ? 'none' : 'block';
+        document.getElementById('v-' + id).classList.add('view-active');
+        // Reset nav style
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('nav-active'));
+        window.scrollTo(0,0);
     }
 
-    function openForm(tipo) {
-        showView('form');
-        document.getElementById('form-header').innerText = "Publicar " + tipo;
-        document.getElementById('media-upload').style.display = (tipo === 'Empleo') ? 'none' : 'block';
+    function openForm(tipo, emoji) {
+        document.getElementById('form-container').style.display = 'block';
+        document.getElementById('form-label').innerText = emoji + " Publicar " + tipo;
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
-    function startCamera() {
-        let cam = document.createElement('input');
-        cam.type = 'file'; cam.accept = 'image/*'; cam.capture = 'camera';
-        cam.onchange = () => alert("✅ Imagen capturada con éxito.");
-        cam.click();
+    function triggerCamera() {
+        let c = document.createElement('input');
+        c.type = 'file'; c.accept = 'image/*'; c.capture = 'camera';
+        c.onchange = () => alert("📸 ¡Imagen capturada para el Mercado Virtual!");
+        c.click();
     }
 
-    function postToWall() {
-        alert("🚀 ¡Imperio en marcha! Tu anuncio se está subiendo al muro de Huanta.");
-        showView('home');
-    }
-
-    function sendMessage() {
-        let m = document.getElementById('chat-msg').value;
-        if(m) {
-            let d = document.createElement('div');
-            d.style.margin = "8px 0"; d.style.textAlign = "right";
-            d.innerHTML = `<span style="background:var(--verde-primario); color:white; padding:10px 15px; border-radius:18px 18px 0 18px; display:inline-block;">${m}</span>`;
-            document.getElementById('chat-box').appendChild(d);
-            document.getElementById('chat-msg').value = "";
-        }
+    function finish() {
+        alert("🌟 ¡Tu anuncio está volando al mercado! Bajo supervisión del Imperio.");
+        changeView('home');
     }
 
     window.onload = function() {
         navigator.geolocation.getCurrentPosition(()=>{}, () => {
-            alert("AVISO DE SEGURIDAD: GPS obligatorio para validar tu cuenta en Huanta.");
+            alert("🛑 SEGURIDAD 2026: Necesitamos tu GPS para validar que eres un comerciante real en Huanta.");
         });
     }
 </script>
