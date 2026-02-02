@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RR Admin - Control Total del Imperio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #020617; --card: #0f172a;
+            --verde: #22c55e; --naranja: #f97316;
+            --azul: #3b82f6; --rojo: #ef4444;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            background: var(--bg); font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: white; margin: 0; padding-bottom: 100px;
+        }
+
+        /* --- HEADER TÁCTICO --- */
+        .admin-nav {
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px);
+            padding: 20px; position: sticky; top: 0; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 45px; height: 45px; background: var(--verde); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; box-shadow: 0 0 20px rgba(34, 197, 94, 0.4); }
+
+        /* --- BÓVEDA DE DINERO (MONEY VAULT) --- */
+        .vault-section {
+            padding: 25px; background: linear-gradient(135deg, #064e3b 0%, #020617 100%);
+            margin: 20px; border-radius: 40px; border: 1px solid rgba(34, 197, 94, 0.2);
+            position: relative; overflow: hidden;
+        }
+        .vault-section::before { content: 'RR'; position: absolute; right: -20px; bottom: -20px; font-size: 150px; font-weight: 900; opacity: 0.05; }
+
+        .money-display { font-size: 42px; font-weight: 800; letter-spacing: -2px; margin: 10px 0; color: var(--verde); }
+        .money-label { font-size: 12px; font-weight: 700; opacity: 0.6; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* --- GRID DE CONTROL --- */
+        .control-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px;
+        }
+        .c-card {
+            background: var(--card); padding: 20px; border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+        }
+        .c-card:active { transform: scale(0.95); background: rgba(255,255,255,0.05); }
+        .c-card i { font-size: 24px; display: block; margin-bottom: 10px; }
+        .c-card b { font-size: 18px; display: block; }
+        .c-card span { font-size: 11px; opacity: 0.5; font-weight: 700; }
+
+        /* --- MONITOR DE GRUPOS Y CHATS --- */
+        .section-title { padding: 25px 25px 10px; font-weight: 800; font-size: 18px; display: flex; justify-content: space-between; }
+        
+        .chat-monitor { margin: 0 20px; background: var(--card); border-radius: 35px; overflow: hidden; }
+        .chat-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 25px; border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .chat-info b { display: block; font-size: 14px; }
+        .chat-info span { font-size: 11px; color: var(--verde); }
+
+        .btn-spy { background: var(--azul); color: white; border: none; padding: 8px 15px; border-radius: 12px; font-weight: 800; font-size: 10px; cursor: pointer; }
+        .btn-ban { background: var(--rojo); color: white; border: none; padding: 8px 15px; border-radius: 12px; font-weight: 800; font-size: 10px; cursor: pointer; margin-left: 5px; }
+
+        /* --- PANEL DE ACCIÓN RÁPIDA --- */
+        .quick-actions {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
+            padding: 20px; display: flex; gap: 10px; border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .action-btn {
+            flex: 1; padding: 15px; border-radius: 20px; border: none;
+            font-weight: 800; font-size: 12px; cursor: pointer; color: white;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="admin-nav">
+    <div class="user-profile">
+        <div class="avatar">RR</div>
+        <div>
+            <div style="font-weight: 800; font-size: 15px;">Admin Supremo</div>
+            <div style="font-size: 10px; color: var(--verde);">CONEXIÓN ENCRIPTADA</div>
+        </div>
+    </div>
+    <div style="background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 15px; font-size: 12px; font-weight: 800;">
+        V1.5 PRO
+    </div>
+</nav>
+
+<div class="vault-section">
+    <div class="money-label">Volumen de Mercado (24h)</div>
+    <div class="money-display" id="total-money">S/ 45,820.00</div>
+    <div style="display:flex; gap:15px; margin-top:15px;">
+        <div style="font-size:11px; font-weight:700;"><span style="color:var(--verde);">▲ 12%</span> vs ayer</div>
+        <div style="font-size:11px; font-weight:700;"><span style="color:var(--azul);">84</span> Transacciones</div>
+    </div>
+</div>
+
+<div class="control-grid">
+    <div class="c-card" onclick="alert('Huanta: 150 activos')">
+        <i style="color:var(--verde)">⛰️</i>
+        <b>Huanta</b>
+        <span>65 Publicaciones</span>
+    </div>
+    <div class="c-card" onclick="alert('Huamanga: 320 activos')">
+        <i style="color:var(--azul)">⛪</i>
+        <b>Huamanga</b>
+        <span>124 Publicaciones</span>
+    </div>
+    <div class="c-card" onclick="alert('VRAEM: 85 activos')">
+        <i style="color:var(--naranja)">🌿</i>
+        <b>VRAEM</b>
+        <span>42 Publicaciones</span>
+    </div>
+    <div class="c-card" style="background: var(--verde); border:none;">
+        <i style="color:white">📊</i>
+        <b style="color:white">Reportes</b>
+        <span style="color:white; opacity:0.8;">Descargar PDF</span>
+    </div>
+</div>
+
+<div class="section-title">
+    <span>📡 INTERCEPTOR DE CHATS</span>
+    <span style="color:var(--verde); font-size:11px;">LIVE</span>
+</div>
+
+<div class="chat-monitor">
+    <div class="chat-row">
+        <div class="chat-info">
+            <b>Chat: Venta Moto Linear</b>
+            <span>Huanta • 2 usuarios</span>
+        </div>
+        <div>
+            <button class="btn-spy" onclick="spyChat('Moto Linear')">ESPIAR</button>
+            <button class="btn-ban" onclick="alert('Usuario baneado')">BAN</button>
+        </div>
+    </div>
+    <div class="chat-row">
+        <div class="chat-info">
+            <b>Grupo: Empleos VRAEM</b>
+            <span>VRAEM • 14 activos</span>
+        </div>
+        <div>
+            <button class="btn-spy" onclick="spyChat('Empleos VRAEM')">MIRAR</button>
+            <button class="btn-ban">MUTE</button>
+        </div>
+    </div>
+    <div class="chat-row">
+        <div class="chat-info">
+            <b>Chat: Terreno Centro</b>
+            <span>Huamanga • Negociación</span>
+        </div>
+        <div>
+            <button class="btn-spy">ESPIAR</button>
+            <button class="btn-ban">BAN</button>
+        </div>
+    </div>
+</div>
+
+<div class="quick-actions">
+    <button class="action-btn" style="background: var(--card); border: 1px solid rgba(255,255,255,0.1);" onclick="location.href='index.html'">VER APP PÚBLICA</button>
+    <button class="action-btn" style="background: var(--verde);" onclick="addMoney()">+ INYECTAR CAPITAL</button>
+</div>
+
+<div id="spy-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:2000; padding:40px;">
+    <h2 id="spy-title" style="color:var(--verde);">Intercepción...</h2>
+    <div id="spy-log" style="background:black; height:70%; border-radius:20px; padding:20px; font-family:monospace; color:#0f0; overflow-y:auto; font-size:12px;">
+        > Conectando a servidor regional...<br>
+        > Acceso concedido...<br>
+        > Escuchando mensajes privados...<br>
+    </div>
+    <button onclick="document.getElementById('spy-modal').style.display='none'" style="width:100%; margin-top:20px; padding:20px; border-radius:20px; background:var(--rojo); color:white; border:none; font-weight:800;">CERRAR INTERCEPCIÓN</button>
+</div>
+
+<script>
+    let money = 45820;
+
+    function addMoney() {
+        let boost = Math.floor(Math.random() * 500);
+        money += boost;
+        document.getElementById('total-money').innerText = "S/ " + money.toLocaleString() + ".00";
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#22c55e'] });
+    }
+
+    function spyChat(name) {
+        document.getElementById('spy-modal').style.display = 'block';
+        document.getElementById('spy-title').innerText = "ESPIANDO: " + name;
+        const log = document.getElementById('spy-log');
+        
+        const msgs = [
+            "User1: ¿Cuál es el precio final?",
+            "User2: S/ 3500 para el imperio.",
+            "User1: Me parece justo, ¿dónde nos vemos?",
+            "User2: En la plaza de Huanta, cerca al mercado.",
+            "SISTEMA: Transacción detectada como segura."
+        ];
+
+        let i = 0;
+        const interval = setInterval(() => {
+            if(i < msgs.length) {
+                log.innerHTML += `<br>> ${msgs[i]}`;
+                i++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 1000);
+    }
+
+    // Efecto de dinero subiendo solo
+    setInterval(() => {
+        money += 1;
+        document.getElementById('total-money').innerText = "S/ " + money.toLocaleString() + ".00";
+    }, 5000);
+</script>
+
+</body>
+</html>
