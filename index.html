@@ -3,125 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rantiy y Rantikuy - Imperio Huanta</title>
+    <title>Rantiy y Rantikuy - Huanta Premium</title>
     <style>
-        :root { --verde: #4ade80; --naranja: #ff8c00; --fondo: #f7fff9; --texto: #2d6a4f; }
-        body { background-color: var(--fondo); font-family: 'Segoe UI', sans-serif; margin: 0; color: var(--texto); padding-bottom: 100px; }
-        
-        /* Cabecera Premium */
-        .header { background: white; padding: 20px 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(74, 222, 128, 0.1); border-bottom: 2px solid var(--verde); }
-        .search-container { display: flex; align-items: center; background: #f0fdf4; border: 1.5px solid var(--verde); border-radius: 15px; padding: 12px; }
-        .search-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 16px; color: var(--texto); }
+        :root { --verde: #22c55e; --verde-suave: #f0fdf4; --naranja: #f97316; --fondo: #f8fafc; --texto: #166534; }
+        body { background-color: var(--fondo); font-family: 'Inter', system-ui, sans-serif; margin: 0; color: #1e293b; padding-bottom: 90px; }
 
-        /* Burbujas de Categoría */
-        .cat-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 15px; scrollbar-width: none; }
-        .cat-card { background: white; border: 1.5px solid var(--verde); padding: 10px 20px; border-radius: 25px; font-weight: bold; white-space: nowrap; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        /* Header Profesional con Logo */
+        .header { background: white; padding: 18px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .logo-box { display: flex; align-items: center; gap: 12px; }
+        .logo-circle { width: 40px; height: 40px; background: linear-gradient(135deg, var(--verde), #4ade80); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 22px; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3); }
+        .brand-name { font-size: 20px; font-weight: 800; background: linear-gradient(to right, var(--texto), var(--verde)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* Tarjetas de Producto VIP */
-        .card { background: white; margin: 15px; border-radius: 25px; border: 1px solid #e0f2f1; overflow: hidden; position: relative; }
-        .card-vip { border: 2.5px solid var(--naranja); box-shadow: 0 8px 20px rgba(255, 140, 0, 0.15); }
-        .badge-vip { position: absolute; top: 12px; right: 12px; background: var(--naranja); color: white; padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; }
-        .card-content { padding: 15px; }
-        .price { font-size: 22px; font-weight: bold; color: var(--verde); margin: 10px 0; }
+        /* Buscador Moderno */
+        .search-area { padding: 15px; }
+        .search-bar { background: white; border: 2px solid #e2e8f0; border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
+        .search-bar:focus-within { border-color: var(--verde); box-shadow: 0 0 0 4px var(--verde-suave); }
 
-        /* Menú de Publicación (Tu favorito mejorado) */
-        #modal-pub { display: none; position: fixed; inset: 0; background: rgba(45, 106, 79, 0.4); z-index: 1000; backdrop-filter: blur(5px); justify-content: center; align-items: center; }
-        .ventana-modal { background: white; width: 90%; max-width: 380px; border-radius: 30px; padding: 30px; position: relative; animation: subida 0.3s ease-out; }
-        @keyframes subida { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .btn-opcion { display: flex; align-items: center; gap: 15px; width: 100%; background: #f0fdf4; border: 2px solid var(--verde); padding: 18px; border-radius: 20px; margin: 12px 0; color: var(--texto); font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        .btn-opcion:hover { background: var(--verde); color: white; }
+        /* Categorías Estilo "Pills" */
+        .cat-row { display: flex; gap: 10px; overflow-x: auto; padding: 5px 15px 15px; scrollbar-width: none; }
+        .pill { background: white; border: 1.5px solid #e2e8f0; padding: 10px 20px; border-radius: 99px; white-space: nowrap; font-size: 14px; font-weight: 600; color: #64748b; transition: 0.2s; cursor: pointer; }
+        .pill:active { background: var(--verde); color: white; border-color: var(--verde); }
 
-        /* Formulario Dinámico */
-        #form-datos { display: none; text-align: left; }
-        input, select, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid var(--verde); border-radius: 15px; box-sizing: border-box; background: #fcfdfc; }
+        /* Botón de Retroceso */
+        .btn-back { display: none; align-items: center; gap: 8px; color: var(--naranja); font-weight: 700; cursor: pointer; padding: 8px 12px; border-radius: 10px; background: #fff7ed; }
 
-        /* Botón de la Camarita (Estilo Pulso) */
-        .btn-cam { position: fixed; bottom: 25px; right: 25px; background: var(--naranja); border: none; width: 75px; height: 75px; border-radius: 50%; cursor: pointer; box-shadow: 0 8px 25px rgba(255,140,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 500; }
+        /* Tarjetas de Muro (Feed) */
+        .feed { padding: 0 15px; }
+        .product-card { background: white; border-radius: 24px; border: 1px solid #f1f5f9; margin-bottom: 20px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        .product-img { height: 200px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .product-info { padding: 20px; }
+        .price-tag { font-size: 24px; font-weight: 800; color: var(--verde); margin: 8px 0; }
+        .btn-action { width: 100%; background: var(--naranja); color: white; border: none; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .btn-action:active { transform: scale(0.96); }
+
+        /* Pantalla de Publicación */
+        #publish-screen { display: none; padding: 20px; animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .option-pro { background: white; padding: 22px; border-radius: 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 18px; border: 2px solid #f1f5f9; cursor: pointer; transition: 0.3s; }
+        .option-pro:active { border-color: var(--verde); background: var(--verde-suave); }
+        .icon-box { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+        /* Botón Flotante con Pulso Naranja */
+        .fab { position: fixed; bottom: 100px; right: 20px; background: var(--naranja); width: 70px; height: 70px; border-radius: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(249, 115, 22, 0.4); border: none; cursor: pointer; z-index: 100; transition: 0.3s; }
+        .fab:active { transform: rotate(90deg) scale(0.9); }
+
+        /* Nav Inferior de Lujo */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 15px 0 25px; border-top: 1px solid #f1f5f9; z-index: 1000; }
+        .nav-link { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 12px; font-weight: 600; text-decoration: none; }
+        .active-link { color: var(--verde); }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="search-container">🔍 <input type="text" placeholder="Buscar en Huanta..."></div>
+    <div class="logo-box" id="header-brand">
+        <div class="logo-circle">R</div>
+        <span class="brand-name">Rantiy y Rantikuy</span>
+    </div>
+    <div id="back-nav" class="btn-back" onclick="goHome()">
+        <span>⬅</span> Retroceder
+    </div>
 </div>
 
-<div class="cat-scroll">
-    <div class="cat-card">👟 Zapatillas</div>
-    <div class="cat-card">🍲 Comida</div>
-    <div class="cat-card">🚗 Carros</div>
-    <div class="cat-card">📱 Tecnología</div>
-    <div class="cat-card">💼 Empleos</div>
-</div>
+<div id="main-content">
+    <div class="search-area">
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="¿Qué necesitas hoy en Huanta?" style="border:none; outline:none; width:100%; font-size:16px; font-weight:500;">
+        </div>
+    </div>
 
-<div class="muro">
-    <div class="card card-vip">
-        <div class="badge-vip">DESTACADO VIP</div>
-        <div style="height:180px; background:#e8f5e9; display:flex; align-items:center; justify-content:center;">🖼️ [Imagen del Producto]</div>
-        <div class="card-content">
-            <h3 style="margin:0;">Zapatillas Deportivas Pro</h3>
-            <p style="color:#666; font-size:14px; margin:5px 0;">Nuevas en caja, todas las tallas.</p>
-            <div class="price">S/ 145.00</div>
-            <button style="width:100%; background:var(--naranja); color:white; border:none; padding:15px; border-radius:15px; font-weight:bold; cursor:pointer;">ME INTERESA</button>
+    <div class="cat-row">
+        <div class="pill">👟 Moda</div>
+        <div class="pill">🍲 Gastronomía</div>
+        <div class="pill">🏍️ Vehículos</div>
+        <div class="pill">💼 Empleos</div>
+        <div class="pill">🛠️ Servicios</div>
+    </div>
+
+    <div class="feed">
+        <div class="product-card" style="border: 2px solid var(--naranja);">
+            <div class="product-img">👟</div>
+            <div class="product-info">
+                <span style="color:var(--naranja); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Destacado Imperio</span>
+                <h3 style="margin:8px 0;">Zapatillas Urbanas Pro-Huanta</h3>
+                <div class="price-tag">S/ 185.00</div>
+                <button class="btn-action">CONTACTAR VENDEDOR</button>
+            </div>
         </div>
     </div>
 </div>
 
-<button class="btn-cam" onclick="abrirMenu()">
-    <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" width="35" style="filter: brightness(0) invert(1);">
+<div id="publish-screen">
+    <h2 style="font-size: 28px; font-weight: 800; margin-bottom: 30px; text-align: center;">Crear Publicación</h2>
+    
+    <div class="option-pro" onclick="openCam('Venta')">
+        <div class="icon-box" style="background: #ecfdf5;">💰</div>
+        <div>
+            <div style="font-weight: 800; font-size: 17px;">Vender algo</div>
+            <div style="font-size: 13px; color: #64748b;">Ropa, tecnología, hogar...</div>
+        </div>
+    </div>
+
+    <div class="option-pro" onclick="openCam('Moto')">
+        <div class="icon-box" style="background: #fff7ed;">🏍️</div>
+        <div>
+            <div style="font-weight: 800; font-size: 17px;">Motos y Repuestos</div>
+            <div style="font-size: 13px; color: #64748b;">Vende tu vehículo rápido.</div>
+        </div>
+    </div>
+
+    <div class="option-pro" onclick="alert('Formulario Empleo...')">
+        <div class="icon-box" style="background: #eff6ff;">💼</div>
+        <div>
+            <div style="font-weight: 800; font-size: 17px;">Ofrecer Empleo</div>
+            <div style="font-size: 13px; color: #64748b;">Busca personal en Huanta.</div>
+        </div>
+    </div>
+</div>
+
+<button class="fab" onclick="showPublish()">
+    <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" width="32" style="filter: brightness(0) invert(1);">
 </button>
 
-<div id="modal-pub">
-    <div class="ventana-modal">
-        <h2 id="modal-title" style="margin-top:0; text-align:center;">¿Qué deseas hacer hoy?</h2>
-        
-        <div id="selector-inicio">
-            <button class="btn-opcion" onclick="flujoPublicar('vender')"><span>💰</span> Quiero Vender algo</button>
-            <button class="btn-opcion" onclick="flujoPublicar('empleo')"><span>💼</span> Ofrecer Empleo</button>
-            <button class="btn-opcion" onclick="flujoPublicar('servicio')"><span>🚕</span> Ofrecer Servicio</button>
-            <p onclick="cerrarMenu()" style="text-align:center; color:var(--naranja); font-weight:bold; cursor:pointer; margin-top:15px;">Regresar</p>
-        </div>
-
-        <div id="form-datos">
-            <div id="upload-box" style="margin-bottom:15px;">
-                <label style="background:var(--verde); color:white; padding:15px; border-radius:15px; display:block; text-align:center; cursor:pointer; font-weight:bold;">
-                    📸 Capturar Foto del Producto
-                    <input type="file" accept="image/*" capture="camera" style="display:none" onchange="alert('Foto lista')">
-                </label>
-            </div>
-            <input type="text" placeholder="¿Qué nombre tendrá tu anuncio?">
-            <input type="number" placeholder="Precio / Sueldo (S/)">
-            <textarea placeholder="Descripción breve para evitar dudas..." rows="3"></textarea>
-            <p style="font-size:10px; color:#2d6a4f; text-align:center;">🔒 Verificado por el Administrador anti-estafas.</p>
-            <button style="width:100%; background:var(--naranja); color:white; border:none; padding:18px; border-radius:15px; font-weight:bold; font-size:16px;" onclick="finalizar()">PUBLICAR EN EL MURO</button>
-        </div>
-    </div>
+<div class="bottom-nav">
+    <a href="#" class="nav-link active-link">🏠<span>Inicio</span></a>
+    <a href="#" class="nav-link">🛍️<span>Tienda</span></a>
+    <a href="#" class="nav-link">📩<span>Chats</span></a>
+    <a href="#" class="nav-link">⚙️<span>Ajustes</span></a>
 </div>
 
 <script>
-    function abrirMenu() { document.getElementById('modal-pub').style.display = 'flex'; }
-    function cerrarMenu() { 
-        document.getElementById('modal-pub').style.display = 'none';
-        document.getElementById('form-datos').style.display = 'none';
-        document.getElementById('selector-inicio').style.display = 'block';
+    function showPublish() {
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('publish-screen').style.display = 'block';
+        document.getElementById('header-brand').style.display = 'none';
+        document.getElementById('back-nav').style.display = 'flex';
+        window.scrollTo(0,0);
     }
 
-    function flujoPublicar(tipo) {
-        document.getElementById('selector-inicio').style.display = 'none';
-        document.getElementById('form-datos').style.display = 'block';
-        document.getElementById('modal-title').innerText = "Casi listo...";
-        // Ocultar foto si es servicio o empleo para ser más rápido
-        document.getElementById('upload-box').style.display = (tipo === 'vender') ? 'block' : 'none';
+    function goHome() {
+        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('publish-screen').style.display = 'none';
+        document.getElementById('header-brand').style.display = 'flex';
+        document.getElementById('back-nav').style.display = 'none';
     }
 
-    function finalizar() {
-        alert("¡Éxito! Tu publicación está siendo procesada bajo la comisión acordada.");
-        cerrarMenu();
+    function openCam(tipo) {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.capture = 'camera';
+        input.onchange = () => alert("✅ Captura de " + tipo + " exitosa. Procesando publicación...");
+        input.click();
     }
 
     window.onload = function() {
         navigator.geolocation.getCurrentPosition(()=>{}, () => {
-            alert("Atención: Activa tu GPS para asegurar que eres de Huanta y evitar el baneo.");
+            alert("🛡️ SEGURIDAD: Activa el GPS para validar que estás en Huanta.");
         });
     }
 </script>
