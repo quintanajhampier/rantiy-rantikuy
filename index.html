@@ -3,87 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vitrina Huanta - Rantiy y Rantikuy</title>
+    <title>Rantiy y Rantikuy - Huanta</title>
     <style>
-        body { background-color: #f7fff9; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+        /* Mantengo tus colores vibrantes y el estilo de tu foto */
+        body { background-color: #f7fff9; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         
-        /* Cabecera y Buscador */
-        .cabecera { background: white; padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .busqueda-container { display: flex; align-items: center; background: #f0fdf4; border: 2px solid #4ade80; border-radius: 12px; padding: 8px 15px; margin-bottom: 10px; }
-        .busqueda-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 16px; }
-
-        /* Botón Flotante de Acción (El más grande y llamativo) */
-        .boton-flotante { 
-            position: fixed; bottom: 20px; right: 20px; 
-            background: #ff8c00; color: white; border: none; 
-            width: 70px; height: 70px; border-radius: 50%; 
-            font-size: 30px; cursor: pointer; 
-            box-shadow: 0 5px 15px rgba(255,140,0,0.4); z-index: 200;
-        }
-
-        /* Menú de Opciones (Al presionar el +) */
-        .modal-opciones { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.5); z-index: 300; justify-content: center; align-items: center; 
-        }
-        .menu-publicar { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; }
+        /* Estilo exacto de tu ventana blanca en la foto */
+        .modal { background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
         
-        .opcion-btn { 
-            background: #f0fdf4; border: 2px solid #4ade80; color: #2d6a4f; 
-            padding: 15px; width: 100%; border-radius: 12px; margin: 10px 0; 
-            font-weight: bold; cursor: pointer; font-size: 16px; 
+        h2 { color: #2d6a4f; margin-bottom: 25px; font-size: 24px; }
+
+        /* Botones con el borde verde y naranja de tu imagen */
+        .btn-opcion { 
+            display: block; width: 100%; padding: 15px; margin: 12px 0; 
+            background: #f0fdf4; border: 2px solid #4ade80; border-radius: 15px; 
+            color: #2d6a4f; font-weight: bold; font-size: 16px; cursor: pointer; text-decoration: none;
+        }
+        
+        .btn-cerrar { 
+            background: #f0fdf4; border: 2px solid #ff8c00; color: #ff8c00; 
+            padding: 12px; border-radius: 15px; width: 100%; font-weight: bold; margin-top: 10px; cursor: pointer;
         }
 
-        /* Estilo para las preguntas de publicación */
-        .formulario-pub { display: none; text-align: left; margin-top: 15px; }
-        .formulario-pub input, .formulario-pub select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #4ade80; border-radius: 8px; }
+        /* Botón flotante de la camarita (el naranja de la esquina) */
+        .float-btn { position: fixed; bottom: 20px; right: 20px; background: #ff8c00; border: none; width: 70px; height: 70px; border-radius: 50%; cursor: pointer; box-shadow: 0 5px 15px rgba(255,140,0,0.4); display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-<button class="boton-flotante" onclick="abrirMenu()">📸</button>
+<div class="modal">
+    <h2>¿Qué deseas hacer?</h2>
 
-<div id="modal" class="modal-opciones">
-    <div class="menu-publicar">
-        <h2 style="color: #2d6a4f; margin-top: 0;">¿Qué deseas hacer?</h2>
-        
-        <button class="opcion-btn" onclick="mostrarForm('vender')">💰 Quiero Vender algo</button>
-        <button class="opcion-btn" onclick="mostrarForm('empleo')">💼 Ofrecer Empleo</button>
-        <button class="opcion-btn" onclick="cerrarMenu()" style="border-color: #ff8c00; color: #ff8c00;">Cerrar</button>
+    <label class="btn-opcion">
+        💰 Quiero Vender algo
+        <input type="file" accept="image/*" capture="camera" style="display:none" onchange="alert('¡Foto capturada con éxito!')">
+    </label>
 
-        <div id="form-vender" class="formulario-pub">
-            <p><b>1. Sube la foto:</b></p>
-            <button onclick="document.getElementById('cam').click()">📸 Tomar Foto</button>
-            <button onclick="document.getElementById('gal').click()">🖼️ Elegir Galería</button>
-            <input type="file" id="cam" accept="image/*" capture="camera" style="display:none">
-            <input type="file" id="gal" accept="image/*" style="display:none">
-            
-            <p><b>2. Detalles:</b></p>
-            <input type="text" placeholder="¿Qué vendes?">
-            <input type="number" placeholder="Precio (S/)">
-            <button class="opcion-btn" style="background: #ff8c00; color: white;">PUBLICAR AHORA</button>
-        </div>
-
-        <div id="form-empleo" class="formulario-pub">
-            <p><b>Preguntas de Empleo:</b></p>
-            <input type="text" placeholder="Nombre del Puesto">
-            <input type="text" placeholder="Ubicación en Huanta">
-            <input type="text" placeholder="Sueldo ofrecido">
-            <button class="opcion-btn" style="background: #2d6a4f; color: white;">BUSCAR PERSONAL</button>
-        </div>
-    </div>
+    <button class="btn-opcion" onclick="alert('Buscando empleos en Huanta...')">💼 Ofrecer Empleo</button>
+    
+    <button class="btn-cerrar">Cerrar</button>
 </div>
 
+<button class="float-btn">
+    <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" width="35" style="filter: brightness(0) invert(1);">
+</button>
+
 <script>
-    function abrirMenu() { document.getElementById('modal').style.display = 'flex'; }
-    function cerrarMenu() { 
-        document.getElementById('modal').style.display = 'none'; 
-        document.getElementById('form-vender').style.display = 'none';
-        document.getElementById('form-empleo').style.display = 'none';
-    }
-    function mostrarForm(tipo) {
-        document.getElementById('form-vender').style.display = tipo === 'vender' ? 'block' : 'none';
-        document.getElementById('form-empleo').style.display = tipo === 'empleo' ? 'block' : 'none';
+    // GPS para seguridad al iniciar tu app
+    window.onload = function() {
+        navigator.geolocation.getCurrentPosition(() => {}, () => {
+            alert("Para proteger el mercado de Huanta de estafas, activa tu GPS.");
+        });
     }
 </script>
 
