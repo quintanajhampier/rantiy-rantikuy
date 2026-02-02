@@ -3,56 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rantiy y Rantikuy - Huanta</title>
+    <title>Rantiy y Rantikuy - Imperio Huanta</title>
     <style>
-        /* Mantengo tus colores vibrantes y el estilo de tu foto */
-        body { background-color: #f7fff9; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        :root { --verde: #4ade80; --naranja: #ff8c00; --fondo: #f7fff9; --texto: #2d6a4f; }
+        body { background-color: var(--fondo); font-family: 'Segoe UI', sans-serif; margin: 0; color: var(--texto); padding-bottom: 100px; }
         
-        /* Estilo exacto de tu ventana blanca en la foto */
-        .modal { background: white; padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
-        
-        h2 { color: #2d6a4f; margin-bottom: 25px; font-size: 24px; }
+        /* Cabecera Premium */
+        .header { background: white; padding: 20px 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(74, 222, 128, 0.1); border-bottom: 2px solid var(--verde); }
+        .search-container { display: flex; align-items: center; background: #f0fdf4; border: 1.5px solid var(--verde); border-radius: 15px; padding: 12px; }
+        .search-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 16px; color: var(--texto); }
 
-        /* Botones con el borde verde y naranja de tu imagen */
-        .btn-opcion { 
-            display: block; width: 100%; padding: 15px; margin: 12px 0; 
-            background: #f0fdf4; border: 2px solid #4ade80; border-radius: 15px; 
-            color: #2d6a4f; font-weight: bold; font-size: 16px; cursor: pointer; text-decoration: none;
-        }
-        
-        .btn-cerrar { 
-            background: #f0fdf4; border: 2px solid #ff8c00; color: #ff8c00; 
-            padding: 12px; border-radius: 15px; width: 100%; font-weight: bold; margin-top: 10px; cursor: pointer;
-        }
+        /* Burbujas de Categoría */
+        .cat-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 15px; scrollbar-width: none; }
+        .cat-card { background: white; border: 1.5px solid var(--verde); padding: 10px 20px; border-radius: 25px; font-weight: bold; white-space: nowrap; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
 
-        /* Botón flotante de la camarita (el naranja de la esquina) */
-        .float-btn { position: fixed; bottom: 20px; right: 20px; background: #ff8c00; border: none; width: 70px; height: 70px; border-radius: 50%; cursor: pointer; box-shadow: 0 5px 15px rgba(255,140,0,0.4); display: flex; align-items: center; justify-content: center; }
+        /* Tarjetas de Producto VIP */
+        .card { background: white; margin: 15px; border-radius: 25px; border: 1px solid #e0f2f1; overflow: hidden; position: relative; }
+        .card-vip { border: 2.5px solid var(--naranja); box-shadow: 0 8px 20px rgba(255, 140, 0, 0.15); }
+        .badge-vip { position: absolute; top: 12px; right: 12px; background: var(--naranja); color: white; padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+        .card-content { padding: 15px; }
+        .price { font-size: 22px; font-weight: bold; color: var(--verde); margin: 10px 0; }
+
+        /* Menú de Publicación (Tu favorito mejorado) */
+        #modal-pub { display: none; position: fixed; inset: 0; background: rgba(45, 106, 79, 0.4); z-index: 1000; backdrop-filter: blur(5px); justify-content: center; align-items: center; }
+        .ventana-modal { background: white; width: 90%; max-width: 380px; border-radius: 30px; padding: 30px; position: relative; animation: subida 0.3s ease-out; }
+        @keyframes subida { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .btn-opcion { display: flex; align-items: center; gap: 15px; width: 100%; background: #f0fdf4; border: 2px solid var(--verde); padding: 18px; border-radius: 20px; margin: 12px 0; color: var(--texto); font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-opcion:hover { background: var(--verde); color: white; }
+
+        /* Formulario Dinámico */
+        #form-datos { display: none; text-align: left; }
+        input, select, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid var(--verde); border-radius: 15px; box-sizing: border-box; background: #fcfdfc; }
+
+        /* Botón de la Camarita (Estilo Pulso) */
+        .btn-cam { position: fixed; bottom: 25px; right: 25px; background: var(--naranja); border: none; width: 75px; height: 75px; border-radius: 50%; cursor: pointer; box-shadow: 0 8px 25px rgba(255,140,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 500; }
     </style>
 </head>
 <body>
 
-<div class="modal">
-    <h2>¿Qué deseas hacer?</h2>
-
-    <label class="btn-opcion">
-        💰 Quiero Vender algo
-        <input type="file" accept="image/*" capture="camera" style="display:none" onchange="alert('¡Foto capturada con éxito!')">
-    </label>
-
-    <button class="btn-opcion" onclick="alert('Buscando empleos en Huanta...')">💼 Ofrecer Empleo</button>
-    
-    <button class="btn-cerrar">Cerrar</button>
+<div class="header">
+    <div class="search-container">🔍 <input type="text" placeholder="Buscar en Huanta..."></div>
 </div>
 
-<button class="float-btn">
+<div class="cat-scroll">
+    <div class="cat-card">👟 Zapatillas</div>
+    <div class="cat-card">🍲 Comida</div>
+    <div class="cat-card">🚗 Carros</div>
+    <div class="cat-card">📱 Tecnología</div>
+    <div class="cat-card">💼 Empleos</div>
+</div>
+
+<div class="muro">
+    <div class="card card-vip">
+        <div class="badge-vip">DESTACADO VIP</div>
+        <div style="height:180px; background:#e8f5e9; display:flex; align-items:center; justify-content:center;">🖼️ [Imagen del Producto]</div>
+        <div class="card-content">
+            <h3 style="margin:0;">Zapatillas Deportivas Pro</h3>
+            <p style="color:#666; font-size:14px; margin:5px 0;">Nuevas en caja, todas las tallas.</p>
+            <div class="price">S/ 145.00</div>
+            <button style="width:100%; background:var(--naranja); color:white; border:none; padding:15px; border-radius:15px; font-weight:bold; cursor:pointer;">ME INTERESA</button>
+        </div>
+    </div>
+</div>
+
+<button class="btn-cam" onclick="abrirMenu()">
     <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" width="35" style="filter: brightness(0) invert(1);">
 </button>
 
+<div id="modal-pub">
+    <div class="ventana-modal">
+        <h2 id="modal-title" style="margin-top:0; text-align:center;">¿Qué deseas hacer hoy?</h2>
+        
+        <div id="selector-inicio">
+            <button class="btn-opcion" onclick="flujoPublicar('vender')"><span>💰</span> Quiero Vender algo</button>
+            <button class="btn-opcion" onclick="flujoPublicar('empleo')"><span>💼</span> Ofrecer Empleo</button>
+            <button class="btn-opcion" onclick="flujoPublicar('servicio')"><span>🚕</span> Ofrecer Servicio</button>
+            <p onclick="cerrarMenu()" style="text-align:center; color:var(--naranja); font-weight:bold; cursor:pointer; margin-top:15px;">Regresar</p>
+        </div>
+
+        <div id="form-datos">
+            <div id="upload-box" style="margin-bottom:15px;">
+                <label style="background:var(--verde); color:white; padding:15px; border-radius:15px; display:block; text-align:center; cursor:pointer; font-weight:bold;">
+                    📸 Capturar Foto del Producto
+                    <input type="file" accept="image/*" capture="camera" style="display:none" onchange="alert('Foto lista')">
+                </label>
+            </div>
+            <input type="text" placeholder="¿Qué nombre tendrá tu anuncio?">
+            <input type="number" placeholder="Precio / Sueldo (S/)">
+            <textarea placeholder="Descripción breve para evitar dudas..." rows="3"></textarea>
+            <p style="font-size:10px; color:#2d6a4f; text-align:center;">🔒 Verificado por el Administrador anti-estafas.</p>
+            <button style="width:100%; background:var(--naranja); color:white; border:none; padding:18px; border-radius:15px; font-weight:bold; font-size:16px;" onclick="finalizar()">PUBLICAR EN EL MURO</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // GPS para seguridad al iniciar tu app
+    function abrirMenu() { document.getElementById('modal-pub').style.display = 'flex'; }
+    function cerrarMenu() { 
+        document.getElementById('modal-pub').style.display = 'none';
+        document.getElementById('form-datos').style.display = 'none';
+        document.getElementById('selector-inicio').style.display = 'block';
+    }
+
+    function flujoPublicar(tipo) {
+        document.getElementById('selector-inicio').style.display = 'none';
+        document.getElementById('form-datos').style.display = 'block';
+        document.getElementById('modal-title').innerText = "Casi listo...";
+        // Ocultar foto si es servicio o empleo para ser más rápido
+        document.getElementById('upload-box').style.display = (tipo === 'vender') ? 'block' : 'none';
+    }
+
+    function finalizar() {
+        alert("¡Éxito! Tu publicación está siendo procesada bajo la comisión acordada.");
+        cerrarMenu();
+    }
+
     window.onload = function() {
-        navigator.geolocation.getCurrentPosition(() => {}, () => {
-            alert("Para proteger el mercado de Huanta de estafas, activa tu GPS.");
+        navigator.geolocation.getCurrentPosition(()=>{}, () => {
+            alert("Atención: Activa tu GPS para asegurar que eres de Huanta y evitar el baneo.");
         });
     }
 </script>
