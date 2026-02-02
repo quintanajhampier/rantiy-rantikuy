@@ -3,131 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rantiy Imperio - RR Elite 2026</title>
+    <title>Rantiy Imperio - Publicación RR</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --verde: #22c55e; --verde-glow: #dcfce7;
-            --naranja: #f97316; --naranja-glow: #ffedd5;
-            --rojo: #ef4444; --oscuro: #0f172a;
-            --glass: rgba(255, 255, 255, 0.9);
-            --shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+            --naranja: #f97316; --oscuro: #0f172a;
+            --glass: rgba(255, 255, 255, 0.95);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { 
-            background: radial-gradient(circle at top left, #f0fdf4, #f8fafc); 
-            font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding-bottom: 110px; color: var(--oscuro);
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding-bottom: 110px; }
 
-        /* HEADER PREMIUM RR */
+        /* HEADER RR */
         .header {
-            background: var(--glass); backdrop-filter: blur(25px); padding: 20px;
+            background: var(--glass); backdrop-filter: blur(20px); padding: 15px 20px;
             display: flex; align-items: center; justify-content: space-between;
             position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .logo-rr {
-            width: 52px; height: 52px; background: linear-gradient(135deg, var(--verde), #15803d);
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 900; font-size: 24px; position: relative;
-            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3); animation: float 3s infinite ease-in-out;
+            width: 48px; height: 48px; background: linear-gradient(135deg, var(--verde), #15803d);
+            border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 900; font-size: 20px; box-shadow: 0 8px 20px rgba(34, 197, 94, 0.2);
         }
-        .dot-alert { 
-            position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; 
-            background: var(--rojo); border: 3px solid white; border-radius: 50%; display: none;
-        }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-        /* SELECTOR DE CIUDADES IMPERIO */
-        .city-bar {
-            padding: 15px 20px; overflow-x: auto; white-space: nowrap; 
-            display: flex; gap: 12px; scrollbar-width: none;
-        }
-        .city-bar::-webkit-scrollbar { display: none; }
+        /* SELECTOR CIUDADES */
+        .city-bar { padding: 15px 20px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
         .city-item {
-            display: inline-flex; flex-direction: column; align-items: center;
-            background: white; padding: 12px 22px; border-radius: 22px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04); cursor: pointer; transition: 0.3s;
-            border: 2px solid transparent; min-width: 95px;
+            background: white; padding: 12px 18px; border-radius: 20px; display: flex;
+            flex-direction: column; align-items: center; min-width: 90px; transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); cursor: pointer; border: 2px solid transparent;
         }
         .city-active { border-color: var(--verde); background: var(--verde-glow); transform: scale(1.05); }
-        .city-item span { font-size: 22px; }
-        .city-item label { font-size: 11px; font-weight: 800; margin-top: 5px; color: #64748b; }
 
         /* VISTAS */
         .view { display: none; padding: 0 20px; animation: slideUp 0.4s ease; }
         .view-active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* TARJETAS DE VITRINA */
-        .v-card {
-            background: white; border-radius: 35px; padding: 12px; margin-bottom: 25px;
-            box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.7); position: relative;
+        /* CÁMARA RR DARK */
+        .cam-container {
+            background: var(--oscuro); border-radius: 40px; padding: 30px 20px;
+            color: white; text-align: center; position: relative;
         }
-        .v-img {
-            width: 100%; height: 240px; background: #f1f5f9; border-radius: 28px;
-            display: flex; align-items: center; justify-content: center; font-size: 80px; position: relative;
-        }
-        .v-tag { 
-            position: absolute; top: 15px; left: 15px; background: white; 
-            padding: 6px 14px; border-radius: 12px; font-weight: 800; font-size: 11px; color: var(--naranja);
-        }
-        .v-price { 
-            position: absolute; bottom: 15px; right: 15px; background: var(--verde); 
-            color: white; padding: 10px 18px; border-radius: 18px; font-weight: 800; font-size: 20px;
-        }
-
-        /* CÁMARA MULTIVERSO RR */
-        .cam-portal {
-            background: var(--oscuro); border-radius: 40px; padding: 35px 20px;
-            text-align: center; color: white; position: relative; overflow: hidden;
-        }
-        .intent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 25px; }
+        .intent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 25px 0; }
         .intent-box {
             background: rgba(255,255,255,0.1); padding: 15px 5px; border-radius: 22px;
-            border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.2s;
+            cursor: pointer; transition: 0.2s; border: 1px solid rgba(255,255,255,0.05);
         }
-        .intent-box:active { background: var(--verde); transform: scale(0.9); }
-        .intent-box span { font-size: 28px; display: block; margin-bottom: 5px; }
-        .intent-box label { font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        .intent-box:active { background: var(--verde); }
+        .intent-box.active { border-color: var(--verde); background: rgba(34,197,94,0.2); }
 
-        /* CHATS */
-        .chat-container { height: 50vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
-        .bubble { padding: 15px; border-radius: 22px; font-size: 14px; max-width: 85%; line-height: 1.4; }
-        .b-left { background: #f1f5f9; align-self: flex-start; border-bottom-left-radius: 5px; }
-        .b-right { background: var(--verde-glow); color: var(--verde); align-self: flex-end; border-bottom-right-radius: 5px; font-weight: 600; }
+        /* FORMULARIO DE DETALLES */
+        #post-form {
+            background: white; border-radius: 35px; padding: 25px; margin-top: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); display: none;
+        }
+        .input-rr {
+            width: 100%; padding: 15px; border-radius: 15px; border: 1.5px solid #e2e8f0;
+            margin-bottom: 15px; font-weight: 600; font-family: inherit;
+        }
+        .preview-img { width: 100%; height: 200px; border-radius: 20px; object-fit: cover; margin-bottom: 15px; }
+
+        /* VITRINA CARDS */
+        .v-card {
+            background: white; border-radius: 30px; padding: 12px; margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); animation: zoomIn 0.3s ease;
+        }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } }
 
         /* NAV ISLAND */
         .nav-island {
             position: fixed; bottom: 20px; left: 5%; width: 90%;
-            background: var(--oscuro); border-radius: 32px; display: flex;
-            justify-content: space-around; padding: 18px; z-index: 3000;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            background: var(--oscuro); border-radius: 28px; display: flex;
+            justify-content: space-around; padding: 15px; z-index: 3000;
         }
-        .nav-item { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; position: relative; cursor: pointer; }
-        .nav-active { color: var(--verde); transform: translateY(-5px); }
-        .badge { position: absolute; top: -5px; right: -5px; background: var(--rojo); color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; }
-
-        .btn-p { 
-            width: 100%; padding: 18px; border-radius: 22px; border: none; 
-            font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;
-        }
+        .nav-item { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
+        .nav-active { color: var(--verde); }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div style="display:flex; align-items:center; gap:12px;">
-        <div class="logo-rr">RR<div class="dot-alert" id="main-dot"></div></div>
+        <div class="logo-rr">RR</div>
         <div>
-            <div style="font-weight: 800; font-size: 19px; letter-spacing: -0.5px;">Rantiy Imperio</div>
-            <div style="font-size: 10px; color: var(--verde); font-weight: 700; text-transform: uppercase;">Garantía Regional</div>
+            <div style="font-weight: 800; font-size: 18px;">Rantiy Imperio</div>
+            <div style="font-size: 10px; color: var(--verde); font-weight: 700;">GARANTÍA REGIONAL</div>
         </div>
     </div>
-    <div style="font-size: 24px; position: relative;" onclick="changeView('chat', this)">
-        💬<div class="badge" id="chat-count" style="display:none;">0</div>
-    </div>
+    <div style="font-size: 24px;">💬</div>
 </div>
 
 <div class="city-bar">
@@ -138,133 +104,133 @@
 </div>
 
 <div id="v-home" class="view view-active">
-    <div class="v-card" id="prod-1">
-        <div class="v-tag">🔥 RECOMENDADO</div>
-        <div class="v-img">👟<div class="v-price">S/ 120</div></div>
-        <div style="padding: 15px;">
-            <h3 style="margin: 0; font-weight: 800;">Zapatillas Jordan Urban</h3>
-            <p style="font-size: 12px; color: #64748b; margin: 10px 0;">📍 Disponible en: <span class="city-name">Huanta</span></p>
-            <div style="display:flex; gap:10px;">
-                <button class="btn-p" style="background:var(--verde); color:white; flex:2;" onclick="alert('Iniciando Chat Seguro...')">COMPRAR</button>
-                <button class="btn-p" style="background:#fee2e2; color:var(--rojo); flex:1;" onclick="marcarVendido('prod-1')">VENDIDO</button>
-            </div>
+    <div id="market-wall">
+        <div style="text-align:center; padding:40px; color:#64748b;">
+            <p>Aún no hay productos en <b id="current-city">Huanta</b>.<br>¡Sé el primero en vender!</p>
         </div>
     </div>
 </div>
 
 <div id="v-camera" class="view">
-    <div class="cam-portal">
-        <h2 style="font-weight:900;">CÁMARA RR</h2>
+    <div class="cam-container" id="cam-panel">
+        <h2 style="font-weight:900; margin-bottom:5px;">CÁMARA RR</h2>
         <p style="font-size:12px; opacity:0.6;">Selecciona el destino de tu publicación</p>
+        
         <div class="intent-grid">
-            <div class="intent-box" onclick="prepCam('Venta', '💰')"><span>🛍️</span><label>Venta</label></div>
-            <div class="intent-box" onclick="prepCam('Empleo', '💼')"><span>👷</span><label>Empleo</label></div>
-            <div class="intent-box" onclick="prepCam('Taxi', '🚕')"><span>🚗</span><label>Taxi</label></div>
-            <div class="intent-box" onclick="prepCam('Turismo', '⛰️')"><span>🗺️</span><label>Turismo</label></div>
-            <div class="intent-box" onclick="prepCam('Comida', '🍲')"><span>🍲</span><label>Comida</label></div>
-            <div class="intent-box" onclick="prepCam('Técnico', '🔧')"><span>⚡</span><label>Servicio</label></div>
+            <div class="intent-box" onclick="selectType('Venta', this)"><span>🛍️</span><label>VENTA</label></div>
+            <div class="intent-box" onclick="selectType('Empleo', this)"><span>👷</span><label>EMPLEO</label></div>
+            <div class="intent-box" onclick="selectType('Taxi', this)"><span>🚗</span><label>TAXI</label></div>
+            <div class="intent-box" onclick="selectType('Turismo', this)"><span>🗺️</span><label>TURISMO</label></div>
+            <div class="intent-box" onclick="selectType('Comida', this)"><span>🍲</span><label>COMIDA</label></div>
+            <div class="intent-box" onclick="selectType('Servicio', this)"><span>⚡</span><label>SERVICIO</label></div>
         </div>
-        <div id="cam-action" style="display:none; margin-top:30px; animation: slideUp 0.3s ease;">
-            <p id="cam-status" style="color:var(--verde); font-weight:800; font-size:13px;"></p>
-            <button class="btn-p" style="background:white; color:var(--oscuro); width:80px; height:80px; border-radius:50%; font-size:30px;" onclick="openCam()">📸</button>
-        </div>
-    </div>
-</div>
 
-<div id="v-chat" class="view">
-    <div style="display:flex; background:white; padding:10px; border-radius:20px; margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">
-        <button class="btn-p" style="background:var(--naranja); color:white; font-size:12px;" onclick="toggleChat('g')">👥 GRUPAL (24H)</button>
-        <button class="btn-p" style="background:none; color:var(--oscuro); font-size:12px;" onclick="toggleChat('p')">👤 PRIVADOS</button>
+        <div id="shutter-zone" style="display:none; animation: fadeIn 0.3s;">
+            <p id="mode-text" style="color:var(--verde); font-weight:800; margin-bottom:20px;"></p>
+            <button onclick="triggerCamera()" style="width:80px; height:80px; background:white; border-radius:50%; border:none; font-size:30px;">📸</button>
+        </div>
     </div>
-    <div id="chat-box" class="chat-container">
-        <div class="bubble b-left"><strong>Imperio:</strong> Bienvenido al muro regional. Los mensajes grupales se borran cada 24 horas.</div>
-    </div>
-    <div style="display:flex; gap:10px; background:white; padding:10px; border-radius:20px; box-shadow:var(--shadow);">
-        <input type="text" id="chat-in" placeholder="Escribe al imperio..." style="flex:1; border:none; padding-left:10px; font-weight:600;">
-        <button onclick="sendMsg()" style="background:var(--verde); color:white; border:none; width:50px; height:50px; border-radius:15px; cursor:pointer;">➡️</button>
+
+    <div id="post-form">
+        <h3 style="margin-top:0; font-weight:800;">Detalles de Publicación</h3>
+        <img id="img-preview" class="preview-img" src="">
+        <input type="text" id="p-titulo" class="input-rr" placeholder="Nombre del producto o empleo">
+        <input type="number" id="p-precio" class="input-rr" placeholder="Precio (S/) o sueldo">
+        <textarea id="p-desc" class="input-rr" rows="3" placeholder="Describe los detalles aquí..."></textarea>
+        <button onclick="publish()" style="width:100%; padding:18px; background:var(--verde); color:white; border:none; border-radius:18px; font-weight:800; font-size:16px;">PUBLICAR EN EL IMPERIO 🚀</button>
+        <button onclick="cancel()" style="width:100%; background:none; border:none; color:#94a3b8; margin-top:15px; font-weight:700;">Cancelar</button>
     </div>
 </div>
 
 <div class="nav-island">
     <div class="nav-item nav-active" onclick="changeView('home', this)"><span>🏠</span><br>VITRINA</div>
     <div class="nav-item" onclick="changeView('camera', this)"><span>📸</span><br>CÁMARA</div>
-    <div class="nav-item" onclick="changeView('chat', this)">
-        <span>💬</span><br>CHAT
-        <div class="badge" id="nav-chat-count" style="display:none;">0</div>
-    </div>
-    <div class="nav-item" onclick="location.href='administracion.html'"><span>👑</span><br>ADMIN</div>
+    <div class="nav-item" onclick="alert('Chats Regionales')"><span>💬</span><br>CHAT</div>
+    <div class="nav-item" onclick="alert('Panel Admin')"><span>👑</span><br>ADMIN</div>
 </div>
 
 <script>
-    let messages = 0;
-    let selectedMode = "";
+    let selectedType = "";
+    let capturedImg = "";
+    let activeCity = "Huanta";
 
     function changeView(id, el) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
         document.getElementById('v-' + id).classList.add('view-active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('nav-active'));
-        if(el) el.classList.add('nav-active');
-        if(id === 'chat') { messages = 0; updateBadges(); }
-        window.scrollTo(0,0);
+        el.classList.add('nav-active');
+        if(id === 'camera') cancel(); // Reset cámara al entrar
     }
 
     function setCity(name, el) {
+        activeCity = name;
         document.querySelectorAll('.city-item').forEach(c => c.classList.remove('city-active'));
         el.classList.add('city-active');
-        document.querySelectorAll('.city-name').forEach(cn => cn.innerText = name);
-        confetti({ particleCount: 40, spread: 50, origin: { y: 0.1 }, colors: ['#22c55e'] });
+        document.getElementById('current-city').innerText = name;
     }
 
-    function prepCam(mode, emoji) {
-        selectedMode = mode;
-        document.getElementById('cam-action').style.display = 'block';
-        document.getElementById('cam-status').innerText = `MODO ${mode.toUpperCase()} ACTIVADO ${emoji}`;
+    function selectType(type, el) {
+        selectedType = type;
+        document.querySelectorAll('.intent-box').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('shutter-zone').style.display = 'block';
+        document.getElementById('mode-text').innerText = "MODO " + type.toUpperCase() + " ACTIVADO";
     }
 
-    function openCam() {
+    function triggerCamera() {
         let input = document.createElement('input');
         input.type = 'file'; input.accept = 'image/*'; input.capture = 'camera';
-        input.onchange = () => {
-            alert(`✅ Foto capturada para ${selectedMode}. Subiendo al Imperio...`);
-            changeView('home', document.querySelector('.nav-item'));
+        input.onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                capturedImg = event.target.result;
+                document.getElementById('img-preview').src = capturedImg;
+                document.getElementById('cam-panel').style.display = 'none';
+                document.getElementById('post-form').style.display = 'block';
+            };
+            reader.readAsDataURL(e.target.files[0]);
         };
         input.click();
     }
 
-    function marcarVendido(id) {
+    function publish() {
+        const titulo = document.getElementById('p-titulo').value;
+        const precio = document.getElementById('p-precio').value;
+        const desc = document.getElementById('p-desc').value;
+
+        if(!titulo || !precio) return alert("Por favor, llena los campos principales.");
+
+        const wall = document.getElementById('market-wall');
+        if(wall.innerHTML.includes('Aún no hay')) wall.innerHTML = '';
+
+        const card = `
+            <div class="v-card">
+                <img src="${capturedImg}" style="width:100%; height:200px; border-radius:20px; object-fit:cover;">
+                <div style="padding:15px 5px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="margin:0; font-weight:800;">${titulo}</h3>
+                        <span style="color:var(--verde); font-weight:900; font-size:18px;">S/ ${precio}</span>
+                    </div>
+                    <p style="font-size:12px; color:#64748b; margin:8px 0;">${desc}</p>
+                    <div style="font-size:10px; font-weight:800; color:var(--naranja);">📍 ${activeCity.toUpperCase()} • ${selectedType.toUpperCase()}</div>
+                </div>
+            </div>
+        `;
+        
+        wall.innerHTML = card + wall.innerHTML;
         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#22c55e', '#f97316'] });
-        document.getElementById(id).style.opacity = "0.4";
-        setTimeout(() => { document.getElementById(id).remove(); alert("💰 ¡Vendido con éxito!"); }, 500);
+        
+        alert("💰 ¡Publicado en el Imperio RR!");
+        changeView('home', document.querySelector('.nav-item'));
     }
 
-    function sendMsg() {
-        let input = document.getElementById('chat-in');
-        if(!input.value) return;
-        let box = document.getElementById('chat-box');
-        box.innerHTML += `<div class="bubble b-right"><strong>Tú:</strong> ${input.value}</div>`;
-        input.value = "";
-        box.scrollTop = box.scrollHeight;
+    function cancel() {
+        document.getElementById('cam-panel').style.display = 'block';
+        document.getElementById('post-form').style.display = 'none';
+        document.getElementById('p-titulo').value = '';
+        document.getElementById('p-precio').value = '';
+        document.getElementById('p-desc').value = '';
     }
-
-    function updateBadges() {
-        const display = messages > 0 ? 'block' : 'none';
-        document.getElementById('main-dot').style.display = display;
-        document.getElementById('chat-count').style.display = display;
-        document.getElementById('nav-chat-count').style.display = display;
-        document.getElementById('chat-count').innerText = messages;
-        document.getElementById('nav-chat-count').innerText = messages;
-    }
-
-    // Simulador de mensajes cada 30 segundos
-    setInterval(() => {
-        if(document.getElementById('v-chat').className.includes('view-active')) return;
-        messages++;
-        updateBadges();
-    }, 30000);
-
-    window.onload = () => {
-        navigator.geolocation.getCurrentPosition(()=>{}, () => alert("📍 GPS necesario para seguridad regional."));
-    };
 </script>
 
 </body>
