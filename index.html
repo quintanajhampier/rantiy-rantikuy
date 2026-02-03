@@ -30,29 +30,11 @@
             color: white; font-weight: 900; font-size: 28px;
             box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
             animation: rotate3d 7s infinite ease-in-out; transform-style: preserve-3d;
-            cursor: pointer;
         }
         @keyframes rotate3d { 
             0%, 100% { transform: perspective(500px) rotateY(0deg); }
             50% { transform: perspective(500px) rotateY(30deg) scale(1.05); } 
         }
-
-        /* --- ESTILOS EXTRA PARA EL APARTADO ADMIN SECRETO --- */
-        #apartado-admin-titan { 
-            display: none; position: fixed; inset: 0; background: #020617; z-index: 9999; 
-            overflow-y: auto; color: white; animation: slideUp 0.5s ease;
-        }
-        .hexagon-wrap { position: relative; width: 150px; height: 150px; margin: 30px auto; }
-        .hexagon-shape { 
-            position: absolute; inset: 0; background: #22c55e; 
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); 
-            opacity: 0.1; border: 2px solid #22c55e; animation: pulseRR 2s infinite; 
-        }
-        @keyframes pulseRR { 0%, 100% { transform: scale(1); opacity: 0.1; } 50% { transform: scale(1.05); opacity: 0.3; } }
-        .sensor-ui { width: 60px; height: 60px; border: 1px solid #22c55e; border-radius: 15px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #22c55e; }
-        .laser-scan { position: absolute; width: 100%; height: 2px; background: #22c55e; box-shadow: 0 0 10px #22c55e; animation: scanLine 2s infinite linear; }
-        @keyframes scanLine { 0% { top: 0%; } 100% { top: 100%; } }
-        .admin-card { background: #0f172a; border: 1px solid #1e293b; padding: 25px; border-radius: 30px; margin-top: 20px; }
 
         /* --- NAVEGACIÓN DE CIUDADES --- */
         .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
@@ -73,6 +55,7 @@
         /* --- ESTUDIO DE PUBLICACIÓN RR --- */
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; position: relative; overflow: hidden; }
         .camera-hub::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%); }
+        
         .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 35px; position: relative; z-index: 5; }
         .cat-btn { background: rgba(255,255,255,0.07); padding: 25px 10px; border-radius: 30px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
         .cat-btn:active { transform: scale(0.9); background: var(--verde); }
@@ -84,11 +67,14 @@
         .rr-field { width: 100%; padding: 20px; border-radius: 22px; border: 2px solid #f1f5f9; font-weight: 700; font-size: 16px; margin-bottom: 20px; transition: 0.3s; }
         .rr-field:focus { border-color: var(--verde); background: var(--verde-glow); }
 
-        /* --- SISTEMA DE CHATS --- */
+        /* --- SISTEMA DE CHATS (GRUPAL Y PRIVADO) --- */
+        .chat-container { display: flex; flex-direction: column; gap: 20px; }
         .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; border: 1px solid rgba(0,0,0,0.03); }
+        
         .chat-nav { display: flex; background: #f1f5f9; padding: 10px; border-radius: 25px; margin-bottom: 15px; }
         .chat-tab { flex: 1; padding: 12px; text-align: center; font-weight: 800; font-size: 12px; border-radius: 18px; cursor: pointer; transition: 0.3s; }
         .tab-active { background: white; color: var(--verde); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
         .chat-header { padding: 22px; color: white; font-weight: 900; display: flex; justify-content: space-between; align-items: center; }
         .msg-area { flex: 1; padding: 25px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
         .bubble { padding: 15px 20px; border-radius: 25px; max-width: 85%; font-size: 14px; font-weight: 600; position: relative; animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -96,20 +82,24 @@
         .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
 
+        /* --- PRIVADO MODAL --- */
+        #private-chat-modal { 
+            position: fixed; inset: 0; background: white; z-index: 5000; display: none;
+            flex-direction: column; animation: slideInRight 0.4s ease;
+        }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
         /* --- NAV ISLAND MASTER --- */
         .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 25px; z-index: 3000; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
         .nav-btn { color: #64748b; text-align: center; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .nav-btn.active { color: var(--verde); transform: translateY(-12px); }
-
-        #private-chat-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; animation: slideInRight 0.4s ease; }
-        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body>
 
 <header class="header">
     <div style="display:flex; align-items:center; gap:18px;">
-        <div class="logo-rr" onclick="abrirProtocoloAdmin()">RR</div>
+        <div class="logo-rr">RR</div>
         <div>
             <div style="font-weight: 900; font-size: 24px; letter-spacing: -1px;">Rantiy Imperio</div>
             <div id="status-line" style="font-size: 10px; color: var(--verde); font-weight: 800; letter-spacing: 1px;">SISTEMA EN LÍNEA</div>
@@ -117,42 +107,6 @@
     </div>
     <div id="private-alert" style="background: var(--verde-glow); padding: 12px; border-radius: 18px; font-size: 22px; cursor:pointer;" onclick="tab('chat', document.getElementById('chat-nav-btn'))">📩</div>
 </header>
-
-<div id="apartado-admin-titan">
-    <div id="pantalla-bloqueo-titan" style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
-        <div class="hexagon-wrap">
-            <div class="hexagon-shape"></div>
-            <div style="position:relative; z-index:2; text-align:center; padding-top:45px;">
-                <span style="font-size:30px;">👑</span><br><b style="font-size:35px;">RR</b>
-            </div>
-        </div>
-        <h2 style="letter-spacing:3px; font-weight:900; margin-bottom:5px;">TITAN ACCESS</h2>
-        <div style="color:#f59e0b; font-size:11px; font-weight:800; margin-bottom:20px;">LEVEL: FOUNDER</div>
-
-        <div style="display:flex; gap:20px; margin-bottom:30px;">
-            <div class="sensor-ui">👤<div class="laser-scan"></div></div>
-            <div class="sensor-ui">☝️<div class="laser-scan"></div></div>
-        </div>
-
-        <input type="password" id="master-key" placeholder="CÓDIGO" style="background:rgba(255,255,255,0.05); border:1px solid #334155; padding:20px; border-radius:20px; color:white; width:80%; text-align:center; font-size:22px; letter-spacing:8px;">
-        <button onclick="validarAdmin()" style="width:85%; background:var(--verde); color:black; border:none; padding:22px; border-radius:25px; font-weight:900; margin-top:20px; text-transform:uppercase;">Autorizar Ingreso</button>
-        <p onclick="cerrarAdmin()" style="margin-top:25px; font-size:12px; opacity:0.5; cursor:pointer;">ABORTAR CONEXIÓN</p>
-    </div>
-
-    <div id="panel-admin-real" style="display:none; padding:30px;">
-        <h1 style="color:var(--verde); font-weight:900;">CENTRO SUPREMO</h1>
-        <div class="admin-card">
-            <small style="opacity:0.6; letter-spacing:1px;">CAPITAL EN BÓVEDA (HUANTA)</small>
-            <div style="font-size:40px; font-weight:900; color:var(--verde); margin:10px 0;">S/ 45,820.00</div>
-            <div style="font-size:12px; color:#f59e0b;">ESTADO: IMPERIO ACTIVO 🟢</div>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:20px;">
-            <div class="admin-card" style="margin:0; padding:15px;"><b>USERS</b><br><span style="font-size:20px;">231</span></div>
-            <div class="admin-card" style="margin:0; padding:15px;"><b>CHATS</b><br><span style="font-size:20px;">14 Activos</span></div>
-        </div>
-        <button onclick="cerrarAdmin()" style="width:100%; margin-top:40px; padding:18px; background:none; border:1px solid #334155; color:white; border-radius:20px; font-weight:800;">SALIR DEL PANEL</button>
-    </div>
-</div>
 
 <div class="city-bar">
     <div class="city-card active-huanta" id="city-huanta" onclick="updateCity('Huanta')"><span>⛰️</span><label>HUANTA</label></div>
@@ -208,6 +162,7 @@
         <div class="chat-tab tab-active" onclick="toggleChatMode('global', this)">SALA REGIONAL</div>
         <div class="chat-tab" onclick="toggleChatMode('private', this)">CHATS PRIVADOS</div>
     </div>
+
     <div id="global-chat-ui" class="chat-box-ui">
         <div class="chat-header" id="chat-color-head" style="background:var(--huanta);">
             <span>SALA: <span id="active-chat-name">HUANTA</span></span>
@@ -221,6 +176,7 @@
             <button onclick="sendGlobal()" style="background:var(--verde); color:white; border:none; width:55px; height:55px; border-radius:20px; font-size:20px;">✈️</button>
         </div>
     </div>
+
     <div id="private-list-ui" style="display:none;">
         <div style="background:white; border-radius:35px; padding:25px; box-shadow:var(--premium-shadow);">
             <h4 style="margin:0 0 20px 0; font-weight:900;">Bandeja de Negocios</h4>
@@ -262,28 +218,7 @@
     let capturedFile = "";
     let privateChats = [];
 
-    // --- FUNCIONES ADMIN (ENTRADA SECRETA) ---
-    function abrirProtocoloAdmin() {
-        document.getElementById('apartado-admin-titan').style.display = 'block';
-    }
-    function cerrarAdmin() {
-        document.getElementById('apartado-admin-titan').style.display = 'none';
-        document.getElementById('pantalla-bloqueo-titan').style.display = 'flex';
-        document.getElementById('panel-admin-real').style.display = 'none';
-    }
-    function validarAdmin() {
-        const key = document.getElementById('master-key').value;
-        if(key === "RR2026") {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#22c55e'] });
-            document.getElementById('pantalla-bloqueo-titan').style.display = 'none';
-            document.getElementById('panel-admin-real').style.display = 'block';
-        } else {
-            alert("⚠️ ERROR CRÍTICO: INTRUSO DETECTADO.");
-            location.reload();
-        }
-    }
-
-    // --- NAVEGACIÓN ---
+    // --- NAVEGACIÓN PRINCIPAL ---
     function tab(id, el) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
         document.getElementById('view-' + id).classList.add('view-active');
@@ -299,18 +234,21 @@
         document.getElementById('city-' + city.toLowerCase()).classList.add('active-' + city.toLowerCase());
         document.getElementById('loc-name').innerText = city;
         document.getElementById('active-chat-name').innerText = city.toUpperCase();
+        
         const colors = { Huanta: '#22c55e', Huamanga: '#3b82f6', VRAEM: '#f59e0b' };
         document.getElementById('chat-color-head').style.backgroundColor = colors[city];
         document.getElementById('loc-name').style.color = colors[city];
         confetti({ particleCount: 70, colors: [colors[city]] });
     }
 
+    // --- ESTUDIO DE CARGA ---
     function startStudio(cat, emoji) {
         activeCat = cat;
         document.getElementById('main-hub').style.display = 'none';
         document.getElementById('upload-studio').style.display = 'block';
         document.getElementById('studio-tag').innerText = emoji + " " + cat;
     }
+
     function exitStudio() {
         document.getElementById('main-hub').style.display = 'block';
         document.getElementById('upload-studio').style.display = 'none';
@@ -336,9 +274,11 @@
     function uploadToEmpire() {
         const title = document.getElementById('in-title').value;
         const price = document.getElementById('in-price').value;
-        if(!title || !capturedFile) return alert("¡Faltan datos!");
+        if(!title || !capturedFile) return alert("¡El Imperio requiere foto y título!");
+
         const container = document.getElementById('feed-container');
         if(container.innerText.includes('Explora las joyas')) container.innerHTML = '';
+
         const card = `
             <div style="background:white; border-radius:45px; padding:18px; box-shadow:var(--premium-shadow); animation: pop 0.5s ease;">
                 <img src="${capturedFile}" style="width:100%; height:280px; border-radius:35px; object-fit:cover;">
@@ -348,14 +288,16 @@
                         <span style="color:var(--verde); font-weight:900; font-size:22px;">S/ ${price}</span>
                     </div>
                     <div style="margin-top:12px; font-size:11px; font-weight:800; color:var(--naranja);">📍 ${activeLoc.toUpperCase()} • ${activeCat.toUpperCase()}</div>
-                    <button onclick="openPrivateChat('${title}')" style="width:100%; margin-top:20px; padding:18px; border-radius:22px; border:none; background:var(--oscuro); color:white; font-weight:800; font-size:14px;">MANDAR CHAT PRIVADO 📩</button>
+                    <button onclick="openPrivateChat('${title}')" style="width:100%; margin-top:20px; padding:18px; border-radius:22px; border:none; background:var(--oscuro); color:white; font-weight:800; font-size:14px; cursor:pointer;">MANDAR CHAT PRIVADO 📩</button>
                 </div>
             </div>`;
+        
         container.innerHTML = card + container.innerHTML;
         confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
         tab('home', document.querySelector('.nav-btn'));
     }
 
+    // --- SISTEMA DE CHATS ---
     function toggleChatMode(mode, el) {
         document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('tab-active'));
         el.classList.add('tab-active');
@@ -368,6 +310,7 @@
             renderPrivateList();
         }
     }
+
     function sendGlobal() {
         const msg = document.getElementById('global-input').value;
         if(!msg) return;
@@ -376,12 +319,19 @@
         document.getElementById('global-input').value = "";
         box.scrollTop = box.scrollHeight;
     }
+
+    // --- CHAT PRIVADO LÓGICA ---
     function openPrivateChat(productTitle) {
         document.getElementById('p-chat-product').innerText = "INTERÉS: " + productTitle.toUpperCase();
         document.getElementById('private-chat-modal').style.display = 'flex';
+        // Guardar en lista de contactos si no existe
         if(!privateChats.includes(productTitle)) privateChats.push(productTitle);
     }
-    function closePrivate() { document.getElementById('private-chat-modal').style.display = 'none'; }
+
+    function closePrivate() {
+        document.getElementById('private-chat-modal').style.display = 'none';
+    }
+
     function sendPrivate() {
         const msg = document.getElementById('private-input').value;
         if(!msg) return;
@@ -390,14 +340,19 @@
         document.getElementById('private-input').value = "";
         box.scrollTop = box.scrollHeight;
     }
+
     function renderPrivateList() {
         const list = document.getElementById('private-contacts');
         if(privateChats.length === 0) return;
         list.innerHTML = privateChats.map(chat => `
             <div onclick="openPrivateChat('${chat}')" style="display:flex; align-items:center; gap:15px; padding:15px; background:#f8fafc; border-radius:20px; margin-bottom:10px; cursor:pointer;">
                 <div style="width:50px; height:50px; background:var(--verde); border-radius:15px; display:flex; align-items:center; justify-content:center; color:white; font-weight:900;">RR</div>
-                <div><div style="font-weight:800; font-size:14px;">Vendedor de: ${chat}</div><div style="font-size:11px; color:var(--verde);">Chat activo ahora</div></div>
-            </div>`).join('');
+                <div>
+                    <div style="font-weight:800; font-size:14px;">Vendedor de: ${chat}</div>
+                    <div style="font-size:11px; color:var(--verde);">Chat activo ahora</div>
+                </div>
+            </div>
+        `).join('');
     }
 </script>
 </body>
