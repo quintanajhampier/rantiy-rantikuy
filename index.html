@@ -18,7 +18,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
         body { background: #f8fafc; margin: 0; padding-bottom: 140px; overflow-x: hidden; color: var(--oscuro); }
 
-        /* --- LOGO RR 3D MASTER CON CONEXIÓN --- */
+        /* --- LOGO RR 3D MASTER --- */
         .header {
             background: var(--glass); backdrop-filter: blur(25px); padding: 18px 25px;
             display: flex; align-items: center; justify-content: space-between;
@@ -54,8 +54,6 @@
 
         /* --- ESTUDIO DE PUBLICACIÓN RR --- */
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; position: relative; overflow: hidden; }
-        .camera-hub::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%); }
-        
         .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 35px; position: relative; z-index: 5; }
         .cat-btn { background: rgba(255,255,255,0.07); padding: 25px 10px; border-radius: 30px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
         .cat-btn:active { transform: scale(0.9); background: var(--verde); }
@@ -76,15 +74,11 @@
         .chat-header { padding: 22px; color: white; font-weight: 900; display: flex; justify-content: space-between; align-items: center; }
         .msg-area { flex: 1; padding: 25px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
         .bubble { padding: 15px 20px; border-radius: 25px; max-width: 85%; font-size: 14px; font-weight: 600; position: relative; animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes pop { from { transform: scale(0.8); opacity: 0; } }
         .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
 
-        /* --- PRIVADO MODAL --- */
-        #private-chat-modal { 
-            position: fixed; inset: 0; background: white; z-index: 5000; display: none;
-            flex-direction: column; animation: slideInRight 0.4s ease;
-        }
+        #private-chat-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; animation: slideInRight 0.4s ease; }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
         /* --- NAV ISLAND MASTER --- */
         .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 25px; z-index: 3000; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
@@ -96,7 +90,7 @@
 
 <header class="header">
     <div style="display:flex; align-items:center; gap:18px;">
-        <div class="logo-rr" onclick="window.location.href='admin.html'" style="cursor: pointer;">RR</div>
+        <div class="logo-rr" onclick="window.location.href='admin.html'">RR</div>
         <div>
             <div style="font-weight: 900; font-size: 24px; letter-spacing: -1px;">Rantiy Imperio</div>
             <div id="status-line" style="font-size: 10px; color: var(--verde); font-weight: 800; letter-spacing: 1px;">SISTEMA EN LÍNEA</div>
@@ -124,20 +118,33 @@
 <section id="view-camera" class="view">
     <div class="camera-hub" id="main-hub">
         <h2 style="font-weight:900; font-size:26px;">ESTUDIO DE CREACIÓN</h2>
+        <p style="opacity:0.7; font-size:14px;">Define el destino de tu nueva publicación</p>
         <div class="category-grid">
             <div class="cat-btn" onclick="startStudio('Venta', '🛍️')"><span>💰</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">VENTA</label></div>
+            <div class="cat-btn" onclick="startStudio('Empleo', '💼')"><span>👷</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">EMPLEO</label></div>
+            <div class="cat-btn" onclick="startStudio('Turismo', '⛰️')"><span>📸</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">TURISMO</label></div>
             <div class="cat-btn" onclick="startStudio('Comida', '🍲')"><span>🥘</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">COMIDA</label></div>
             <div class="cat-btn" onclick="startStudio('Taxi', '🚗')"><span>🚕</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">TAXI</label></div>
+            <div class="cat-btn" onclick="startStudio('Servicio', '⚡')"><span>🔧</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">SERVICIO</label></div>
         </div>
     </div>
+
     <div id="upload-studio">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+            <h3 id="studio-tag" style="margin:0; font-weight:900; font-size:22px;">Nueva Publicación</h3>
+            <button onclick="exitStudio()" style="background:#f1f5f9; border:none; width:40px; height:40px; border-radius:50%; font-weight:900;">✕</button>
+        </div>
         <div class="drop-zone" onclick="capture('cam')">
-            <div id="drop-info">📸<br><b style="font-size:12px;">TOMAR FOTO AHORA</b></div>
-            <img id="render-img" style="display:none; width:100%; height:100%; object-fit:cover;">
+            <div id="drop-info" style="text-align:center;"><span style="font-size:40px;">📸</span><br><b style="font-size:12px;">TOMAR FOTO AHORA</b></div>
+            <img id="render-img" style="display:none;">
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:25px;">
+            <button onclick="capture('gal')" style="padding:18px; border-radius:20px; border:none; background:#f1f5f9; font-weight:800; font-size:12px;">🖼️ GALERÍA</button>
+            <button onclick="capture('cam')" style="padding:18px; border-radius:20px; border:none; background:#f1f5f9; font-weight:800; font-size:12px;">📷 CÁMARA</button>
         </div>
         <input type="text" id="in-title" class="rr-field" placeholder="¿Qué estás ofreciendo?">
-        <input type="number" id="in-price" class="rr-field" placeholder="Precio S/">
-        <button onclick="uploadToEmpire()" style="width:100%; padding:22px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR 🚀</button>
+        <input type="number" id="in-price" class="rr-field" placeholder="Precio en Soles (S/)">
+        <button onclick="uploadToEmpire()" style="width:100%; padding:22px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900; font-size:18px; box-shadow:0 15px 30px rgba(34,197,94,0.3);">PUBLICAR EN EL IMPERIO 🚀</button>
     </div>
 </section>
 
@@ -146,17 +153,44 @@
         <div class="chat-tab tab-active" onclick="toggleChatMode('global', this)">SALA REGIONAL</div>
         <div class="chat-tab" onclick="toggleChatMode('private', this)">CHATS PRIVADOS</div>
     </div>
+
     <div id="global-chat-ui" class="chat-box-ui">
         <div class="chat-header" id="chat-color-head" style="background:var(--huanta);">
             <span>SALA: <span id="active-chat-name">HUANTA</span></span>
         </div>
-        <div class="msg-area" id="global-msgs"></div>
-        <div style="padding:20px; display:flex; gap:12px; background:white;">
-            <input type="text" id="global-input" class="rr-field" style="margin:0; flex:1;" placeholder="Mensaje...">
-            <button onclick="sendGlobal()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
+        <div class="msg-area" id="global-msgs">
+            <div class="bubble bubble-in"><b>Imperio RR:</b> Bienvenido a la sala de Huanta.</div>
+        </div>
+        <div style="padding:20px; display:flex; gap:12px; background:white; border-top:1px solid #eee;">
+            <input type="text" id="global-input" class="rr-field" style="margin:0; flex:1;" placeholder="Mensaje público...">
+            <button onclick="sendGlobal()" style="background:var(--verde); color:white; border:none; width:55px; height:55px; border-radius:20px;">✈️</button>
+        </div>
+    </div>
+
+    <div id="private-list-ui" style="display:none;">
+        <div style="background:white; border-radius:35px; padding:25px; box-shadow:var(--premium-shadow);">
+            <h4 style="margin:0 0 20px 0; font-weight:900;">Bandeja de Negocios</h4>
+            <div id="private-contacts"><p style="text-align:center; color:#94a3b8; padding:20px;">Sin chats activos.</p></div>
         </div>
     </div>
 </section>
+
+<div id="private-chat-modal">
+    <div class="chat-header" style="background:var(--oscuro); padding:25px;">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <button onclick="closePrivate()" style="background:none; border:none; color:white; font-size:24px;">⬅</button>
+            <div>
+                <div id="p-chat-user" style="font-weight:900; font-size:18px; color:white;">Vendedor RR</div>
+                <div id="p-chat-product" style="font-size:10px; color:var(--verde); font-weight:800;">INTERÉS: PRODUCTO</div>
+            </div>
+        </div>
+    </div>
+    <div class="msg-area" id="private-msgs" style="background:#f1f5f9;"></div>
+    <div style="padding:25px; display:flex; gap:12px; background:white; border-top:1px solid #eee;">
+        <input type="text" id="private-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe...">
+        <button onclick="sendPrivate()" style="background:var(--verde); color:white; border:none; width:60px; height:60px; border-radius:22px;">✈️</button>
+    </div>
+</div>
 
 <nav class="nav-island">
     <div class="nav-btn active" onclick="tab('home', this)"><span>🏠</span><br>VITRINA</div>
@@ -165,7 +199,7 @@
 </nav>
 
 <script>
-    let activeLoc = "Huanta", activeCat = "", capturedFile = "";
+    let activeLoc = "Huanta", activeCat = "", capturedFile = "", privateChats = [];
 
     function tab(id, el) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
@@ -173,6 +207,7 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
         if(id === 'camera') exitStudio();
+        window.scrollTo(0,0);
     }
 
     function updateCity(city) {
@@ -180,8 +215,10 @@
         document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-huanta', 'active-huamanga', 'active-vraem'));
         document.getElementById('city-' + city.toLowerCase()).classList.add('active-' + city.toLowerCase());
         document.getElementById('loc-name').innerText = city;
+        document.getElementById('active-chat-name').innerText = city.toUpperCase();
         const colors = { Huanta: '#22c55e', Huamanga: '#3b82f6', VRAEM: '#f59e0b' };
         document.getElementById('chat-color-head').style.backgroundColor = colors[city];
+        document.getElementById('loc-name').style.color = colors[city];
         confetti({ particleCount: 70, colors: [colors[city]] });
     }
 
@@ -189,6 +226,7 @@
         activeCat = cat;
         document.getElementById('main-hub').style.display = 'none';
         document.getElementById('upload-studio').style.display = 'block';
+        document.getElementById('studio-tag').innerText = emoji + " " + cat;
     }
 
     function exitStudio() {
@@ -197,8 +235,7 @@
     }
 
     function capture(mode) {
-        let input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
+        let input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
         if(mode === 'cam') input.capture = 'camera';
         input.onchange = (e) => {
             const reader = new FileReader();
@@ -216,24 +253,67 @@
     function uploadToEmpire() {
         const title = document.getElementById('in-title').value;
         const price = document.getElementById('in-price').value;
-        if(!title || !capturedFile) return alert("¡Sube una foto!");
+        if(!title || !capturedFile) return alert("¡Sube foto y título!");
         const container = document.getElementById('feed-container');
         if(container.innerText.includes('Explora las joyas')) container.innerHTML = '';
         container.innerHTML = `
-            <div style="background:white; border-radius:45px; padding:18px; box-shadow:var(--premium-shadow);">
+            <div style="background:white; border-radius:45px; padding:18px; box-shadow:var(--premium-shadow); margin-bottom:20px;">
                 <img src="${capturedFile}" style="width:100%; height:280px; border-radius:35px; object-fit:cover;">
-                <h3 style="margin:10px 0;">${title} - S/ ${price}</h3>
-                <div style="color:var(--naranja); font-weight:800; font-size:12px;">📍 ${activeLoc}</div>
+                <div style="padding:20px 10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="margin:0; font-weight:900;">${title}</h3>
+                        <span style="color:var(--verde); font-weight:900;">S/ ${price}</span>
+                    </div>
+                    <div style="margin-top:12px; font-size:11px; font-weight:800; color:var(--naranja);">📍 ${activeLoc.toUpperCase()}</div>
+                    <button onclick="openPrivateChat('${title}')" style="width:100%; margin-top:20px; padding:18px; border-radius:22px; background:var(--oscuro); color:white; font-weight:800; border:none; cursor:pointer;">CHATEAR CON VENDEDOR</button>
+                </div>
             </div>` + container.innerHTML;
         confetti({ particleCount: 150 });
         tab('home', document.querySelector('.nav-btn'));
     }
 
+    function toggleChatMode(mode, el) {
+        document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('tab-active'));
+        el.classList.add('active-tab'); 
+        if(mode === 'global') {
+            document.getElementById('global-chat-ui').style.display = 'flex';
+            document.getElementById('private-list-ui').style.display = 'none';
+        } else {
+            document.getElementById('global-chat-ui').style.display = 'none';
+            document.getElementById('private-list-ui').style.display = 'block';
+            renderPrivateList();
+        }
+    }
+
     function sendGlobal() {
         const msg = document.getElementById('global-input').value;
         if(!msg) return;
-        document.getElementById('global-msgs').innerHTML += `<div class="bubble bubble-out">${msg}</div>`;
+        document.getElementById('global-msgs').innerHTML += `<div class="bubble bubble-out"><b>Tú:</b> ${msg}</div>`;
         document.getElementById('global-input').value = "";
+    }
+
+    function openPrivateChat(title) {
+        document.getElementById('p-chat-product').innerText = "INTERÉS: " + title.toUpperCase();
+        document.getElementById('private-chat-modal').style.display = 'flex';
+        if(!privateChats.includes(title)) privateChats.push(title);
+    }
+
+    function closePrivate() { document.getElementById('private-chat-modal').style.display = 'none'; }
+
+    function sendPrivate() {
+        const msg = document.getElementById('private-input').value;
+        if(!msg) return;
+        document.getElementById('private-msgs').innerHTML += `<div class="bubble bubble-out">${msg}</div>`;
+        document.getElementById('private-input').value = "";
+    }
+
+    function renderPrivateList() {
+        const list = document.getElementById('private-contacts');
+        if(privateChats.length === 0) return;
+        list.innerHTML = privateChats.map(chat => `
+            <div onclick="openPrivateChat('${chat}')" style="padding:15px; background:#f8fafc; border-radius:20px; margin-bottom:10px; cursor:pointer;">
+                <b>Vendedor de: ${chat}</b>
+            </div>`).join('');
     }
 </script>
 </body>
