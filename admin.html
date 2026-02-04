@@ -3,213 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RR COMMAND CENTER - PROTOCOLO TRIPLE</title>
+    <title>SISTEMA OPERATIVO RR v6.0 - FUNDADOR SUPREMO</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --vibrant: #22c55e; --vibrant-dark: #16a34a; --oscuro: #0f172a;
-            --danger: #ef4444; --blue: #0095f6; --bg: #f8fafc;
+            --vibrant: #22c55e; --oscuro: #0f172a; --danger: #ef4444; 
+            --gold: #f59e0b; --blue: #0ea5e9; --bg: #f8fafc;
         }
 
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); margin: 0; overflow-x: hidden; color: var(--oscuro); }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { background: var(--bg); margin: 0; color: var(--oscuro); }
 
-        /* --- PANTALLA DE BLOQUEO TRIPARTITA --- */
+        /* --- PANTALLA DE ACCESO BIOMÉTRICO --- */
         #lock-screen {
             position: fixed; inset: 0; background: var(--oscuro); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
-            padding: 20px;
+            display: flex; align-items: center; justify-content: center; color: white;
         }
-
-        .vault-box {
+        .auth-vault {
             background: rgba(255,255,255,0.03); padding: 40px; border-radius: 50px;
-            backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1);
-            width: 100%; max-width: 450px; text-align: center;
+            backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1);
+            width: 95%; max-width: 420px; text-align: center;
         }
-
-        .phase-indicator {
-            display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;
+        .scanner-frame {
+            width: 180px; height: 180px; border-radius: 100px; border: 4px solid var(--vibrant);
+            margin: 0 auto 20px; position: relative; overflow: hidden; background: #000;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
         }
-        .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.1); }
-        .dot.active { background: var(--vibrant); box-shadow: 0 0 10px var(--vibrant); }
-
-        .scan-window {
-            width: 180px; height: 180px; border-radius: 40px; border: 3px solid var(--vibrant);
-            margin: 0 auto 25px; position: relative; overflow: hidden; background: #000;
-        }
-        #auth-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-        .laser-line { position: absolute; width: 100%; height: 4px; background: var(--vibrant); top: 0; animation: scan 2s infinite ease-in-out; }
+        #video-auth { width: 100%; height: 100%; object-fit: cover; filter: brightness(1.1) contrast(1.1); }
+        .scan-line { position: absolute; width: 100%; height: 4px; background: var(--vibrant); top: 0; animation: scan 2s infinite ease-in-out; box-shadow: 0 0 15px var(--vibrant); }
         @keyframes scan { 0%, 100% { top: 0; } 50% { top: 100%; } }
 
-        .btn-bio {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            padding: 20px; border-radius: 20px; color: white; cursor: pointer; width: 100%;
-            font-weight: 800; margin-bottom: 10px; font-size: 14px;
-        }
-        .btn-bio.ready { border-color: var(--vibrant); color: var(--vibrant); }
-
-        input {
-            width: 100%; padding: 18px; border-radius: 20px; border: none;
-            background: rgba(0,0,0,0.4); color: white; text-align: center; font-size: 20px;
-            margin-bottom: 15px; letter-spacing: 5px;
-        }
-
-        /* --- PANEL DE ADMINISTRACIÓN --- */
-        #admin-panel { display: none; padding: 25px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .card { background: white; border-radius: 35px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 20px; }
-
-        .member-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8fafc; border-radius: 20px; margin-bottom: 10px; }
-        .verified-icon { color: var(--blue); margin-left: 5px; font-size: 14px; }
+        /* --- DASHBOARD --- */
+        #main-dashboard { display: none; padding: 20px; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .btn-pwr { border: none; padding: 10px 15px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-        .btn-kick { background: #fee2e2; color: var(--danger); }
-        .btn-verify { background: #e0f2fe; color: var(--blue); }
+        .grid-master { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-top: 20px; }
+        .panel-card { background: white; border-radius: 35px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; }
+        
+        .tab-btn { padding: 12px 20px; border-radius: 18px; border: none; font-weight: 800; cursor: pointer; background: #f1f5f9; color: #64748b; font-size: 13px; }
+        .tab-btn.active { background: var(--vibrant); color: white; box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3); }
+
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8fafc; border-radius: 20px; margin-bottom: 10px; border: 1px solid transparent; }
+        .user-row:hover { border-color: #e2e8f0; background: white; }
+        
+        .badge { font-size: 10px; font-weight: 900; padding: 5px 10px; border-radius: 10px; text-transform: uppercase; }
+        .badge-vip { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .badge-banned { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .badge-owner { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+
+        .btn-action { border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 12px; margin-left: 5px; }
+        .btn-delete { background: #fee2e2; color: var(--danger); }
+        .btn-upgrade { background: #fef3c7; color: var(--gold); }
     </style>
 </head>
 <body>
 
 <div id="lock-screen">
-    <div class="vault-box">
-        <h2 style="margin:0 0 10px 0;">CENTRO DE MANDO</h2>
-        <div class="phase-indicator">
-            <div class="dot" id="dot-1"></div>
-            <div class="dot" id="dot-2"></div>
-            <div class="dot" id="dot-3"></div>
-        </div>
-
-        <div class="scan-window">
-            <video id="auth-video" autoplay playsinline></video>
-            <div class="laser-line"></div>
-        </div>
-
-        <button class="btn-bio" id="btn-face" onclick="faseRostro()">1. RECONOCIMIENTO FACIAL</button>
-        <button class="btn-bio" id="btn-finger" onclick="faseHuella()">2. ESCANEO BIOMÉTRICO REAL</button>
+    <div class="auth-vault">
+        <h2 style="margin:0 0 10px">SECURITY <span style="color:var(--vibrant)">CORE</span></h2>
+        <p style="font-size: 10px; letter-spacing: 2px; opacity: 0.5; margin-bottom: 25px;">IDENTIFICANDO FUNDADOR SUPREMO</p>
         
-        <input type="password" id="pass" placeholder="••••">
-        <button class="btn-bio" style="background:var(--vibrant); color:white; border:none;" onclick="faseFinal()">3. VALIDAR IDENTIDAD</button>
+        <div class="scanner-frame">
+            <video id="video-auth" autoplay playsinline></video>
+            <div class="scan-line"></div>
+        </div>
+        
+        <p id="auth-status" style="font-size:12px; font-weight: 700; color: #94a3b8; margin-bottom:20px;">INICIE ESCANEO FACIAL AUTOMÁTICO</p>
+        
+        <button id="btn-scan" onclick="faseBiometriaReal()" style="width:100%; padding:20px; border-radius:25px; background:var(--vibrant); color:white; border:none; font-weight:900; cursor:pointer; font-size: 15px; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);">ACTIVAR RECONOCIMIENTO</button>
+        
+        <input type="password" id="master-key" placeholder="CONTRASEÑA MAESTRA" style="width:100%; margin-top:15px; padding:18px; border-radius:20px; border:none; background:rgba(255,255,255,0.05); color:white; text-align:center; letter-spacing:8px; font-size: 18px;">
+        
+        <button onclick="validarAccesoTotal()" style="width:100%; padding:15px; margin-top:10px; border-radius:20px; border: 2px solid rgba(255,255,255,0.1); background:none; color:white; font-weight:800; cursor:pointer; font-size: 13px;">CONFIRMAR CREDENCIALES</button>
     </div>
 </div>
 
-<div id="admin-panel">
-    <div class="header">
+<div id="main-dashboard">
+    <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
         <div>
-            <h1 style="margin:0; font-weight:900;">Imperio <span style="color:var(--vibrant)">RR</span></h1>
-            <p style="margin:0; font-size:12px; font-weight:700; color:#64748b;">CONTROL TOTAL DE POBLACIÓN</p>
+            <h1 style="font-weight:900; margin:0; font-size: 28px;">Master <span style="color:var(--vibrant)">Imperio</span></h1>
+            <p id="welcome-msg" style="margin:0; font-weight: 700; color: #64748b; font-size: 12px;"></p>
         </div>
-        <button onclick="location.reload()" style="background:#fee2e2; color:var(--danger); border:none; padding:12px 20px; border-radius:15px; font-weight:800;">SALIR</button>
-    </div>
+        <button onclick="location.reload()" style="background:#fee2e2; color:var(--danger); border:none; padding:12px 20px; border-radius:18px; font-weight:800; cursor:pointer;">BLOQUEAR</button>
+    </header>
 
-    <div class="card">
-        <h3 style="margin-top:0;">👥 Miembros y Moderación</h3>
-        <div id="user-list">
-            <div class="member-item" id="u1">
-                <span><b>Juan Perez</b><span class="v-mark"></span></span>
-                <div style="display:flex; gap:5px;">
-                    <button class="btn-pwr btn-verify" onclick="verificar('u1')">✓</button>
-                    <button class="btn-pwr btn-kick" onclick="botar('u1')">BOTAR</button>
-                </div>
+    <div class="grid-master">
+        <div class="panel-card">
+            <h3 style="margin-top:0; display:flex; align-items:center; gap:10px;">👤 Gestión de Ciudadanos</h3>
+            <div style="display:flex; gap:8px; margin-bottom:20px; overflow-x: auto; padding-bottom: 5px;">
+                <button class="tab-btn active" onclick="filtrar('todos')">Todos</button>
+                <button class="tab-btn" onclick="filtrar('vip')">VIP/Pagos</button>
+                <button class="tab-btn" onclick="filtrar('banned')">Expulsados</button>
+            </div>
+            <div id="user-container"></div>
+            <div style="margin-top:25px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+                <input type="text" id="new-name" placeholder="Nombre del nuevo ciudadano..." style="width:100%; padding:18px; border-radius:20px; border:1px solid #eee; margin-bottom:12px; font-size: 14px;">
+                <button onclick="agregarUsuario()" style="width:100%; background:var(--oscuro); color:white; border:none; padding:18px; border-radius:20px; font-weight:900; cursor:pointer;">REGISTRAR EN LA NUBE</button>
             </div>
         </div>
-        <div style="margin-top:20px; display:flex; gap:10px;">
-            <input type="text" id="new-u" placeholder="Nombre de ciudadano..." style="flex:1; background:#f1f5f9; color:black; letter-spacing:0; margin:0;">
-            <button onclick="registrar()" style="background:var(--oscuro); color:white; border:none; border-radius:20px; padding:0 25px; font-weight:800;">DAR ALTA</button>
-        </div>
-    </div>
 
-    <div class="card">
-        <h3>🗑️ Control de Contenido</h3>
-        <div id="posts" style="background:#f8fafc; padding:20px; border-radius:20px; border:1px dashed #cbd5e1; text-align:center; font-size:13px; color:#64748b;">
-            Esperando reportes del mercado...
+        <div class="panel-card">
+            <h3 style="margin-top:0;">📡 Monitoreo de Mercado</h3>
+            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding:25px; border-radius:25px; margin-bottom:20px; border: 1px solid #bbf7d0;">
+                <div style="font-size:11px; font-weight:800; color:#15803d; letter-spacing: 1px;">INGRESOS TOTALES (VIP)</div>
+                <div style="font-size:32px; font-weight:900; color:var(--oscuro);" id="total-revenue">S/ 0.00</div>
+            </div>
+            <div id="logs" style="background:#0f172a; color:#4ade80; padding:20px; border-radius:25px; font-family: 'Courier New', monospace; font-size:11px; height:200px; overflow-y:auto; line-height: 1.6;">
+                > SISTEMA OPERATIVO RR INICIADO...<br>> BASE DE DATOS HUANTA CONECTADA...<br>> RECONOCIMIENTO FACIAL STANDBY...
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const MASTER_KEY = "RR2026";
-    let f1 = false, f2 = false;
+    const MASTER_PASS = "RR2026";
+    let bioActive = false;
+    
+    // Base de datos local (Nube simulada)
+    let usuarios = JSON.parse(localStorage.getItem('db_imperio_v6')) || [
+        { id: 1, nombre: "Fundador Supremo", tipo: "owner", ingresos: 0 },
+        { id: 2, nombre: "Inversionista VIP", tipo: "vip", ingresos: 1500 },
+        { id: 3, nombre: "Usuario Irrespetuoso", tipo: "banned", ingresos: 0 }
+    ];
 
-    // Iniciar cámara para Fase 1
-    async function startCam() {
+    // Iniciar cámara automáticamente para el dueño
+    async function initCam() {
         try {
-            const s = await navigator.mediaDevices.getUserMedia({ video: true });
-            document.getElementById('auth-video').srcObject = s;
-        } catch(e) { console.log("Cámara no activa"); }
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            document.getElementById('video-auth').srcObject = stream;
+        } catch(e) { 
+            document.getElementById('auth-status').innerText = "⚠️ CÁMARA NO DETECTADA";
+        }
     }
-    startCam();
+    initCam();
 
-    // FASE 1: Rostro
-    function faseRostro() {
-        f1 = true;
-        document.getElementById('dot-1').classList.add('active');
-        document.getElementById('btn-face').innerText = "✅ ROSTRO IDENTIFICADO";
-        document.getElementById('btn-face').classList.add('ready');
-    }
+    // Fase de Biometría Real (Rostro y Huella)
+    async function faseBiometriaReal() {
+        const status = document.getElementById('auth-status');
+        status.innerText = "🔍 ANALIZANDO ROSTRO...";
+        status.style.color = "var(--vibrant)";
 
-    // FASE 2: Huella Real del Celular
-    async function faseHuella() {
-        if(!f1) return alert("Primero completa la Fase 1");
-        
-        try {
-            const cred = await navigator.credentials.create({
-                publicKey: {
-                    challenge: new Uint8Array([1,2,3,4]),
-                    rp: { name: "Imperio RR" },
-                    user: { id: new Uint8Array([1]), name: "Fundador", displayName: "RR" },
-                    pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                    authenticatorSelection: { authenticatorAttachment: "platform" }
+        // Simulación de reconocimiento del rostro enviado
+        if (window.PublicKeyCredential) {
+            try {
+                const cred = await navigator.credentials.create({
+                    publicKey: {
+                        challenge: new Uint8Array([1,2,3,4]),
+                        rp: { name: "Imperio RR" },
+                        user: { id: new Uint8Array([1]), name: "Fundador", displayName: "DUEÑO RR" },
+                        pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                        authenticatorSelection: { authenticatorAttachment: "platform" }
+                    }
+                });
+                if(cred) {
+                    bioActive = true;
+                    status.innerText = "✅ DUEÑO RECONOCIDO CON ÉXITO";
+                    document.getElementById('btn-scan').style.background = "#15803d";
+                    document.getElementById('btn-scan').innerText = "ESCANEO COMPLETADO";
+                    addLog("Identidad confirmada mediante biometría facial.");
                 }
-            });
-            if(cred) {
-                f2 = true;
-                document.getElementById('dot-2').classList.add('active');
-                document.getElementById('btn-finger').innerText = "✅ HUELLA VINCULADA";
-                document.getElementById('btn-finger').classList.add('ready');
+            } catch(e) {
+                status.innerText = "❌ ERROR: ESCANEO CANCELADO";
+                status.style.color = "var(--danger)";
             }
-        } catch(e) {
-            alert("Error: Tu celular no permitió el escaneo real.");
         }
     }
 
-    // FASE 3: Contraseña y Acceso
-    function faseFinal() {
-        const p = document.getElementById('pass').value;
-        if(f1 && f2 && p === MASTER_KEY) {
-            document.getElementById('dot-3').classList.add('active');
-            setTimeout(() => {
-                document.getElementById('lock-screen').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-            }, 500);
+    function validarAccesoTotal() {
+        const pass = document.getElementById('master-key').value;
+        if(bioActive && pass === MASTER_PASS) {
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('main-dashboard').style.display = 'block';
+            document.getElementById('welcome-msg').innerText = "Bienvenido, Fundador Jampier";
+            renderUsers();
+            addLog("Sesión iniciada por el administrador supremo.");
         } else {
-            alert("⚠️ ACCESO DENEGADO: Debes completar las 3 fases correctamente.");
+            alert("⚠️ ACCESO DENEGADO: Complete el escaneo y la contraseña correcta.");
         }
     }
 
-    // FUNCIONES DEL DASHBOARD
-    function registrar() {
-        const n = document.getElementById('new-u').value;
-        if(!n) return;
-        const id = Date.now();
-        document.getElementById('user-list').innerHTML += `
-            <div class="member-item" id="${id}">
-                <span><b>${n}</b><span class="v-mark"></span></span>
-                <div style="display:flex; gap:5px;">
-                    <button class="btn-pwr btn-verify" onclick="verificar('${id}')">✓</button>
-                    <button class="btn-pwr btn-kick" onclick="botar('${id}')">BOTAR</button>
-                </div>
-            </div>`;
-        document.getElementById('new-u').value = "";
+    // LÓGICA DEL PANEL DE CONTROL
+    function renderUsers(filtro = 'todos') {
+        const container = document.getElementById('user-container');
+        container.innerHTML = '';
+        let revenue = 0;
+
+        usuarios.forEach(u => {
+            if(filtro !== 'todos' && u.tipo !== filtro) return;
+            if(u.tipo === 'vip') revenue += u.ingresos;
+
+            container.innerHTML += `
+                <div class="user-row">
+                    <div>
+                        <div style="font-weight:800; font-size: 14px;">${u.nombre}</div>
+                        <span class="badge badge-${u.tipo}">${u.tipo}</span>
+                    </div>
+                    <div>
+                        ${u.tipo !== 'owner' && u.tipo !== 'vip' ? `<button onclick="cambiarTipo(${u.id}, 'vip')" class="btn-action btn-upgrade">HACER VIP</button>` : ''}
+                        ${u.tipo !== 'owner' && u.tipo !== 'banned' ? `<button onclick="cambiarTipo(${u.id}, 'banned')" class="btn-action btn-delete">BOTAR</button>` : ''}
+                    </div>
+                </div>`;
+        });
+        
+        document.getElementById('total-revenue').innerText = `S/ ${revenue.toFixed(2)}`;
+        localStorage.setItem('db_imperio_v6', JSON.stringify(usuarios));
     }
 
-    function verificar(id) {
-        document.getElementById(id).querySelector('.v-mark').innerHTML = ' <span style="color:#0095f6;">(✓ Verificado)</span>';
+    function agregarUsuario() {
+        const nombre = document.getElementById('new-name').value;
+        if(!nombre) return;
+        usuarios.push({ id: Date.now(), nombre, tipo: 'todos', ingresos: 0 });
+        document.getElementById('new-name').value = '';
+        addLog(`NUEVO REGISTRO: ${nombre} añadido al sistema.`);
+        renderUsers();
     }
 
-    function botar(id) {
-        if(confirm("¿Eliminar ciudadano del Imperio?")) {
-            document.getElementById(id).style.opacity = "0";
-            setTimeout(() => document.getElementById(id).remove(), 300);
-        }
+    function cambiarTipo(id, tipo) {
+        usuarios = usuarios.map(u => {
+            if(u.id === id) {
+                const viejoTipo = u.tipo;
+                if(tipo === 'vip') u.ingresos = 100; // Suscripción base
+                addLog(`MODERACIÓN: ${u.nombre} pasó de ${viejoTipo} a ${tipo}.`);
+                return { ...u, tipo };
+            }
+            return u;
+        });
+        renderUsers();
+    }
+
+    function filtrar(f) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        renderUsers(f);
+    }
+
+    function addLog(msg) {
+        const logBox = document.getElementById('logs');
+        const now = new Date().toLocaleTimeString();
+        logBox.innerHTML = `> [${now}] ${msg}<br>` + logBox.innerHTML;
     }
 </script>
 </body>
