@@ -3,233 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RR COMMAND CENTER - ULTIMATE EDITION</title>
+    <title>RR EMPIRE - COMMAND & CONTROL v4.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --vibrant: #22c55e; --vibrant-dark: #16a34a; --oscuro: #0f172a;
             --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc;
-            --glass-dark: rgba(15, 23, 42, 0.9);
+            --blue-meta: #0095f6; --gold: #eab308;
         }
 
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         body { background: var(--bg); margin: 0; color: var(--oscuro); overflow-x: hidden; }
 
-        /* --- ACCESO NIVEL TITÁN --- */
+        /* --- BIOMETRÍA DE ACCESO --- */
         #lock-screen {
             position: fixed; inset: 0; background: var(--oscuro); z-index: 9999;
             display: flex; align-items: center; justify-content: center;
         }
-
-        .auth-vault {
-            background: rgba(255,255,255,0.02); padding: 50px; border-radius: 60px;
-            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(50px);
-            text-align: center; width: 90%; max-width: 500px;
-            box-shadow: 0 0 150px rgba(0,0,0,0.8);
+        .vault-ui {
+            background: rgba(255,255,255,0.03); padding: 50px; border-radius: 60px;
+            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(30px); text-align: center;
         }
-
-        .scanner-frame {
-            width: 200px; height: 200px; border-radius: 100px; border: 4px solid var(--vibrant);
-            margin: 0 auto 30px; position: relative; overflow: hidden; background: #000;
-        }
-        #auth-video { width: 100%; height: 100%; object-fit: cover; filter: hue-rotate(90deg) brightness(1.2); }
-        .scanning-line { position: absolute; width: 100%; height: 5px; background: var(--vibrant); box-shadow: 0 0 30px var(--vibrant); top: 0; animation: scanAnim 2s infinite ease-in-out; }
-        @keyframes scanAnim { 0%, 100% { top: 0%; } 50% { top: 100%; } }
 
         /* --- DASHBOARD SUPREMO --- */
-        #dashboard { display: none; padding: 25px; }
-        .main-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+        #main-ui { display: none; padding: 20px; }
+        .grid-layout { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
         
-        .card {
-            background: white; border-radius: 40px; padding: 25px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
-            grid-column: span 4; position: relative;
+        .card { 
+            background: white; border-radius: 40px; padding: 30px; 
+            box-shadow: 0 15px 50px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            position: relative; overflow: hidden;
         }
-        .span-8 { grid-column: span 8; }
-        .span-12 { grid-column: span 12; }
-
-        /* --- NUEVAS FUNCIONES DE CONTROL --- */
-        .analytics-bar { height: 10px; background: #f1f5f9; border-radius: 10px; margin: 10px 0; overflow: hidden; }
-        .analytics-fill { height: 100%; background: var(--vibrant); border-radius: 10px; }
-
-        .chat-admin-box { height: 250px; overflow-y: auto; background: #0f172a; color: #4ade80; border-radius: 25px; padding: 20px; font-family: monospace; font-size: 12px; }
         
-        .btn-action {
-            padding: 18px; border-radius: 22px; border: none; font-weight: 800; cursor: pointer;
-            width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        /* --- GESTIÓN DE MIEMBROS --- */
+        .member-card {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 25px; background: #f8fafc; border-radius: 25px; margin-bottom: 15px;
+            border: 1px solid transparent;
         }
-        .btn-vibrant { background: var(--vibrant); color: white; box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4); }
-        .btn-danger { background: var(--danger); color: white; }
+        .member-card:hover { border-color: var(--vibrant); background: white; transform: scale(1.02); }
+        
+        .avatar-circle { width: 45px; height: 45px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #64748b; }
+        
+        .badge { font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 10px; text-transform: uppercase; margin-left: 5px; }
+        .badge-verified { background: #e0f2fe; color: var(--blue-meta); }
+        .badge-vip { background: #fef9c3; color: var(--gold); }
+        .badge-warn { background: #fee2e2; color: var(--danger); }
 
-        /* --- TABLA DE USUARIOS PRO --- */
-        .user-list { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        .user-list tr { background: #f8fafc; border-radius: 20px; }
-        .user-list td { padding: 15px; font-weight: 700; }
-        .user-list td:first-child { border-radius: 20px 0 0 20px; }
-        .user-list td:last-child { border-radius: 0 20px 20px 0; }
+        /* --- BOTONES DE PODER --- */
+        .power-btn { border: none; padding: 12px; border-radius: 15px; cursor: pointer; font-weight: 800; font-size: 12px; }
+        .btn-kick { background: #fee2e2; color: #ef4444; }
+        .btn-kick:hover { background: #ef4444; color: white; }
+        .btn-verify { background: #e0f2fe; color: var(--blue-meta); }
+        .btn-vip { background: #fffbeb; color: var(--gold); }
 
-        .status-on { width: 10px; height: 10px; background: var(--vibrant); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 10px var(--vibrant); }
+        /* --- FEED DE PUBLICACIONES --- */
+        .post-box { background: #fdfdfd; border-radius: 25px; padding: 20px; margin-bottom: 15px; border: 1px solid #eee; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        
+        /* --- CONSOLA INTELIGENTE --- */
+        #terminal {
+            background: #0f172a; color: #4ade80; padding: 20px; border-radius: 25px;
+            font-family: 'Courier New', monospace; height: 180px; overflow-y: auto; font-size: 12px;
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes fadeOut { to { opacity: 0; transform: translateX(50px); } }
+        .removing { animation: fadeOut 0.4s forwards; }
     </style>
 </head>
 <body>
 
 <div id="lock-screen">
-    <div class="auth-vault">
-        <h1 style="margin: 0; font-weight: 900; color: white;">RR <span style="color:var(--vibrant)">ELITE</span></h1>
-        <p style="opacity: 0.5; color: white; font-size: 11px; letter-spacing: 2px; margin-bottom: 25px;">PROTOCOLO DE SEGURIDAD 2026</p>
+    <div class="vault-ui">
+        <h1 style="color:white; margin:0; font-size:32px;">CORE <span style="color:var(--vibrant)">RR</span></h1>
+        <p style="color:white; opacity:0.5; font-size:11px; letter-spacing:3px; margin-bottom:30px;">IDENTITY PROTOCOL v4.0</p>
         
-        <div class="scanner-frame">
-            <video id="auth-video" autoplay playsinline></video>
-            <div class="scanning-line"></div>
+        <div style="display:flex; justify-content:center; gap:20px; margin-bottom:25px;">
+            <div id="step-1" onclick="verify('face')" style="cursor:pointer; font-size:45px; opacity:0.3;">👤</div>
+            <div id="step-2" onclick="verify('finger')" style="cursor:pointer; font-size:45px; opacity:0.3;">☝️</div>
         </div>
 
-        <div style="display:flex; justify-content:center; gap:20px; margin-bottom:20px;">
-            <button onclick="verifyStep('Rostro')" id="btn-face" style="background:none; border:2px solid #334155; border-radius:15px; padding:15px; cursor:pointer;">👤</button>
-            <button onclick="verifyStep('Huella')" id="btn-finger" style="background:none; border:2px solid #334155; border-radius:15px; padding:15px; cursor:pointer;">☝️</button>
-        </div>
-
-        <input type="password" id="master-pass" placeholder="PASSWORD" style="width:100%; padding:20px; border-radius:20px; background:rgba(0,0,0,0.5); border:1px solid #334155; color:white; text-align:center; font-size:22px; letter-spacing:8px; margin-bottom:20px;">
-        <button class="btn-action btn-vibrant" onclick="unlockSystem()">DESBLOQUEAR IMPERIO</button>
+        <input type="password" id="master-key" placeholder="PASSWORD" style="width:100%; padding:20px; border-radius:20px; border:none; background:rgba(255,255,255,0.05); color:white; text-align:center; font-size:20px; letter-spacing:5px; margin-bottom:20px;">
+        <button onclick="unlock()" style="width:100%; padding:20px; border-radius:20px; border:none; background:var(--vibrant); color:white; font-weight:900; cursor:pointer;">EJECUTAR ACCESO</button>
     </div>
 </div>
 
-<div id="dashboard">
-    <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+<div id="main-ui">
+    <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding:0 10px;">
         <div>
-            <h2 style="margin:0; font-weight:900;">Master Dashboard <span style="color:var(--vibrant)">RR</span></h2>
-            <div style="font-size:12px; font-weight:800; color:var(--vibrant);"><span class="status-on"></span> SISTEMA TOTALMENTE OPERATIVO</div>
+            <h1 style="margin:0; font-weight:900;">Comando Central <span style="color:var(--vibrant)">Imperio</span></h1>
+            <div style="font-size:12px; font-weight:800; color:#64748b;">📍 HUANTA NETWORK | SESIÓN: <span style="color:var(--vibrant)">FUNDADOR</span></div>
         </div>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-action btn-danger" style="padding:10px 20px; width:auto;" onclick="location.href='index.html'">CERRAR TERMINAL</button>
-        </div>
+        <button onclick="location.reload()" style="background:#fee2e2; color:var(--danger); border:none; padding:12px 25px; border-radius:18px; font-weight:800; cursor:pointer;">BLOQUEAR SISTEMA</button>
     </header>
 
-    <div class="main-grid">
-        <div class="card">
-            <h3 style="margin:0 0 15px 0;">👁️ Vigilancia Biométrica</h3>
-            <div style="width:100%; height:180px; background:#000; border-radius:25px; overflow:hidden;">
-                <video id="dash-cam" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
-            </div>
-            <div style="margin-top:15px;">
-                <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800;">
-                    <span>RECONOCIMIENTO DE ROSTRO</span><span>98%</span>
+    <div class="grid-layout">
+        <div class="card" style="grid-column: span 7;">
+            <h3 style="margin:0 0 20px 0;">🛡️ Gestión de Población</h3>
+            <div id="member-list">
+                <div class="member-card" id="user-1">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <div class="avatar-circle">JP</div>
+                        <div>
+                            <div style="font-weight:800;">Juan Perez <span id="badge-1"></span></div>
+                            <div style="font-size:10px; color:#94a3b8;">IP: 192.168.1.45 (Huanta)</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="power-btn btn-verify" onclick="setLabel(1, 'verified')">✓</button>
+                        <button class="power-btn btn-vip" onclick="setLabel(1, 'vip')">💎</button>
+                        <button class="power-btn btn-kick" onclick="kickUser(1)">BOTAR</button>
+                    </div>
                 </div>
-                <div class="analytics-bar"><div class="analytics-fill" style="width:98%;"></div></div>
-            </div>
-            <button class="btn-action" style="background:var(--oscuro); color:white;" onclick="alert('Enviando alerta a patrullas...')">🚨 ALERTA ROJA</button>
-        </div>
-
-        <div class="card span-8">
-            <h3 style="margin:0 0 15px 0;">📈 Actividad del Imperio (Huanta)</h3>
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px;">
-                <div style="background:#f0fdf4; padding:20px; border-radius:25px; text-align:center;">
-                    <div style="font-size:10px; font-weight:800; color:#15803d;">VENTAS HOY</div>
-                    <div style="font-size:24px; font-weight:900;">S/ 4,250</div>
-                </div>
-                <div style="background:#eff6ff; padding:20px; border-radius:25px; text-align:center;">
-                    <div style="font-size:10px; font-weight:800; color:#1d4ed8;">NUEVOS USUARIOS</div>
-                    <div style="font-size:24px; font-weight:900;">+128</div>
-                </div>
-                <div style="background:#fffbeb; padding:20px; border-radius:25px; text-align:center;">
-                    <div style="font-size:10px; font-weight:800; color:#b45309;">ADS ACTIVOS</div>
-                    <div style="font-size:24px; font-weight:900;">14</div>
+                <div class="member-card" id="user-2">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <div class="avatar-circle" style="background:var(--danger); color:white;">TX</div>
+                        <div>
+                            <div style="font-weight:800;">Usuario_Tóxico <span id="badge-2"></span></div>
+                            <div style="font-size:10px; color:#94a3b8;">IP: 184.22.1.09 (Anónimo)</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="power-btn btn-verify" onclick="setLabel(2, 'verified')">✓</button>
+                        <button class="power-btn btn-vip" onclick="setLabel(2, 'vip')">💎</button>
+                        <button class="power-btn btn-kick" onclick="kickUser(2)">BOTAR</button>
+                    </div>
                 </div>
             </div>
-            <h3 style="margin:20px 0 10px 0;">📡 Consola de Comandos RR</h3>
-            <div class="chat-admin-box" id="console-out">
-                > Sistema iniciado... <br>
-                > Cargando base de datos de Huanta... <br>
-                > Encriptación SSL-256 Activa... <br>
-            </div>
-        </div>
-
-        <div class="card span-8">
-            <h3 style="margin:0 0 15px 0;">💎 Gestión de Ciudadanos VIP</h3>
-            <table class="user-list">
-                <tbody id="user-body">
-                    <tr>
-                        <td>👤 Fundador Supremo</td>
-                        <td><span style="color:var(--vibrant)">● MASTER</span></td>
-                        <td>Huanta</td>
-                        <td><button style="border:none; color:var(--danger); background:none; font-weight:900;">✕</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <input type="text" id="add-name" placeholder="Nombre de Usuario" style="flex:1; padding:18px; border-radius:20px; border:1px solid #eee;">
-                <button class="btn-action btn-vibrant" style="width:180px; margin:0;" onclick="addUser()">DAR ALTA VIP</button>
+            <div style="margin-top:20px; display:flex; gap:10px;">
+                <input type="text" id="add-name" placeholder="Nombre de nuevo ciudadano..." style="flex:1; padding:18px; border-radius:20px; border:1px solid #eee;">
+                <button onclick="addUser()" style="background:var(--oscuro); color:white; border:none; padding:18px 25px; border-radius:20px; font-weight:800;">REGISTRAR</button>
             </div>
         </div>
 
-        <div class="card">
-            <h3 style="margin:0 0 15px 0;">⚙️ Configuración Global</h3>
-            <label style="font-size:11px; font-weight:800;">COLOR DE MARCA (INDEX)</label>
-            <input type="color" id="theme-color" value="#22c55e" style="width:100%; height:55px; border:none; border-radius:15px; margin:10px 0; cursor:pointer;">
-            <button class="btn-action btn-vibrant" onclick="applyTheme()">ACTUALIZAR RED</button>
-            <button class="btn-action" style="background:#f1f5f9; color:#64748b;" onclick="alert('Modo Mantenimiento Activado')">MODO MANTENIMIENTO</button>
+        <div class="card" style="grid-column: span 5;">
+            <h3 style="margin:0 0 20px 0;">📸 Monitoreo en Vivo</h3>
+            <div style="width:100%; height:180px; background:#000; border-radius:30px; overflow:hidden;">
+                <video id="v-cam" autoplay playsinline style="width:100%; height:100%; object-fit:cover; opacity:0.6;"></video>
+            </div>
+            <h3 style="margin:25px 0 15px 0;">🗑️ Control de Contenido</h3>
+            <div id="posts-feed">
+                <div class="post-box" id="post-101">
+                    <div class="post-header">
+                        <span style="font-size:11px; font-weight:900; color:var(--vibrant);">POST #101</span>
+                        <button onclick="delPost(101)" style="border:none; background:none; color:var(--danger); font-size:18px; cursor:pointer;">✕</button>
+                    </div>
+                    <p style="margin:0; font-size:13px; font-weight:600;">"Vendo celulares baratos en el mercado central de Huanta..."</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card span-12">
+            <h3 style="margin:0 0 15px 0;">📟 Registro de Operaciones del Imperio</h3>
+            <div id="terminal">> Núcleo RR v4.0 listo para comandos...</div>
         </div>
     </div>
 </div>
 
 <script>
-    const PASS = "RR2026";
-    let auth = { face: false, finger: false };
+    const MASTER = "RR2026";
+    let steps = { face: false, finger: false };
 
-    async function startCam() {
+    async function initCam() {
         try {
             const s = await navigator.mediaDevices.getUserMedia({ video: true });
-            document.getElementById('auth-video').srcObject = s;
-            document.getElementById('dash-cam').srcObject = s;
-        } catch(e) { console.log("Cámara bloqueada"); }
+            document.getElementById('v-cam').srcObject = s;
+        } catch(e) {}
     }
-    startCam();
+    initCam();
 
-    function verifyStep(type) {
-        if(type === 'Rostro') {
-            auth.face = true;
-            document.getElementById('btn-face').style.borderColor = "var(--vibrant)";
-            document.getElementById('btn-face').style.background = "rgba(34,197,94,0.1)";
-        } else {
-            auth.finger = true;
-            document.getElementById('btn-finger').style.borderColor = "var(--vibrant)";
-            document.getElementById('btn-finger').style.background = "rgba(34,197,94,0.1)";
-        }
-        printConsole(`Verificación de ${type} exitosa...`);
+    function verify(type) {
+        steps[type] = true;
+        document.getElementById('step-' + (type === 'face' ? '1' : '2')).style.opacity = "1";
+        addLog(`Protocolo ${type} verificado.`);
     }
 
-    function unlockSystem() {
-        const p = document.getElementById('master-pass').value;
-        if(p === PASS && auth.face && auth.finger) {
+    function unlock() {
+        if(document.getElementById('master-key').value === MASTER && steps.face && steps.finger) {
             document.getElementById('lock-screen').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            printConsole("ACCESO TOTAL CONCEDIDO. Bienvenido Fundador.");
+            document.getElementById('main-ui').style.display = 'block';
+            addLog("Acceso de Fundador validado. Control OMNI activo.");
         } else {
-            alert("⚠️ ERROR: Se requiere Rostro, Huella y Contraseña Correcta.");
-            printConsole("ERROR DE AUTENTICACIÓN: Intento de acceso no autorizado.");
+            alert("⚠️ ERROR CRÍTICO: Identidad no validada.");
         }
     }
 
-    function printConsole(msg) {
-        const con = document.getElementById('console-out');
-        const time = new Date().toLocaleTimeString();
-        con.innerHTML += `> [${time}] ${msg} <br>`;
-        con.scrollTop = con.scrollHeight;
+    // SISTEMA DE BOTAR (KICK)
+    function kickUser(id) {
+        if(confirm("¿EXPULSAR permanentemente a este usuario del imperio?")) {
+            const user = document.getElementById('user-' + id);
+            user.classList.add('removing');
+            addLog(`USUARIO EXPULSADO: Miembro #${id} ha sido baneado.`);
+            setTimeout(() => user.remove(), 400);
+        }
+    }
+
+    // SISTEMA DE INSIGNIAS (VERIFICADO / VIP)
+    function setLabel(id, type) {
+        const badge = document.getElementById('badge-' + id);
+        if(type === 'verified') {
+            badge.innerHTML = '<span class="badge badge-verified">✓ Verificado</span>';
+            addLog(`ESTADO: Usuario #${id} ahora es VERIFICADO.`);
+        } else {
+            badge.innerHTML = '<span class="badge badge-vip">💎 Miembro VIP</span>';
+            addLog(`ESTADO: Usuario #${id} elevado a rango VIP.`);
+        }
+    }
+
+    // BORRAR POSTS
+    function delPost(id) {
+        const p = document.getElementById('post-' + id);
+        p.style.border = "1px solid var(--danger)";
+        setTimeout(() => {
+            p.remove();
+            addLog(`CONTENIDO: Publicación #${id} eliminada por orden del administrador.`);
+        }, 300);
     }
 
     function addUser() {
-        const n = document.getElementById('add-name').value;
-        if(!n) return;
-        const body = document.getElementById('user-body');
-        body.innerHTML += `<tr><td>👤 ${n}</td><td><span style="color:var(--vibrant)">● VIP</span></td><td>Huanta</td><td><button onclick="this.closest('tr').remove()" style="border:none; color:var(--danger); background:none; font-weight:900;">✕</button></td></tr>`;
-        printConsole(`Usuario ${n} añadido a la base VIP.`);
+        const name = document.getElementById('add-name').value;
+        if(!name) return;
+        const id = Date.now();
+        const div = document.createElement('div');
+        div.className = 'member-card';
+        div.id = 'user-' + id;
+        div.innerHTML = `
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div class="avatar-circle">${name.substring(0,2).toUpperCase()}</div>
+                <div>
+                    <div style="font-weight:800;">${name} <span id="badge-${id}"></span></div>
+                    <div style="font-size:10px; color:#94a3b8;">IP: 192.168.1.${Math.floor(Math.random()*100)} (Nueva)</div>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="power-btn btn-verify" onclick="setLabel(${id}, 'verified')">✓</button>
+                <button class="power-btn btn-vip" onclick="setLabel(${id}, 'vip')">💎</button>
+                <button class="power-btn btn-kick" onclick="kickUser(${id})">BOTAR</button>
+            </div>`;
+        document.getElementById('member-list').prepend(div);
+        addLog(`SISTEMA: Nuevo ciudadano registrado: ${name}`);
         document.getElementById('add-name').value = "";
     }
 
-    function applyTheme() {
-        const c = document.getElementById('theme-color').value;
-        localStorage.setItem('empireColor', c);
-        printConsole(`Color de red actualizado a: ${c}`);
-        alert("Sincronización de red completa.");
+    function addLog(msg) {
+        const t = document.getElementById('terminal');
+        const now = new Date().toLocaleTimeString();
+        t.innerHTML = `> [${now}] ${msg}<br>` + t.innerHTML;
     }
 </script>
 </body>
