@@ -104,14 +104,14 @@
     <div id="feed-container" style="display: grid; gap: 25px;">
         <div id="placeholder-msg" style="text-align:center; padding:60px; background:white; border-radius:50px; color:#94a3b8;">
             <span style="font-size:60px;">💎</span>
-            <p style="font-weight:800;">Explora las joyas del Imperio.<br>Aún no hay publicaciones aquí.</p>
+            <p style="font-weight:800;">Explora las joyas de Rantiy.<br>Aún no hay publicaciones aquí.</p>
         </div>
     </div>
 </main>
 
 <section id="view-camera" class="view">
     <div class="camera-hub" id="main-hub">
-        <h2 style="font-weight:900; font-size:26px;">ESTUDIO DE CREACIÓN</h2>
+        <h2 style="font-weight:900; font-size:26px;">RANTIKUY STUDIO</h2>
         <p style="opacity:0.7; font-size:14px;">Define el destino de tu nueva publicación</p>
         <div class="category-grid">
             <div class="cat-btn" onclick="startStudio('Venta', '🛍️')"><span>💰</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">VENTA</label></div>
@@ -133,7 +133,7 @@
         </div>
         <input type="text" id="in-title" class="rr-field" placeholder="¿Qué estás ofreciendo?">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio en Soles (S/)">
-        <button onclick="uploadToEmpire()" style="width:100%; padding:22px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900; font-size:18px; box-shadow:0 15px 30px rgba(34,197,94,0.3);">PUBLICAR EN EL IMPERIO 🚀</button>
+        <button onclick="uploadToEmpire()" style="width:100%; padding:22px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900; font-size:18px; box-shadow:0 15px 30px rgba(34,197,94,0.3);">PUBLICAR EN RANTIKUY 🚀</button>
     </div>
 </section>
 
@@ -148,7 +148,7 @@
             <span>SALA: <span id="active-chat-name">HUANTA</span></span>
         </div>
         <div class="msg-area" id="global-msgs">
-            <div class="bubble bubble-in"><b>Imperio RR:</b> Bienvenido a la sala de Huanta.</div>
+            <div class="bubble bubble-in"><b>Rantiy:</b> Bienvenido a la sala de Huanta.</div>
         </div>
         <div style="padding:20px; display:flex; gap:12px; background:white; border-top:1px solid #eee;">
             <input type="text" id="global-input" class="rr-field" style="margin:0; flex:1;" placeholder="Mensaje público...">
@@ -169,7 +169,7 @@
         <div style="display:flex; align-items:center; gap:15px;">
             <button onclick="closePrivate()" style="background:none; border:none; color:white; font-size:24px;">⬅</button>
             <div>
-                <div id="p-chat-user" style="font-weight:900; font-size:18px; color:white;">Vendedor RR</div>
+                <div id="p-chat-user" style="font-weight:900; font-size:18px; color:white;">Vendedor Rantiy</div>
                 <div id="p-chat-product" style="font-size:10px; color:var(--verde); font-weight:800;">INTERÉS: PRODUCTO</div>
             </div>
         </div>
@@ -245,10 +245,12 @@
     }
 
     function uploadDoc() {
-        let input = document.createElement('input'); input.type = 'file'; input.accept = '.pdf';
+        let input = document.createElement('input'); 
+        input.type = 'file'; 
+        input.accept = '*/*'; // AHORA CUALQUIER ARCHIVO
         input.onchange = (e) => {
             chatDoc = e.target.files[0];
-            document.getElementById('chat-img-preview').innerHTML += `<div style="background:var(--naranja); color:white; padding:8px 15px; border-radius:12px; font-size:10px; font-weight:800;">📄 ${chatDoc.name}</div>`;
+            document.getElementById('chat-img-preview').innerHTML += `<div style="background:var(--naranja); color:white; padding:8px 15px; border-radius:12px; font-size:10px; font-weight:800;">📎 ${chatDoc.name}</div>`;
         };
         input.click();
     }
@@ -313,11 +315,21 @@
     function sendPrivate() {
         const msg = document.getElementById('private-input').value;
         const imgs = chatFiles.map(src => `<img src="${src}" style="width:100%; border-radius:15px; margin-top:5px;">`).join('');
-        const docHtml = chatDoc ? `<div style="background:#f1f5f9; color:var(--oscuro); padding:10px; border-radius:12px; margin-top:5px; font-size:11px;">📄 <b>PDF:</b> ${chatDoc.name}</div>` : '';
+        
+        let docHtml = '';
+        if (chatDoc) {
+            const docUrl = URL.createObjectURL(chatDoc); // PERMITE ABRIR LOCALMENTE
+            docHtml = `<div style="background:rgba(255,255,255,0.2); color:white; padding:10px; border-radius:12px; margin-top:5px; font-size:11px;">
+                <a href="${docUrl}" target="_blank" download="${chatDoc.name}" style="color:white; text-decoration:none;">📄 <b>VER ARCHIVO:</b> ${chatDoc.name}</a>
+            </div>`;
+        }
+
         if(!msg && chatFiles.length === 0 && !chatDoc) return;
         document.getElementById('private-msgs').innerHTML += `<div class="bubble bubble-out">${msg} ${imgs} ${docHtml}</div>`;
         document.getElementById('private-input').value = "";
-        chatFiles = []; chatDoc = null; renderChatPreviews();
+        chatFiles = []; chatDoc = null; 
+        document.getElementById('chat-img-preview').innerHTML = "";
+        renderChatPreviews();
     }
 
     function renderPrivateList() {
@@ -328,4 +340,3 @@
 </script>
 </body>
 </html>
-.
