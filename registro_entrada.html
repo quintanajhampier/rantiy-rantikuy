@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rantiy y Rantikuy - Ingreso Seguro</title>
     <style>
-        /* Colores claros y vibrantes de Huanta - Sin negros intensos */
+        /* Mantenemos tus colores claros y vibrantes de Huanta */
         body { background-color: #f0fff4; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .contenedor { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(45, 106, 79, 0.1); width: 90%; max-width: 400px; text-align: center; border: 2px solid #4ade80; }
         
         h1 { color: #2d6a4f; margin-bottom: 5px; font-size: 24px; }
         .eslogan { color: #ff8c00; font-weight: bold; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Caja de GPS Psicológica */
         .alerta-gps { background: #e6fffa; border-left: 5px solid #4ade80; padding: 10px; margin-bottom: 20px; font-size: 12px; color: #065f46; text-align: left; }
         
         input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e0e0e0; border-radius: 12px; outline: none; box-sizing: border-box; transition: 0.3s; }
@@ -23,6 +22,7 @@
         .check-group { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #374151; text-align: left; cursor: pointer; }
         
         .btn-ingresar { background-color: #ff8c00; color: white; border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3); }
+        .btn-ingresar:disabled { background-color: #ccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -51,25 +51,55 @@
         <span>Acepto los términos, el pago de comisiones y la supervisión del administrador por mi seguridad.</span>
     </label>
 
-    <button onclick="validarYEntrar()" class="btn-ingresar">VERIFICAR E INGRESAR</button>
+    <button id="btnEntrar" onclick="validarYEntrar()" class="btn-ingresar">VERIFICAR E INGRESAR</button>
+    <p id="status" style="font-size: 12px; margin-top: 10px; color: #2d6a4f;"></p>
 </div>
 
 <script>
-function validarYEntrar() {
+async function validarYEntrar() {
     const nombre = document.getElementById('nombre').value;
     const telefono = document.getElementById('telefono').value;
     const acepto = document.getElementById('acepto').checked;
+    const btn = document.getElementById('btnEntrar');
+    const status = document.getElementById('status');
 
     if (!nombre || !telefono || !acepto) {
         alert("Por favor, completa todos los campos y acepta las reglas para proteger la comunidad.");
         return;
     }
 
-    // Activación obligatoria de GPS
+    // Activación de GPS y envío de datos
     navigator.geolocation.getCurrentPosition(
-        (pos) => {
-            alert("¡Identidad y GPS verificados! Bienvenido al imperio, " + nombre);
-            // Aquí rediriges al muro principal
+        async (pos) => {
+            btn.disabled = true;
+            status.innerText = "Registrando en la base de datos del Imperio...";
+
+            // Tu URL de Google Apps Script
+            const scriptURL = "https://script.google.com/macros/s/AKfycbwsQyjUIFJkUgKpYBQVM-sUccSRMBO1wZlr9m2cofzzFVsO_dpqVyjQzufMRmtNWVI7/exec";
+
+            const datos = {
+                nombre: nombre,
+                telefono: telefono,
+                firma: "Aceptó Términos (GPS Verificado)", // Usamos esto ya que no hay canvas de firma aquí
+                dispositivo: navigator.userAgent + " | Lat: " + pos.coords.latitude + " Lon: " + pos.coords.longitude
+            };
+
+            try {
+                // Enviamos los datos al Excel
+                await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(datos)
+                });
+
+                alert("¡Identidad y GPS verificados! Bienvenido al imperio, " + nombre);
+                status.innerText = "¡Bienvenido!";
+                // Aquí puedes poner la lógica para entrar a la app
+            } catch (error) {
+                alert("Error al conectar con el servidor del Imperio.");
+                btn.disabled = false;
+                status.innerText = "";
+            }
         },
         (err) => {
             alert("ERROR: No puedes entrar sin activar el GPS. Esta es una comunidad seria de Huanta.");
