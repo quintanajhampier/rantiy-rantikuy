@@ -68,42 +68,48 @@ async function validarYEntrar() {
         return;
     }
 
-    // Activación de GPS y envío de datos
     navigator.geolocation.getCurrentPosition(
         async (pos) => {
             btn.disabled = true;
-            status.innerText = "Registrando en la base de datos del Imperio...";
+            status.innerText = "Sincronizando con el Imperio...";
 
-            // Tu URL de Google Apps Script
+            // TU ENLACE DE GOOGLE APPS SCRIPT
             const scriptURL = "https://script.google.com/macros/s/AKfycbwsQyjUIFJkUgKpYBQVM-sUccSRMBO1wZlr9m2cofzzFVsO_dpqVyjQzufMRmtNWVI7/exec";
 
-            const datos = {
-                nombre: nombre,
-                telefono: telefono,
-                firma: "Aceptó Términos (GPS Verificado)", // Usamos esto ya que no hay canvas de firma aquí
-                dispositivo: navigator.userAgent + " | Lat: " + pos.coords.latitude + " Lon: " + pos.coords.longitude
-            };
+            // Guardamos localmente para que el sistema sepa quién eres al entrar
+            localStorage.setItem('rantiy_user', nombre);
+
+            // Preparamos los datos tal cual los necesita tu Excel
+            const datos = new FormData();
+            datos.append('nombre', nombre);
+            datos.append('telefono', telefono);
+            datos.append('firma', "GPS Verificado ✅");
+            datos.append('dispositivo', `Ubicación: ${pos.coords.latitude}, ${pos.coords.longitude} | Navegador: ${navigator.userAgent}`);
 
             try {
-                // Enviamos los datos al Excel
-                await fetch(scriptURL, {
+                // Enviamos al Excel con modo 'no-cors' para evitar bloqueos visuales
+                fetch(scriptURL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify(datos)
+                    body: datos
                 });
 
-                alert("¡Identidad y GPS verificados! Bienvenido al imperio, " + nombre);
-                status.innerText = "¡Bienvenido!";
-                // Aquí puedes poner la lógica para entrar a la app
+                // Esperamos un segundo para que el servidor procese y saltamos a la App
+                setTimeout(() => {
+                    status.innerText = "¡Bienvenido al Imperio!";
+                    window.location.href = "index.html"; // Aquí va el archivo de la vitrina
+                }, 1200);
+
             } catch (error) {
-                alert("Error al conectar con el servidor del Imperio.");
-                btn.disabled = false;
-                status.innerText = "";
+                console.log("Error de envío, pero procediendo...");
+                window.location.href = "index.html";
             }
         },
         (err) => {
-            alert("ERROR: No puedes entrar sin activar el GPS. Esta es una comunidad seria de Huanta.");
-        }
+            alert("ERROR: Rantiy y Rantikuy requiere GPS activo para garantizar un mercado sin estafas.");
+            btn.disabled = false;
+        },
+        { enableHighAccuracy: true }
     );
 }
 </script>
