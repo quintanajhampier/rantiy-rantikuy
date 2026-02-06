@@ -85,6 +85,7 @@
         .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
         .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .bubble img { width: 100%; border-radius: 15px; margin-top: 5px; cursor: pointer; }
         .sticker { font-size: 50px; display: block; }
 
         #private-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; }
@@ -97,6 +98,12 @@
         .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 12px; border-radius: 15px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 10px; }
         .emoji-panel { display: flex; gap: 10px; padding: 10px; overflow-x: auto; background: #f1f5f9; }
         .emoji-btn { font-size: 20px; cursor: pointer; border: none; background: none; }
+
+        /* --- NUEVOS ESTILOS MULTIMEDIA CHAT --- */
+        .chat-tools { display: flex; gap: 10px; padding: 0 15px 10px 15px; background: white; }
+        .tool-btn { background: #f1f5f9; border: none; padding: 12px; border-radius: 18px; font-size: 18px; cursor: pointer; flex: 1; transition: 0.2s; }
+        .tool-btn:active { background: var(--verde-glow); }
+        .file-msg { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 12px; text-decoration: none; color: inherit; }
     </style>
 </head>
 <body>
@@ -192,21 +199,25 @@
         <span id="p-chat-name" style="font-weight:900;">Cargando...</span>
         <button onclick="clearPrivateChat()" style="background:none; border:none; color:white; font-size:12px;">BORRAR</button>
     </div>
+    
     <div class="msg-area" id="private-msgs"></div>
+
     <div class="emoji-panel">
         <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
         <button class="emoji-btn" onclick="addEmoji('✅')">✅</button>
         <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
-        <button class="emoji-btn" onclick="addEmoji('📦')">📦</button>
         <button class="emoji-btn" onclick="addEmoji('🤝')">🤝</button>
         <button class="emoji-btn" onclick="addSticker('👑')">👑</button>
     </div>
+
+    <div class="chat-tools">
+        <button class="tool-btn" onclick="triggerPrivateCapture('camera')">📷</button>
+        <button class="tool-btn" onclick="triggerPrivateCapture('gallery')">🖼️</button>
+        <button class="tool-btn" onclick="triggerPrivateFile()">📄</button>
+    </div>
+
     <div style="padding:15px; display:flex; gap:10px; align-items:center;">
-        <label style="background:#f1f5f9; padding:15px; border-radius:20px; cursor:pointer; font-size:20px;">
-            📎
-            <input type="file" hidden onchange="uploadFilePrivate(this)">
-        </label>
-        <input type="text" id="p-input" class="rr-field" style="margin:0; flex:1;" placeholder="Mensaje o archivo...">
+        <input type="text" id="p-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe un mensaje...">
         <button onclick="sendPrivate()" style="background:var(--verde); color:white; border:none; width:60px; height:50px; border-radius:20px; font-size:20px;">✈️</button>
     </div>
 </div>
@@ -235,7 +246,6 @@
         if(!currentUser) { window.location.href = 'registro_entrada.html'; return; }
         document.getElementById('user-tag').innerText = "CIUDADANO: " + currentUser.toUpperCase();
 
-        // ACTIVACIÓN DE GPS REAL
         if ("geolocation" in navigator) {
             navigator.geolocation.watchPosition(successGPS, errorGPS, {enableHighAccuracy:true});
         } else {
@@ -264,7 +274,7 @@
             document.getElementById('gps-screen').style.display = 'none';
             document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
             let card = document.getElementById('city-' + activeLoc.toLowerCase());
-            card.classList.add('active-city', 'active-' + activeLoc.toLowerCase());
+            if(card) card.classList.add('active-city', 'active-' + activeLoc.toLowerCase());
             document.getElementById('current-zone-text').innerText = activeLoc;
             document.getElementById('group-title').innerText = "SALA " + activeLoc.toUpperCase();
             renderFeed();
@@ -333,7 +343,7 @@
         confetti(); exitStudio(); renderFeed(); tab('home', document.querySelector('.nav-btn'));
     }
 
-    // --- CHATS ---
+    // --- CHATS GRUPALES ---
     function checkGroupCleanup() {
         let last = localStorage.getItem('group_cleanup_time');
         let now = Date.now();
@@ -360,8 +370,9 @@
         loadGroupMsgs();
     }
 
-    // --- PRIVADO MULTIMEDIA ---
+    // --- NUEVO CHAT PRIVADO AVANZADO (FOTOS Y DOCUMENTOS) ---
     let currentChatPartner = "";
+
     function openPrivateChat(partner) {
         if(partner === currentUser) return;
         currentChatPartner = partner;
@@ -375,11 +386,17 @@
         let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
         let chatKey = [currentUser, currentChatPartner].sort().join('_');
         let msgs = all[chatKey] || [];
-        area.innerHTML = msgs.map(m => `
-            <div class="bubble ${m.u===currentUser?'bubble-out':'bubble-in'}">
-                ${m.type === 'file' ? `<div style="background:rgba(0,0,0,0.05); padding:10px; border-radius:10px;">📄 <a href="${m.t}" download="${m.name}" style="color:inherit; font-weight:bold;">${m.name}</a></div>` : 
-                  m.type === 'sticker' ? `<span class="sticker">${m.t}</span>` : m.t}
-            </div>`).join('');
+        
+        area.innerHTML = msgs.map(m => {
+            let content = "";
+            if (m.type === 'text') content = m.t;
+            if (m.type === 'image') content = `<img src="${m.t}" onclick="window.open('${m.t}')">`;
+            if (m.type === 'file') content = `<a href="${m.t}" download="${m.name}" class="file-msg">📂 <b>${m.name}</b><br>(Toca para descargar)</a>`;
+            if (m.type === 'sticker') content = `<span class="sticker">${m.t}</span>`;
+            
+            return `<div class="bubble ${m.u===currentUser?'bubble-out':'bubble-in'}">${content}</div>`;
+        }).join('');
+        
         area.scrollTop = area.scrollHeight;
     }
 
@@ -389,14 +406,38 @@
         document.getElementById('p-input').value="";
     }
 
-    function uploadFilePrivate(el) {
-        const file = el.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            savePrivateMsg({u: currentUser, t: e.target.result, type: 'file', name: file.name});
+    // Función para disparar cámara o galería en el chat
+    function triggerPrivateCapture(mode) {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        if(mode === 'camera') input.capture = 'camera';
+        
+        input.onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                savePrivateMsg({u: currentUser, t: ev.target.result, type: 'image'});
+            };
+            reader.readAsDataURL(e.target.files[0]);
         };
-        reader.readAsDataURL(file);
+        input.click();
+    }
+
+    // Función para subir cualquier documento (PDF, etc)
+    function triggerPrivateFile() {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.pdf,.doc,.docx,.xls,.xlsx,.txt';
+        
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                savePrivateMsg({u: currentUser, t: ev.target.result, type: 'file', name: file.name});
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
     }
 
     function savePrivateMsg(msgObj) {
@@ -412,7 +453,7 @@
     function addSticker(s) { savePrivateMsg({u: currentUser, t: s, type: 'sticker'}); }
 
     function clearPrivateChat() {
-        if(!confirm("¿Borrar historial?")) return;
+        if(!confirm("¿Borrar historial de este chat?")) return;
         let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
         let chatKey = [currentUser, currentChatPartner].sort().join('_');
         delete all[chatKey];
@@ -420,7 +461,7 @@
         loadPrivateMsgs();
     }
 
-    // --- INTERFAZ ---
+    // --- INTERFAZ GENERAL ---
     function tab(id, el) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
         document.getElementById('view-'+id).classList.add('view-active');
@@ -446,13 +487,29 @@
     }
 
     function deletePost(id) {
+        if(!confirm("¿Deseas eliminar tu anuncio?")) return;
         let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
         localStorage.setItem('empire_posts', JSON.stringify(posts.filter(p => p.id !== id)));
         renderFeed();
     }
 
-    function exitStudio() { document.getElementById('main-hub').style.display='block'; document.getElementById('upload-studio').style.display='none'; capturedFiles=[null,null,null,null]; for(let i=0;i<4;i++){document.getElementById(`img-${i}`).style.display='none'; document.getElementById(`info-${i}`).style.display='block';}}
-    function filterByCat(c, el) { currentFilter=c; document.querySelectorAll('.filter-chip').forEach(x=>x.classList.remove('filter-active')); el.classList.add('filter-active'); renderFeed(); }
+    function exitStudio() { 
+        document.getElementById('main-hub').style.display='block'; 
+        document.getElementById('upload-studio').style.display='none'; 
+        capturedFiles=[null,null,null,null]; 
+        for(let i=0;i<4;i++){
+            document.getElementById(`img-${i}`).style.display='none'; 
+            document.getElementById(`info-${i}`).style.display='block';
+        }
+    }
+
+    function filterByCat(c, el) { 
+        currentFilter=c; 
+        document.querySelectorAll('.filter-chip').forEach(x=>x.classList.remove('filter-active')); 
+        el.classList.add('filter-active'); 
+        renderFeed(); 
+    }
+
     function closePrivate() { document.getElementById('private-modal').style.display='none'; }
 
     window.onload = init;
