@@ -2,442 +2,352 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rantiy | Sistema Integrado del Imperio</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rantiy Imperio - Private Network 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-
     <style>
         :root {
-            /* Paleta Huanta: Colores vivos y ligeros, evitando el negro puro */
-            --huanta-green: #2ecc71;
-            --huanta-yellow: #f1c40f;
-            --huanta-blue: #3498db;
-            --huanta-orange: #e67e22;
-            --bg-light: #f8fafc;
-            --card-white: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --accent-soft: rgba(46, 204, 113, 0.1);
-            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-            --radius-pro: 24px;
+            --verde: #22c55e; --verde-glow: #dcfce7;
+            --naranja: #f97316; --oscuro: #0f172a;
+            --glass: rgba(255, 255, 255, 0.96);
+            --huanta: #22c55e; --huamanga: #3b82f6; --vraem: #f59e0b;
+            --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
-        /* --- Estilos Base --- */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { 
-            margin: 0; padding: 0; background: var(--bg-light); color: var(--text-main); 
-            font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
+        body { background: #f8fafc; margin: 0; padding-bottom: 140px; overflow-x: hidden; color: var(--oscuro); }
 
-        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none; }
-
-        /* --- Contenedor Principal --- */
-        .imperio-app {
-            max-width: 500px; margin: 0 auto; min-height: 100vh;
-            display: flex; flex-direction: column; position: relative; z-index: 10;
-        }
-
-        /* --- Header de Lujo --- */
-        header {
-            padding: 25px; background: rgba(255,255,255,0.85); backdrop-filter: blur(15px);
+        /* --- LOGO RR 3D MASTER --- */
+        .header {
+            background: var(--glass); backdrop-filter: blur(25px); padding: 18px 25px;
             display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0;
+            position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-        .logo-box { display: flex; align-items: center; gap: 12px; }
-        .logo-icon {
-            width: 45px; height: 45px; background: linear-gradient(135deg, var(--huanta-green), var(--huanta-blue));
-            border-radius: 14px; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 800; font-size: 20px; box-shadow: 0 8px 15px rgba(46, 204, 113, 0.3);
+        .logo-rr {
+            width: 62px; height: 62px; background: linear-gradient(135deg, var(--verde), #15803d);
+            border-radius: 22px; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 900; font-size: 28px; cursor: pointer;
+            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
+            animation: rotate3d 7s infinite ease-in-out; transform-style: preserve-3d;
         }
-        .logo-text h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); }
-        .logo-text span { font-size: 10px; font-weight: 700; color: var(--huanta-green); text-transform: uppercase; }
-
-        /* --- Barra de Progreso del Imperio (Para tus Videos) --- */
-        .empire-stats {
-            padding: 15px 20px; background: var(--card-white); margin: 15px 20px;
-            border-radius: 20px; box-shadow: var(--shadow-soft); display: flex; gap: 15px; overflow-x: auto;
-        }
-        .stat-item { min-width: 100px; text-align: center; }
-        .stat-val { display: block; font-size: 16px; font-weight: 800; color: var(--huanta-green); }
-        .stat-lbl { font-size: 9px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; }
-
-        /* --- Navegación de Ciudades --- */
-        .city-scroller {
-            display: flex; gap: 10px; padding: 0 20px 15px; overflow-x: auto; scrollbar-width: none;
-        }
-        .city-scroller::-webkit-scrollbar { display: none; }
-        .city-tab {
-            padding: 12px 22px; border-radius: 30px; background: var(--card-white);
-            border: 2px solid transparent; white-space: nowrap; cursor: pointer;
-            font-size: 13px; font-weight: 700; color: var(--text-sub); transition: 0.3s;
-        }
-        .city-tab.active {
-            border-color: var(--huanta-green); background: var(--accent-soft); color: var(--huanta-green);
+        @keyframes rotate3d { 
+            0%, 100% { transform: perspective(500px) rotateY(0deg); }
+            50% { transform: perspective(500px) rotateY(30deg) scale(1.05); } 
         }
 
-        /* --- Vistas SPA --- */
-        .view { padding: 0 20px 120px; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
-
-        /* --- Vitrina Rantikuy --- */
-        .rantikuy-card {
-            background: var(--card-white); border-radius: var(--radius-pro); overflow: hidden;
-            margin-bottom: 25px; box-shadow: var(--shadow-soft); border: 1px solid #edf2f7;
-            position: relative;
+        /* --- NAVEGACIÓN DE CIUDADES --- */
+        .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
+        .city-card {
+            background: white; min-width: 140px; padding: 22px; border-radius: 32px;
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; transition: 0.4s;
         }
-        .card-media { height: 320px; width: 100%; position: relative; background: #f1f5f9; }
-        .card-media img { width: 100%; height: 100%; object-fit: cover; }
+        .active-huanta { border-color: var(--huanta); background: #f0fdf4; transform: translateY(-5px); }
+        .active-huamanga { border-color: var(--huamanga); background: #eff6ff; transform: translateY(-5px); }
+        .active-vraem { border-color: var(--vraem); background: #fffbeb; transform: translateY(-5px); }
+
+        /* --- VISTAS DINÁMICAS --- */
+        .view { display: none; padding: 0 20px; animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        .view-active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ESTUDIO DE PUBLICACIÓN RR --- */
+        .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; position: relative; overflow: hidden; }
+        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 35px; position: relative; z-index: 5; }
+        .cat-btn { background: rgba(255,255,255,0.07); padding: 25px 10px; border-radius: 30px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        .cat-btn:active { transform: scale(0.9); background: var(--verde); }
+
+        #upload-studio { background: white; border-radius: 45px; padding: 35px; margin-top: 25px; display: none; box-shadow: var(--premium-shadow); }
+        .drop-zone { width: 100%; height: 220px; border: 3px dashed #cbd5e1; border-radius: 35px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 25px; cursor: pointer; background: #f8fafc; overflow: hidden; }
+        .drop-zone img { width: 100%; height: 100%; object-fit: cover; }
         
-        .badge-sticker {
-            position: absolute; top: 15px; left: 15px; padding: 6px 14px;
-            border-radius: 10px; font-weight: 800; font-size: 10px; color: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); z-index: 5;
-        }
-        .s-oferta { background: #e74c3c; }
-        .s-verificado { background: var(--huanta-green); }
-        .s-premium { background: var(--huanta-yellow); color: #000; }
+        .rr-field { width: 100%; padding: 20px; border-radius: 22px; border: 2px solid #f1f5f9; font-weight: 700; font-size: 16px; margin-bottom: 20px; transition: 0.3s; }
+        .rr-field:focus { border-color: var(--verde); background: var(--verde-glow); }
 
-        .card-body { padding: 20px; }
-        .card-price { font-size: 26px; font-weight: 800; color: var(--huanta-green); }
-        .card-title { font-size: 18px; font-weight: 700; margin: 5px 0 15px; }
-        
-        /* --- Rantikuy Studio --- */
-        .studio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .studio-btn {
-            background: var(--card-white); padding: 25px 15px; border-radius: 20px;
-            text-align: center; border: 1px solid #e2e8f0; cursor: pointer;
-        }
-        .studio-btn:hover { border-color: var(--huanta-green); background: var(--accent-soft); }
-        .studio-btn i { font-size: 30px; display: block; margin-bottom: 10px; }
+        /* --- SISTEMA DE CHATS --- */
+        .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; border: 1px solid rgba(0,0,0,0.03); }
+        .chat-nav { display: flex; background: #f1f5f9; padding: 10px; border-radius: 25px; margin-bottom: 15px; }
+        .chat-tab { flex: 1; padding: 12px; text-align: center; font-weight: 800; font-size: 12px; border-radius: 18px; cursor: pointer; transition: 0.3s; }
+        .tab-active { background: white; color: var(--verde); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        /* --- Editor Modal --- */
-        #editor-overlay {
-            position: fixed; inset: 0; background: rgba(255,255,255,0.95);
-            z-index: 2000; display: none; flex-direction: column; padding: 30px;
-        }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 8px; color: var(--text-sub); }
-        .form-control {
-            width: 100%; padding: 18px; border-radius: 15px; border: 1px solid #e2e8f0;
-            background: #f1f5f9; font-size: 15px; font-weight: 600;
-        }
+        .chat-header { padding: 22px; color: white; font-weight: 900; display: flex; justify-content: space-between; align-items: center; }
+        .msg-area { flex: 1; padding: 25px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
+        .bubble { padding: 15px 20px; border-radius: 25px; max-width: 85%; font-size: 14px; font-weight: 600; position: relative; animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
 
-        /* --- Chat Imperial --- */
-        .chat-container {
-            height: calc(100vh - 250px); display: flex; flex-direction: column;
-            background: var(--card-white); border-radius: var(--radius-pro); overflow: hidden;
-            border: 1px solid #e2e8f0;
-        }
-        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .bubble { padding: 14px 18px; border-radius: 18px; max-width: 80%; font-size: 14px; font-weight: 500; }
-        .me { background: var(--huanta-green); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .them { background: #f1f5f9; color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; }
+        #private-chat-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; animation: slideInRight 0.4s ease; }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
-        /* --- Barra de Navegación --- */
-        .nav-bar {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 90%; background: white; padding: 12px; border-radius: 35px;
-            display: flex; justify-content: space-around; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            border: 1px solid #e2e8f0; z-index: 1500;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; color: var(--text-sub); }
-        .nav-item.active { color: var(--huanta-green); }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
-        .nav-item label { font-size: 9px; font-weight: 800; text-transform: uppercase; }
-
-        .hidden { display: none !important; }
+        /* --- NAV ISLAND MASTER --- */
+        .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 25px; z-index: 3000; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        .nav-btn { color: #64748b; text-align: center; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .nav-btn.active { color: var(--verde); transform: translateY(-12px); }
     </style>
 </head>
-<body onload="initImperio()">
+<body>
 
-    <canvas id="bg-canvas"></canvas>
-
-    <div class="imperio-app">
-        <header>
-            <div class="logo-box">
-                <div class="logo-icon">R</div>
-                <div class="logo-text">
-                    <h1>Rantiy Imperio</h1>
-                    <span id="zone-label">Huanta Conectado</span>
-                </div>
-            </div>
-            <div id="gps-status" style="font-size: 20px;">📍</div>
-        </header>
-
-        <div class="empire-stats">
-            <div class="stat-item"><span class="stat-val" id="st-sales">0</span><span class="stat-lbl">Ventas</span></div>
-            <div class="stat-item"><span class="stat-val" id="st-products">0</span><span class="stat-lbl">Activos</span></div>
-            <div class="stat-item"><span class="stat-val" id="st-chats">0</span><span class="stat-lbl">Mensajes</span></div>
-            <div class="stat-item"><span class="stat-val">S/ 0</span><span class="stat-lbl">Ganancia</span></div>
+<header class="header">
+    <div style="display:flex; align-items:center; gap:18px;">
+        <div class="logo-rr" onclick="window.location.href='admin.html'">RR</div>
+        <div>
+            <div style="font-weight: 900; font-size: 24px; letter-spacing: -1px;">Rantiy Imperio</div>
+            <div id="status-line" style="font-size: 10px; color: var(--verde); font-weight: 800; letter-spacing: 1px;">SISTEMA EN LÍNEA</div>
         </div>
+    </div>
+    <div id="private-alert" style="background: var(--verde-glow); padding: 12px; border-radius: 18px; font-size: 22px; cursor:pointer;" onclick="tab('chat', document.getElementById('chat-nav-btn'))">📩</div>
+</header>
 
-        <div class="city-scroller">
-            <div class="city-tab active" onclick="setCity('Huanta', this)">⛰️ Huanta</div>
-            <div class="city-tab" onclick="setCity('Huamanga', this)">⛪ Huamanga</div>
-            <div class="city-tab" onclick="setCity('VRAEM', this)">🌿 VRAEM</div>
+<div class="city-bar">
+    <div class="city-card active-huanta" id="city-huanta" onclick="updateCity('Huanta')"><span>⛰️</span><label>HUANTA</label></div>
+    <div class="city-card" id="city-huamanga" onclick="updateCity('Huamanga')"><span>⛪</span><label>HUAMANGA</label></div>
+    <div class="city-card" id="city-vraem" onclick="updateCity('VRAEM')"><span>🌿</span><label>VRAEM</label></div>
+</div>
+
+<main id="view-home" class="view view-active">
+    <h2 style="font-weight: 900; font-size: 28px; margin-bottom: 25px;">Vitrina de <span id="loc-name" style="color:var(--verde)">Huanta</span></h2>
+    <div id="feed-container" style="display: grid; gap: 25px;">
+        <div id="placeholder-msg" style="text-align:center; padding:60px; background:white; border-radius:50px; color:#94a3b8;">
+            <span style="font-size:60px;">💎</span>
+            <p style="font-weight:800;">Explora las joyas del Imperio.<br>Aún no hay publicaciones aquí.</p>
         </div>
+    </div>
+</main>
 
-        <main id="view-vitrina" class="view">
-            <h2 style="font-weight: 800; font-size: 22px; margin-bottom: 20px;">Oportunidades de Hoy</h2>
-            <div id="feed-items"></div>
-        </main>
-
-        <main id="view-studio" class="view hidden">
-            <h2 style="font-weight: 800; font-size: 22px;">Rantikuy Studio</h2>
-            <p style="color: var(--text-sub); font-size: 14px; margin-bottom: 20px;">Crea contenido para tu imperio digital.</p>
-            
-            <div class="studio-grid">
-                <div class="studio-btn" onclick="openEditor('Venta', 's-oferta')"><i>💰</i><b>VENTA</b></div>
-                <div class="studio-btn" onclick="openEditor('Servicio', 's-verificado')"><i>🛠️</i><b>SERVICIO</b></div>
-                <div class="studio-btn" onclick="openEditor('Especial', 's-premium')"><i>💎</i><b>PREMIUM</b></div>
-                <div class="studio-btn" onclick="alert('Próximamente: Video Reels del Imperio')"><i>🎬</i><b>VIDEO</b></div>
-            </div>
-        </main>
-
-        <main id="view-chat" class="view hidden">
-            <div class="chat-container">
-                <div id="chat-msgs" class="chat-messages"></div>
-                <div style="padding: 15px; display: flex; gap: 10px; border-top: 1px solid #eee;">
-                    <input type="text" id="chat-input" class="form-control" placeholder="Escribe al Imperio...">
-                    <button onclick="sendMsg()" style="background: var(--huanta-green); color: white; border: none; width: 55px; height: 55px; border-radius: 15px; cursor: pointer;">✈️</button>
-                </div>
-            </div>
-        </main>
-
-        <nav class="nav-bar">
-            <div class="nav-item active" onclick="showView('vitrina', this)"><i>🏠</i><label>Vitrina</label></div>
-            <div class="nav-item" onclick="showView('studio', this)"><i>📸</i><label>Studio</label></div>
-            <div class="nav-item" onclick="showView('chat', this)"><i>💬</i><label>Chat</label></div>
-        </nav>
+<section id="view-camera" class="view">
+    <div class="camera-hub" id="main-hub">
+        <h2 style="font-weight:900; font-size:26px;">ESTUDIO DE CREACIÓN</h2>
+        <p style="opacity:0.7; font-size:14px;">Define el destino de tu nueva publicación</p>
+        <div class="category-grid">
+            <div class="cat-btn" onclick="startStudio('Venta', '🛍️')"><span>💰</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">VENTA</label></div>
+            <div class="cat-btn" onclick="startStudio('Empleo', '💼')"><span>👷</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">EMPLEO</label></div>
+            <div class="cat-btn" onclick="startStudio('Turismo', '⛰️')"><span>📸</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">TURISMO</label></div>
+            <div class="cat-btn" onclick="startStudio('Comida', '🍲')"><span>🥘</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">COMIDA</label></div>
+            <div class="cat-btn" onclick="startStudio('Taxi', '🚗')"><span>🚕</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">TAXI</label></div>
+            <div class="cat-btn" onclick="startStudio('Servicio', '⚡')"><span>🔧</span><label style="display:block; font-size:10px; font-weight:900; margin-top:8px;">SERVICIO</label></div>
+        </div>
     </div>
 
-    <div id="editor-overlay">
-        <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
-            <h2 id="editor-title" style="font-weight: 800;">Nuevo Activo</h2>
-            <button onclick="closeEditor()" style="border:none; background:none; font-size:24px;">✕</button>
+    <div id="upload-studio">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+            <h3 id="studio-tag" style="margin:0; font-weight:900; font-size:22px;">Nueva Publicación</h3>
+            <button onclick="exitStudio()" style="background:#f1f5f9; border:none; width:40px; height:40px; border-radius:50%; font-weight:900;">✕</button>
         </div>
-
-        <div class="form-group">
-            <label>IMÁGENES DEL PRODUCTO</label>
-            <div id="img-prev-row" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px;">
-                <div onclick="document.getElementById('file-in').click()" style="min-width:100px; height:100px; background:#f1f5f9; border:2px dashed #cbd5e1; border-radius:15px; display:flex; align-items:center; justify-content:center; cursor:pointer;">➕</div>
-            </div>
-            <input type="file" id="file-in" class="hidden" multiple accept="image/*" onchange="previewImages(this)">
+        <div class="drop-zone" onclick="capture('cam')">
+            <div id="drop-info" style="text-align:center;"><span style="font-size:40px;">📸</span><br><b style="font-size:12px;">TOMAR FOTO AHORA</b></div>
+            <img id="render-img" style="display:none;">
         </div>
-
-        <div class="form-group">
-            <label>NOMBRE DEL ACTIVO</label>
-            <input type="text" id="p-name" class="form-control" placeholder="Ej: Café Orgánico de Huanta">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:25px;">
+            <button onclick="capture('gal')" style="padding:18px; border-radius:20px; border:none; background:#f1f5f9; font-weight:800; font-size:12px;">🖼️ GALERÍA</button>
+            <button onclick="capture('cam')" style="padding:18px; border-radius:20px; border:none; background:#f1f5f9; font-weight:800; font-size:12px;">📷 CÁMARA</button>
         </div>
-
-        <div class="form-group">
-            <label>PRECIO DE MERCADO (S/)</label>
-            <input type="number" id="p-price" class="form-control" placeholder="0.00">
-        </div>
-
-        <button onclick="saveActive()" style="width:100%; padding:22px; background:var(--huanta-green); color:white; border:none; border-radius:18px; font-weight:800; font-size:16px; margin-top:auto;">LANZAR AL IMPERIO 🚀</button>
+        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué estás ofreciendo?">
+        <input type="number" id="in-price" class="rr-field" placeholder="Precio en Soles (S/)">
+        <button onclick="uploadToEmpire()" style="width:100%; padding:22px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900; font-size:18px; box-shadow:0 15px 30px rgba(34,197,94,0.3);">PUBLICAR EN EL IMPERIO 🚀</button>
     </div>
+</section>
+
+<section id="view-chat" class="view">
+    <div class="chat-nav">
+        <div class="chat-tab tab-active" onclick="toggleChatMode('global', this)">SALA REGIONAL</div>
+        <div class="chat-tab" onclick="toggleChatMode('private', this)">CHATS PRIVADOS</div>
+    </div>
+
+    <div id="global-chat-ui" class="chat-box-ui">
+        <div class="chat-header" id="chat-color-head" style="background:var(--huanta);">
+            <span>SALA: <span id="active-chat-name">HUANTA</span></span>
+        </div>
+        <div class="msg-area" id="global-msgs">
+            <div class="bubble bubble-in"><b>Imperio RR:</b> Bienvenido a la sala de Huanta.</div>
+        </div>
+        <div style="padding:20px; display:flex; gap:12px; background:white; border-top:1px solid #eee;">
+            <input type="text" id="global-input" class="rr-field" style="margin:0; flex:1;" placeholder="Mensaje público...">
+            <button onclick="sendGlobal()" style="background:var(--verde); color:white; border:none; width:55px; height:55px; border-radius:20px;">✈️</button>
+        </div>
+    </div>
+
+    <div id="private-list-ui" style="display:none;">
+        <div style="background:white; border-radius:35px; padding:25px; box-shadow:var(--premium-shadow);">
+            <h4 style="margin:0 0 20px 0; font-weight:900;">Bandeja de Negocios</h4>
+            <div id="private-contacts"><p style="text-align:center; color:#94a3b8; padding:20px;">Sin chats activos.</p></div>
+        </div>
+    </div>
+</section>
+
+<div id="private-chat-modal">
+    <div class="chat-header" style="background:var(--oscuro); padding:25px;">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <button onclick="closePrivate()" style="background:none; border:none; color:white; font-size:24px;">⬅</button>
+            <div>
+                <div id="p-chat-user" style="font-weight:900; font-size:18px; color:white;">Vendedor RR</div>
+                <div id="p-chat-product" style="font-size:10px; color:var(--verde); font-weight:800;">INTERÉS: PRODUCTO</div>
+            </div>
+        </div>
+    </div>
+    <div class="msg-area" id="private-msgs" style="background:#f1f5f9;"></div>
+    <div style="padding:25px; display:flex; gap:12px; background:white; border-top:1px solid #eee;">
+        <input type="text" id="private-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe...">
+        <button onclick="sendPrivate()" style="background:var(--verde); color:white; border:none; width:60px; height:60px; border-radius:22px;">✈️</button>
+    </div>
+</div>
+
+<nav class="nav-island">
+    <div class="nav-btn active" onclick="tab('home', this)"><span>🏠</span><br>VITRINA</div>
+    <div class="nav-btn" onclick="tab('camera', this)"><span>📸</span><br>SUBIR</div>
+    <div class="nav-btn" id="chat-nav-btn" onclick="tab('chat', this)"><span>💬</span><br>CHATS</div>
+</nav>
 
 <script>
-    // --- NÚCLEO DE DATOS (THE EMPIRE STATE) ---
-    let state = {
-        city: 'Huanta',
-        assets: [],
-        messages: [],
-        stats: { sales: 0, products: 0, chats: 0 },
-        lastReset: Date.now()
-    };
+    let activeLoc = "Huanta", activeCat = "", capturedFile = "", privateChats = [];
+    let userInHuanta = false;
 
-    let tempImgs = [];
-    let currentSticker = '';
+    // Coordenadas de Huanta (Centro)
+    const HUANTA_COORDS = { lat: -12.9424, lon: -74.2475 };
 
-    // --- MOTOR INICIAL ---
-    function initImperio() {
-        init3D();
-        loadState();
-        renderVitrina();
-        renderMessages();
-        updateStatsUI();
-        
-        // Log para tus videos
-        console.log("SISTEMA RANTIY: Iniciando motor de crecimiento del imperio...");
-    }
-
-    function loadState() {
-        const data = localStorage.getItem('rantiy_empire_v4');
-        if(data) {
-            state = JSON.parse(data);
-            // Reset de 30 horas
-            if(Date.now() - state.lastReset > 30*60*60*1000) {
-                state.messages = [];
-                state.lastReset = Date.now();
-                saveState();
+    // Función para verificar ubicación al iniciar
+    function checkEmpireGPS() {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            // Cálculo de distancia simple (aprox 20km de rango)
+            const dist = Math.sqrt(Math.pow(lat - HUANTA_COORDS.lat, 2) + Math.pow(lon - HUANTA_COORDS.lon, 2));
+            if(dist < 0.18) { // Rango para el área de Huanta
+                userInHuanta = true;
+                console.log("Acceso de Ciudadano Verificado");
             }
-        }
-    }
-
-    function saveState() {
-        localStorage.setItem('rantiy_empire_v4', JSON.stringify(state));
-        updateStatsUI();
-    }
-
-    // --- MOTOR 3D ---
-    function init3D() {
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-        const geo = new THREE.SphereGeometry(15, 32, 32);
-        const mat = new THREE.MeshBasicMaterial({ color: 0x2ecc71, wireframe: true, transparent: true, opacity: 0.03 });
-        const globe = new THREE.Mesh(geo, mat);
-        scene.add(globe);
-
-        camera.position.z = 20;
-
-        function anim() {
-            requestAnimationFrame(anim);
-            globe.rotation.y += 0.001;
-            globe.rotation.x += 0.001;
-            renderer.render(scene, camera);
-        }
-        anim();
-    }
-
-    // --- LÓGICA DE CIUDADES ---
-    function setCity(city, el) {
-        state.city = city;
-        document.querySelectorAll('.city-tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById('zone-label').innerText = `${city} Conectado`;
-        renderVitrina();
-        renderMessages();
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.8 }, colors: ['#2ecc71', '#3498db'] });
-    }
-
-    function showView(viewId, el) {
-        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-        document.getElementById('view-' + viewId).classList.remove('hidden');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    // --- RANTIKUY STUDIO LOGIC ---
-    function openEditor(type, sticker) {
-        currentSticker = sticker;
-        document.getElementById('editor-title').innerText = "Rantikuy: " + type;
-        document.getElementById('editor-overlay').style.display = 'flex';
-    }
-
-    function closeEditor() {
-        document.getElementById('editor-overlay').style.display = 'none';
-        tempImgs = [];
-        document.getElementById('img-prev-row').innerHTML = `<div onclick="document.getElementById('file-in').click()" style="min-width:100px; height:100px; background:#f1f5f9; border:2px dashed #cbd5e1; border-radius:15px; display:flex; align-items:center; justify-content:center; cursor:pointer;">➕</div>`;
-    }
-
-    function previewImages(input) {
-        Array.from(input.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                tempImgs.push(e.target.result);
-                const div = document.createElement('img');
-                div.src = e.target.result;
-                div.style.cssText = "min-width:100px; height:100px; object-fit:cover; border-radius:15px;";
-                document.getElementById('img-prev-row').appendChild(div);
-            };
-            reader.readAsDataURL(file);
         });
     }
+    checkEmpireGPS();
 
-    function saveActive() {
-        const name = document.getElementById('p-name').value;
-        const price = document.getElementById('p-price').value;
-        
-        if(!name || !price || tempImgs.length === 0) return alert("El Imperio exige datos completos (Nombre, Precio y Fotos).");
-
-        const newAsset = {
-            id: Date.now(),
-            name, price,
-            imgs: [...tempImgs],
-            sticker: currentSticker,
-            city: state.city,
-            timestamp: new Date().toLocaleTimeString()
-        };
-
-        state.assets.unshift(newAsset);
-        state.stats.products++;
-        saveState();
-        renderVitrina();
-        closeEditor();
-        showView('vitrina', document.querySelectorAll('.nav-item')[0]);
-        confetti({ particleCount: 150, scalar: 1.2, shapes: ['star'] });
+    function tab(id, el) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
+        document.getElementById('view-' + id).classList.add('view-active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        if(id === 'camera') exitStudio();
+        window.scrollTo(0,0);
     }
 
-    // --- RENDERIZADO ---
-    function renderVitrina() {
-        const container = document.getElementById('feed-items');
-        const items = state.assets.filter(a => a.city === state.city);
-        
-        if(items.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:50px; opacity:0.3;"><h3>No hay activos en ${state.city}</h3></div>`;
+    function updateCity(city) {
+        // REGLA DE BLOQUEO: Solo Huanta si el GPS no confirma ubicación
+        if(city !== "Huanta" && !userInHuanta) {
+            alert("🔒 ACCESO BLOQUEADO: Tu GPS indica que no estás en esta zona. Solo puedes ver Huanta.");
             return;
         }
 
-        container.innerHTML = items.map(a => `
-            <div class="rantikuy-card">
-                <div class="badge-sticker ${a.sticker}">${a.sticker.split('-')[1].toUpperCase()}</div>
-                <div class="card-media">
-                    <img src="${a.imgs[0]}">
+        activeLoc = city;
+        document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-huanta', 'active-huamanga', 'active-vraem'));
+        document.getElementById('city-' + city.toLowerCase()).classList.add('active-' + city.toLowerCase());
+        document.getElementById('loc-name').innerText = city;
+        document.getElementById('active-chat-name').innerText = city.toUpperCase();
+        
+        // Limpiar vitrina al cambiar para que no se mezcle
+        document.getElementById('feed-container').innerHTML = `
+            <div id="placeholder-msg" style="text-align:center; padding:60px; background:white; border-radius:50px; color:#94a3b8;">
+                <span style="font-size:60px;">💎</span>
+                <p style="font-weight:800;">Vitrina de ${city}<br>Cargando productos locales...</p>
+            </div>`;
+
+        const colors = { Huanta: '#22c55e', Huamanga: '#3b82f6', VRAEM: '#f59e0b' };
+        document.getElementById('chat-color-head').style.backgroundColor = colors[city];
+        document.getElementById('loc-name').style.color = colors[city];
+        confetti({ particleCount: 70, colors: [colors[city]] });
+    }
+
+    function startStudio(cat, emoji) {
+        activeCat = cat;
+        document.getElementById('main-hub').style.display = 'none';
+        document.getElementById('upload-studio').style.display = 'block';
+        document.getElementById('studio-tag').innerText = emoji + " " + cat;
+    }
+
+    function exitStudio() {
+        document.getElementById('main-hub').style.display = 'block';
+        document.getElementById('upload-studio').style.display = 'none';
+    }
+
+    function capture(mode) {
+        let input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+        if(mode === 'cam') input.capture = 'camera';
+        input.onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                capturedFile = ev.target.result;
+                document.getElementById('render-img').src = capturedFile;
+                document.getElementById('render-img').style.display = 'block';
+                document.getElementById('drop-info').style.display = 'none';
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        };
+        input.click();
+    }
+
+    function uploadToEmpire() {
+        const title = document.getElementById('in-title').value;
+        const price = document.getElementById('in-price').value;
+        if(!title || !capturedFile) return alert("¡Sube foto y título!");
+        const container = document.getElementById('feed-container');
+        if(container.innerHTML.includes('💎')) container.innerHTML = '';
+        container.innerHTML = `
+            <div class="post-card" style="background:white; border-radius:45px; padding:18px; box-shadow:var(--premium-shadow); margin-bottom:20px;">
+                <img src="${capturedFile}" style="width:100%; height:280px; border-radius:35px; object-fit:cover;">
+                <div style="padding:20px 10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="margin:0; font-weight:900;">${title}</h3>
+                        <span style="color:var(--verde); font-weight:900;">S/ ${price}</span>
+                    </div>
+                    <div style="margin-top:12px; font-size:11px; font-weight:800; color:var(--naranja);">📍 ${activeLoc.toUpperCase()}</div>
+                    <button onclick="openPrivateChat('${title}')" style="width:100%; margin-top:20px; padding:18px; border-radius:22px; background:var(--oscuro); color:white; font-weight:800; border:none; cursor:pointer;">CHATEAR CON VENDEDOR</button>
                 </div>
-                <div class="card-body">
-                    <div class="card-price">S/ ${a.price}</div>
-                    <div class="card-title">${a.name}</div>
-                    <button onclick="startNegotiation('${a.name}')" style="width:100%; padding:18px; border-radius:15px; border:none; background:var(--huanta-green); color:white; font-weight:800; cursor:pointer;">INTERESADO</button>
-                </div>
-            </div>
-        `).join('');
+            </div>` + container.innerHTML;
+        confetti({ particleCount: 150 });
+        tab('home', document.querySelector('.nav-btn'));
     }
 
-    function sendMsg() {
-        const input = document.getElementById('chat-input');
-        if(!input.value) return;
-
-        state.messages.push({
-            text: input.value,
-            city: state.city,
-            me: true,
-            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-        });
-
-        input.value = "";
-        state.stats.chats++;
-        saveState();
-        renderMessages();
+    function toggleChatMode(mode, el) {
+        document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('tab-active'));
+        el.classList.add('tab-active'); 
+        if(mode === 'global') {
+            document.getElementById('global-chat-ui').style.display = 'flex';
+            document.getElementById('private-list-ui').style.display = 'none';
+        } else {
+            document.getElementById('global-chat-ui').style.display = 'none';
+            document.getElementById('private-list-ui').style.display = 'block';
+            renderPrivateList();
+        }
     }
 
-    function renderMessages() {
-        const box = document.getElementById('chat-msgs');
-        const msgs = state.messages.filter(m => m.city === state.city);
-        box.innerHTML = msgs.map(m => `
-            <div class="bubble ${m.me ? 'me' : 'them'}">${m.text}<br><small style="font-size:8px; opacity:0.6;">${m.time}</small></div>
-        `).join('');
-        box.scrollTop = box.scrollHeight;
+    function sendGlobal() {
+        const msg = document.getElementById('global-input').value;
+        if(!msg) return;
+        document.getElementById('global-msgs').innerHTML += `<div class="bubble bubble-out"><b>Tú:</b> ${msg}</div>`;
+        document.getElementById('global-input').value = "";
     }
 
-    function startNegotiation(name) {
-        showView('chat', document.querySelectorAll('.nav-item')[2]);
-        document.getElementById('chat-input').value = `Hola, me interesa el activo: ${name}`;
+    function openPrivateChat(title) {
+        document.getElementById('p-chat-product').innerText = "INTERÉS: " + title.toUpperCase();
+        document.getElementById('private-chat-modal').style.display = 'flex';
+        if(!privateChats.includes(title)) privateChats.push(title);
     }
 
-    function updateStatsUI() {
-        document.getElementById('st-sales').innerText = state.stats.sales;
-        document.getElementById('st-products').innerText = state.assets.length;
-        document.getElementById('st-chats').innerText = state.stats.chats;
+    function closePrivate() { document.getElementById('private-chat-modal').style.display = 'none'; }
+
+    function sendPrivate() {
+        const msg = document.getElementById('private-input').value;
+        if(!msg) return;
+        document.getElementById('private-msgs').innerHTML += `<div class="bubble bubble-out">${msg}</div>`;
+        document.getElementById('private-input').value = "";
     }
 
+    function renderPrivateList() {
+        const list = document.getElementById('private-contacts');
+        if(privateChats.length === 0) return;
+        list.innerHTML = privateChats.map(chat => `
+            <div onclick="openPrivateChat('${chat}')" style="padding:15px; background:#f8fafc; border-radius:20px; margin-bottom:10px; cursor:pointer;">
+                <b>Vendedor de: ${chat}</b>
+            </div>`).join('');
+    }
 </script>
 </body>
 </html>
