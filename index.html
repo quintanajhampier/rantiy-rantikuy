@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rantiy Imperio - Private Network 2026</title>
+    <title>Rantiy y Rantikuy</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
@@ -18,6 +18,11 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
         body { background: #f8fafc; margin: 0; padding-bottom: 140px; overflow-x: hidden; color: var(--oscuro); }
 
+        /* --- BLOQUEO GPS INICIAL --- */
+        #gps-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+        .gps-loader { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--verde); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* --- HEADER --- */
         .header {
             background: var(--glass); backdrop-filter: blur(25px); padding: 18px 25px;
@@ -27,7 +32,7 @@
         .logo-rr {
             width: 62px; height: 62px; background: linear-gradient(135deg, var(--verde), #15803d);
             border-radius: 22px; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 900; font-size: 28px; cursor: pointer;
+            color: white; font-weight: 900; font-size: 24px; cursor: pointer;
             box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
             animation: rotate3d 7s infinite ease-in-out; transform-style: preserve-3d;
         }
@@ -45,7 +50,8 @@
 
         /* --- CIUDADES --- */
         .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
-        .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; }
+        .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.5; pointer-events: none; }
+        .active-city { opacity: 1; pointer-events: auto; border-width: 3px; }
         .active-huanta { border-color: var(--huanta); background: #f0fdf4; }
         .active-huamanga { border-color: var(--huamanga); background: #eff6ff; }
         .active-vraem { border-color: var(--vraem); background: #fffbeb; }
@@ -76,7 +82,7 @@
         /* --- SISTEMA DE CHATS --- */
         .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; }
         .msg-area { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; }
+        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
         .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .sticker { font-size: 50px; display: block; }
@@ -95,12 +101,20 @@
 </head>
 <body>
 
+<div id="gps-screen">
+    <div class="logo-rr" style="width:100px; height:100px; font-size:40px; margin-bottom:20px;">R&R</div>
+    <h1 style="font-weight:900; margin-bottom:5px;">Rantiy y Rantikuy</h1>
+    <p style="opacity:0.6; margin-bottom:30px;">Detectando tu ubicación real en el mapa...</p>
+    <div class="gps-loader" id="gps-loader"></div>
+    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--verde);">Iniciando satélites...</p>
+</div>
+
 <header class="header">
     <div style="display:flex; align-items:center; gap:18px;">
-        <div class="logo-rr" onclick="window.location.href='admin.html'">RR</div>
+        <div class="logo-rr" onclick="window.location.href='admin.html'">R&R</div>
         <div>
-            <div style="font-weight: 900; font-size: 20px;">Rantiy Imperio</div>
-            <div id="user-tag" style="font-size: 10px; color: var(--verde); font-weight: 800;">CONECTANDO...</div>
+            <div style="font-weight: 900; font-size: 20px;">Rantiy y Rantikuy</div>
+            <div id="user-tag" style="font-size: 10px; color: var(--verde); font-weight: 800;">CIUDADANO: CARGANDO...</div>
         </div>
     </div>
 </header>
@@ -108,7 +122,7 @@
 <div class="search-container">
     <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas hoy?" oninput="renderFeed()">
+        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas en tu zona?" oninput="renderFeed()">
     </div>
 </div>
 
@@ -121,9 +135,9 @@
 </div>
 
 <div class="city-bar">
-    <div class="city-card active-huanta" id="city-huanta" onclick="updateCity('Huanta')"><span>⛰️</span><label>HUANTA</label></div>
-    <div class="city-card" id="city-huamanga" onclick="updateCity('Huamanga')"><span>⛪</span><label>HUAMANGA</label></div>
-    <div class="city-card" id="city-vraem" onclick="updateCity('VRAEM')"><span>🌿</span><label>VRAEM</label></div>
+    <div class="city-card" id="city-huanta"><span>⛰️</span><label>HUANTA</label></div>
+    <div class="city-card" id="city-huamanga"><span>⛪</span><label>HUAMANGA</label></div>
+    <div class="city-card" id="city-vraem"><span>🌿</span><label>VRAEM</label></div>
 </div>
 
 <main id="view-home" class="view view-active">
@@ -132,7 +146,7 @@
 
 <section id="view-camera" class="view">
     <div class="camera-hub" id="main-hub">
-        <h2 style="font-weight:900;">Nueva Publicación</h2>
+        <h2 style="font-weight:900;">Publicar en <span id="current-zone-text">...</span></h2>
         <div class="category-grid">
             <div class="cat-btn" onclick="startStudio('Venta', '🛍️')">💰<br>VENTA</div>
             <div class="cat-btn" onclick="startStudio('Comida', '🍲')">🥘<br>COMIDA</div>
@@ -145,7 +159,7 @@
 
     <div id="upload-studio">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 id="studio-tag" style="margin:0; font-weight:900;">Estudio RR</h3>
+            <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
             <button onclick="exitStudio()">✕</button>
         </div>
         <div class="photo-grid">
@@ -155,18 +169,18 @@
             <div class="drop-zone"><div id="info-3">4</div><img id="img-3" style="display:none;"><div class="source-chooser"><button onclick="capture('cam',3)">📷</button><button onclick="capture('gal',3)">🖼️</button></div></div>
         </div>
         <div id="q-box" style="margin-top:20px;"></div>
-        <input type="text" id="in-title" class="rr-field" placeholder="Nombre/Título">
+        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
-        <button onclick="uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR 🚀</button>
+        <button onclick="uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
     </div>
 </section>
 
 <section id="view-chat" class="view">
     <div class="chat-box-ui">
-        <div style="padding:20px; background:var(--huanta); color:white; font-weight:900;">SALA REGIONAL (Auto-limpieza 30h)</div>
+        <div id="group-title" style="padding:20px; background:var(--verde); color:white; font-weight:900;">SALA REGIONAL</div>
         <div class="msg-area" id="group-msgs"></div>
         <div style="padding:15px; display:flex; gap:10px;">
-            <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Mensaje público...">
+            <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe al grupo...">
             <button onclick="sendGroup()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
         </div>
     </div>
@@ -175,8 +189,8 @@
 <div id="private-modal">
     <div style="padding:20px; background:var(--oscuro); color:white; display:flex; justify-content:space-between; align-items:center;">
         <button onclick="closePrivate()" style="background:none; border:none; color:white; font-size:20px;">⬅</button>
-        <span id="p-chat-name" style="font-weight:900;">Vendedor</span>
-        <button onclick="clearPrivateChat()" style="background:none; border:none; color:white; font-size:12px;">BORRAR CHAT</button>
+        <span id="p-chat-name" style="font-weight:900;">Cargando...</span>
+        <button onclick="clearPrivateChat()" style="background:none; border:none; color:white; font-size:12px;">BORRAR</button>
     </div>
     <div class="msg-area" id="private-msgs"></div>
     <div class="emoji-panel">
@@ -184,13 +198,16 @@
         <button class="emoji-btn" onclick="addEmoji('✅')">✅</button>
         <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
         <button class="emoji-btn" onclick="addEmoji('📦')">📦</button>
-        <button class="emoji-btn" onclick="addEmoji('💰')">💰</button>
+        <button class="emoji-btn" onclick="addEmoji('🤝')">🤝</button>
         <button class="emoji-btn" onclick="addSticker('👑')">👑</button>
     </div>
-    <div style="padding:15px; display:flex; gap:10px;">
-        <label style="background:#eee; padding:15px; border-radius:20px; cursor:pointer;">📎<input type="file" hidden onchange="uploadFilePrivate(this)"></label>
-        <input type="text" id="p-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe...">
-        <button onclick="sendPrivate()" style="background:var(--verde); color:white; border:none; width:60px; border-radius:20px;">✈️</button>
+    <div style="padding:15px; display:flex; gap:10px; align-items:center;">
+        <label style="background:#f1f5f9; padding:15px; border-radius:20px; cursor:pointer; font-size:20px;">
+            📎
+            <input type="file" hidden onchange="uploadFilePrivate(this)">
+        </label>
+        <input type="text" id="p-input" class="rr-field" style="margin:0; flex:1;" placeholder="Mensaje o archivo...">
+        <button onclick="sendPrivate()" style="background:var(--verde); color:white; border:none; width:60px; height:50px; border-radius:20px; font-size:20px;">✈️</button>
     </div>
 </div>
 
@@ -201,45 +218,79 @@
 </nav>
 
 <script>
-    let activeLoc = "Huanta", activeCat = "", currentFilter = "Todas", capturedFiles = [null,null,null,null], currentUser = "";
-    const CITIES = { "Huanta": { lat: -12.9424, lon: -74.2475 }, "Huamanga": { lat: -13.1588, lon: -74.2239 }, "VRAEM": { lat: -12.5000, lon: -73.8000 } };
-    let userLat = 0, userLon = 0;
+    let activeLoc = ""; 
+    let activeCat = ""; 
+    let currentFilter = "Todas"; 
+    let capturedFiles = [null,null,null,null]; 
+    let currentUser = "";
+    
+    const ZONAS = {
+        "Huanta": { lat: -12.94, lon: -74.24, r: 0.05 },
+        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.05 },
+        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.1 }
+    };
 
-    // --- 1. CONEXIÓN Y GPS OBLIGATORIO ---
     function init() {
-        // Conexión con tu registro_entrada.html
         currentUser = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
         if(!currentUser) { window.location.href = 'registro_entrada.html'; return; }
         document.getElementById('user-tag').innerText = "CIUDADANO: " + currentUser.toUpperCase();
 
-        // GPS Forzado
-        navigator.geolocation.watchPosition(p => {
-            userLat = p.coords.latitude; userLon = p.coords.longitude;
-        }, () => alert("GPS Obligatorio para entrar al Imperio"), {enableHighAccuracy:true});
+        // ACTIVACIÓN DE GPS REAL
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition(successGPS, errorGPS, {enableHighAccuracy:true});
+        } else {
+            alert("Tu celular no soporta GPS.");
+        }
 
         checkGroupCleanup();
         renderFeed();
-        loadPrivateMsgs();
     }
 
-    function updateCity(city) {
-        let d = Math.sqrt(Math.pow(userLat - CITIES[city].lat, 2) + Math.pow(userLon - CITIES[city].lon, 2));
-        if(d > 0.4) return alert("⚠️ GPS: No estás físicamente en " + city);
-        activeLoc = city;
-        document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-huanta','active-huamanga','active-vraem'));
-        document.getElementById('city-'+city.toLowerCase()).classList.add('active-'+city.toLowerCase());
-        renderFeed();
+    function successGPS(pos) {
+        let lat = pos.coords.latitude;
+        let lon = pos.coords.longitude;
+        let found = false;
+
+        for (let zone in ZONAS) {
+            let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
+            if (d < ZONAS[zone].r) {
+                activeLoc = zone;
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            document.getElementById('gps-screen').style.display = 'none';
+            document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
+            let card = document.getElementById('city-' + activeLoc.toLowerCase());
+            card.classList.add('active-city', 'active-' + activeLoc.toLowerCase());
+            document.getElementById('current-zone-text').innerText = activeLoc;
+            document.getElementById('group-title').innerText = "SALA " + activeLoc.toUpperCase();
+            renderFeed();
+        } else {
+            document.getElementById('gps-loader').style.display = 'none';
+            document.getElementById('gps-msg').innerText = "FUERA DE COBERTURA: Debes estar en Huanta, Huamanga o VRAEM.";
+            document.getElementById('gps-msg').style.color = "red";
+        }
     }
 
-    // --- 2. VITRINA PERSISTENTE ---
+    function errorGPS() {
+        document.getElementById('gps-loader').style.display = 'none';
+        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS de tu celular para usar Rantiy y Rantikuy.";
+        document.getElementById('gps-msg').style.color = "red";
+    }
+
+    // --- VITRINA ---
     function renderFeed() {
+        if(!activeLoc) return;
         const container = document.getElementById('feed-container');
         const search = document.getElementById('main-search').value.toLowerCase();
         let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
         
         let filtered = posts.filter(p => p.city === activeLoc && (currentFilter === "Todas" || p.category === currentFilter) && p.title.toLowerCase().includes(search));
         
-        container.innerHTML = filtered.length ? '' : '<p style="text-align:center; padding:50px; opacity:0.5;">No hay nada aún en esta zona.</p>';
+        container.innerHTML = filtered.length ? '' : '<p style="text-align:center; padding:50px; opacity:0.5;">No hay anuncios en ' + activeLoc + ' todavía.</p>';
         
         filtered.forEach(p => {
             let imgs = p.imgs.map(img => `<img src="${img}">`).join('');
@@ -248,29 +299,32 @@
                     <div class="img-scroll">${imgs}</div>
                     <h3 style="margin:10px 0;">${p.title} <span style="color:var(--verde)">S/ ${p.price}</span></h3>
                     <p style="font-size:12px; opacity:0.7;">${p.extra} <br> <b>Vendedor: ${p.user}</b></p>
-                    <button onclick="openPrivateChat('${p.user}', '${p.title}')" style="width:100%; padding:15px; background:var(--oscuro); color:white; border-radius:20px; border:none; font-weight:800;">CHATEAR PRIVADO</button>
-                    ${p.user === currentUser ? `<button onclick="deletePost(${p.id})" class="delete-btn">ELIMINAR MI PUBLICACIÓN</button>` : ''}
+                    <button onclick="openPrivateChat('${p.user}')" style="width:100%; padding:15px; background:var(--oscuro); color:white; border-radius:20px; border:none; font-weight:800;">CHATEAR CON VENDEDOR</button>
+                    ${p.user === currentUser ? `<button onclick="deletePost(${p.id})" class="delete-btn">BORRAR MI PUBLICACIÓN</button>` : ''}
                 </div>`;
         });
     }
 
+    // --- STUDIO Y PUBLICACIÓN ---
     function startStudio(cat, em) {
         activeCat = cat;
         document.getElementById('main-hub').style.display='none';
         document.getElementById('upload-studio').style.display='block';
         document.getElementById('studio-tag').innerText = em + " " + cat;
         const questions = {
-            'Venta': '<input type="text" id="q1" class="rr-field" placeholder="¿Estado? (Nuevo/Usado)">',
-            'Comida': '<input type="text" id="q1" class="rr-field" placeholder="¿Delivery incluido?">',
-            'Taxi': '<input type="text" id="q1" class="rr-field" placeholder="Placa y Modelo">'
+            'Venta': '<input type="text" id="q1" class="rr-field" placeholder="¿Es nuevo o usado?">',
+            'Comida': '<input type="text" id="q1" class="rr-field" placeholder="¿Haces delivery?">',
+            'Taxi': '<input type="text" id="q1" class="rr-field" placeholder="Placa y Modelo del auto">',
+            'Empleo': '<input type="text" id="q1" class="rr-field" placeholder="Sueldo y Horario">',
+            'Servicio': '<input type="text" id="q1" class="rr-field" placeholder="¿Años de experiencia?">'
         };
-        document.getElementById('q-box').innerHTML = questions[cat] || '<input type="text" id="q1" class="rr-field" placeholder="Detalles">';
+        document.getElementById('q-box').innerHTML = questions[cat] || '<input type="text" id="q1" class="rr-field" placeholder="Detalles extra">';
     }
 
     function uploadToEmpire() {
         const title = document.getElementById('in-title').value;
         const price = document.getElementById('in-price').value;
-        if(!title || !capturedFiles[0]) return alert("Faltan datos o fotos");
+        if(!title || !capturedFiles[0]) return alert("Pon el título y al menos una foto.");
 
         const post = { id: Date.now(), user: currentUser, title, price, city: activeLoc, category: activeCat, imgs: capturedFiles.filter(f => f), extra: document.getElementById('q1').value };
         let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
@@ -279,11 +333,11 @@
         confetti(); exitStudio(); renderFeed(); tab('home', document.querySelector('.nav-btn'));
     }
 
-    // --- 3. CHATS (GRUPAL CON LIMPIEZA Y PRIVADO PERSISTENTE) ---
+    // --- CHATS ---
     function checkGroupCleanup() {
-        let lastCleanup = localStorage.getItem('group_cleanup_time');
+        let last = localStorage.getItem('group_cleanup_time');
         let now = Date.now();
-        if(!lastCleanup || (now - lastCleanup) > (30 * 60 * 60 * 1000)) {
+        if(!last || (now - last) > (30 * 60 * 60 * 1000)) {
             localStorage.setItem('group_messages', '[]');
             localStorage.setItem('group_cleanup_time', now);
         }
@@ -306,24 +360,24 @@
         loadGroupMsgs();
     }
 
-    // --- PRIVADO ---
+    // --- PRIVADO MULTIMEDIA ---
     let currentChatPartner = "";
-    function openPrivateChat(partner, item) {
-        if(partner === currentUser) return alert("Es tu publicación");
+    function openPrivateChat(partner) {
+        if(partner === currentUser) return;
         currentChatPartner = partner;
         document.getElementById('private-modal').style.display='flex';
-        document.getElementById('p-chat-name').innerText = "Chat con " + partner;
+        document.getElementById('p-chat-name').innerText = "Rantikuy con " + partner;
         loadPrivateMsgs();
     }
 
     function loadPrivateMsgs() {
         const area = document.getElementById('private-msgs');
-        let allPrivates = JSON.parse(localStorage.getItem('private_messages') || '{}');
+        let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
         let chatKey = [currentUser, currentChatPartner].sort().join('_');
-        let msgs = allPrivates[chatKey] || [];
+        let msgs = all[chatKey] || [];
         area.innerHTML = msgs.map(m => `
             <div class="bubble ${m.u===currentUser?'bubble-out':'bubble-in'}">
-                ${m.type === 'file' ? `📄 <a href="${m.t}" download style="color:inherit">${m.name}</a>` : 
+                ${m.type === 'file' ? `<div style="background:rgba(0,0,0,0.05); padding:10px; border-radius:10px;">📄 <a href="${m.t}" download="${m.name}" style="color:inherit; font-weight:bold;">${m.name}</a></div>` : 
                   m.type === 'sticker' ? `<span class="sticker">${m.t}</span>` : m.t}
             </div>`).join('');
         area.scrollTop = area.scrollHeight;
@@ -335,34 +389,38 @@
         document.getElementById('p-input').value="";
     }
 
+    function uploadFilePrivate(el) {
+        const file = el.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            savePrivateMsg({u: currentUser, t: e.target.result, type: 'file', name: file.name});
+        };
+        reader.readAsDataURL(file);
+    }
+
     function savePrivateMsg(msgObj) {
-        let allPrivates = JSON.parse(localStorage.getItem('private_messages') || '{}');
+        let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
         let chatKey = [currentUser, currentChatPartner].sort().join('_');
-        if(!allPrivates[chatKey]) allPrivates[chatKey] = [];
-        allPrivates[chatKey].push(msgObj);
-        localStorage.setItem('private_messages', JSON.stringify(allPrivates));
+        if(!all[chatKey]) all[chatKey] = [];
+        all[chatKey].push(msgObj);
+        localStorage.setItem('private_messages', JSON.stringify(all));
         loadPrivateMsgs();
     }
 
     function addEmoji(e) { document.getElementById('p-input').value += e; }
     function addSticker(s) { savePrivateMsg({u: currentUser, t: s, type: 'sticker'}); }
 
-    function uploadFilePrivate(el) {
-        const f = el.files[0]; const r = new FileReader();
-        r.onload = (e) => savePrivateMsg({u: currentUser, t: e.target.result, type: 'file', name: f.name});
-        r.readAsDataURL(f);
-    }
-
     function clearPrivateChat() {
         if(!confirm("¿Borrar historial?")) return;
-        let allPrivates = JSON.parse(localStorage.getItem('private_messages') || '{}');
+        let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
         let chatKey = [currentUser, currentChatPartner].sort().join('_');
-        delete allPrivates[chatKey];
-        localStorage.setItem('private_messages', JSON.stringify(allPrivates));
+        delete all[chatKey];
+        localStorage.setItem('private_messages', JSON.stringify(all));
         loadPrivateMsgs();
     }
 
-    // --- TOOLS ---
+    // --- INTERFAZ ---
     function tab(id, el) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
         document.getElementById('view-'+id).classList.add('view-active');
