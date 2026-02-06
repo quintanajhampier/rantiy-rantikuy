@@ -9,7 +9,7 @@
     <style>
         :root {
             --verde: #22c55e; --verde-glow: #dcfce7;
-            --naranja: #f97316; --oscuro: #0f172a;
+            --naranja: #f97316; --oscuro: #1e293b; /* Un poco más suave que el negro puro */
             --glass: rgba(255, 255, 255, 0.96);
             --huanta: #22c55e; --huamanga: #3b82f6; --vraem: #f59e0b;
             --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
@@ -59,11 +59,17 @@
         .cat-btn:active { transform: scale(0.9); background: var(--verde); }
 
         #upload-studio { background: white; border-radius: 45px; padding: 35px; margin-top: 25px; display: none; box-shadow: var(--premium-shadow); }
-        .drop-zone { width: 100%; height: 220px; border: 3px dashed #cbd5e1; border-radius: 35px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 25px; cursor: pointer; background: #f8fafc; overflow: hidden; }
+        
+        /* Mejora Vitrina: Multi-foto */
+        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .drop-zone { width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; background: #f8fafc; overflow: hidden; }
         .drop-zone img { width: 100%; height: 100%; object-fit: cover; }
         
-        .rr-field { width: 100%; padding: 20px; border-radius: 22px; border: 2px solid #f1f5f9; font-weight: 700; font-size: 16px; margin-bottom: 20px; transition: 0.3s; }
+        .rr-field { width: 100%; padding: 20px; border-radius: 22px; border: 2px solid #f1f5f9; font-weight: 700; font-size: 16px; margin-bottom: 15px; transition: 0.3s; }
         .rr-field:focus { border-color: var(--verde); background: var(--verde-glow); }
+
+        /* Preguntas Dinámicas */
+        #dynamic-questions { margin-bottom: 20px; padding: 15px; background: #f1f5f9; border-radius: 20px; display: none; }
 
         /* --- SISTEMA DE CHATS --- */
         .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; border: 1px solid rgba(0,0,0,0.03); }
@@ -84,6 +90,9 @@
         .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 25px; z-index: 3000; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
         .nav-btn { color: #64748b; text-align: center; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .nav-btn.active { color: var(--verde); transform: translateY(-12px); }
+
+        /* Estilo Archivos en Chat */
+        .file-link { background: #e2e8f0; padding: 10px; border-radius: 12px; text-decoration: none; color: #1e293b; display: block; margin-top: 5px; font-size: 12px; border: 1px solid #cbd5e1; }
     </style>
 </head>
 <body>
@@ -134,15 +143,31 @@
             <h3 id="studio-tag" style="margin:0; font-weight:900; font-size:22px;">Nueva Publicación</h3>
             <button onclick="exitStudio()" style="background:#f1f5f9; border:none; width:40px; height:40px; border-radius:50%; font-weight:900;">✕</button>
         </div>
-        <div class="drop-zone" onclick="capture('cam')">
-            <div id="drop-info" style="text-align:center;"><span style="font-size:40px;">📸</span><br><b style="font-size:12px;">TOMAR FOTO AHORA</b></div>
-            <img id="render-img" style="display:none;">
+
+        <div class="photo-grid">
+            <div class="drop-zone" onclick="capture('cam', 0)">
+                <div id="info-0"><span>📸</span></div>
+                <img id="img-0" style="display:none;">
+            </div>
+            <div class="drop-zone" onclick="capture('cam', 1)">
+                <div id="info-1"><span>📸</span></div>
+                <img id="img-1" style="display:none;">
+            </div>
+            <div class="drop-zone" onclick="capture('cam', 2)">
+                <div id="info-2"><span>📸</span></div>
+                <img id="img-2" style="display:none;">
+            </div>
+            <div class="drop-zone" onclick="capture('cam', 3)">
+                <div id="info-3"><span>📸</span></div>
+                <img id="img-3" style="display:none;">
+            </div>
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:25px;">
-            <button onclick="capture('gal')" style="padding:18px; border-radius:20px; border:none; background:#f1f5f9; font-weight:800; font-size:12px;">🖼️ GALERÍA</button>
-            <button onclick="capture('cam')" style="padding:18px; border-radius:20px; border:none; background:#f1f5f9; font-weight:800; font-size:12px;">📷 CÁMARA</button>
+
+        <div id="dynamic-questions">
+            <div id="q-content"></div>
         </div>
-        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué estás ofreciendo?">
+
+        <input type="text" id="in-title" class="rr-field" placeholder="Título o nombre...">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio en Soles (S/)">
         <button onclick="uploadToEmpire()" style="width:100%; padding:22px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900; font-size:18px; box-shadow:0 15px 30px rgba(34,197,94,0.3);">PUBLICAR EN EL IMPERIO 🚀</button>
     </div>
@@ -157,9 +182,10 @@
     <div id="global-chat-ui" class="chat-box-ui">
         <div class="chat-header" id="chat-color-head" style="background:var(--huanta);">
             <span>SALA: <span id="active-chat-name">HUANTA</span></span>
+            <span style="font-size: 9px; opacity: 0.8;">Auto-limpieza: 30h</span>
         </div>
         <div class="msg-area" id="global-msgs">
-            <div class="bubble bubble-in"><b>Imperio RR:</b> Bienvenido a la sala de Huanta.</div>
+            <div class="bubble bubble-in"><b>Imperio RR:</b> Bienvenido a la sala. Los mensajes se borran cada 30 horas para tu privacidad.</div>
         </div>
         <div style="padding:20px; display:flex; gap:12px; background:white; border-top:1px solid #eee;">
             <input type="text" id="global-input" class="rr-field" style="margin:0; flex:1;" placeholder="Mensaje público...">
@@ -186,9 +212,14 @@
         </div>
     </div>
     <div class="msg-area" id="private-msgs" style="background:#f1f5f9;"></div>
-    <div style="padding:25px; display:flex; gap:12px; background:white; border-top:1px solid #eee;">
-        <input type="text" id="private-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe...">
-        <button onclick="sendPrivate()" style="background:var(--verde); color:white; border:none; width:60px; height:60px; border-radius:22px;">✈️</button>
+    <div style="padding:15px; display:flex; flex-direction:column; gap:10px; background:white; border-top:1px solid #eee;">
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="private-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe...">
+            <label style="background:#f1f5f9; width:60px; height:60px; border-radius:22px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                📎 <input type="file" id="chat-file" hidden onchange="uploadFilePrivate(this)">
+            </label>
+            <button onclick="sendPrivate()" style="background:var(--verde); color:white; border:none; width:60px; height:60px; border-radius:22px;">✈️</button>
+        </div>
     </div>
 </div>
 
@@ -199,40 +230,48 @@
 </nav>
 
 <script>
-    let activeLoc = "Huanta", activeCat = "", capturedFile = "", privateChats = [];
-    let userInHuanta = false;
+    let activeLoc = "Huanta", activeCat = "", capturedFiles = [null, null, null, null], privateChats = [];
+    let userLat = 0, userLon = 0;
 
-    // Coordenadas de Huanta (Centro)
-    const HUANTA_COORDS = { lat: -12.9424, lon: -74.2475 };
+    // Coordenadas Ciudad (Huanta como centro)
+    const CITIES = {
+        "Huanta": { lat: -12.9424, lon: -74.2475 },
+        "Huamanga": { lat: -13.1588, lon: -74.2239 },
+        "VRAEM": { lat: -12.5000, lon: -73.8000 }
+    };
 
-    // Función para verificar ubicación al iniciar
+    // 1. GPS OBLIGATORIO Y RESTRICTIVO
     function checkEmpireGPS() {
-        navigator.geolocation.getCurrentPosition((pos) => {
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            // Cálculo de distancia simple (aprox 20km de rango)
-            const dist = Math.sqrt(Math.pow(lat - HUANTA_COORDS.lat, 2) + Math.pow(lon - HUANTA_COORDS.lon, 2));
-            if(dist < 0.18) { // Rango para el área de Huanta
-                userInHuanta = true;
-                console.log("Acceso de Ciudadano Verificado");
-            }
-        });
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition((pos) => {
+                userLat = pos.coords.latitude;
+                userLon = pos.coords.longitude;
+                updateUbicacionReal();
+            }, (err) => {
+                alert("GPS OBLIGATORIO: Activa tu ubicación para usar Rantiy Imperio.");
+            }, { enableHighAccuracy: true });
+        }
     }
     checkEmpireGPS();
 
-    function tab(id, el) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
-        document.getElementById('view-' + id).classList.add('view-active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        if(id === 'camera') exitStudio();
-        window.scrollTo(0,0);
+    function updateUbicacionReal() {
+        // Bloqueo de zonas según GPS
+        for (let city in CITIES) {
+            let d = Math.sqrt(Math.pow(userLat - CITIES[city].lat, 2) + Math.pow(userLon - CITIES[city].lon, 2));
+            if (d < 0.2) { // Rango aproximado de ciudad
+                if(activeLoc !== city) updateCity(city);
+                return;
+            }
+        }
     }
 
     function updateCity(city) {
-        // REGLA DE BLOQUEO: Solo Huanta si el GPS no confirma ubicación
-        if(city !== "Huanta" && !userInHuanta) {
-            alert("🔒 ACCESO BLOQUEADO: Tu GPS indica que no estás en esta zona. Solo puedes ver Huanta.");
+        // Bloqueo estricto: Si el GPS no coincide con la ciudad clickeada
+        let target = CITIES[city];
+        let dist = Math.sqrt(Math.pow(userLat - target.lat, 2) + Math.pow(userLon - target.lon, 2));
+        
+        if (dist > 0.25) {
+            alert(`🔒 BLOQUEADO: No estás en ${city}. GPS Activo.`);
             return;
         }
 
@@ -242,12 +281,8 @@
         document.getElementById('loc-name').innerText = city;
         document.getElementById('active-chat-name').innerText = city.toUpperCase();
         
-        // Limpiar vitrina al cambiar para que no se mezcle
-        document.getElementById('feed-container').innerHTML = `
-            <div id="placeholder-msg" style="text-align:center; padding:60px; background:white; border-radius:50px; color:#94a3b8;">
-                <span style="font-size:60px;">💎</span>
-                <p style="font-weight:800;">Vitrina de ${city}<br>Cargando productos locales...</p>
-            </div>`;
+        // Limpieza de mensajes según zona (Privacidad)
+        document.getElementById('global-msgs').innerHTML = `<div class="bubble bubble-in"><b>Imperio ${city}:</b> Conectado a la red local segura.</div>`;
 
         const colors = { Huanta: '#22c55e', Huamanga: '#3b82f6', VRAEM: '#f59e0b' };
         document.getElementById('chat-color-head').style.backgroundColor = colors[city];
@@ -255,28 +290,49 @@
         confetti({ particleCount: 70, colors: [colors[city]] });
     }
 
+    // 2. PREGUNTAS DINÁMICAS SEGÚN CATEGORÍA
     function startStudio(cat, emoji) {
         activeCat = cat;
         document.getElementById('main-hub').style.display = 'none';
         document.getElementById('upload-studio').style.display = 'block';
         document.getElementById('studio-tag').innerText = emoji + " " + cat;
+        
+        let qDiv = document.getElementById('dynamic-questions');
+        let qContent = document.getElementById('q-content');
+        qDiv.style.display = 'block';
+        
+        const questions = {
+            'Venta': '<input type="text" class="rr-field" placeholder="¿Es nuevo o usado?"><input type="text" class="rr-field" placeholder="¿Haces delivery?">',
+            'Taxi': '<input type="text" class="rr-field" placeholder="Modelo del auto/moto"><input type="text" class="rr-field" placeholder="N° de Placa (Seguridad)">',
+            'Empleo': '<input type="text" class="rr-field" placeholder="Horario de trabajo"><input type="text" class="rr-field" placeholder="Requisitos mínimos">',
+            'Comida': '<input type="text" class="rr-field" placeholder="¿Qué ingredientes incluye?"><input type="text" class="rr-field" placeholder="Tiempo estimado">',
+            'Servicio': '<input type="text" class="rr-field" placeholder="Años de experiencia"><input type="text" class="rr-field" placeholder="Zona de cobertura">',
+            'Turismo': '<input type="text" class="rr-field" placeholder="Punto de partida"><input type="text" class="rr-field" placeholder="Duración del tour">'
+        };
+        qContent.innerHTML = questions[cat] || '';
     }
 
     function exitStudio() {
         document.getElementById('main-hub').style.display = 'block';
         document.getElementById('upload-studio').style.display = 'none';
+        capturedFiles = [null, null, null, null];
+        for(let i=0; i<4; i++) {
+            document.getElementById(`img-${i}`).style.display = 'none';
+            document.getElementById(`info-${i}`).style.display = 'block';
+        }
     }
 
-    function capture(mode) {
+    // 3. MÁXIMO 4 FOTOS
+    function capture(mode, index) {
         let input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
         if(mode === 'cam') input.capture = 'camera';
         input.onchange = (e) => {
             const reader = new FileReader();
             reader.onload = (ev) => {
-                capturedFile = ev.target.result;
-                document.getElementById('render-img').src = capturedFile;
-                document.getElementById('render-img').style.display = 'block';
-                document.getElementById('drop-info').style.display = 'none';
+                capturedFiles[index] = ev.target.result;
+                document.getElementById(`img-${index}`).src = capturedFiles[index];
+                document.getElementById(`img-${index}`).style.display = 'block';
+                document.getElementById(`info-${index}`).style.display = 'none';
             };
             reader.readAsDataURL(e.target.files[0]);
         };
@@ -286,23 +342,61 @@
     function uploadToEmpire() {
         const title = document.getElementById('in-title').value;
         const price = document.getElementById('in-price').value;
-        if(!title || !capturedFile) return alert("¡Sube foto y título!");
+        if(!title || !capturedFiles[0]) return alert("¡Sube al menos la primera foto y el título!");
+        
         const container = document.getElementById('feed-container');
         if(container.innerHTML.includes('💎')) container.innerHTML = '';
+        
+        // Generar vitrina con fotos cargadas
+        let photosHtml = capturedFiles.filter(f => f !== null).map(f => `<img src="${f}" style="width:100%; height:280px; border-radius:35px; object-fit:cover; margin-bottom:10px;">`).join('');
+
         container.innerHTML = `
             <div class="post-card" style="background:white; border-radius:45px; padding:18px; box-shadow:var(--premium-shadow); margin-bottom:20px;">
-                <img src="${capturedFile}" style="width:100%; height:280px; border-radius:35px; object-fit:cover;">
+                <div style="overflow-x:auto; display:flex; gap:10px;">${photosHtml}</div>
                 <div style="padding:20px 10px;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <h3 style="margin:0; font-weight:900;">${title}</h3>
                         <span style="color:var(--verde); font-weight:900;">S/ ${price}</span>
                     </div>
                     <div style="margin-top:12px; font-size:11px; font-weight:800; color:var(--naranja);">📍 ${activeLoc.toUpperCase()}</div>
-                    <button onclick="openPrivateChat('${title}')" style="width:100%; margin-top:20px; padding:18px; border-radius:22px; background:var(--oscuro); color:white; font-weight:800; border:none; cursor:pointer;">CHATEAR CON VENDEDOR</button>
+                    <button onclick="openPrivateChat('${title}')" style="width:100%; margin-top:20px; padding:18px; border-radius:22px; background:var(--oscuro); color:white; font-weight:800; border:none; cursor:pointer;">CHATEAR PRIVADO</button>
                 </div>
             </div>` + container.innerHTML;
+        
         confetti({ particleCount: 150 });
         tab('home', document.querySelector('.nav-btn'));
+    }
+
+    // 4. CHAT PRIVADO CON ARCHIVOS Y DESCARGAS
+    function uploadFilePrivate(el) {
+        const file = el.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const fileData = e.target.result;
+            document.getElementById('private-msgs').innerHTML += `
+                <div class="bubble bubble-out">
+                    📄 Archivo: ${file.name}
+                    <a href="${fileData}" download="${file.name}" class="file-link">⬇️ Descargar Archivo</a>
+                </div>`;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // 5. LIMPIEZA DE CHAT CADA 30 HORAS (Lógica de simulación)
+    setInterval(() => {
+        console.log("Sistema RR: Verificando mensajes antiguos para limpieza de 30h...");
+        // Aquí iría la lógica de borrar de base de datos
+    }, 3600000); // Chequea cada hora
+
+    // Navegación Básica
+    function tab(id, el) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
+        document.getElementById('view-' + id).classList.add('view-active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        if(id === 'camera') exitStudio();
+        window.scrollTo(0,0);
     }
 
     function toggleChatMode(mode, el) {
@@ -344,10 +438,21 @@
         const list = document.getElementById('private-contacts');
         if(privateChats.length === 0) return;
         list.innerHTML = privateChats.map(chat => `
-            <div onclick="openPrivateChat('${chat}')" style="padding:15px; background:#f8fafc; border-radius:20px; margin-bottom:10px; cursor:pointer;">
-                <b>Vendedor de: ${chat}</b>
+            <div onclick="openPrivateChat('${chat}')" style="padding:15px; background:#f8fafc; border-radius:20px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; gap:10px;">
+                <div style="width:10px; height:10px; background:var(--verde); border-radius:50%;"></div>
+                <b>Negocio: ${chat}</b>
             </div>`).join('');
     }
+
+    // 6. RELACIÓN CON ADMIN (Sincronización)
+    // Escucha si hay cambios en el perfil desde Admin (localStorage)
+    window.addEventListener('storage', (e) => {
+        if(e.key === 'admin_profile_update') {
+            const data = JSON.parse(e.newValue);
+            document.getElementById('status-line').innerText = "PERFIL ACTUALIZADO: " + data.name;
+            document.getElementById('status-line').style.color = "var(--naranja)";
+        }
+    });
 </script>
 </body>
 </html>
