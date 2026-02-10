@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>R&R Chat Imperial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --verde-principal: #22c55e;
+            --verde-brillante: #4ade80;
+            --verde-suave: #f0fdf4;
+            --oscuro-imperial: #0f172a;
+            --gris-texto: #64748b;
+            --blanco-puro: #ffffff;
+            --glass: rgba(255, 255, 255, 0.95);
+            --shadow-lux: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: #f8fafc; margin: 0; height: 100vh; display: flex; flex-direction: column; 
+            font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden;
+            background-image: radial-gradient(#22c55e22 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* --- CABECERA PREMIUM --- */
+        .p-header { 
+            padding: 20px; background: var(--glass); backdrop-filter: blur(25px);
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.1); z-index: 1000;
+        }
+
+        .back-btn { width: 45px; height: 45px; border-radius: 15px; border: none; background: var(--verde-suave); color: var(--verde-principal); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        
+        .user-info { flex: 1; margin: 0 15px; display: flex; align-items: center; gap: 12px; }
+        .avatar-box { width: 50px; height: 50px; border-radius: 18px; background: linear-gradient(45deg, var(--verde-principal), var(--verde-brillante)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 22px; position: relative; box-shadow: 0 8px 20px rgba(34, 197, 94, 0.2); }
+        .status-badge { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; background: #10b981; border: 3px solid white; border-radius: 50%; }
+
+        .name-meta b { display: block; font-size: 16px; color: var(--oscuro-imperial); letter-spacing: -0.5px; }
+        .name-meta span { font-size: 11px; color: var(--verde-principal); font-weight: 700; }
+
+        /* --- HERRAMIENTAS DE NEGOCIO --- */
+        .business-bar { display: flex; gap: 10px; padding: 10px 20px; overflow-x: auto; scrollbar-width: none; background: white; }
+        .biz-chip { padding: 10px 18px; background: var(--verde-suave); color: var(--verde-principal); border-radius: 15px; font-size: 12px; font-weight: 800; white-space: nowrap; border: 1px solid #dcfce7; cursor: pointer; }
+
+        /* --- ÁREA DE MENSAJES --- */
+        .msg-area { flex: 1; padding: 25px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; scroll-behavior: smooth; }
+        
+        /* BURBUJAS IMPERIALES */
+        .bubble { max-width: 82%; padding: 14px 18px; border-radius: 25px; font-size: 14.5px; font-weight: 600; line-height: 1.6; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.02); transition: 0.3s; }
+        .bubble-out { align-self: flex-end; background: var(--verde-principal); color: white; border-bottom-right-radius: 5px; box-shadow: 0 10px 25px rgba(34, 197, 94, 0.25); }
+        .bubble-in { align-self: flex-start; background: white; color: var(--oscuro-imperial); border-bottom-left-radius: 5px; }
+
+        .msg-time { font-size: 9px; margin-top: 6px; display: flex; align-items: center; justify-content: flex-end; gap: 3px; opacity: 0.8; }
+
+        /* --- CONTENEDOR DE MULTIMEDIA --- */
+        .media-preview { width: 100%; border-radius: 18px; margin-bottom: 8px; cursor: pointer; border: 2px solid white; }
+        .file-attachment { background: rgba(255,255,255,0.15); padding: 12px; border-radius: 15px; display: flex; align-items: center; gap: 12px; }
+        .bubble-in .file-attachment { background: var(--verde-suave); }
+
+        /* --- DOCK DE COMANDOS (BOTONES) --- */
+        .imperial-dock { background: var(--blanco-puro); border-radius: 35px 35px 0 0; padding: 25px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; box-shadow: 0 -15px 50px rgba(0,0,0,0.06); }
+        .dock-item { display: flex; flex-direction: column; align-items: center; gap: 8px; border: none; background: none; cursor: pointer; }
+        .dock-icon { width: 55px; height: 55px; background: #f1f5f9; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 22px; transition: 0.4s; border: 1px solid #e2e8f0; }
+        .dock-item:active .dock-icon { transform: translateY(-8px) scale(1.1); background: var(--verde-suave); border-color: var(--verde-principal); }
+        .dock-label { font-size: 10px; font-weight: 800; color: var(--gris-texto); }
+
+        /* --- ENTRADA DE TEXTO --- */
+        .footer-input { padding: 10px 20px 40px; background: white; display: flex; align-items: center; gap: 12px; }
+        .input-box { flex: 1; padding: 18px 22px; background: #f1f5f9; border: 2px solid transparent; border-radius: 22px; font-weight: 700; font-size: 15px; transition: 0.3s; }
+        .input-box:focus { background: white; border-color: var(--verde-principal); box-shadow: 0 0 20px rgba(34, 197, 94, 0.1); }
+        
+        .action-btn { width: 58px; height: 58px; border-radius: 20px; border: none; background: var(--oscuro-imperial); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+        /* MODALES Y EFECTOS */
+        #safety-overlay { position: fixed; inset: 0; background: var(--verde-principal); z-index: 5000; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; visibility: hidden; opacity: 0; transition: 0.5s; }
+    </style>
+</head>
+<body>
+
+<div id="safety-overlay">🛡️ CONEXIÓN ENCRIPTADA R&R</div>
+
+<header class="p-header">
+    <button class="back-btn" onclick="exitChat()">❮</button>
+    <div class="user-info">
+        <div class="avatar-box">
+            <span id="initial">?</span>
+            <div class="status-badge"></div>
+        </div>
+        <div class="name-meta">
+            <b id="partner-name">Cargando...</b>
+            <span>Comerciante Verificado</span>
+        </div>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button onclick="wipe()" style="background:none; border:none; font-size:20px;">🧼</button>
+        <button onclick="toggleSafety()" style="background:none; border:none; font-size:20px;">🔒</button>
+    </div>
+</header>
+
+<div class="business-bar">
+    <div class="biz-chip" onclick="quickMsg('Hola, ¿sigue disponible?')">🛍️ Disponibilidad</div>
+    <div class="biz-chip" onclick="quickMsg('¿Cuál es el precio mínimo?')">💰 Oferta Mínima</div>
+    <div class="biz-chip" onclick="quickMsg('¿Haces delivery en Huanta?')">🛵 Delivery</div>
+    <div class="biz-chip" onclick="sendBizCard()">💳 Mi Tarjeta</div>
+</div>
+
+<div class="msg-area" id="chat-box"></div>
+
+<div class="imperial-dock">
+    <button class="dock-item" onclick="triggerFile('cam')">
+        <div class="dock-icon">📸</div>
+        <span class="dock-label">CÁMARA</span>
+    </button>
+    <button class="dock-item" onclick="triggerFile('gal')">
+        <div class="dock-icon">🖼️</div>
+        <span class="dock-label">GALERÍA</span>
+    </button>
+    <button class="dock-item" onclick="triggerFile('doc')">
+        <div class="dock-icon">📂</div>
+        <span class="dock-label">DOCS</span>
+    </button>
+    <button class="dock-item" onclick="shareLocation()">
+        <div class="dock-icon">📍</div>
+        <span class="dock-label">UBICACIÓN</span>
+    </button>
+</div>
+
+<div class="footer-input">
+    <button style="background:none; border:none; font-size:24px;" onclick="alert('Micrófono activado')">🎙️</button>
+    <input type="text" id="msg-input" class="input-box" placeholder="Escribe un mensaje de negocio...">
+    <button class="action-btn" onclick="processSend()">🚀</button>
+</div>
+
+<script>
+    const user = localStorage.getItem('rantiy_user');
+    const partner = localStorage.getItem('chat_with');
+    const box = document.getElementById('chat-box');
+
+    function init() {
+        if(!partner) { location.href = 'index.html'; return; }
+        document.getElementById('partner-name').innerText = partner;
+        document.getElementById('initial').innerText = partner.charAt(0).toUpperCase();
+        
+        // Animación de entrada de seguridad
+        const overlay = document.getElementById('safety-overlay');
+        overlay.style.visibility = 'visible';
+        overlay.style.opacity = '1';
+        setTimeout(() => { overlay.style.opacity = '0'; overlay.style.visibility = 'hidden'; }, 1500);
+
+        load();
+        setInterval(load, 3000);
+    }
+
+    function load() {
+        const chats = JSON.parse(localStorage.getItem('p_chats') || '{}');
+        const key = [user, partner].sort().join('_');
+        const msgs = chats[key] || [];
+        
+        box.innerHTML = msgs.map((m, index) => {
+            let content = m.t;
+            if(m.type === 'img') content = `<img src="${m.t}" class="media-preview" onclick="openFull('${m.t}')">`;
+            if(m.type === 'doc') content = `<div class="file-attachment">📂 <div><b style="font-size:12px;">${m.name}</b><br><small>Archivo Imperial</small></div> <a href="${m.t}" download="${m.name}" style="color:inherit; font-weight:900;">💾</a></div>`;
+            if(m.type === 'loc') content = `<div onclick="window.open('${m.t}')" style="cursor:pointer; color:#2563eb; font-weight:800;">📍 Posición GPS Compartida (Clic para ver mapa)</div>`;
+            if(m.type === 'biz') content = `<div style="background:var(--oscuro-imperial); color:white; padding:15px; border-radius:15px;">👤 <b>PERFIL COMERCIAL</b><br><small>Ciudadano: ${m.u}</small><br><span style="color:var(--verde-principal)">★ ★ ★ ★ ★</span></div>`;
+
+            return `
+                <div class="bubble ${m.u===user?'bubble-out':'bubble-in'}" style="animation-delay: ${index*0.1}s">
+                    ${content}
+                    <div class="msg-time">
+                        ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} 
+                        ${m.u===user ? '<span>✓✓</span>' : ''}
+                    </div>
+                </div>`;
+        }).join('');
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function processSend() {
+        const input = document.getElementById('msg-input');
+        if(!input.value.trim()) return;
+        saveMsg({ u: user, t: input.value, type: 'text' });
+        input.value = "";
+    }
+
+    function quickMsg(txt) { saveMsg({ u: user, t: txt, type: 'text' }); }
+
+    function sendBizCard() { saveMsg({ u: user, t: 'CARD', type: 'biz' }); }
+
+    function triggerFile(mode) {
+        let i = document.createElement('input'); i.type = 'file';
+        if(mode === 'cam') { i.accept = 'image/*'; i.capture = 'camera'; }
+        else if(mode === 'gal') { i.accept = 'image/*'; }
+        else { i.accept = '.pdf,.doc,.docx,.xls,.xlsx'; }
+
+        i.onchange = e => {
+            const f = e.target.files[0];
+            const r = new FileReader();
+            r.onload = ev => saveMsg({ u: user, t: ev.target.result, type: (mode==='doc'?'doc':'img'), name: f.name });
+            r.readAsDataURL(f);
+        };
+        i.click();
+    }
+
+    function shareLocation() {
+        navigator.geolocation.getCurrentPosition(p => {
+            const url = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+            saveMsg({ u: user, t: url, type: 'loc' });
+        }, () => alert("Activa el GPS para compartir ubicación"));
+    }
+
+    function saveMsg(obj) {
+        let data = JSON.parse(localStorage.getItem('p_chats') || '{}');
+        const key = [user, partner].sort().join('_');
+        if(!data[key]) data[key] = [];
+        data[key].push(obj);
+        localStorage.setItem('p_chats', JSON.stringify(data));
+        load();
+    }
+
+    function wipe() { if(confirm("¿Vaciar historial privado?")) { 
+        let d = JSON.parse(localStorage.getItem('p_chats')); 
+        d[[user, partner].sort().join('_')] = []; 
+        localStorage.setItem('p_chats', JSON.stringify(d)); load(); 
+    }}
+
+    function toggleSafety() {
+        const overlay = document.getElementById('safety-overlay');
+        overlay.style.visibility = 'visible';
+        overlay.style.opacity = '1';
+        setTimeout(() => { overlay.style.opacity = '0'; overlay.style.visibility = 'hidden'; }, 800);
+    }
+
+    function openFull(src) { window.open(src); }
+    function exitChat() { location.href = 'index.html'; }
+
+    window.onload = init;
+</script>
+</body>
+</html>
