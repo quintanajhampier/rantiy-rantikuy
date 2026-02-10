@@ -2,255 +2,237 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rantiy y Rantikuy - Imperio Huanta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rantiy y Rantikuy - Imperio</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
-        /* Diseño vibrante Huanta - No intenso, elegante y representativo */
         :root {
-            --verde: #22c55e; --verde-glow: #dcfce7;
-            --naranja: #f97316; --oscuro: #1e293b;
-            --glass: rgba(255, 255, 255, 0.96);
-            --huanta: #22c55e; --huamanga: #3b82f6; --vraem: #f59e0b;
-            --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            --oro: #fbbf24;
+            --verde: #22c55e; --naranja: #f97316; --oscuro: #1e293b;
+            --fondo: #f8fafc; --blanco: #ffffff; --gris: #64748b;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: #f8fafc; margin: 0; padding-bottom: 140px; color: var(--oscuro); }
+        body { background: var(--fondo); margin: 0; padding-bottom: 110px; color: var(--oscuro); }
 
-        /* --- GPS SCREEN --- */
-        #gps-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-        .gps-loader { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--verde); border-radius: 50%; animation: spin 1s linear infinite; }
+        /* --- PANTALLA GPS (BLOQUEO SEGURIDAD) --- */
+        #gps-lock { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+        .spinner { width: 60px; height: 60px; border: 6px solid #f3f3f3; border-top: 6px solid var(--verde); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- HEADER --- */
-        .header {
-            background: var(--glass); backdrop-filter: blur(25px); padding: 18px 25px;
-            display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .logo-rr {
-            width: 62px; height: 62px; background: linear-gradient(135deg, var(--verde), #15803d);
-            border-radius: 22px; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 900; font-size: 24px; cursor: pointer;
-            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
-        }
+        .header { background: var(--blanco); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; }
+        .logo-rr { width: 50px; height: 50px; background: linear-gradient(135deg, var(--verde), #15803d); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; cursor: pointer; }
 
-        /* --- BUSCADOR Y FILTROS --- */
-        .search-wrapper { position: relative; padding: 15px 20px; }
-        .search-input { width: 100%; padding: 18px 55px; border-radius: 25px; border: none; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.03); font-weight: 700; }
-        .filter-bar { padding: 10px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
-        .filter-chip { padding: 10px 20px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; }
-        .filter-active { background: var(--verde-glow); color: var(--verde); border: 2px solid var(--verde); }
+        /* --- GRUPOS POR CIUDAD --- */
+        .city-indicator { padding: 10px 20px; background: var(--verde); color: white; font-size: 12px; font-weight: 800; text-align: center; }
 
-        /* --- CIUDADES --- */
-        .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
-        .city-card { background: white; min-width: 140px; padding: 20px; border-radius: 30px; text-align: center; opacity: 0.3; transition: 0.5s; }
-        .active-city { opacity: 1; transform: scale(1.05); border: 3px solid var(--verde); }
+        /* --- CHAT GRUPAL --- */
+        .group-chat-area { height: 70vh; display: flex; flex-direction: column; background: #f1f5f9; margin: 15px; border-radius: 30px; overflow: hidden; border: 1px solid #e2e8f0; }
+        #group-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 12px 18px; border-radius: 18px; max-width: 80%; font-size: 14px; font-weight: 600; }
+        .msg-me { align-self: flex-end; background: var(--verde); color: white; }
+        .msg-them { align-self: flex-start; background: white; color: var(--oscuro); }
 
-        /* --- VITRINA DE POSTS --- */
-        .view { display: none; padding: 0 20px; }
-        .view-active { display: block; animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } }
-
-        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 25px; position: relative; }
-        .badge-trusted { position: absolute; top: 20px; right: 20px; background: var(--oro); color: var(--oscuro); font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 15px; z-index: 10; }
-        .img-scroll { display: flex; overflow-x: auto; gap: 10px; scrollbar-width: none; border-radius: 25px; }
-        .img-scroll img { width: 100%; height: 280px; object-fit: cover; border-radius: 25px; flex-shrink: 0; }
+        /* --- VITRINA & STUDIO (Igual al anterior para mantener esencia) --- */
+        .card { background: white; margin: 15px; border-radius: 30px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .img-container { height: 300px; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .img-container img { width: 100%; flex-shrink: 0; object-fit: cover; }
         
-        /* --- STUDIO DE SUBIDA --- */
-        .camera-hub { background: var(--oscuro); border-radius: 50px; padding: 40px 20px; color: white; text-align: center; }
-        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 25px; }
-        .cat-btn { background: rgba(255,255,255,0.1); padding: 20px 10px; border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: 800; }
-        
-        #upload-studio { background: white; border-radius: 40px; padding: 30px; margin-top: 20px; display: none; }
-        .photo-grid { display: grid; grid-template-columns: repeat(2, 2fr); gap: 10px; }
-        .drop-zone { width: 100%; height: 110px; border: 3px dashed #cbd5e1; border-radius: 20px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .rr-field { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; }
-
         /* --- NAVEGACIÓN --- */
-        .nav-island { position: fixed; bottom: 30px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 40px; display: flex; justify-content: space-around; padding: 20px; z-index: 3000; }
-        .nav-btn { color: #64748b; text-align: center; font-size: 11px; font-weight: 800; cursor: pointer; }
-        .nav-btn.active { color: var(--verde); }
+        .nav-bar { position: fixed; bottom: 25px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 30px; display: flex; justify-content: space-around; padding: 15px; z-index: 2000; }
+        .nav-item { color: #94a3b8; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
+        .nav-item.active { color: var(--verde); }
     </style>
 </head>
 <body>
 
-<div id="gps-screen">
-    <div class="logo-rr" style="width:100px; height:100px; font-size:40px;">R&R</div>
-    <h1 style="font-weight:900;">Imperio Huanta</h1>
-    <div class="gps-loader"></div>
-    <p id="gps-msg" style="font-weight:700; color:var(--verde);">Sincronizando con Satélites...</p>
+<div id="gps-lock">
+    <div class="logo-rr" style="width:80px; height:80px; font-size:30px;">R&R</div>
+    <h2 id="status-msg">Sincronizando Imperio...</h2>
+    <div class="spinner"></div>
+    <p style="color: var(--gris); font-size: 12px;">Validando Ciudadanía y Ubicación</p>
 </div>
 
 <header class="header">
-    <div style="display:flex; align-items:center; gap:15px;">
-        <div class="logo-rr" id="admin-trigger">R&R</div>
+    <div style="display:flex; align-items:center; gap:12px;">
+        <div class="logo-rr" id="admin-btn">R&R</div>
         <div>
-            <div style="font-weight: 900; font-size: 18px;">Rantiy y Rantikuy</div>
-            <div id="user-tag" style="font-size: 10px; color: var(--verde); font-weight: 800;">CIUDADANO...</div>
+            <div style="font-weight: 800; font-size: 16px;">Rantiy y Rantikuy</div>
+            <div id="user-display" style="font-size: 10px; color: var(--verde); font-weight: 800;">...</div>
         </div>
     </div>
+    <div id="active-city-badge" style="font-size: 18px;">📍</div>
 </header>
 
-<div class="search-wrapper">
-    <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas hoy?" oninput="renderFeed()">
-</div>
+<div id="city-label" class="city-indicator">CONECTANDO A LA RED DE HUANTA...</div>
 
-<div class="filter-bar">
-    <div class="filter-chip filter-active" onclick="setFilter('Todas', this)">✨ Todas</div>
-    <div class="filter-chip" onclick="setFilter('Comida', this)">🍲 Comida</div>
-    <div class="filter-chip" onclick="setFilter('Venta', this)">👕 Venta</div>
-</div>
-
-<div class="city-bar">
-    <div class="city-card" id="city-huanta">⛰️<br>HUANTA</div>
-    <div class="city-card" id="city-huamanga">⛪<br>HUAMANGA</div>
-    <div class="city-card" id="city-vraem">🌿<br>VRAEM</div>
-</div>
-
-<main id="view-home" class="view view-active">
-    <div id="feed-container"></div>
+<main id="view-home" class="view">
+    <div style="padding: 15px 20px;">
+        <input type="text" id="search" placeholder="🔍 Buscar en el mercado..." oninput="renderFeed()" 
+               style="width:100%; padding:15px; border-radius:15px; border:1px solid #e2e8f0; font-weight:600;">
+    </div>
+    <div id="feed"></div>
 </main>
 
-<section id="view-camera" class="view">
-    <div class="camera-hub" id="main-hub">
-        <h2 style="font-weight:900;">Panel de Rantikuy</h2>
-        <div class="category-grid">
-            <div class="cat-btn" onclick="startStudio('Venta')">💰 VENTA</div>
-            <div class="cat-btn" onclick="startStudio('Comida')">🥘 COMIDA</div>
-            <div class="cat-btn" onclick="startStudio('Taxi')">🚕 TAXI</div>
+<section id="view-upload" class="view" style="display:none; padding:20px;">
+    <h3 style="font-weight: 800;">Publicar Anuncio</h3>
+    <select id="cat-select" onchange="updateForm()" style="width:100%; padding:15px; border-radius:15px; margin-bottom:15px; font-weight:700;">
+        <option value="Venta">🛒 Venta de Producto</option>
+        <option value="Trabajo">👔 Oferta de Trabajo</option>
+        <option value="Turismo">⛰️ Turismo / Viajes</option>
+        <option value="Comida">🍲 Venta de Comida</option>
+    </select>
+    
+    <div id="dynamic-form">
         </div>
-    </div>
 
-    <div id="upload-studio">
-        <div class="photo-grid">
-            <div class="drop-zone" onclick="capture(0)"><img id="img-0" style="display:none; width:100%; height:100%; object-fit:cover;"><span>+</span></div>
-            <div class="drop-zone" onclick="capture(1)"><img id="img-1" style="display:none; width:100%; height:100%; object-fit:cover;"><span>+</span></div>
+    <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:5px; margin: 15px 0;">
+        <div onclick="pickImg(0)" style="height:70px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img id="i0" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+        <div onclick="pickImg(1)" style="height:70px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img id="i1" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+        <div onclick="pickImg(2)" style="height:70px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img id="i2" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+        <div onclick="pickImg(3)" style="height:70px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img id="i3" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+    </div>
+    <button onclick="publish()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:20px; font-weight:900;">PUBLICAR</button>
+</section>
+
+<section id="view-group" class="view" style="display:none;">
+    <div class="group-chat-area">
+        <div id="group-messages"></div>
+        <div style="padding:15px; display:flex; gap:10px; background:white;">
+            <input type="text" id="group-input" placeholder="Mensaje al grupo..." style="flex:1; border:none; font-weight:600; outline:none;">
+            <button onclick="sendGroup()" style="background:var(--verde); color:white; border:none; padding:10px 20px; border-radius:15px;">✈️</button>
         </div>
-        <input type="text" id="in-title" class="rr-field" style="margin-top:20px;" placeholder="Título del anuncio">
-        <input type="number" id="in-price" class="rr-field" placeholder="Precio S/">
-        <button onclick="publishPost()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:20px; font-weight:900;">SUBIR A LA VITRINA</button>
     </div>
 </section>
 
-<section id="view-chat" class="view">
-    <div style="background:white; border-radius:30px; height:450px; display:flex; flex-direction:column; overflow:hidden;">
-        <div style="padding:20px; background:var(--verde); color:white; font-weight:900;" id="label-sala">SALA HUANTA</div>
-        <div id="group-msgs" style="flex:1; padding:20px; overflow-y:auto; background:#f8fafc;"></div>
-        <div style="padding:15px; display:flex; gap:10px;">
-            <input type="text" id="group-input" class="rr-field" style="margin:0;" placeholder="Escribir al grupo...">
-            <button onclick="sendGroupMsg()" style="background:var(--verde); color:white; border:none; padding:10px 20px; border-radius:15px;">✈️</button>
-        </div>
-    </div>
-</section>
-
-<nav class="nav-island">
-    <div class="nav-btn active" onclick="tab('home', this)">🏠<br>VITRINA</div>
-    <div class="nav-btn" onclick="tab('camera', this)">📸<br>SUBIR</div>
-    <div class="nav-btn" onclick="tab('chat', this)">💬<br>GRUPAL</div>
+<nav class="nav-bar">
+    <div class="nav-item active" onclick="tab('home', this)">🏠<br>VITRINA</div>
+    <div class="nav-item" onclick="tab('upload', this)">📸<br>SUBIR</div>
+    <div class="nav-item" onclick="tab('group', this)">📢<br>GRUPO</div>
+    <div class="nav-item" onclick="window.location.href='chat_privado.html'">💬<br>PRIVADO</div>
 </nav>
 
 <script>
-    let activeLoc = ""; let currentUser = ""; let files = [null, null];
-    let clicks = 0; let currentFilter = "Todas";
+    let user = ""; let myCity = "Huanta"; let imgs = [null,null,null,null]; let adminHits = 0;
 
     function init() {
-        // Conexión con registro_entrada.html
-        currentUser = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
-        if(!currentUser) { window.location.href = 'registro_entrada.html'; return; }
-        document.getElementById('user-tag').innerText = "CIUDADANO: " + currentUser.toUpperCase();
+        // 1. CONEXIÓN INICIO SESIÓN
+        user = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
+        if(!user) { window.location.href = 'registro_entrada.html'; return; }
+        document.getElementById('user-display').innerText = user.toUpperCase();
 
-        // Tapping 7 veces para admin.html
-        document.getElementById('admin-trigger').onclick = () => {
-            clicks++;
-            if(clicks === 7) { window.location.href = 'admin.html'; clicks = 0; }
-            setTimeout(() => clicks = 0, 3000);
+        // 2. GPS Y BLOQUEO
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                // Aquí iría la lógica de coordenadas para Huanta/Huamanga/VRAEM
+                document.getElementById('gps-lock').style.display = 'none';
+                updateForm(); renderFeed();
+            }, () => {
+                alert("Activa el GPS para entrar al Imperio.");
+            });
+        }
+
+        // 3. ADMIN (7 toques)
+        document.getElementById('admin-btn').onclick = () => {
+            adminHits++;
+            if(adminHits === 7) window.location.href = 'admin.html';
+            setTimeout(() => adminHits = 0, 2000);
         };
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(geoOk, geoError);
-        }
+        // Escuchar mensajes nuevos de otros
+        window.addEventListener('storage', () => { renderFeed(); renderGroup(); });
     }
 
-    function geoOk(pos) {
-        // Lógica de detección de zona (Huanta, Huamanga, VRAEM)
-        activeLoc = "Huanta"; // Ejemplo para visualización
-        document.getElementById('gps-screen').style.display = 'none';
-        document.getElementById('city-huanta').classList.add('active-city');
+    // --- CHAT GRUPAL CIUDAD ---
+    function sendGroup() {
+        let txt = document.getElementById('group-input').value;
+        if(!txt) return;
+        let msgs = JSON.parse(localStorage.getItem('chat_group_' + myCity) || '[]');
+        msgs.push({u: user, t: txt, time: new Date().toLocaleTimeString()});
+        localStorage.setItem('chat_group_' + myCity, JSON.stringify(msgs));
+        document.getElementById('group-input').value = "";
+        renderGroup();
+    }
+
+    function renderGroup() {
+        const box = document.getElementById('group-messages');
+        let msgs = JSON.parse(localStorage.getItem('chat_group_' + myCity) || '[]');
+        box.innerHTML = msgs.map(m => `
+            <div class="bubble ${m.u === user ? 'msg-me' : 'msg-them'}">
+                <small style="display:block; font-size:9px; opacity:0.7;">${m.u}</small>
+                ${m.t}
+            </div>
+        `).join('');
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // --- STUDIO Y PREGUNTAS ---
+    function updateForm() {
+        const cat = document.getElementById('cat-select').value;
+        const form = document.getElementById('dynamic-form');
+        let html = `<input type="text" id="f-title" placeholder="¿Qué ofreces?" style="width:100%; padding:15px; border-radius:15px; border:1px solid #ddd; margin-bottom:10px;">`;
+        
+        if(cat === 'Venta') html += `<input type="number" id="f-price" placeholder="Precio S/" style="width:100%; padding:15px; border-radius:15px; border:1px solid #ddd;">`;
+        if(cat === 'Trabajo') html += `<input type="text" id="f-price" placeholder="Sueldo estimado" style="width:100%; padding:15px; border-radius:15px; border:1px solid #ddd;">`;
+        if(cat === 'Turismo') html += `<input type="text" id="f-price" placeholder="Precio del tour" style="width:100%; padding:15px; border-radius:15px; border:1px solid #ddd;">`;
+        
+        form.innerHTML = html;
+    }
+
+    // --- CONEXIÓN CHAT PRIVADO ---
+    function goPrivate(seller) {
+        if(seller === user) return;
+        localStorage.setItem('current_chat_partner', seller);
+        window.location.href = 'chat_privado.html';
+    }
+
+    // --- LÓGICA BASE ---
+    function pickImg(i) {
+        let input = document.createElement('input'); input.type='file'; input.accept='image/*';
+        input.onchange = e => {
+            let r = new FileReader(); r.onload = ev => {
+                imgs[i] = ev.target.result;
+                document.getElementById('i'+i).src = ev.target.result;
+                document.getElementById('i'+i).style.display = 'block';
+            }; r.readAsDataURL(e.target.files[0]);
+        }; input.click();
+    }
+
+    function publish() {
+        let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
+        posts.unshift({
+            u: user, title: document.getElementById('f-title').value, 
+            price: document.getElementById('f-price').value, 
+            imgs: imgs.filter(i=>i), city: myCity, cat: document.getElementById('cat-select').value
+        });
+        localStorage.setItem('empire_posts', JSON.stringify(posts));
+        confetti(); tab('home', document.querySelectorAll('.nav-item')[0]);
         renderFeed();
     }
 
-    function geoError() { alert("GPS necesario para el Imperio."); }
-
-    function getRep(user) {
-        let rep = JSON.parse(localStorage.getItem('empire_reputation') || '{}');
-        if(!rep[user]) return { score: 5.0, votes: 0 };
-        let total = rep[user].reduce((a, b) => a + b, 0);
-        return { score: (total / rep[user].length).toFixed(1), votes: rep[user].length };
-    }
-
     function renderFeed() {
-        const container = document.getElementById('feed-container');
+        const feed = document.getElementById('feed');
         let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
-        container.innerHTML = '';
-        
-        posts.forEach(p => {
-            let rep = getRep(p.user);
-            container.innerHTML += `
-                <div class="post-card">
-                    ${rep.score >= 4.5 ? '<div class="badge-trusted">🛡️ PRO</div>' : ''}
-                    <div class="img-scroll">${p.imgs.map(i => `<img src="${i}">`).join('')}</div>
-                    <h2 style="margin:15px 0 5px 0;">${p.title} <span style="color:var(--verde)">S/ ${p.price}</span></h2>
-                    <p style="font-size:12px; opacity:0.6;">Vendedor: ${p.user} | ⭐ ${rep.score}</p>
-                    <button onclick="goChat('${p.user}')" style="width:100%; padding:18px; background:var(--oscuro); color:white; border-radius:20px; border:none; font-weight:800;">NEGOCIAR</button>
-                </div>`;
-        });
-    }
-
-    // CONEXIÓN CON chat_privado.html
-    function goChat(partner) {
-        if(partner === currentUser) return;
-        localStorage.setItem('current_chat_partner', partner);
-        window.location.href = 'chat_privado.html'; 
-    }
-
-    function startStudio(cat) {
-        document.getElementById('main-hub').style.display = 'none';
-        document.getElementById('upload-studio').style.display = 'block';
-    }
-
-    function capture(i) {
-        let inp = document.createElement('input'); inp.type='file'; inp.accept='image/*';
-        inp.onchange = (e) => {
-            const r = new FileReader(); r.onload = (ev) => {
-                files[i] = ev.target.result;
-                document.getElementById(`img-${i}`).src = ev.target.result;
-                document.getElementById(`img-${i}`).style.display = 'block';
-            };
-            r.readAsDataURL(e.target.files[0]);
-        };
-        inp.click();
-    }
-
-    function publishPost() {
-        const title = document.getElementById('in-title').value;
-        const price = document.getElementById('in-price').value;
-        if(!title || !files[0]) return;
-        let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
-        posts.unshift({user: currentUser, title, price, imgs: files.filter(f=>f), city: activeLoc});
-        localStorage.setItem('empire_posts', JSON.stringify(posts));
-        confetti();
-        location.reload();
+        feed.innerHTML = posts.map(p => `
+            <div class="card">
+                <div class="img-container">${p.imgs.map(img => `<img src="${img}">`).join('')}</div>
+                <div style="padding:20px;">
+                    <span style="background:var(--verde); color:white; padding:4px 10px; border-radius:10px; font-size:10px; font-weight:800;">${p.cat}</span>
+                    <h2 style="margin:10px 0 5px 0;">S/ ${p.price}</h2>
+                    <p style="font-weight:700; margin-bottom:15px;">${p.title}</p>
+                    <button onclick="goPrivate('${p.u}')" style="width:100%; padding:15px; background:var(--oscuro); color:white; border-radius:15px; border:none; font-weight:800;">NEGOCIAR</button>
+                </div>
+            </div>
+        `).join('');
     }
 
     function tab(id, el) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
-        document.getElementById('view-'+id).classList.add('view-active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+        document.getElementById('view-' + id).style.display = 'block';
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
+        if(id === 'group') renderGroup();
     }
 
     window.onload = init;
