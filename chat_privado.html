@@ -30,7 +30,7 @@
             border-bottom: 1px solid #e2e8f0; z-index: 1000;
         }
 
-        .back-btn { width: 45px; height: 45px; border-radius: 15px; border: none; background: var(--verde-suave); color: var(--verde); font-size: 20px; cursor: pointer; }
+        .back-btn { width: 45px; height: 45px; border-radius: 15px; border: none; background: var(--verde-suave); color: var(--verde); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         
         .user-info { flex: 1; margin: 0 15px; display: flex; align-items: center; gap: 12px; }
         .avatar-box { width: 45px; height: 45px; border-radius: 15px; background: var(--verde); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; position: relative; }
@@ -54,10 +54,10 @@
 
         /* --- ENTRADA --- */
         .footer-input { padding: 15px 20px 30px; background: white; display: flex; align-items: center; gap: 10px; }
-        .input-box { flex: 1; padding: 15px 20px; background: #f1f5f9; border: 2px solid transparent; border-radius: 18px; font-weight: 600; outline: none; }
+        .input-box { flex: 1; padding: 15px 20px; background: #f1f5f9; border: 2px solid transparent; border-radius: 18px; font-weight: 600; outline: none; font-size: 15px; }
         .input-box:focus { border-color: var(--verde); background: white; }
         
-        .send-btn { width: 50px; height: 50px; border-radius: 15px; border: none; background: var(--oscuro); color: white; font-size: 20px; cursor: pointer; }
+        .send-btn { width: 50px; height: 50px; border-radius: 15px; border: none; background: var(--oscuro); color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         #safety-overlay { position: fixed; inset: 0; background: var(--verde); z-index: 5000; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; visibility: hidden; opacity: 0; transition: 0.5s; }
     </style>
@@ -96,15 +96,14 @@
 </div>
 
 <script>
-    // --- CONEXIÓN CRÍTICA CON EL INDEX ---
-    const user = localStorage.getItem('rantiy_user');
-    // Recuperamos el socio con el que se hizo clic en el Index
+    // --- CONEXIÓN IMPERIAL ---
+    const user = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
     const partner = localStorage.getItem('current_chat_partner'); 
     const box = document.getElementById('chat-box');
 
     function init() {
         if(!user || !partner) { 
-            alert("Selecciona un vendedor en la vitrina primero.");
+            alert("Acceso denegado. Selecciona un vendedor en la vitrina.");
             location.href = 'index.html'; 
             return; 
         }
@@ -112,31 +111,30 @@
         document.getElementById('partner-name').innerText = partner;
         document.getElementById('initial').innerText = partner.charAt(0).toUpperCase();
         
-        // Animación de seguridad
+        // Efecto de carga segura
         const overlay = document.getElementById('safety-overlay');
         overlay.style.visibility = 'visible'; overlay.style.opacity = '1';
-        setTimeout(() => { overlay.style.opacity = '0'; overlay.style.visibility = 'hidden'; }, 1200);
+        setTimeout(() => { overlay.style.opacity = '0'; overlay.style.visibility = 'hidden'; }, 1000);
 
         load();
-        // Sincronización automática cada 2 segundos
-        setInterval(load, 2000);
+        // Sincronización automática cada 2.5 segundos
+        setInterval(load, 2500);
     }
 
     function load() {
         const chats = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
-        // Llave única para la conversación entre estos dos usuarios
         const key = [user, partner].sort().join('_');
         const msgs = chats[key] || [];
         
         box.innerHTML = msgs.map(m => {
             let content = m.t;
-            if(m.type === 'img') content = `<img src="${m.t}" style="width:100%; border-radius:10px;">`;
-            if(m.type === 'loc') content = `<a href="${m.t}" target="_blank" style="color:inherit; font-weight:800;">📍 Ver Ubicación GPS</a>`;
+            if(m.type === 'img') content = `<img src="${m.t}" style="width:100%; border-radius:12px; margin-top:5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">`;
+            if(m.type === 'loc') content = `<div onclick="window.open('${m.t}')" style="cursor:pointer; color:inherit; font-weight:800; text-decoration:underline;">📍 Ver Ubicación en Mapa</div>`;
 
             return `
                 <div class="bubble ${m.u === user ? 'bubble-out' : 'bubble-in'}">
                     ${content}
-                    <div style="font-size:8px; opacity:0.6; text-align:right; margin-top:5px;">
+                    <div style="font-size:8px; opacity:0.6; text-align:right; margin-top:6px;">
                         ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
                     </div>
                 </div>`;
@@ -164,10 +162,12 @@
     }
 
     function shareLocation() {
-        navigator.geolocation.getCurrentPosition(p => {
-            const url = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
-            saveMsg({ u: user, t: url, type: 'loc' });
-        });
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(p => {
+                const url = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+                saveMsg({ u: user, t: url, type: 'loc' });
+            }, () => alert("Activa el GPS para compartir tu ubicación."));
+        }
     }
 
     function saveMsg(obj) {
@@ -180,7 +180,7 @@
     }
 
     function wipe() {
-        if(confirm("¿Borrar historial con este vendedor?")) {
+        if(confirm("¿Deseas limpiar el historial con este comerciante?")) {
             let data = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
             data[[user, partner].sort().join('_')] = [];
             localStorage.setItem('empire_private_chats', JSON.stringify(data));
