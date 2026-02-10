@@ -2,123 +2,168 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>R&R Imperio - Seguridad Máxima</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>R&R Imperio - Vitrina Real</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
-        :root { --verde: #22c55e; --oro: #facc15; --oscuro: #0f172a; --error: #ff4757; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #f4f7f6; margin: 0; }
+        :root {
+            --verde: #22c55e; --verde-luz: #dcfce7; --oro: #fbbf24;
+            --oscuro: #0f172a; --gris: #64748b; --blanco: #ffffff;
+            --fondo: #f8fafc;
+        }
 
-        /* --- PANTALLA DE BLOQUEO INTELIGENTE --- */
-        #master-lock { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; align-items: center; justify-content: center; text-align: center; }
-        .lock-content { padding: 40px; max-width: 350px; }
-        .radar { width: 80px; height: 80px; border: 4px solid var(--verde); border-radius: 50%; margin: 0 auto 20px; border-top-color: transparent; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--fondo); color: var(--oscuro); overflow: hidden; }
 
-        /* --- VITRINA PREMIUM --- */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; padding-bottom: 100px; }
-        .card { background: white; border-radius: 22px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
-        .img-w { width: 100%; aspect-ratio: 1/1; position: relative; }
-        .img-w img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Botón de Venta (Dueño/Admin) */
-        .sold-btn { position: absolute; top: 10px; right: 10px; background: var(--error); color: white; border: none; width: 32px; height: 32px; border-radius: 10px; font-weight: 800; cursor: pointer; z-index: 20; box-shadow: 0 4px 10px rgba(255,71,87,0.3); }
-
-        .price-tag { background: var(--verde); color: white; padding: 5px 10px; border-radius: 10px; font-size: 14px; font-weight: 800; position: absolute; bottom: 10px; left: 10px; }
+        /* --- LAYOUT PRINCIPAL --- */
+        .app-shell { display: flex; flex-direction: column; height: 100vh; }
         
-        .info { padding: 12px; }
-        .info b { display: block; font-size: 13px; color: var(--oscuro); margin-bottom: 8px; height: 2.6em; overflow: hidden; line-height: 1.3; }
-        .btn-msg { width: 100%; padding: 12px; background: var(--oscuro); color: white; border: none; border-radius: 14px; font-weight: 700; font-size: 11px; }
+        /* --- HEADER ELITE --- */
+        header { 
+            padding: 15px 20px; background: var(--blanco); border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex; justify-content: space-between; align-items: center; z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 20px; letter-spacing: -1px; display: flex; align-items: center; gap: 8px; }
+        .logo span { color: var(--verde); }
+        .admin-badge { background: var(--oro); color: var(--oscuro); font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; box-shadow: 0 4px 10px rgba(250, 204, 21, 0.3); }
 
-        /* --- NAVEGACIÓN --- */
-        .nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; background: var(--oscuro); border-radius: 24px; display: flex; justify-content: space-around; padding: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .n-item { color: #64748b; font-size: 10px; text-align: center; font-weight: 800; }
-        .active { color: var(--verde); }
+        /* --- SELECTOR DE ZONA --- */
+        .zone-tabs { display: flex; padding: 10px 15px; gap: 10px; overflow-x: auto; background: var(--blanco); scrollbar-width: none; }
+        .zone-chip { padding: 8px 18px; border-radius: 15px; background: #f1f5f9; font-size: 12px; font-weight: 700; white-space: nowrap; transition: 0.3s; color: var(--gris); border: 1px solid transparent; }
+        .zone-chip.active { background: var(--verde-luz); color: var(--verde); border-color: var(--verde); }
+
+        /* --- VISTAS --- */
+        .view { flex: 1; overflow-y: auto; display: none; padding-bottom: 100px; }
+        .view.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- VITRINA (GRID 2 COL) --- */
+        .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        .product-card { background: var(--blanco); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,0,0,0.03); position: relative; display: flex; flex-direction: column; }
+        .product-card .img-container { width: 100%; aspect-ratio: 1/1; position: relative; }
+        .product-card img { width: 100%; height: 100%; object-fit: cover; }
+        .product-card .price { position: absolute; bottom: 8px; left: 8px; background: var(--verde); color: white; padding: 4px 10px; border-radius: 10px; font-weight: 800; font-size: 14px; }
+        .product-card .delete-btn { position: absolute; top: 8px; right: 8px; background: #ff4757; color: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 900; }
+        .product-info { padding: 12px; flex: 1; }
+        .product-info h3 { margin: 0; font-size: 13px; font-weight: 700; height: 2.6em; overflow: hidden; line-height: 1.3; }
+        .product-info button { width: 100%; margin-top: 10px; padding: 10px; border-radius: 12px; border: none; background: var(--oscuro); color: white; font-size: 11px; font-weight: 800; }
+
+        /* --- CHAT GRUPAL INTEGRADO --- */
+        .group-chat-container { height: 100%; display: flex; flex-direction: column; padding: 15px; }
+        #group-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .g-msg { max-width: 80%; padding: 10px 14px; border-radius: 15px; font-size: 13px; font-weight: 600; line-height: 1.4; position: relative; }
+        .g-msg .u { font-size: 9px; font-weight: 800; display: block; margin-bottom: 2px; text-transform: uppercase; }
+        .g-msg-me { align-self: flex-end; background: var(--verde); color: white; border-bottom-right-radius: 2px; }
+        .g-msg-them { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 2px; }
+        .chat-input-area { background: white; padding: 10px; border-radius: 20px; display: flex; gap: 10px; border: 1px solid #e2e8f0; }
+        .chat-input-area input { flex: 1; border: none; font-weight: 600; font-size: 14px; }
+
+        /* --- BARRA NAVEGACIÓN --- */
+        nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; background: var(--oscuro); padding: 10px; border-radius: 25px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .nav-btn { color: #94a3b8; text-align: center; border: none; background: none; font-size: 10px; font-weight: 800; cursor: pointer; }
+        .nav-btn.active { color: var(--verde); }
+
+        /* --- MODAL DE CARGA / BLOQUEO --- */
+        #loader { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .loader-box { padding: 40px; }
+        .spin { width: 50px; height: 50px; border: 4px solid #f1f5f9; border-top-color: var(--verde); border-radius: 50%; animation: s 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes s { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div id="master-lock">
-    <div class="lock-content">
-        <div id="radar-ui" class="radar"></div>
-        <h2 id="l-title">Escaneando Identidad</h2>
-        <p id="l-msg" style="color: #64748b; font-size: 14px;">Iniciando protocolos de seguridad R&R...</p>
-        <button id="btn-retry" onclick="checkSecurity()" style="display:none; width:100%; padding:15px; background:var(--verde); color:white; border:none; border-radius:15px; font-weight:800; margin-top:15px;">FORZAR RE-ESCANEO</button>
+<div id="loader">
+    <div class="loader-box">
+        <div class="spin"></div>
+        <h2 id="l-title">Conectando...</h2>
+        <p id="l-msg">Sincronizando con el Imperio Real</p>
+        <button id="l-btn" onclick="checkAccess()" style="display:none; padding:12px 25px; background:var(--verde); color:white; border:none; border-radius:15px; font-weight:800;">REINTENTAR ACCESO</button>
     </div>
 </div>
 
-<header style="padding: 15px; background: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee;">
-    <div style="font-weight: 900; letter-spacing: -1px; font-size: 20px;">R&R <span style="color:var(--verde)">IMPERIO</span></div>
-    <div id="badge-admin" style="display:none; background: var(--oro); color: var(--oscuro); font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 6px;">MASTER ADMIN</div>
-</header>
+<div class="app-shell">
+    <header>
+        <div class="logo">R&R <span>IMPERIO</span></div>
+        <div id="admin-tag" class="admin-badge" style="display:none;">ADMIN MASTER</div>
+        <div style="font-size: 10px; font-weight: 800; color: var(--gris);" id="user-display"></div>
+    </header>
 
-<div class="grid" id="main-feed"></div>
+    <div class="zone-tabs" id="zone-selector">
+        <div class="zone-chip active" onclick="setZone('HUANTA', this)">HUANTA</div>
+        <div class="zone-chip" onclick="setZone('CUSCO', this)">CUSCO</div>
+        <div class="zone-chip" onclick="setZone('VRAEM', this)">VRAEM</div>
+    </div>
 
-<nav class="nav">
-    <div class="n-item active">🏠<br>VITRINA</div>
-    <div class="n-item" onclick="alert('Acceso a Grupos Protegido')">👥<br>GRUPOS</div>
-    <div class="n-item" onclick="location.href='chat_privado.html'">💬<br>CHATS</div>
-</nav>
+    <div id="v-market" class="view active">
+        <div class="market-grid" id="market-feed"></div>
+    </div>
+
+    <div id="v-group" class="view">
+        <div class="group-chat-container">
+            <div id="group-box"></div>
+            <div class="chat-input-area">
+                <input type="text" id="g-input" placeholder="Mensaje al grupo...">
+                <button onclick="sendGroupMsg()" style="background:var(--verde); color:white; border:none; padding:8px 15px; border-radius:12px; font-weight:800;">ENVIAR</button>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <button class="nav-btn active" onclick="switchView('market', this)">🏠<br>VITRINA</button>
+        <button class="nav-btn" onclick="alert('Usa el botón de subir en el panel Admin')">📸<br>SUBIR</button>
+        <button class="nav-btn" onclick="switchView('group', this)">👥<br>GRUPO</button>
+        <button class="nav-btn" onclick="location.href='chat_privado.html'">💬<br>CHAT</button>
+    </nav>
+</div>
 
 <script>
-    // --- PROTOCOLO DUEÑO / ADMIN ---
-    const ADMIN_USER = "TU_USUARIO_AQUÍ"; // Pon aquí tu nombre de usuario exacto del registro
-    const currentUser = localStorage.getItem('rantiy_user');
+    const USER = localStorage.getItem('rantiy_user') || "Invitado";
+    const ADMIN_USER = "TU_USUARIO_AQUÍ"; // CAMBIA ESTO POR TU NOMBRE
+    let currentZone = "HUANTA";
 
-    // COORDENADAS ESTRICTAS (CENTRO Y RADIO AJUSTADO)
-    const ZONES = {
-        HUANTA: { lat: -12.9400, lon: -74.2400, r: 15 },
-        CUSCO:  { lat: -13.5226, lon: -71.9673, r: 25 },
-        VRAEM:  { lat: -12.5000, lon: -73.8500, r: 50 }
+    // --- COORDENADAS ---
+    const COORDS = {
+        HUANTA: { lat: -12.94, lon: -74.24, r: 30 },
+        CUSCO:  { lat: -13.52, lon: -71.96, r: 40 },
+        VRAEM:  { lat: -12.50, lon: -73.85, r: 80 }
     };
 
-    function checkSecurity() {
-        const title = document.getElementById('l-title');
-        const msg = document.getElementById('l-msg');
-        const retry = document.getElementById('btn-retry');
-
-        // REGLA 1: EL DUEÑO TIENE PASE LIBRE
-        if (currentUser === ADMIN_USER) {
-            document.getElementById('badge-admin').style.display = 'block';
+    function checkAccess() {
+        if (USER === ADMIN_USER) {
+            document.getElementById('admin-tag').style.display = 'block';
             unlock();
             return;
         }
 
-        // REGLA 2: GPS ESTRICTO PARA OTROS
-        if (!navigator.geolocation) {
-            msg.innerText = "Error: Hardware GPS no detectado.";
-            return;
-        }
-
         navigator.geolocation.getCurrentPosition(pos => {
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            let access = false;
+            let userLat = pos.coords.latitude;
+            let userLon = pos.coords.longitude;
+            let inside = false;
 
-            for (let z in ZONES) {
-                if (getDist(lat, lon, ZONES[z].lat, ZONES[z].lon) <= ZONES[z].r) {
-                    access = true;
-                    break;
-                }
+            for (let z in COORDS) {
+                let d = getDistance(userLat, userLon, COORDS[z].lat, COORDS[z].lon);
+                if (d <= COORDS[z].r) { inside = true; break; }
             }
 
-            if (access) unlock();
-            else {
-                title.innerText = "ZONA RESTRINGIDA";
-                msg.innerText = "Te encuentras fuera de los límites permitidos del Imperio.";
-                document.getElementById('radar-ui').style.borderColor = "var(--error)";
-                retry.style.display = 'block';
-            }
-        }, () => {
-            title.innerText = "GPS OBLIGATORIO";
-            msg.innerText = "Para entrar al mercado debes dar permiso de ubicación.";
-            retry.style.display = 'block';
-        }, { enableHighAccuracy: true });
+            if (inside) unlock();
+            else lock("Acceso Denegado", "No estás dentro de las zonas del Imperio.");
+        }, () => lock("GPS Apagado", "Activa tu ubicación para entrar."));
     }
 
-    function getDist(l1, n1, l2, n2) {
+    function unlock() {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('user-display').innerText = USER;
+        renderMarket();
+    }
+
+    function lock(t, m) {
+        document.getElementById('l-title').innerText = t;
+        document.getElementById('l-msg').innerText = m;
+        document.getElementById('l-btn').style.display = 'block';
+    }
+
+    function getDistance(l1, n1, l2, n2) {
         const R = 6371;
         const dLat = (l2-l1) * Math.PI/180;
         const dLon = (n2-n1) * Math.PI/180;
@@ -126,48 +171,81 @@
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    function unlock() {
-        document.getElementById('master-lock').style.display = 'none';
-        renderFeed();
+    function setZone(z, el) {
+        currentZone = z;
+        document.querySelectorAll('.zone-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        renderMarket();
+        renderGroupChat();
     }
 
-    function renderFeed() {
-        const feed = document.getElementById('main-feed');
+    function renderMarket() {
+        const feed = document.getElementById('market-feed');
         const posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
-        
-        feed.innerHTML = posts.map(p => `
-            <div class="card">
-                <div class="img-w">
-                    ${(p.u === currentUser || currentUser === ADMIN_USER) ? `<button class="sold-btn" onclick="sellItem(${p.id})">✕</button>` : ''}
-                    <div class="price-tag">S/ ${p.price}</div>
+        const filtered = posts.filter(p => p.city === currentZone);
+
+        feed.innerHTML = filtered.map(p => `
+            <div class="product-card">
+                <div class="img-container">
+                    ${(p.u === USER || USER === ADMIN_USER) ? `<button class="delete-btn" onclick="deletePost(${p.id})">✕</button>` : ''}
+                    <div class="price">S/ ${p.price}</div>
                     <img src="${p.imgs[0] || 'https://via.placeholder.com/300'}">
                 </div>
-                <div class="info">
-                    <b>${p.title}</b>
-                    <button class="btn-msg" onclick="goChat('${p.u}')">HABLAR CON VENDEDOR</button>
+                <div class="product-info">
+                    <h3>${p.title}</h3>
+                    <button onclick="goPrivate('${p.u}')">NEGOCIAR</button>
                 </div>
             </div>
         `).join('');
     }
 
-    function sellItem(id) {
-        if(confirm("¿Confirmas que el producto se vendió?")) {
-            // EFECTO DE SOLES (AMARILLO ORO)
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#facc15', '#fbbf24', '#ffffff'] });
-
+    function deletePost(id) {
+        if(confirm("¿Vendido?")) {
+            confetti({ particleCount: 100, spread: 70, colors: ['#22c55e', '#fbbf24'] });
             let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
             posts = posts.filter(p => p.id !== id);
             localStorage.setItem('empire_posts', JSON.stringify(posts));
-            setTimeout(renderFeed, 1000);
+            renderMarket();
         }
     }
 
-    function goChat(s) {
+    function sendGroupMsg() {
+        const input = document.getElementById('g-input');
+        if(!input.value.trim()) return;
+        let msgs = JSON.parse(localStorage.getItem('chat_group_' + currentZone) || '[]');
+        msgs.push({ u: USER, t: input.value });
+        localStorage.setItem('chat_group_' + currentZone, JSON.stringify(msgs));
+        input.value = "";
+        renderGroupChat();
+    }
+
+    function renderGroupChat() {
+        const box = document.getElementById('group-box');
+        let msgs = JSON.parse(localStorage.getItem('chat_group_' + currentZone) || '[]');
+        box.innerHTML = msgs.map(m => `
+            <div class="g-msg ${m.u === USER ? 'g-msg-me' : 'g-msg-them'}">
+                <span class="u">${m.u}</span>
+                ${m.t}
+            </div>
+        `).join('');
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function switchView(v, el) {
+        document.querySelectorAll('.view').forEach(vw => vw.classList.remove('active'));
+        document.getElementById('v-' + v).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        if(v === 'group') renderGroupChat();
+    }
+
+    function goPrivate(s) {
         localStorage.setItem('current_chat_partner', s);
         location.href = 'chat_privado.html';
     }
 
-    window.onload = checkSecurity;
+    window.onload = checkAccess;
+    setInterval(renderGroupChat, 3000); // Sincronización grupo cada 3 seg
 </script>
 </body>
 </html>
