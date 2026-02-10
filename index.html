@@ -8,100 +8,111 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --verde: #22c55e; --naranja: #f97316; --oscuro: #1e293b;
-            --fondo: #f8fafc; --blanco: #ffffff; --gris: #64748b;
+            --verde: #22c55e; 
+            --verde-claro: #4ade80;
+            --naranja: #f97316; 
+            --oscuro: #1e293b;
+            --fondo: #f0fff4; /* Verde muy suave Huanta */
+            --blanco: #ffffff; 
+            --gris: #64748b;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--fondo); margin: 0; padding-bottom: 110px; color: var(--oscuro); }
+        body { background: var(--fondo); margin: 0; padding-bottom: 110px; color: var(--oscuro); transition: 0.3s; }
 
-        /* --- PANTALLA GPS (BLOQUEO SEGURIDAD) --- */
+        /* --- PANTALLA GPS --- */
         #gps-lock { position: fixed; inset: 0; background: white; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
         .spinner { width: 60px; height: 60px; border: 6px solid #f3f3f3; border-top: 6px solid var(--verde); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- HEADER --- */
-        .header { background: var(--blanco); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; }
-        .logo-rr { width: 50px; height: 50px; background: linear-gradient(135deg, var(--verde), #15803d); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; cursor: pointer; }
+        /* --- HEADER PREMIUM --- */
+        .header { background: var(--blanco); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--verde-claro); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .logo-rr { width: 45px; height: 45px; background: linear-gradient(135deg, var(--verde), #15803d); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; cursor: pointer; }
 
-        /* --- GRUPOS POR CIUDAD --- */
-        .city-indicator { padding: 10px 20px; background: var(--verde); color: white; font-size: 12px; font-weight: 800; text-align: center; }
+        /* --- SELECTOR DE CIUDAD --- */
+        .city-selector-bar { background: var(--verde); color: white; padding: 10px; display: flex; justify-content: center; gap: 10px; overflow-x: auto; white-space: nowrap; }
+        .city-chip { padding: 6px 15px; border-radius: 20px; font-size: 11px; font-weight: 800; background: rgba(255,255,255,0.2); cursor: pointer; border: 1px solid transparent; }
+        .city-chip.active { background: white; color: var(--verde); border-color: white; }
 
         /* --- CHAT GRUPAL --- */
-        .group-chat-area { height: 70vh; display: flex; flex-direction: column; background: #f1f5f9; margin: 15px; border-radius: 30px; overflow: hidden; border: 1px solid #e2e8f0; }
-        #group-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px 18px; border-radius: 18px; max-width: 80%; font-size: 14px; font-weight: 600; }
-        .msg-me { align-self: flex-end; background: var(--verde); color: white; }
-        .msg-them { align-self: flex-start; background: white; color: var(--oscuro); }
+        .group-chat-area { height: 65vh; display: flex; flex-direction: column; background: white; margin: 15px; border-radius: 25px; overflow: hidden; border: 2px solid var(--verde-claro); }
+        #group-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 10px 15px; border-radius: 15px; max-width: 85%; font-size: 13px; font-weight: 600; line-height: 1.4; }
+        .msg-me { align-self: flex-end; background: var(--verde); color: white; border-bottom-right-radius: 2px; }
+        .msg-them { align-self: flex-start; background: #f1f5f9; color: var(--oscuro); border-bottom-left-radius: 2px; }
 
-        /* --- VITRINA & STUDIO (Igual al anterior para mantener esencia) --- */
-        .card { background: white; margin: 15px; border-radius: 30px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .img-container { height: 300px; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-        .img-container img { width: 100%; flex-shrink: 0; object-fit: cover; }
+        /* --- CARDS --- */
+        .card { background: white; margin: 15px; border-radius: 25px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+        .img-container { height: 280px; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; }
+        .img-container img { width: 100%; flex-shrink: 0; object-fit: cover; scroll-snap-align: start; }
         
         /* --- NAVEGACIÓN --- */
-        .nav-bar { position: fixed; bottom: 25px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 30px; display: flex; justify-content: space-around; padding: 15px; z-index: 2000; }
-        .nav-item { color: #94a3b8; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
-        .nav-item.active { color: var(--verde); }
+        .nav-bar { position: fixed; bottom: 20px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 25px; display: flex; justify-content: space-around; padding: 12px; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .nav-item { color: #94a3b8; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--verde-claro); transform: translateY(-5px); }
     </style>
 </head>
 <body>
 
 <div id="gps-lock">
-    <div class="logo-rr" style="width:80px; height:80px; font-size:30px;">R&R</div>
-    <h2 id="status-msg">Sincronizando Imperio...</h2>
+    <div class="logo-rr" style="width:70px; height:70px; font-size:25px;">R&R</div>
+    <h2 id="status-msg" style="margin-top:20px;">Sincronizando Imperio...</h2>
     <div class="spinner"></div>
-    <p style="color: var(--gris); font-size: 12px;">Validando Ciudadanía y Ubicación</p>
+    <p style="color: var(--gris); font-size: 12px;">Validando Identidad en la Zona</p>
 </div>
 
 <header class="header">
-    <div style="display:flex; align-items:center; gap:12px;">
+    <div style="display:flex; align-items:center; gap:10px;">
         <div class="logo-rr" id="admin-btn">R&R</div>
         <div>
-            <div style="font-weight: 800; font-size: 16px;">Rantiy y Rantikuy</div>
-            <div id="user-display" style="font-size: 10px; color: var(--verde); font-weight: 800;">...</div>
+            <div id="user-display" style="font-weight: 800; font-size: 14px; color: var(--verde);">CARGANDO...</div>
+            <div id="current-location-text" style="font-size: 10px; color: var(--gris); font-weight: 700;">📍 Localizando...</div>
         </div>
     </div>
-    <div id="active-city-badge" style="font-size: 18px;">📍</div>
+    <div style="font-size: 20px;">👑</div>
 </header>
 
-<div id="city-label" class="city-indicator">CONECTANDO A LA RED DE HUANTA...</div>
+<div class="city-selector-bar" id="city-selector">
+    <div class="city-chip active" onclick="setCity('Huanta', this)">Huanta</div>
+    <div class="city-chip" onclick="setCity('VRAEM', this)">VRAEM</div>
+    <div class="city-chip" onclick="setCity('Huamanga', this)">Huamanga</div>
+    <div class="city-chip" onclick="setCity('Cusco', this)">Cusco</div>
+</div>
 
 <main id="view-home" class="view">
-    <div style="padding: 15px 20px;">
-        <input type="text" id="search" placeholder="🔍 Buscar en el mercado..." oninput="renderFeed()" 
-               style="width:100%; padding:15px; border-radius:15px; border:1px solid #e2e8f0; font-weight:600;">
+    <div style="padding: 15px;">
+        <input type="text" id="search" placeholder="🔍 Buscar en este mercado..." oninput="renderFeed()" 
+               style="width:100%; padding:14px; border-radius:15px; border:2px solid #e2e8f0; font-weight:600; outline:none;">
     </div>
     <div id="feed"></div>
 </main>
 
 <section id="view-upload" class="view" style="display:none; padding:20px;">
-    <h3 style="font-weight: 800;">Publicar Anuncio</h3>
-    <select id="cat-select" onchange="updateForm()" style="width:100%; padding:15px; border-radius:15px; margin-bottom:15px; font-weight:700;">
+    <h3 style="font-weight: 800; margin-bottom:20px;">Publicar Anuncio en <span id="target-city" style="color:var(--verde)">Huanta</span></h3>
+    <select id="cat-select" onchange="updateForm()" style="width:100%; padding:15px; border-radius:15px; margin-bottom:15px; font-weight:700; border:2px solid var(--verde-claro);">
         <option value="Venta">🛒 Venta de Producto</option>
         <option value="Trabajo">👔 Oferta de Trabajo</option>
         <option value="Turismo">⛰️ Turismo / Viajes</option>
         <option value="Comida">🍲 Venta de Comida</option>
     </select>
     
-    <div id="dynamic-form">
-        </div>
+    <div id="dynamic-form"></div>
 
-    <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:5px; margin: 15px 0;">
-        <div onclick="pickImg(0)" style="height:70px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img id="i0" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
-        <div onclick="pickImg(1)" style="height:70px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img id="i1" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
-        <div onclick="pickImg(2)" style="height:70px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img id="i2" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
-        <div onclick="pickImg(3)" style="height:70px; background:#e2e8f0; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;"><img id="i3" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+    <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:8px; margin: 15px 0;">
+        <div onclick="pickImg(0)" id="slot0" style="height:75px; background:#e2e8f0; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px dashed var(--verde);"><img id="i0" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+        <div onclick="pickImg(1)" id="slot1" style="height:75px; background:#e2e8f0; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px dashed var(--verde);"><img id="i1" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+        <div onclick="pickImg(2)" id="slot2" style="height:75px; background:#e2e8f0; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px dashed var(--verde);"><img id="i2" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+        <div onclick="pickImg(3)" id="slot3" style="height:75px; background:#e2e8f0; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; border:2px dashed var(--verde);"><img id="i3" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
     </div>
-    <button onclick="publish()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:20px; font-weight:900;">PUBLICAR</button>
+    <button onclick="publish()" style="width:100%; padding:18px; background:linear-gradient(135deg, var(--verde), #15803d); color:white; border:none; border-radius:18px; font-weight:900; box-shadow: 0 8px 15px rgba(34,197,94,0.3);">SUBIR AL IMPERIO 🚀</button>
 </section>
 
 <section id="view-group" class="view" style="display:none;">
     <div class="group-chat-area">
         <div id="group-messages"></div>
-        <div style="padding:15px; display:flex; gap:10px; background:white;">
-            <input type="text" id="group-input" placeholder="Mensaje al grupo..." style="flex:1; border:none; font-weight:600; outline:none;">
-            <button onclick="sendGroup()" style="background:var(--verde); color:white; border:none; padding:10px 20px; border-radius:15px;">✈️</button>
+        <div style="padding:15px; display:flex; gap:10px; background:white; border-top:1px solid #eee;">
+            <input type="text" id="group-input" placeholder="Escribe al grupo de la ciudad..." style="flex:1; border:none; font-weight:600; outline:none;">
+            <button onclick="sendGroup()" style="background:var(--verde); color:white; border:none; padding:10px 18px; border-radius:12px;">✈️</button>
         </div>
     </div>
 </section>
@@ -110,41 +121,50 @@
     <div class="nav-item active" onclick="tab('home', this)">🏠<br>VITRINA</div>
     <div class="nav-item" onclick="tab('upload', this)">📸<br>SUBIR</div>
     <div class="nav-item" onclick="tab('group', this)">📢<br>GRUPO</div>
-    <div class="nav-item" onclick="window.location.href='chat_privado.html'">💬<br>PRIVADO</div>
+    <div class="nav-item" onclick="window.location.href='chat_privado.html'">💬<br>CHAT</div>
 </nav>
 
 <script>
-    let user = ""; let myCity = "Huanta"; let imgs = [null,null,null,null]; let adminHits = 0;
+    let user = ""; 
+    let myCity = "Huanta"; 
+    let imgs = [null,null,null,null]; 
+    let adminHits = 0;
 
     function init() {
-        // 1. CONEXIÓN INICIO SESIÓN
         user = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
         if(!user) { window.location.href = 'registro_entrada.html'; return; }
         document.getElementById('user-display').innerText = user.toUpperCase();
 
-        // 2. GPS Y BLOQUEO
+        // Simulador de GPS Inteligente
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
-                // Aquí iría la lógica de coordenadas para Huanta/Huamanga/VRAEM
                 document.getElementById('gps-lock').style.display = 'none';
+                document.getElementById('current-location-text').innerText = "📍 Conexión Segura: " + myCity;
                 updateForm(); renderFeed();
             }, () => {
-                alert("Activa el GPS para entrar al Imperio.");
+                document.getElementById('status-msg').innerText = "¡GPS Necesario!";
+                alert("Debes activar el GPS para comerciar en el Imperio.");
             });
         }
 
-        // 3. ADMIN (7 toques)
+        // Admin: 7 toques al logo
         document.getElementById('admin-btn').onclick = () => {
             adminHits++;
             if(adminHits === 7) window.location.href = 'admin.html';
-            setTimeout(() => adminHits = 0, 2000);
+            setTimeout(() => adminHits = 0, 2500);
         };
-
-        // Escuchar mensajes nuevos de otros
-        window.addEventListener('storage', () => { renderFeed(); renderGroup(); });
     }
 
-    // --- CHAT GRUPAL CIUDAD ---
+    function setCity(city, el) {
+        myCity = city;
+        document.getElementById('target-city').innerText = city;
+        document.getElementById('current-location-text').innerText = "📍 Mercado de " + city;
+        document.querySelectorAll('.city-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        renderFeed();
+        if(document.getElementById('view-group').style.display !== 'none') renderGroup();
+    }
+
     function sendGroup() {
         let txt = document.getElementById('group-input').value;
         if(!txt) return;
@@ -160,34 +180,21 @@
         let msgs = JSON.parse(localStorage.getItem('chat_group_' + myCity) || '[]');
         box.innerHTML = msgs.map(m => `
             <div class="bubble ${m.u === user ? 'msg-me' : 'msg-them'}">
-                <small style="display:block; font-size:9px; opacity:0.7;">${m.u}</small>
+                <small style="display:block; font-size:9px; font-weight:800; opacity:0.7; margin-bottom:2px;">${m.u}</small>
                 ${m.t}
             </div>
         `).join('');
         box.scrollTop = box.scrollHeight;
     }
 
-    // --- STUDIO Y PREGUNTAS ---
     function updateForm() {
         const cat = document.getElementById('cat-select').value;
         const form = document.getElementById('dynamic-form');
-        let html = `<input type="text" id="f-title" placeholder="¿Qué ofreces?" style="width:100%; padding:15px; border-radius:15px; border:1px solid #ddd; margin-bottom:10px;">`;
-        
-        if(cat === 'Venta') html += `<input type="number" id="f-price" placeholder="Precio S/" style="width:100%; padding:15px; border-radius:15px; border:1px solid #ddd;">`;
-        if(cat === 'Trabajo') html += `<input type="text" id="f-price" placeholder="Sueldo estimado" style="width:100%; padding:15px; border-radius:15px; border:1px solid #ddd;">`;
-        if(cat === 'Turismo') html += `<input type="text" id="f-price" placeholder="Precio del tour" style="width:100%; padding:15px; border-radius:15px; border:1px solid #ddd;">`;
-        
+        let html = `<input type="text" id="f-title" placeholder="¿Qué vendes u ofreces?" style="width:100%; padding:15px; border-radius:12px; border:2px solid #eee; margin-bottom:10px; font-weight:600;">`;
+        html += `<input type="text" id="f-price" placeholder="Precio o Sueldo (Ej: S/ 50)" style="width:100%; padding:15px; border-radius:12px; border:2px solid #eee; font-weight:600;">`;
         form.innerHTML = html;
     }
 
-    // --- CONEXIÓN CHAT PRIVADO ---
-    function goPrivate(seller) {
-        if(seller === user) return;
-        localStorage.setItem('current_chat_partner', seller);
-        window.location.href = 'chat_privado.html';
-    }
-
-    // --- LÓGICA BASE ---
     function pickImg(i) {
         let input = document.createElement('input'); input.type='file'; input.accept='image/*';
         input.onchange = e => {
@@ -195,36 +202,61 @@
                 imgs[i] = ev.target.result;
                 document.getElementById('i'+i).src = ev.target.result;
                 document.getElementById('i'+i).style.display = 'block';
+                document.getElementById('slot'+i).style.border = '2px solid var(--verde)';
             }; r.readAsDataURL(e.target.files[0]);
         }; input.click();
     }
 
     function publish() {
+        const title = document.getElementById('f-title').value;
+        if(!title) { alert("Ponle un nombre a tu publicación"); return; }
+        
         let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
         posts.unshift({
-            u: user, title: document.getElementById('f-title').value, 
-            price: document.getElementById('f-price').value, 
-            imgs: imgs.filter(i=>i), city: myCity, cat: document.getElementById('cat-select').value
+            u: user, title: title, 
+            price: document.getElementById('f-price').value || "Consultar", 
+            imgs: imgs.filter(i=>i), 
+            city: myCity, 
+            cat: document.getElementById('cat-select').value
         });
         localStorage.setItem('empire_posts', JSON.stringify(posts));
-        confetti(); tab('home', document.querySelectorAll('.nav-item')[0]);
+        
+        confetti(); 
+        imgs = [null,null,null,null];
+        tab('home', document.querySelectorAll('.nav-item')[0]);
         renderFeed();
     }
 
     function renderFeed() {
         const feed = document.getElementById('feed');
+        const search = document.getElementById('search').value.toLowerCase();
         let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
-        feed.innerHTML = posts.map(p => `
+        
+        // Filtrar por ciudad y búsqueda
+        let filtered = posts.filter(p => p.city === myCity && p.title.toLowerCase().includes(search));
+
+        if(filtered.length === 0) {
+            feed.innerHTML = `<div style="text-align:center; padding:50px; color:var(--gris);">Aún no hay anuncios en ${myCity}. ¡Sé el primero!</div>`;
+            return;
+        }
+
+        feed.innerHTML = filtered.map(p => `
             <div class="card">
-                <div class="img-container">${p.imgs.map(img => `<img src="${img}">`).join('')}</div>
-                <div style="padding:20px;">
-                    <span style="background:var(--verde); color:white; padding:4px 10px; border-radius:10px; font-size:10px; font-weight:800;">${p.cat}</span>
-                    <h2 style="margin:10px 0 5px 0;">S/ ${p.price}</h2>
-                    <p style="font-weight:700; margin-bottom:15px;">${p.title}</p>
-                    <button onclick="goPrivate('${p.u}')" style="width:100%; padding:15px; background:var(--oscuro); color:white; border-radius:15px; border:none; font-weight:800;">NEGOCIAR</button>
+                <div class="img-container">${p.imgs.length > 0 ? p.imgs.map(img => `<img src="${img}">`).join('') : '<div style="width:100%; height:100%; background:#f1f5f9; display:flex; align-items:center; justify-content:center;">Sin Imagen</div>'}</div>
+                <div style="padding:15px;">
+                    <span style="background:var(--verde); color:white; padding:4px 12px; border-radius:10px; font-size:10px; font-weight:800; text-transform:uppercase;">${p.cat}</span>
+                    <h2 style="margin:10px 0 5px 0; color:var(--oscuro); font-size:22px;">${p.price.includes('S/') ? p.price : 'S/ ' + p.price}</h2>
+                    <p style="font-weight:700; color:var(--gris); margin-bottom:15px; font-size:14px;">${p.title}</p>
+                    <button onclick="goPrivate('${p.u}')" style="width:100%; padding:15px; background:var(--oscuro); color:white; border-radius:12px; border:none; font-weight:800; cursor:pointer;">NEGOCIAR CON VENDEDOR</button>
                 </div>
             </div>
         `).join('');
+    }
+
+    function goPrivate(seller) {
+        if(seller === user) { alert("Es tu propia publicación"); return; }
+        localStorage.setItem('current_chat_partner', seller);
+        window.location.href = 'chat_privado.html';
     }
 
     function tab(id, el) {
@@ -233,6 +265,7 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
         if(id === 'group') renderGroup();
+        if(id === 'home') renderFeed();
     }
 
     window.onload = init;
