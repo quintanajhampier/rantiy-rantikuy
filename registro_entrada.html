@@ -3,191 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rantiy y Rantikuy - Acceso Seguro</title>
+    <title>Rantiy y Rantikuy - Ingreso Seguro</title>
     <style>
-        :root {
-            --verde-huanta: #4ade80;
-            --verde-oscuro: #2d6a4f;
-            --naranja-brillante: #ff8c00;
-            --fondo-vibrante: #f0fff4;
-        }
-
-        body { 
-            background-color: var(--fondo-vibrante); 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; margin: 0; 
-        }
-
-        .contenedor { 
-            background: white; padding: 40px 30px; border-radius: 30px; 
-            box-shadow: 0 20px 40px rgba(45, 106, 79, 0.15); 
-            width: 90%; max-width: 420px; text-align: center; 
-            border: 3px solid var(--verde-huanta);
-        }
-
-        /* Título con interacción secreta */
-        h1 { 
-            color: var(--verde-oscuro); margin-bottom: 5px; font-size: 28px; 
-            font-weight: 800; cursor: pointer; user-select: none; 
-        }
+        /* Mantenemos tus colores claros y vibrantes de Huanta */
+        body { background-color: #f0fff4; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .contenedor { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(45, 106, 79, 0.1); width: 90%; max-width: 400px; text-align: center; border: 2px solid #4ade80; }
         
-        .eslogan { color: var(--naranja-brillante); font-weight: bold; font-size: 13px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
+        h1 { color: #2d6a4f; margin-bottom: 5px; font-size: 24px; }
+        .eslogan { color: #ff8c00; font-weight: bold; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
         
-        .alerta-gps { 
-            background: #fff9f0; border-radius: 15px; padding: 15px; margin-bottom: 25px; 
-            font-size: 12px; color: #854d0e; text-align: left; border: 1px solid #fde68a;
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        .input-group { margin-bottom: 15px; text-align: left; }
-        label { font-size: 12px; color: var(--verde-oscuro); font-weight: bold; margin-left: 10px; }
+        .alerta-gps { background: #e6fffa; border-left: 5px solid #4ade80; padding: 10px; margin-bottom: 20px; font-size: 12px; color: #065f46; text-align: left; }
         
-        input { 
-            width: 100%; padding: 14px 18px; margin-top: 5px;
-            border: 2px solid #edf2f7; border-radius: 16px; outline: none; 
-            box-sizing: border-box; font-size: 16px; background: #f8fafc;
-        }
-
-        .terminos-box { 
-            background: #f1f5f9; padding: 15px; border-radius: 16px; 
-            height: 100px; overflow-y: auto; font-size: 11px; color: #64748b; 
-            text-align: left; margin: 20px 0; border: 1px solid #e2e8f0;
-        }
-
-        .check-group { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #334155; cursor: pointer; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e0e0e0; border-radius: 12px; outline: none; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: #ff8c00; }
         
-        .btn-ingresar { 
-            background: linear-gradient(135deg, var(--verde-huanta), var(--verde-oscuro)); 
-            color: white; border: none; padding: 18px; width: 100%; border-radius: 18px; 
-            font-weight: 800; font-size: 17px; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(45, 106, 79, 0.2); 
-        }
-
-        /* MODAL ADMIN OCULTO */
-        #admin-modal { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; 
-        }
-        .admin-caja { background: white; padding: 30px; border-radius: 20px; width: 80%; max-width: 300px; text-align: center; }
-
-        #status { font-size: 13px; font-weight: 700; margin-top: 20px; color: var(--verde-oscuro); }
+        .terminos-box { background: #f9fafb; padding: 15px; border-radius: 12px; height: 100px; overflow-y: scroll; font-size: 11px; color: #4b5563; text-align: left; margin: 15px 0; border: 1px solid #eee; }
+        
+        .check-group { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #374151; text-align: left; cursor: pointer; }
+        
+        .btn-ingresar { background-color: #ff8c00; color: white; border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3); }
+        .btn-ingresar:disabled { background-color: #ccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
 <div class="contenedor">
-    <h1 onclick="contarClics()">Rantiy y Rantikuy</h1>
-    <div class="eslogan">El Imperio del Comercio</div>
+    <h1>Rantiy y Rantikuy</h1>
+    <div class="eslogan">Mercado Serio - Cero Estafas</div>
 
-    <div id="user-view">
-        <div class="alerta-gps">📍 Verificación Satelital para un mercado sin estafas.</div>
-
-        <div class="input-group">
-            <label>IDENTIDAD</label>
-            <input type="text" id="nombre" placeholder="Tu nombre completo">
-        </div>
-
-        <div class="input-group">
-            <label>TELÉFONO</label>
-            <input type="tel" id="telefono" placeholder="Número de celular">
-        </div>
-
-        <div class="terminos-box">
-            • Seguridad: Su ubicación se registra para evitar estafas.<br>
-            • Transparencia: El administrador vigila la paz del mercado.<br>
-            • Expulsión: Estafadores serán baneados permanentemente.
-        </div>
-
-        <label class="check-group">
-            <input type="checkbox" id="acepto">
-            <span>Acepto las leyes del imperio.</span>
-        </label>
-
-        <button id="btnEntrar" onclick="validarYEntrar()" class="btn-ingresar">SOLICITAR ACCESO</button>
+    <div class="alerta-gps">
+        📍 <b>Seguridad de Huanta:</b> Esta app requiere GPS activo para validar que eres un usuario local y real. Las cuentas sin ubicación serán bloqueadas.
     </div>
 
-    <div id="status"></div>
-</div>
+    <input type="text" id="nombre" placeholder="Nombre y Apellido Completo" required>
+    <input type="tel" id="telefono" placeholder="Número de Teléfono Real (9xx...)" required>
 
-<div id="admin-modal">
-    <div class="admin-caja">
-        <h3 style="color: var(--naranja-brillante);">MODO COMANDANTE</h3>
-        <input type="password" id="admin-pass" placeholder="Clave Maestra">
-        <button onclick="loginAdmin()" style="background:var(--verde-oscuro); color:white; border:none; padding:12px; width:100%; border-radius:12px; margin-top:10px; cursor:pointer; font-weight:bold;">ACCESO TOTAL</button>
-        <button onclick="cerrarAdmin()" style="background:none; border:none; color:gray; margin-top:10px; cursor:pointer; font-size:11px;">Cancelar</button>
+    <div class="terminos-box">
+        <b>REGLAS DEL IMPERIO:</b><br>
+        1. <b>Cero Estafas:</b> Cualquier intento de engaño resultará en expulsión inmediata y bloqueo de equipo (Hardware).<br>
+        2. <b>Supervisión:</b> El administrador tiene derecho a auditar chats si hay reportes de mal comportamiento.<br>
+        3. <b>Comisiones:</b> Se cobrará un porcentaje por venta realizada para el mantenimiento de la comunidad.<br>
+        4. <b>Respeto:</b> Insultos o falta de seriedad son motivo de baneo permanente.
     </div>
+
+    <label class="check-group">
+        <input type="checkbox" id="acepto" required>
+        <span>Acepto los términos, el pago de comisiones y la supervisión del administrador por mi seguridad.</span>
+    </label>
+
+    <button id="btnEntrar" onclick="validarYEntrar()" class="btn-ingresar">VERIFICAR E INGRESAR</button>
+    <p id="status" style="font-size: 12px; margin-top: 10px; color: #2d6a4f;"></p>
 </div>
 
 <script>
-    let clicks = 0;
-    let timer;
+async function validarYEntrar() {
+    const nombre = document.getElementById('nombre').value;
+    const telefono = document.getElementById('telefono').value;
+    const acepto = document.getElementById('acepto').checked;
+    const btn = document.getElementById('btnEntrar');
+    const status = document.getElementById('status');
 
-    // EL TRUCO DE LOS 7 CLICS
-    function contarClics() {
-        clicks++;
-        clearTimeout(timer);
-        if (clicks === 7) {
-            document.getElementById('admin-modal').style.display = 'flex';
-            clicks = 0;
-        }
-        timer = setTimeout(() => { clicks = 0; }, 3000); // 3 segundos para completar los 7 clics
+    if (!nombre || !telefono || !acepto) {
+        alert("Por favor, completa todos los campos y acepta las reglas para proteger la comunidad.");
+        return;
     }
 
-    function cerrarAdmin() { document.getElementById('admin-modal').style.display = 'none'; }
+    navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+            btn.disabled = true;
+            status.innerText = "Sincronizando con el Imperio...";
 
-    async function validarYEntrar() {
-        const nombre = document.getElementById('nombre').value.trim();
-        const telefono = document.getElementById('telefono').value.trim();
-        const acepto = document.getElementById('acepto').checked;
-        const status = document.getElementById('status');
-        const btn = document.getElementById('btnEntrar');
+            // TU ENLACE DE GOOGLE APPS SCRIPT
+            const scriptURL = "https://script.google.com/macros/s/AKfycbwsQyjUIFJkUgKpYBQVM-sUccSRMBO1wZlr9m2cofzzFVsO_dpqVyjQzufMRmtNWVI7/exec";
 
-        if (!nombre || !telefono || !acepto) { alert("⚠️ Completa tus datos."); return; }
+            // Guardamos localmente para que el sistema sepa quién eres al entrar
+            localStorage.setItem('rantiy_user', nombre);
 
-        btn.disabled = true;
-        status.innerHTML = "🛰️ Buscando satélite de Huanta...";
+            // Preparamos los datos tal cual los necesita tu Excel
+            const datos = new FormData();
+            datos.append('nombre', nombre);
+            datos.append('telefono', telefono);
+            datos.append('firma', "GPS Verificado ✅");
+            datos.append('dispositivo', `Ubicación: ${pos.coords.latitude}, ${pos.coords.longitude} | Navegador: ${navigator.userAgent}`);
 
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                const scriptURL = "https://script.google.com/macros/s/AKfycbwsQyjUIFJkUgKpYBQVM-sUccSRMBO1wZlr9m2cofzzFVsO_dpqVyjQzufMRmtNWVI7/exec";
-                
-                // GUARDAR SESIÓN NORMAL
-                localStorage.setItem('rantiy_user', nombre);
-                localStorage.setItem('admin_session', 'false'); // No es admin
+            try {
+                // Enviamos al Excel con modo 'no-cors' para evitar bloqueos visuales
+                fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: datos
+                });
 
-                const datos = new FormData();
-                datos.append('nombre', nombre);
-                datos.append('telefono', telefono);
-                datos.append('firma', "ACCESO SATELITAL ✅");
-                datos.append('dispositivo', `COORD: ${pos.coords.latitude}, ${pos.coords.longitude}`);
+                // Esperamos un segundo para que el servidor procese y saltamos a la App
+                setTimeout(() => {
+                    status.innerText = "¡Bienvenido al Imperio!";
+                    window.location.href = "index.html"; // Aquí va el archivo de la vitrina
+                }, 1200);
 
-                try {
-                    fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: datos });
-                    status.innerText = "¡Ubicación Verificada!";
-                    setTimeout(() => { window.location.href = "index.html"; }, 1000);
-                } catch (e) { window.location.href = "index.html"; }
-            },
-            (err) => {
-                btn.disabled = false;
-                status.style.color = "#dc2626";
-                status.innerText = "❌ GPS BLOQUEADO. Toca el candado arriba.";
-            },
-            { enableHighAccuracy: true, timeout: 15000 }
-        );
-    }
-
-    function loginAdmin() {
-        const pass = document.getElementById('admin-pass').value;
-        // AQUÍ TU CONTRASEÑA
-        if (pass === "1234") { 
-            localStorage.setItem('rantiy_user', "ADMIN_IMPERIO");
-            localStorage.setItem('admin_session', "true"); // ESTA ES LA LLAVE PARA INDEX.HTML
-            window.location.href = "index.html"; 
-        } else {
-            alert("Clave incorrecta.");
-        }
-    }
+            } catch (error) {
+                console.log("Error de envío, pero procediendo...");
+                window.location.href = "index.html";
+            }
+        },
+        (err) => {
+            alert("ERROR: Rantiy y Rantikuy requiere GPS activo para garantizar un mercado sin estafas.");
+            btn.disabled = false;
+        },
+        { enableHighAccuracy: true }
+    );
+}
 </script>
+
 </body>
 </html>
