@@ -18,12 +18,12 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
         body { background: #f8fafc; margin: 0; padding-bottom: 140px; overflow-x: hidden; color: var(--oscuro); }
 
-        /* --- BLOQUEO GPS INICIAL --- */
+        /* --- PANTALLA DE CARGA GPS --- */
         #gps-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
         .gps-loader { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--verde); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- HEADER --- */
+        /* --- CABECERA --- */
         .header {
             background: var(--glass); backdrop-filter: blur(25px); padding: 18px 25px;
             display: flex; align-items: center; justify-content: space-between;
@@ -38,19 +38,19 @@
         }
         @keyframes rotate3d { 0%, 100% { transform: perspective(500px) rotateY(0deg); } 50% { transform: perspective(500px) rotateY(30deg); } }
 
-        /* --- BÚSQUEDA Y FILTROS --- */
+        /* --- BÚSQUEDA --- */
         .search-container { padding: 0 20px; margin-top: 15px; }
         .search-wrapper { position: relative; display: flex; align-items: center; }
         .search-input { width: 100%; padding: 18px 25px 18px 55px; border-radius: 25px; border: none; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.03); font-weight: 700; }
         .search-icon { position: absolute; left: 20px; font-size: 20px; }
 
+        /* --- CATEGORÍAS Y CIUDADES --- */
         .filter-bar { padding: 15px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
         .filter-chip { padding: 10px 20px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
         .filter-active { background: var(--verde-glow); border-color: var(--verde); color: var(--verde); }
 
-        /* --- CIUDADES --- */
         .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
-        .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.5; pointer-events: none; }
+        .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.3; pointer-events: none; }
         .active-city { opacity: 1; pointer-events: auto; border-width: 3px; }
         .active-huanta { border-color: var(--huanta); background: #f0fdf4; }
         .active-huamanga { border-color: var(--huamanga); background: #eff6ff; }
@@ -61,10 +61,10 @@
         .view-active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- VITRINA / CARDS --- */
-        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; }
-        .img-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
-        .img-scroll img { width: 100%; height: 230px; object-fit: cover; border-radius: 25px; flex-shrink: 0; }
+        /* --- CARDS DE LA VITRINA --- */
+        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 25px; border: 1px solid rgba(0,0,0,0.03); }
+        .img-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; border-radius: 25px; }
+        .img-scroll img { width: 100%; height: 250px; object-fit: cover; border-radius: 25px; flex-shrink: 0; }
 
         /* --- STUDIO SUBIDA --- */
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
@@ -82,39 +82,37 @@
         /* --- SISTEMA DE CHATS --- */
         .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; }
         .msg-area { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
+        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; word-wrap: break-word; }
         .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .bubble img { width: 100%; border-radius: 15px; margin-top: 5px; cursor: pointer; }
 
-        /* --- MODAL PRIVADO --- */
+        /* --- MODAL PRIVADO AVANZADO --- */
         #private-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; }
         .private-header { padding: 20px; background: var(--oscuro); color: white; display: flex; justify-content: space-between; align-items: center; }
-        .chat-tools { display: flex; gap: 10px; padding: 10px 20px; background: white; border-top: 1px solid #eee; }
-        .tool-btn { background: #f1f5f9; border: none; padding: 12px; border-radius: 18px; font-size: 18px; cursor: pointer; flex: 1; }
-        .file-bubble { background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; display: flex; flex-direction: column; gap: 5px; }
+        .chat-tools { display: flex; gap: 10px; padding: 12px 20px; background: #fdfdfd; border-top: 1px solid #eee; }
+        .tool-btn { background: #f1f5f9; border: none; padding: 15px; border-radius: 20px; font-size: 20px; cursor: pointer; flex: 1; transition: 0.2s; }
+        .tool-btn:active { background: var(--verde-glow); transform: scale(0.95); }
+        .file-msg { background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; border-left: 4px solid var(--verde); }
 
-        /* --- NAV ISLAND --- */
-        .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
-        .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
-        .nav-btn.active { color: var(--verde); }
-        
-        .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 12px; border-radius: 15px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 10px; }
+        /* --- NAVEGACIÓN --- */
+        .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .nav-btn.active { color: var(--verde); transform: translateY(-5px); }
     </style>
 </head>
 <body>
 
 <div id="gps-screen">
-    <div class="logo-rr" style="width:100px; height:100px; font-size:40px; margin-bottom:20px;">R&R</div>
-    <h1 style="font-weight:900; margin-bottom:5px;">Rantiy y Rantikuy</h1>
+    <div class="logo-rr" style="width:110px; height:110px; font-size:45px; margin-bottom:25px;">R&R</div>
+    <h1 style="font-weight:900;">Rantiy y Rantikuy</h1>
     <p style="opacity:0.6; margin-bottom:30px;">Detectando ubicación para Huanta, Huamanga o VRAEM...</p>
     <div class="gps-loader"></div>
-    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--verde);">Sincronizando con el satélite...</p>
+    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--verde);">Conectando con satélites...</p>
 </div>
 
 <header class="header">
     <div style="display:flex; align-items:center; gap:18px;">
-        <div class="logo-rr" id="main-logo-trigger">R&R</div>
+        <div class="logo-rr" id="admin-trigger">R&R</div>
         <div>
             <div style="font-weight: 900; font-size: 20px;">Rantiy y Rantikuy</div>
             <div id="user-tag" style="font-size: 10px; color: var(--verde); font-weight: 800;">CIUDADANO: CARGANDO...</div>
@@ -125,16 +123,16 @@
 <div class="search-container">
     <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas hoy?" oninput="renderFeed()">
+        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas en tu ciudad?" oninput="renderFeed()">
     </div>
 </div>
 
 <div class="filter-bar">
-    <div class="filter-chip filter-active" onclick="filterByCat('Todas', this)">✨ Todas</div>
-    <div class="filter-chip" onclick="filterByCat('Comida', this)">🍲 Comida</div>
-    <div class="filter-chip" onclick="filterByCat('Venta', this)">👕 Venta</div>
-    <div class="filter-chip" onclick="filterByCat('Taxi', this)">🚗 Taxi</div>
-    <div class="filter-chip" onclick="filterByCat('Servicio', this)">⚡ Servicio</div>
+    <div class="filter-chip filter-active" onclick="setFilter('Todas', this)">✨ Todas</div>
+    <div class="filter-chip" onclick="setFilter('Comida', this)">🍲 Comida</div>
+    <div class="filter-chip" onclick="setFilter('Venta', this)">👕 Venta</div>
+    <div class="filter-chip" onclick="setFilter('Taxi', this)">🚗 Taxi</div>
+    <div class="filter-chip" onclick="setFilter('Servicio', this)">⚡ Servicio</div>
 </div>
 
 <div class="city-bar">
@@ -149,7 +147,7 @@
 
 <section id="view-camera" class="view">
     <div class="camera-hub" id="main-hub">
-        <h2 style="font-weight:900;">Vender en <span id="current-zone-text">...</span></h2>
+        <h2 style="font-weight:900;">Vender en <span id="zone-txt">...</span></h2>
         <div class="category-grid">
             <div class="cat-btn" onclick="startStudio('Venta', '🛍️')">💰<br>VENTA</div>
             <div class="cat-btn" onclick="startStudio('Comida', '🍲')">🥘<br>COMIDA</div>
@@ -162,7 +160,7 @@
 
     <div id="upload-studio">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
+            <h3 id="studio-tag" style="margin:0; font-weight:900;">Publicar</h3>
             <button onclick="exitStudio()" style="background:none; border:none; font-size:20px;">✕</button>
         </div>
         <div class="photo-grid">
@@ -171,20 +169,23 @@
             <div class="drop-zone"><div id="info-2">3</div><img id="img-2" style="display:none;"><div class="source-chooser"><button onclick="capture('cam',2)">📷</button><button onclick="capture('gal',2)">🖼️</button></div></div>
             <div class="drop-zone"><div id="info-3">4</div><img id="img-3" style="display:none;"><div class="source-chooser"><button onclick="capture('cam',3)">📷</button><button onclick="capture('gal',3)">🖼️</button></div></div>
         </div>
-        <div id="q-box" style="margin-top:20px;"></div>
-        <input type="text" id="in-title" class="rr-field" placeholder="Nombre del producto o servicio">
+        <div id="extra-q" style="margin-top:20px;"></div>
+        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
-        <button onclick="uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR AHORA 🚀</button>
+        <button onclick="publishPost()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">SUBIR A LA VITRINA 🚀</button>
     </div>
 </section>
 
 <section id="view-chat" class="view">
     <div class="chat-box-ui">
-        <div id="group-title" style="padding:20px; background:var(--verde); color:white; font-weight:900;">SALA DE CHAT</div>
+        <div id="chat-group-header" style="padding:20px; background:var(--verde); color:white; font-weight:900; display:flex; justify-content:space-between;">
+            <span id="label-sala">SALA GRUPAL</span>
+            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:5px 10px; border-radius:10px;">BORRADO AUTOMÁTICO 30H</span>
+        </div>
         <div class="msg-area" id="group-msgs"></div>
-        <div style="padding:15px; display:flex; gap:10px;">
-            <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe al grupo...">
-            <button onclick="sendGroup()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
+        <div style="padding:15px; display:flex; gap:10px; background:white;">
+            <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Mensaje para el grupo...">
+            <button onclick="sendGroupMsg()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
         </div>
     </div>
 </section>
@@ -192,21 +193,21 @@
 <div id="private-modal">
     <div class="private-header">
         <button onclick="closePrivate()" style="background:none; border:none; color:white; font-size:20px;">⬅</button>
-        <span id="p-chat-name" style="font-weight:900;">Mensajes</span>
-        <button onclick="clearPrivateChat()" style="background:#ef4444; border:none; color:white; font-size:10px; padding:8px 12px; border-radius:12px; font-weight:800;">BORRAR</button>
+        <span id="p-partner-name" style="font-weight:900;">...</span>
+        <button onclick="wipePrivateChat()" style="background:#ef4444; border:none; color:white; font-size:10px; padding:8px 12px; border-radius:12px; font-weight:800;">BORRAR</button>
     </div>
     
     <div class="msg-area" id="private-msgs"></div>
 
     <div class="chat-tools">
-        <button class="tool-btn" onclick="triggerPrivateMedia('cam')">📷</button>
-        <button class="tool-btn" onclick="triggerPrivateMedia('gal')">🖼️</button>
-        <button class="tool-btn" onclick="triggerPrivateFile()">📄</button>
+        <button class="tool-btn" title="Cámara" onclick="pMedia('cam')">📷</button>
+        <button class="tool-btn" title="Galería" onclick="pMedia('gal')">🖼️</button>
+        <button class="tool-btn" title="Documentos" onclick="pFile()">📄</button>
     </div>
 
-    <div style="padding:15px; display:flex; gap:10px; background:white;">
-        <input type="text" id="p-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe un mensaje...">
-        <button onclick="sendPrivate()" style="background:var(--verde); color:white; border:none; width:60px; height:50px; border-radius:20px;">✈️</button>
+    <div style="padding:15px; display:flex; gap:10px; background:white; border-top:1px solid #eee;">
+        <input type="text" id="p-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe un mensaje privado...">
+        <button onclick="sendPrivateMsg()" style="background:var(--verde); color:white; border:none; width:60px; height:50px; border-radius:20px;">✈️</button>
     </div>
 </div>
 
@@ -220,9 +221,10 @@
     let activeLoc = ""; 
     let activeCat = ""; 
     let currentFilter = "Todas"; 
-    let capturedFiles = [null,null,null,null]; 
+    let files = [null,null,null,null]; 
     let currentUser = "";
-    let adminClickCount = 0;
+    let partnerUser = "";
+    let clicks = 0;
 
     const ZONAS = {
         "Huanta": { lat: -12.94, lon: -74.24, r: 0.05 },
@@ -235,21 +237,20 @@
         if(!currentUser) { window.location.href = 'registro_entrada.html'; return; }
         document.getElementById('user-tag').innerText = "CIUDADANO: " + currentUser.toUpperCase();
 
+        // 7 CLICKS PARA ADMIN
+        document.getElementById('admin-trigger').onclick = () => {
+            clicks++;
+            if(clicks === 7) { window.location.href = 'admin.html'; clicks = 0; }
+            setTimeout(() => clicks = 0, 3000);
+        };
+
         if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition(successGPS, errorGPS, {enableHighAccuracy:true});
+            navigator.geolocation.watchPosition(geoOk, geoError, {enableHighAccuracy:true});
         }
 
-        // Sistema Admin: 7 toques en el título
-        document.getElementById('main-logo-trigger').addEventListener('click', () => {
-            adminClickCount++;
-            if(adminClickCount === 7) { window.location.href = 'admin.html'; adminClickCount = 0; }
-            setTimeout(() => adminClickCount = 0, 3000);
-        });
+        check30hCleanup();
 
-        // Limpieza automática cada 30 horas
-        checkGroupCleanup();
-
-        // Sincronización en vivo cada 3 segundos
+        // SINCRONIZACIÓN EN VIVO (CADA 3 SEGUNDOS)
         setInterval(() => {
             renderFeed();
             if(activeLoc) loadGroupMsgs();
@@ -257,38 +258,35 @@
         }, 3000);
     }
 
-    function successGPS(pos) {
+    function geoOk(pos) {
         let lat = pos.coords.latitude;
         let lon = pos.coords.longitude;
         let found = false;
 
-        for (let zone in ZONAS) {
-            let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
-            if (d < ZONAS[zone].r) {
-                activeLoc = zone;
-                found = true;
-                break;
-            }
+        for (let z in ZONAS) {
+            let d = Math.sqrt(Math.pow(lat - ZONAS[z].lat, 2) + Math.pow(lon - ZONAS[z].lon, 2));
+            if (d < ZONAS[z].r) { activeLoc = z; found = true; break; }
         }
 
         if (found) {
             document.getElementById('gps-screen').style.display = 'none';
             document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
             document.getElementById('city-' + activeLoc.toLowerCase()).classList.add('active-city', 'active-' + activeLoc.toLowerCase());
-            document.getElementById('current-zone-text').innerText = activeLoc;
-            document.getElementById('group-title').innerText = "SALA " + activeLoc.toUpperCase();
+            document.getElementById('zone-txt').innerText = activeLoc;
+            document.getElementById('label-sala').innerText = "SALA " + activeLoc.toUpperCase();
             renderFeed();
         } else {
-            document.getElementById('gps-msg').innerText = "ESTÁS FUERA DE LA ZONA DE COBERTURA.";
+            document.getElementById('gps-msg').innerText = "LO SENTIMOS, ESTÁS FUERA DE LA COBERTURA R&R.";
             document.getElementById('gps-msg').style.color = "red";
         }
     }
 
-    function errorGPS() {
-        document.getElementById('gps-msg').innerText = "ERROR: ACTIVA TU GPS PARA INGRESAR.";
+    function geoError() {
+        document.getElementById('gps-msg').innerText = "POR FAVOR ACTIVA TU GPS PARA INGRESAR.";
         document.getElementById('gps-msg').style.color = "red";
     }
 
+    // --- VITRINA Y FILTROS ---
     function renderFeed() {
         if(!activeLoc) return;
         const container = document.getElementById('feed-container');
@@ -297,27 +295,34 @@
         
         let filtered = posts.filter(p => p.city === activeLoc && (currentFilter === "Todas" || p.category === currentFilter) && p.title.toLowerCase().includes(search));
         
-        container.innerHTML = filtered.length ? '' : '<p style="text-align:center; padding:50px; opacity:0.5;">No hay nada por aquí...</p>';
+        container.innerHTML = filtered.length ? '' : '<p style="text-align:center; padding:100px; opacity:0.3;">Nada por aquí...</p>';
         
         filtered.forEach(p => {
-            let imgs = p.imgs.map(img => `<img src="${img}">`).join('');
+            let images = p.imgs.map(img => `<img src="${img}">`).join('');
             container.innerHTML += `
                 <div class="post-card">
-                    <div class="img-scroll">${imgs}</div>
-                    <h3 style="margin:10px 0;">${p.title} <span style="color:var(--verde)">S/ ${p.price}</span></h3>
-                    <p style="font-size:12px; opacity:0.7;">${p.extra} | <b>Vendedor: ${p.user}</b></p>
-                    <button onclick="openPrivateChat('${p.user}')" style="width:100%; padding:15px; background:var(--oscuro); color:white; border-radius:20px; border:none; font-weight:800;">ENVIAR MENSAJE PRIVADO</button>
-                    ${p.user === currentUser ? `<button onclick="deletePost(${p.id})" class="delete-btn">BORRAR MI ANUNCIO</button>` : ''}
+                    <div class="img-scroll">${images}</div>
+                    <h2 style="margin:15px 0 5px 0;">${p.title} <span style="color:var(--verde)">S/ ${p.price}</span></h2>
+                    <p style="font-size:12px; opacity:0.6; margin-bottom:15px;">${p.extra} | <b>Vendedor: ${p.user}</b></p>
+                    <button onclick="openPrivate('${p.user}')" style="width:100%; padding:18px; background:var(--oscuro); color:white; border-radius:25px; border:none; font-weight:800; margin-bottom:10px;">CHATEAR CON VENDEDOR</button>
+                    ${p.user === currentUser ? `<button onclick="delPost(${p.id})" style="width:100%; background:#fee2e2; color:#ef4444; border:none; padding:12px; border-radius:20px; font-weight:800;">BORRAR ANUNCIO</button>` : ''}
                 </div>`;
         });
     }
 
+    function setFilter(c, el) {
+        currentFilter = c;
+        document.querySelectorAll('.filter-chip').forEach(f => f.classList.remove('filter-active'));
+        el.classList.add('filter-active');
+        renderFeed();
+    }
+
     // --- CHAT PRIVADO MULTIMEDIA ---
-    function openPrivateChat(partner) {
+    function openPrivate(partner) {
         if(partner === currentUser) return;
-        currentChatPartner = partner;
+        partnerUser = partner;
         document.getElementById('private-modal').style.display = 'flex';
-        document.getElementById('p-chat-name').innerText = "Chat con " + partner;
+        document.getElementById('p-partner-name').innerText = "Rantikuy: " + partner;
         loadPrivateMsgs();
     }
 
@@ -325,114 +330,124 @@
 
     function loadPrivateMsgs() {
         const area = document.getElementById('private-msgs');
-        let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
-        let chatKey = [currentUser, currentChatPartner].sort().join('_');
-        let msgs = all[chatKey] || [];
+        let all = JSON.parse(localStorage.getItem('p_chats') || '{}');
+        let key = [currentUser, partnerUser].sort().join('_');
+        let msgs = all[key] || [];
         
         area.innerHTML = msgs.map(m => {
-            let body = m.t;
-            if(m.type === 'image') body = `<img src="${m.t}" style="width:100%; border-radius:10px;" onclick="window.open('${m.t}')">`;
-            if(m.type === 'file') body = `<div class="file-bubble">📄 <b>${m.name}</b><a href="${m.t}" download="${m.name}" style="color:var(--verde); font-weight:800;">Descargar</a></div>`;
-            return `<div class="bubble ${m.u===currentUser?'bubble-out':'bubble-in'}">${body}</div>`;
+            let content = m.t;
+            if(m.type === 'img') content = `<img src="${m.t}" style="width:100%; border-radius:15px;" onclick="window.open('${m.t}')">`;
+            if(m.type === 'doc') content = `<div class="file-msg">📄 <b>${m.name}</b><br><a href="${m.t}" download="${m.name}" style="color:var(--verde); font-weight:800;">DESCARGAR</a></div>`;
+            return `<div class="bubble ${m.u===currentUser?'bubble-out':'bubble-in'}">${content}</div>`;
         }).join('');
         area.scrollTop = area.scrollHeight;
     }
 
-    function sendPrivate() {
-        let t = document.getElementById('p-input').value; if(!t) return;
-        savePrivateMsg({u: currentUser, t: t, type: 'text'});
+    function sendPrivateMsg() {
+        let val = document.getElementById('p-input').value; if(!val) return;
+        savePM({u: currentUser, t: val, type: 'text'});
         document.getElementById('p-input').value = "";
     }
 
-    function triggerPrivateMedia(mode) {
-        let input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
-        if(mode === 'cam') input.capture = 'camera';
-        input.onchange = (e) => {
-            const r = new FileReader();
-            r.onload = (ev) => savePrivateMsg({u: currentUser, t: ev.target.result, type: 'image'});
-            r.readAsDataURL(e.target.files[0]);
+    function pMedia(mode) {
+        let inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+        if(mode==='cam') inp.capture = 'camera';
+        inp.onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => savePM({u: currentUser, t: ev.target.result, type: 'img'});
+            reader.readAsDataURL(e.target.files[0]);
         };
-        input.click();
+        inp.click();
     }
 
-    function triggerPrivateFile() {
-        let input = document.createElement('input');
-        input.type = 'file'; input.accept = '.pdf,.doc,.docx,.xls,.xlsx,.txt';
-        input.onchange = (e) => {
+    function pFile() {
+        let inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.pdf,.doc,.docx,.xls,.xlsx,.txt';
+        inp.onchange = (e) => {
             const f = e.target.files[0];
-            const r = new FileReader();
-            r.onload = (ev) => savePrivateMsg({u: currentUser, t: ev.target.result, type: 'file', name: f.name});
-            r.readAsDataURL(f);
+            const reader = new FileReader();
+            reader.onload = (ev) => savePM({u: currentUser, t: ev.target.result, type: 'doc', name: f.name});
+            reader.readAsDataURL(f);
         };
-        input.click();
+        inp.click();
     }
 
-    function savePrivateMsg(obj) {
-        let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
-        let chatKey = [currentUser, currentChatPartner].sort().join('_');
-        if(!all[chatKey]) all[chatKey] = [];
-        all[chatKey].push(obj);
-        localStorage.setItem('private_messages', JSON.stringify(all));
+    function savePM(obj) {
+        let all = JSON.parse(localStorage.getItem('p_chats') || '{}');
+        let key = [currentUser, partnerUser].sort().join('_');
+        if(!all[key]) all[key] = [];
+        all[key].push(obj);
+        localStorage.setItem('p_chats', JSON.stringify(all));
         loadPrivateMsgs();
     }
 
-    function clearPrivateChat() {
-        if(!confirm("¿Borrar historial para liberar espacio?")) return;
-        let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
-        let chatKey = [currentUser, currentChatPartner].sort().join('_');
-        delete all[chatKey];
-        localStorage.setItem('private_messages', JSON.stringify(all));
+    function wipePrivateChat() {
+        if(!confirm("¿Borrar historial de este chat?")) return;
+        let all = JSON.parse(localStorage.getItem('p_chats') || '{}');
+        let key = [currentUser, partnerUser].sort().join('_');
+        delete all[key];
+        localStorage.setItem('p_chats', JSON.stringify(all));
         loadPrivateMsgs();
     }
 
-    // --- GRUPAL (LIMPIEZA 30H) ---
-    function checkGroupCleanup() {
-        let last = localStorage.getItem('group_clean_time');
+    // --- GRUPAL Y AUTO-LIMPIEZA ---
+    function check30hCleanup() {
+        let last = localStorage.getItem('last_cleanup');
         let now = Date.now();
         if(!last || (now - last) > (30 * 60 * 60 * 1000)) {
-            localStorage.setItem('group_messages_Huanta', '[]');
-            localStorage.setItem('group_messages_Huamanga', '[]');
-            localStorage.setItem('group_messages_VRAEM', '[]');
-            localStorage.setItem('group_clean_time', now);
+            localStorage.setItem('group_Huanta', '[]');
+            localStorage.setItem('group_Huamanga', '[]');
+            localStorage.setItem('group_VRAEM', '[]');
+            localStorage.setItem('last_cleanup', now);
         }
     }
 
     function loadGroupMsgs() {
         const area = document.getElementById('group-msgs');
-        let msgs = JSON.parse(localStorage.getItem('group_messages_' + activeLoc) || '[]');
+        let msgs = JSON.parse(localStorage.getItem('group_' + activeLoc) || '[]');
         area.innerHTML = msgs.map(m => `<div class="bubble ${m.u===currentUser?'bubble-out':'bubble-in'}"><b>${m.u}:</b><br>${m.t}</div>`).join('');
         area.scrollTop = area.scrollHeight;
     }
 
-    function sendGroup() {
-        let t = document.getElementById('group-input').value; if(!t) return;
-        let msgs = JSON.parse(localStorage.getItem('group_messages_' + activeLoc) || '[]');
-        msgs.push({u: currentUser, t: t});
-        localStorage.setItem('group_messages_' + activeLoc, JSON.stringify(msgs));
+    function sendGroupMsg() {
+        let val = document.getElementById('group-input').value; if(!val) return;
+        let msgs = JSON.parse(localStorage.getItem('group_' + activeLoc) || '[]');
+        msgs.push({u: currentUser, t: val});
+        localStorage.setItem('group_' + activeLoc, JSON.stringify(msgs));
         document.getElementById('group-input').value = "";
         loadGroupMsgs();
     }
 
-    // --- STUDIO SUBIDA ---
+    // --- STUDIO DE SUBIDA ---
     function startStudio(cat, em) {
         activeCat = cat;
         document.getElementById('main-hub').style.display='none';
         document.getElementById('upload-studio').style.display='block';
         document.getElementById('studio-tag').innerText = em + " " + cat;
-        const q = {
-            'Venta': '¿Nuevo o usado?', 'Comida': '¿Haces delivery?',
-            'Taxi': 'Placa / Modelo', 'Empleo': 'Sueldo / Horario',
-            'Servicio': 'Años de experiencia'
-        };
-        document.getElementById('q-box').innerHTML = `<input type="text" id="q1" class="rr-field" placeholder="${q[cat] || 'Detalles'}">`;
+        const tips = { 'Venta':'¿Es nuevo?', 'Comida':'¿Delivery?', 'Taxi':'Placa/Modelo', 'Empleo':'Sueldo', 'Servicio':'Experiencia' };
+        document.getElementById('extra-q').innerHTML = `<input type="text" id="q1" class="rr-field" placeholder="${tips[cat] || 'Detalles'}">`;
     }
 
-    function uploadToEmpire() {
+    function capture(mode, i) {
+        let inp = document.createElement('input'); inp.type='file'; inp.accept='image/*';
+        if(mode==='cam') inp.capture='camera';
+        inp.onchange = (e) => {
+            const r = new FileReader();
+            r.onload = (ev) => {
+                files[i] = ev.target.result;
+                document.getElementById(`img-${i}`).src = ev.target.result;
+                document.getElementById(`img-${i}`).style.display = 'block';
+                document.getElementById(`info-${i}`).style.display = 'none';
+            };
+            r.readAsDataURL(e.target.files[0]);
+        };
+        inp.click();
+    }
+
+    function publishPost() {
         const title = document.getElementById('in-title').value;
         const price = document.getElementById('in-price').value;
-        if(!title || !capturedFiles[0]) return alert("Falta título o foto.");
-        const p = { id: Date.now(), user: currentUser, title, price, city: activeLoc, category: activeCat, imgs: capturedFiles.filter(f=>f), extra: document.getElementById('q1').value };
+        if(!title || !files[0]) return alert("Falta título o foto principal.");
+        const p = { id: Date.now(), user: currentUser, title, price, city: activeLoc, category: activeCat, imgs: files.filter(f=>f), extra: document.getElementById('q1').value };
         let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
         posts.unshift(p);
         localStorage.setItem('empire_posts', JSON.stringify(posts));
@@ -442,28 +457,12 @@
     function exitStudio() {
         document.getElementById('main-hub').style.display='block';
         document.getElementById('upload-studio').style.display='none';
-        capturedFiles = [null,null,null,null];
-        for(let i=0;i<4;i++) { document.getElementById(`img-${i}`).style.display='none'; document.getElementById(`info-${i}`).style.display='block'; }
+        files = [null,null,null,null];
+        for(let i=0;i<4;i++){ document.getElementById(`img-${i}`).style.display='none'; document.getElementById(`info-${i}`).style.display='block'; }
     }
 
-    function capture(mode, i) {
-        let input = document.createElement('input'); input.type='file'; input.accept='image/*';
-        if(mode==='cam') input.capture='camera';
-        input.onchange = (e) => {
-            const r = new FileReader();
-            r.onload = (ev) => {
-                capturedFiles[i] = ev.target.result;
-                document.getElementById(`img-${i}`).src = ev.target.result;
-                document.getElementById(`img-${i}`).style.display = 'block';
-                document.getElementById(`info-${i}`).style.display = 'none';
-            };
-            r.readAsDataURL(e.target.files[0]);
-        };
-        input.click();
-    }
-
-    function deletePost(id) {
-        if(!confirm("¿Borrar anuncio?")) return;
+    function delPost(id) {
+        if(!confirm("¿Eliminar?")) return;
         let p = JSON.parse(localStorage.getItem('empire_posts') || '[]');
         localStorage.setItem('empire_posts', JSON.stringify(p.filter(x => x.id !== id)));
         renderFeed();
@@ -474,13 +473,6 @@
         document.getElementById('view-'+id).classList.add('view-active');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
-    }
-
-    function filterByCat(c, el) {
-        currentFilter = c;
-        document.querySelectorAll('.filter-chip').forEach(f => f.classList.remove('filter-active'));
-        el.classList.add('filter-active');
-        renderFeed();
     }
 
     window.onload = init;
