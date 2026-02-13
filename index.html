@@ -2,250 +2,242 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>R&R Imperio - Vitrina Real</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>R&R - Vitrina Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --verde: #22c55e; --verde-luz: #dcfce7; --oro: #fbbf24;
-            --oscuro: #0f172a; --gris: #64748b; --blanco: #ffffff;
-            --fondo: #f8fafc;
+            --verde: #22c55e; --verde-claro: #dcfce7; --oscuro: #0f172a;
+            --fondo: #f8fafc; --blanco: #ffffff; --rojo: #ef4444;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--fondo); color: var(--oscuro); overflow: hidden; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--fondo); margin: 0; padding-bottom: 100px; color: var(--oscuro); }
 
-        /* --- LAYOUT PRINCIPAL --- */
-        .app-shell { display: flex; flex-direction: column; height: 100vh; }
+        /* --- HEADER --- */
+        .header { background: var(--blanco); padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; }
+        .logo-rr { width: 40px; height: 40px; background: linear-gradient(135deg, var(--verde), #15803d); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; cursor: pointer; font-size: 14px; }
+
+        /* --- CIUDADES --- */
+        .city-selector { background: var(--blanco); padding: 10px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid #f1f5f9; }
+        .city-chip { padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 800; background: #f1f5f9; color: var(--oscuro); cursor: pointer; white-space: nowrap; border: 1px solid #e2e8f0; }
+        .city-chip.active { background: var(--verde); color: white; border-color: var(--verde); }
+
+        /* --- VITRINA 2 COLUMNAS --- */
+        .grid-feed { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+        .card { background: var(--blanco); border-radius: 18px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; position: relative; display: flex; flex-direction: column; }
         
-        /* --- HEADER ELITE --- */
-        header { 
-            padding: 15px 20px; background: var(--blanco); border-bottom: 1px solid rgba(0,0,0,0.05);
-            display: flex; justify-content: space-between; align-items: center; z-index: 100;
-        }
-        .logo { font-weight: 800; font-size: 20px; letter-spacing: -1px; display: flex; align-items: center; gap: 8px; }
-        .logo span { color: var(--verde); }
-        .admin-badge { background: var(--oro); color: var(--oscuro); font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; box-shadow: 0 4px 10px rgba(250, 204, 21, 0.3); }
+        .img-box { width: 100%; aspect-ratio: 1/1; position: relative; background: #eee; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .badge-cat { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.5); color: white; padding: 3px 7px; border-radius: 6px; font-size: 8px; font-weight: 800; backdrop-filter: blur(4px); }
+        .btn-del { position: absolute; top: 8px; right: 8px; background: var(--rojo); color: white; border: none; width: 24px; height: 24px; border-radius: 8px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* --- SELECTOR DE ZONA --- */
-        .zone-tabs { display: flex; padding: 10px 15px; gap: 10px; overflow-x: auto; background: var(--blanco); scrollbar-width: none; }
-        .zone-chip { padding: 8px 18px; border-radius: 15px; background: #f1f5f9; font-size: 12px; font-weight: 700; white-space: nowrap; transition: 0.3s; color: var(--gris); border: 1px solid transparent; }
-        .zone-chip.active { background: var(--verde-luz); color: var(--verde); border-color: var(--verde); }
+        .info-box { padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .info-box h3 { margin: 0; font-size: 15px; color: var(--verde); font-weight: 800; }
+        .info-box p { margin: 4px 0 10px 0; font-size: 11px; font-weight: 600; color: var(--oscuro); line-height: 1.2; height: 2.4em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        
+        .btn-chat { width: 100%; padding: 8px; background: var(--oscuro); color: white; border: none; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; }
 
-        /* --- VISTAS --- */
-        .view { flex: 1; overflow-y: auto; display: none; padding-bottom: 100px; }
-        .view.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- CHAT GRUPAL OPTIMIZADO --- */
+        #view-group { height: 80vh; padding: 10px; }
+        .group-container { background: white; border-radius: 20px; height: 100%; display: flex; flex-direction: column; border: 1px solid #e2e8f0; overflow: hidden; }
+        #group-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 8px; }
+        .bubble { padding: 8px 12px; border-radius: 14px; max-width: 85%; font-size: 13px; line-height: 1.4; font-weight: 600; }
+        .msg-me { align-self: flex-end; background: var(--verde); color: white; border-bottom-right-radius: 2px; }
+        .msg-them { align-self: flex-start; background: #e2e8f0; color: var(--oscuro); border-bottom-left-radius: 2px; }
 
-        /* --- VITRINA (GRID 2 COL) --- */
-        .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-        .product-card { background: var(--blanco); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,0,0,0.03); position: relative; display: flex; flex-direction: column; }
-        .product-card .img-container { width: 100%; aspect-ratio: 1/1; position: relative; }
-        .product-card img { width: 100%; height: 100%; object-fit: cover; }
-        .product-card .price { position: absolute; bottom: 8px; left: 8px; background: var(--verde); color: white; padding: 4px 10px; border-radius: 10px; font-weight: 800; font-size: 14px; }
-        .product-card .delete-btn { position: absolute; top: 8px; right: 8px; background: #ff4757; color: white; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: 900; }
-        .product-info { padding: 12px; flex: 1; }
-        .product-info h3 { margin: 0; font-size: 13px; font-weight: 700; height: 2.6em; overflow: hidden; line-height: 1.3; }
-        .product-info button { width: 100%; margin-top: 10px; padding: 10px; border-radius: 12px; border: none; background: var(--oscuro); color: white; font-size: 11px; font-weight: 800; }
+        /* --- NAVEGACIÓN --- */
+        .nav-bar { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; background: var(--oscuro); border-radius: 20px; display: flex; justify-content: space-around; padding: 10px; z-index: 2000; }
+        .nav-item { color: #94a3b8; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
+        .nav-item.active { color: var(--verde); }
 
-        /* --- CHAT GRUPAL INTEGRADO --- */
-        .group-chat-container { height: 100%; display: flex; flex-direction: column; padding: 15px; }
-        #group-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
-        .g-msg { max-width: 80%; padding: 10px 14px; border-radius: 15px; font-size: 13px; font-weight: 600; line-height: 1.4; position: relative; }
-        .g-msg .u { font-size: 9px; font-weight: 800; display: block; margin-bottom: 2px; text-transform: uppercase; }
-        .g-msg-me { align-self: flex-end; background: var(--verde); color: white; border-bottom-right-radius: 2px; }
-        .g-msg-them { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 2px; }
-        .chat-input-area { background: white; padding: 10px; border-radius: 20px; display: flex; gap: 10px; border: 1px solid #e2e8f0; }
-        .chat-input-area input { flex: 1; border: none; font-weight: 600; font-size: 14px; }
-
-        /* --- BARRA NAVEGACIÓN --- */
-        nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; background: var(--oscuro); padding: 10px; border-radius: 25px; display: flex; justify-content: space-around; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .nav-btn { color: #94a3b8; text-align: center; border: none; background: none; font-size: 10px; font-weight: 800; cursor: pointer; }
-        .nav-btn.active { color: var(--verde); }
-
-        /* --- MODAL DE CARGA / BLOQUEO --- */
-        #loader { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; align-items: center; justify-content: center; text-align: center; }
-        .loader-box { padding: 40px; }
-        .spin { width: 50px; height: 50px; border: 4px solid #f1f5f9; border-top-color: var(--verde); border-radius: 50%; animation: s 1s linear infinite; margin: 0 auto 20px; }
-        @keyframes s { to { transform: rotate(360deg); } }
+        /* --- FORMULARIO --- */
+        .upload-card { background: white; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; }
+        .input-rr { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 10px; font-weight: 700; outline: none; }
     </style>
 </head>
 <body>
 
-<div id="loader">
-    <div class="loader-box">
-        <div class="spin"></div>
-        <h2 id="l-title">Conectando...</h2>
-        <p id="l-msg">Sincronizando con el Imperio Real</p>
-        <button id="l-btn" onclick="checkAccess()" style="display:none; padding:12px 25px; background:var(--verde); color:white; border:none; border-radius:15px; font-weight:800;">REINTENTAR ACCESO</button>
+<header class="header">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <div class="logo-rr" id="admin-btn">R&R</div>
+        <b id="user-display" style="font-size: 13px; color: var(--verde);">...</b>
     </div>
+    <span style="font-size: 12px; font-weight: 800; color: #64748b;">Mercado Real</span>
+</header>
+
+<div class="city-selector">
+    <div class="city-chip active" onclick="setCity('Huanta', this)">Huanta</div>
+    <div class="city-chip" onclick="setCity('VRAEM', this)">VRAEM</div>
+    <div class="city-chip" onclick="setCity('Huamanga', this)">Huamanga</div>
+    <div class="city-chip" onclick="setCity('Cusco', this)">Cusco</div>
 </div>
 
-<div class="app-shell">
-    <header>
-        <div class="logo">R&R <span>IMPERIO</span></div>
-        <div id="admin-tag" class="admin-badge" style="display:none;">ADMIN MASTER</div>
-        <div style="font-size: 10px; font-weight: 800; color: var(--gris);" id="user-display"></div>
-    </header>
+<main id="view-home" class="view">
+    <div id="feed" class="grid-feed"></div>
+</main>
 
-    <div class="zone-tabs" id="zone-selector">
-        <div class="zone-chip active" onclick="setZone('HUANTA', this)">HUANTA</div>
-        <div class="zone-chip" onclick="setZone('CUSCO', this)">CUSCO</div>
-        <div class="zone-chip" onclick="setZone('VRAEM', this)">VRAEM</div>
+<section id="view-upload" class="view" style="display:none; padding:15px;">
+    <div class="upload-card">
+        <h3 style="margin-top:0;">Nuevo Anuncio</h3>
+        <select id="cat-select" class="input-rr">
+            <option value="PRODUCTO">🛒 Producto</option>
+            <option value="COMIDA">🍲 Comida</option>
+            <option value="TRABAJO">💼 Trabajo</option>
+        </select>
+        <input type="text" id="f-title" class="input-rr" placeholder="¿Qué ofreces?">
+        <input type="text" id="f-price" class="input-rr" placeholder="Precio S/">
+        <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:5px; margin-bottom:15px;">
+            <div onclick="pickImg(0)" style="height:50px; background:#f1f5f9; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:20px; color:#cbd5e1;"><img id="i0" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+            <div onclick="pickImg(1)" style="height:50px; background:#f1f5f9; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:20px; color:#cbd5e1;"><img id="i1" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+            <div onclick="pickImg(2)" style="height:50px; background:#f1f5f9; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:20px; color:#cbd5e1;"><img id="i2" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+            <div onclick="pickImg(3)" style="height:50px; background:#f1f5f9; border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:20px; color:#cbd5e1;"><img id="i3" style="display:none; width:100%; height:100%; object-fit:cover;">+</div>
+        </div>
+        <button onclick="publish()" style="width:100%; padding:15px; background:var(--verde); color:white; border:none; border-radius:12px; font-weight:900;">PUBLICAR EN VIVO</button>
     </div>
+</section>
 
-    <div id="v-market" class="view active">
-        <div class="market-grid" id="market-feed"></div>
-    </div>
-
-    <div id="v-group" class="view">
-        <div class="group-chat-container">
-            <div id="group-box"></div>
-            <div class="chat-input-area">
-                <input type="text" id="g-input" placeholder="Mensaje al grupo...">
-                <button onclick="sendGroupMsg()" style="background:var(--verde); color:white; border:none; padding:8px 15px; border-radius:12px; font-weight:800;">ENVIAR</button>
-            </div>
+<section id="view-group" class="view" style="display:none;">
+    <div class="group-container">
+        <div id="group-messages"></div>
+        <div style="padding:10px; display:flex; gap:8px; background:white;">
+            <input type="text" id="group-input" placeholder="Escribe al grupo..." style="flex:1; border:none; outline:none; font-weight:600;">
+            <button onclick="sendGroup()" style="background:var(--verde); color:white; border:none; padding:8px 15px; border-radius:10px;">✈️</button>
         </div>
     </div>
+</section>
 
-    <nav>
-        <button class="nav-btn active" onclick="switchView('market', this)">🏠<br>VITRINA</button>
-        <button class="nav-btn" onclick="alert('Usa el botón de subir en el panel Admin')">📸<br>SUBIR</button>
-        <button class="nav-btn" onclick="switchView('group', this)">👥<br>GRUPO</button>
-        <button class="nav-btn" onclick="location.href='chat_privado.html'">💬<br>CHAT</button>
-    </nav>
-</div>
+<nav class="nav-bar">
+    <div class="nav-item active" onclick="tab('home', this)">🏠<br>VITRINA</div>
+    <div class="nav-item" onclick="tab('upload', this)">📸<br>SUBIR</div>
+    <div class="nav-item" onclick="tab('group', this)">📢<br>GRUPO</div>
+    <div class="nav-item" onclick="window.location.href='chat_privado.html'">💬<br>CHAT</div>
+</nav>
 
 <script>
-    const USER = localStorage.getItem('rantiy_user') || "Invitado";
-    const ADMIN_USER = "TU_USUARIO_AQUÍ"; // CAMBIA ESTO POR TU NOMBRE
-    let currentZone = "HUANTA";
+    let user = localStorage.getItem('rantiy_user');
+    let myCity = "Huanta";
+    let imgs = [null,null,null,null];
 
-    // --- COORDENADAS ---
-    const COORDS = {
-        HUANTA: { lat: -12.94, lon: -74.24, r: 30 },
-        CUSCO:  { lat: -13.52, lon: -71.96, r: 40 },
-        VRAEM:  { lat: -12.50, lon: -73.85, r: 80 }
-    };
-
-    function checkAccess() {
-        if (USER === ADMIN_USER) {
-            document.getElementById('admin-tag').style.display = 'block';
-            unlock();
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(pos => {
-            let userLat = pos.coords.latitude;
-            let userLon = pos.coords.longitude;
-            let inside = false;
-
-            for (let z in COORDS) {
-                let d = getDistance(userLat, userLon, COORDS[z].lat, COORDS[z].lon);
-                if (d <= COORDS[z].r) { inside = true; break; }
-            }
-
-            if (inside) unlock();
-            else lock("Acceso Denegado", "No estás dentro de las zonas del Imperio.");
-        }, () => lock("GPS Apagado", "Activa tu ubicación para entrar."));
+    function init() {
+        if(!user) { window.location.href = 'registro_entrada.html'; return; }
+        document.getElementById('user-display').innerText = user.toUpperCase();
+        renderFeed();
+        setInterval(renderFeed, 5000); // Tiempo real
     }
 
-    function unlock() {
-        document.getElementById('loader').style.display = 'none';
-        document.getElementById('user-display').innerText = USER;
-        renderMarket();
-    }
-
-    function lock(t, m) {
-        document.getElementById('l-title').innerText = t;
-        document.getElementById('l-msg').innerText = m;
-        document.getElementById('l-btn').style.display = 'block';
-    }
-
-    function getDistance(l1, n1, l2, n2) {
-        const R = 6371;
-        const dLat = (l2-l1) * Math.PI/180;
-        const dLon = (n2-n1) * Math.PI/180;
-        const a = Math.sin(dLat/2)**2 + Math.cos(l1*Math.PI/180)*Math.cos(l2*Math.PI/180)*Math.sin(dLon/2)**2;
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
-
-    function setZone(z, el) {
-        currentZone = z;
-        document.querySelectorAll('.zone-chip').forEach(c => c.classList.remove('active'));
+    function setCity(city, el) {
+        myCity = city;
+        document.querySelectorAll('.city-chip').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
-        renderMarket();
-        renderGroupChat();
+        renderFeed();
+        if(document.getElementById('view-group').style.display !== 'none') renderGroup();
     }
 
-    function renderMarket() {
-        const feed = document.getElementById('market-feed');
-        const posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
-        const filtered = posts.filter(p => p.city === currentZone);
+    function renderFeed() {
+        const feed = document.getElementById('feed');
+        let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
+        let filtered = posts.filter(p => p.city === myCity);
 
-        feed.innerHTML = filtered.map(p => `
-            <div class="product-card">
-                <div class="img-container">
-                    ${(p.u === USER || USER === ADMIN_USER) ? `<button class="delete-btn" onclick="deletePost(${p.id})">✕</button>` : ''}
-                    <div class="price">S/ ${p.price}</div>
-                    <img src="${p.imgs[0] || 'https://via.placeholder.com/300'}">
+        feed.innerHTML = filtered.map((p, index) => `
+            <div class="card">
+                <div class="img-box">
+                    <span class="badge-cat">${p.cat}</span>
+                    ${p.u === user ? `<button class="btn-del" onclick="deletePost(${p.id})">✕</button>` : ''}
+                    <img src="${p.imgs[0] || 'https://via.placeholder.com/200'}">
                 </div>
-                <div class="product-info">
-                    <h3>${p.title}</h3>
-                    <button onclick="goPrivate('${p.u}')">NEGOCIAR</button>
+                <div class="info-box">
+                    <div>
+                        <h3>S/ ${p.price}</h3>
+                        <p>${p.title}</p>
+                    </div>
+                    <button class="btn-chat" onclick="goPrivate('${p.u}')">NEGOCIAR</button>
                 </div>
             </div>
         `).join('');
     }
 
     function deletePost(id) {
-        if(confirm("¿Vendido?")) {
-            confetti({ particleCount: 100, spread: 70, colors: ['#22c55e', '#fbbf24'] });
+        if(confirm("¿Eliminar este anuncio?")) {
             let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
             posts = posts.filter(p => p.id !== id);
             localStorage.setItem('empire_posts', JSON.stringify(posts));
-            renderMarket();
+            renderFeed();
         }
     }
 
-    function sendGroupMsg() {
-        const input = document.getElementById('g-input');
-        if(!input.value.trim()) return;
-        let msgs = JSON.parse(localStorage.getItem('chat_group_' + currentZone) || '[]');
-        msgs.push({ u: USER, t: input.value });
-        localStorage.setItem('chat_group_' + currentZone, JSON.stringify(msgs));
-        input.value = "";
-        renderGroupChat();
+    function publish() {
+        const title = document.getElementById('f-title').value;
+        const price = document.getElementById('f-price').value;
+        if(!title || !price) return alert("Completa los campos");
+
+        let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
+        posts.unshift({
+            id: Date.now(),
+            u: user,
+            title: title,
+            price: price,
+            imgs: imgs.filter(i => i),
+            city: myCity,
+            cat: document.getElementById('cat-select').value
+        });
+        localStorage.setItem('empire_posts', JSON.stringify(posts));
+        confetti();
+        imgs = [null,null,null,null];
+        tab('home', document.querySelectorAll('.nav-item')[0]);
+        renderFeed();
     }
 
-    function renderGroupChat() {
-        const box = document.getElementById('group-box');
-        let msgs = JSON.parse(localStorage.getItem('chat_group_' + currentZone) || '[]');
+    function sendGroup() {
+        let txt = document.getElementById('group-input').value;
+        if(!txt) return;
+        let msgs = JSON.parse(localStorage.getItem('chat_group_' + myCity) || '[]');
+        msgs.push({u: user, t: txt});
+        localStorage.setItem('chat_group_' + myCity, JSON.stringify(msgs));
+        document.getElementById('group-input').value = "";
+        renderGroup();
+    }
+
+    function renderGroup() {
+        const box = document.getElementById('group-messages');
+        let msgs = JSON.parse(localStorage.getItem('chat_group_' + myCity) || '[]');
         box.innerHTML = msgs.map(m => `
-            <div class="g-msg ${m.u === USER ? 'g-msg-me' : 'g-msg-them'}">
-                <span class="u">${m.u}</span>
+            <div class="bubble ${m.u === user ? 'msg-me' : 'msg-them'}">
+                <div style="font-size:9px; opacity:0.7; margin-bottom:2px;">${m.u}</div>
                 ${m.t}
             </div>
         `).join('');
         box.scrollTop = box.scrollHeight;
     }
 
-    function switchView(v, el) {
-        document.querySelectorAll('.view').forEach(vw => vw.classList.remove('active'));
-        document.getElementById('v-' + v).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    function pickImg(i) {
+        let input = document.createElement('input'); input.type='file'; input.accept='image/*';
+        input.onchange = e => {
+            let r = new FileReader(); r.onload = ev => {
+                imgs[i] = ev.target.result;
+                document.getElementById('i'+i).src = ev.target.result;
+                document.getElementById('i'+i).style.display = 'block';
+            }; r.readAsDataURL(e.target.files[0]);
+        }; input.click();
+    }
+
+    function goPrivate(seller) {
+        if(seller === user) return;
+        localStorage.setItem('current_chat_partner', seller);
+        window.location.href = 'chat_privado.html';
+    }
+
+    function tab(id, el) {
+        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+        document.getElementById('view-' + id).style.display = 'block';
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
-        if(v === 'group') renderGroupChat();
+        if(id === 'group') renderGroup();
     }
 
-    function goPrivate(s) {
-        localStorage.setItem('current_chat_partner', s);
-        location.href = 'chat_privado.html';
-    }
-
-    window.onload = checkAccess;
-    setInterval(renderGroupChat, 3000); // Sincronización grupo cada 3 seg
+    window.onload = init;
 </script>
 </body>
 </html>
