@@ -9,307 +9,292 @@
     <style>
         :root {
             --verde: #22c55e; --verde-dark: #16a34a; --verde-glow: #dcfce7;
-            --naranja: #f97316; --oscuro: #0f172a; --gris-fuerte: #64748b;
-            --glass: rgba(255, 255, 255, 0.98);
-            --premium-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+            --oscuro: #0f172a; --blanco: #ffffff;
+            --huanta: #22c55e; --huamanga: #3b82f6; --vraem: #f59e0b;
+            --shadow: 0 10px 25px rgba(0,0,0,0.08);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0; }
         
-        body, html { 
-            background: #f1f5f9; margin: 0; padding: 0;
-            overflow: hidden; color: var(--oscuro); 
-            height: 100%; width: 100%; position: fixed;
+        /* BLOQUEO DE MOVIMIENTOS EXTRAÑOS */
+        html, body { 
+            height: 100%; width: 100%; overflow: hidden; 
+            background: #f8fafc; color: var(--oscuro); position: fixed;
         }
 
-        /* --- SISTEMA DE CAPAS (LAYOUT) --- */
-        .app-wrapper {
+        .app-shell {
             display: flex; flex-direction: column;
             height: 100vh; width: 100vw;
         }
 
-        /* --- HEADER MEJORADO --- */
+        /* HEADER PREMIUM */
         .header {
-            background: var(--glass); backdrop-filter: blur(15px);
-            padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
-            z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.06); flex-shrink: 0;
+            background: rgba(255,255,255,0.98); backdrop-filter: blur(15px);
+            padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid rgba(0,0,0,0.05); z-index: 1000; flex-shrink: 0;
         }
         .logo-rr {
-            width: 48px; height: 48px; background: linear-gradient(135deg, var(--verde), var(--verde-dark));
+            width: 50px; height: 50px; background: linear-gradient(135deg, var(--verde), var(--verde-dark));
             border-radius: 16px; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 800; font-size: 18px; box-shadow: 0 8px 15px rgba(34, 197, 94, 0.2);
+            color: white; font-weight: 900; font-size: 20px; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
         }
 
-        /* --- ZONA DE CONTENIDO DINÁMICO --- */
-        .content-area {
-            flex: 1; overflow-y: auto; overflow-x: hidden;
-            padding-bottom: 110px; /* Evita que la nav tape el final */
+        /* VISTAS PRINCIPALES */
+        .main-view {
+            flex: 1; overflow-y: auto; padding-bottom: 120px;
             -webkit-overflow-scrolling: touch;
+            display: none;
         }
+        .view-active { display: block; }
+        #view-chat { display: none; flex-direction: column; } /* Chat necesita flex */
 
-        /* --- BUSCADOR FLOTANTE --- */
-        .sticky-tools {
-            position: sticky; top: 0; background: #f1f5f9; z-index: 900;
-            padding: 10px 0;
+        /* INDICADORES DE CIUDAD */
+        .city-scroll {
+            padding: 10px 20px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none;
         }
+        .city-tab {
+            padding: 10px 18px; border-radius: 20px; font-size: 11px; font-weight: 800;
+            background: white; border: 2px solid transparent; opacity: 0.4; white-space: nowrap;
+            transition: 0.3s;
+        }
+        .active-huanta { border-color: var(--huanta); color: var(--huanta); opacity: 1; background: #f0fdf4; box-shadow: 0 5px 15px rgba(34, 197, 94, 0.2); }
+        .active-huamanga { border-color: var(--huamanga); color: var(--huamanga); opacity: 1; background: #eff6ff; box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2); }
+        .active-vraem { border-color: var(--vraem); color: var(--vraem); opacity: 1; background: #fffbeb; box-shadow: 0 5px 15px rgba(245, 158, 11, 0.2); }
 
-        /* --- CARDS DE PRODUCTOS (VITRINA) --- */
+        /* POSTS (VITRINA) */
         .post-card { 
-            background: white; border-radius: 24px; margin: 15px; 
-            overflow: hidden; box-shadow: var(--premium-shadow); border: 1px solid rgba(0,0,0,0.03);
-            position: relative; animation: fadeIn 0.4s ease;
+            background: white; border-radius: 30px; margin: 15px 20px; 
+            box-shadow: var(--shadow); overflow: hidden; position: relative;
+            animation: slideIn 0.4s ease-out;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .img-container { position: relative; width: 100%; height: 220px; background: #eee; }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; }
-        .price-tag { 
-            position: absolute; bottom: 12px; right: 12px; 
-            background: var(--verde); color: white; padding: 6px 14px; 
-            border-radius: 12px; font-weight: 800; font-size: 16px;
-        }
-
-        /* --- CHAT GRUPAL ESTILO WHATSAPP --- */
-        #view-chat { background: #e5ddd5; } /* Color fondo WhatsApp */
-        .chat-header { background: var(--verde-dark); color: white; padding: 12px 20px; font-weight: 700; }
-        .msg-container { flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .bubble { 
-            max-width: 85%; padding: 10px 14px; border-radius: 16px; 
-            font-size: 14px; line-height: 1.4; position: relative;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .b-me { align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 2px; }
-        .b-other { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
+        .img-wrapper { display: flex; overflow-x: auto; snap-type: x mandatory; scrollbar-width: none; height: 260px; background: #eee; }
+        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; snap-align: start; }
         
-        .chat-input-bar {
-            background: white; padding: 10px 15px; display: flex; gap: 10px;
-            align-items: center; border-top: 1px solid #ddd;
+        .delete-btn {
+            position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.9);
+            color: white; border: none; padding: 7px 12px; border-radius: 12px; font-size: 10px; font-weight: 800; z-index: 10;
         }
 
-        /* --- BARRA DE NAVEGACIÓN (NAV ISLAND) --- */
-        .nav-island { 
-            position: fixed; bottom: 25px; left: 5%; width: 90%; 
-            background: var(--oscuro); border-radius: 30px; 
-            display: flex; justify-content: space-around; padding: 12px; z-index: 2000;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        /* STUDIO: 4 FOTOS REALES */
+        .studio-container { padding: 20px; }
+        .grid-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .photo-box { 
+            height: 120px; background: #f1f5f9; border: 2px dashed #cbd5e1; 
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; cursor: pointer;
         }
-        .nav-item { color: #94a3b8; text-align: center; font-size: 9px; font-weight: 700; cursor: pointer; flex: 1; }
-        .nav-item.active { color: var(--verde); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
+        .photo-box span { font-size: 11px; font-weight: 800; color: #94a3b8; z-index: 1; }
 
-        /* --- GPS SCREEN --- */
-        #gps-screen { 
-            position: fixed; inset: 0; background: white; z-index: 5000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        /* CHAT GRUPAL (NO SE TAPA) */
+        .chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: #f1f5f9; }
+        .bubble { 
+            max-width: 80%; padding: 14px; border-radius: 20px; font-size: 14px; font-weight: 600; line-height: 1.4;
+        }
+        .mine { align-self: flex-end; background: var(--verde); color: white; border-bottom-right-radius: 4px; }
+        .others { align-self: flex-start; background: white; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .chat-input-wrapper {
+            background: white; padding: 15px 20px; display: flex; gap: 10px;
+            border-top: 1px solid #eee; padding-bottom: 100px; /* AQUÍ EL TRUCO PARA QUE NO SE TAPE */
         }
 
-        /* --- STUDIO SUBIDA --- */
-        .studio-card { background: white; border-radius: 25px; padding: 20px; margin: 15px; }
-        .photo-slot { 
-            width: 100%; height: 150px; border: 2px dashed #cbd5e1; 
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            flex-direction: column; color: var(--gris-fuerte); font-weight: 700;
+        /* BARRA DE NAVEGACIÓN INFERIOR */
+        .nav-island {
+            position: fixed; bottom: 30px; left: 5%; width: 90%;
+            background: var(--oscuro); border-radius: 40px;
+            display: flex; justify-content: space-around; padding: 20px; z-index: 2000;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
+        .nav-link { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .nav-link.active { color: var(--verde); transform: translateY(-5px); }
 
-        /* --- BOTONES --- */
-        .btn-main { 
-            background: var(--verde); color: white; border: none; 
-            padding: 16px; border-radius: 18px; font-weight: 800; width: 100%;
-            transition: 0.2s;
-        }
-        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
+        /* INPUTS ESTILIZADOS */
+        .rr-field { width: 100%; padding: 16px; border-radius: 18px; border: 1px solid #e2e8f0; margin-bottom: 12px; font-weight: 700; font-size: 14px; outline: none; }
+        .rr-field:focus { border-color: var(--verde); background: #fff; }
 
+        #gps-loader { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-<div id="gps-screen">
-    <div class="logo-rr" style="width:70px; height:70px; font-size:24px;">R&R</div>
-    <h3 style="margin-top:20px; font-weight:800;">Ubicando tu Imperio...</h3>
-    <div style="width:40px; height:40px; border:4px solid #f3f3f3; border-top:4px solid var(--verde); border-radius:50%; animation:spin 1s linear infinite;"></div>
+<div id="gps-loader">
+    <div class="logo-rr" style="width:90px; height:90px; font-size:35px; margin-bottom:20px;">R&R</div>
+    <h2 style="font-weight:900; letter-spacing:-1px;">Sincronizando con el Imperio</h2>
+    <div style="width:40px; height:40px; border:5px solid #f3f3f3; border-top:5px solid var(--verde); border-radius:50%; animation: spin 1s linear infinite; margin-top:20px;"></div>
 </div>
 
-<div class="app-wrapper">
+<div class="app-shell">
     <header class="header">
         <div style="display:flex; align-items:center; gap:12px;">
-            <div class="logo-rr" onclick="handleAdmin()">R&R</div>
+            <div class="logo-rr" onclick="adminTrigger()">R&R</div>
             <div>
-                <div style="font-weight: 800; font-size: 15px;" id="app-title">Rantiy y Rantikuy</div>
-                <div id="user-display" style="font-size: 9px; color: var(--verde); font-weight: 700; letter-spacing: 0.5px;">CARGANDO...</div>
+                <div style="font-weight:900; font-size:17px; line-height:1;">Rantiy y Rantikuy</div>
+                <div id="user-tag" style="font-size:9px; color:var(--verde); font-weight:800; margin-top:4px;">CIUDADANO: CARGANDO...</div>
             </div>
         </div>
-        <div onclick="window.location.href='chat_privado.html'" style="font-size: 22px; position: relative;">
-            💬
-            <span id="notif-dot" style="display:none; position:absolute; top:0; right:0; width:10px; height:10px; background:red; border-radius:50%; border:2px solid white;"></span>
-        </div>
+        <div style="font-size:26px; cursor:pointer;" onclick="window.location.href='chat_privado.html'">💬</div>
     </header>
 
-    <div id="view-home" class="content-area" style="display:block;">
-        <div class="sticky-tools">
-            <div style="padding: 0 15px;">
-                <input type="text" id="search-bar" placeholder="🔍 ¿Qué buscas hoy?" style="width:100%; padding:14px 20px; border-radius:15px; border:none; background:white; box-shadow: var(--premium-shadow);" oninput="renderContent()">
-            </div>
-            <div style="display:flex; gap:8px; overflow-x:auto; padding:10px 15px; scrollbar-width:none;">
-                <button class="filter-btn" onclick="setFilter('Todas')">✨ Todas</button>
-                <button class="filter-btn" onclick="setFilter('Venta')">🛍️ Ventas</button>
-                <button class="filter-btn" onclick="setFilter('Comida')">🥘 Comida</button>
-                <button class="filter-btn" onclick="setFilter('Taxi')">🚕 Taxis</button>
-            </div>
-        </div>
-        <div id="feed-items"></div>
+    <div class="city-scroll">
+        <div class="city-tab" id="tag-huanta">⛰️ HUANTA</div>
+        <div class="city-tab" id="tag-huamanga">⛪ HUAMANGA</div>
+        <div class="city-tab" id="tag-vraem">🌿 VRAEM</div>
     </div>
 
-    <div id="view-camera" class="content-area" style="display:none; background:#f8fafc;">
-        <div class="studio-card">
-            <h2 style="font-weight:900; margin-top:0;">Crear Anuncio</h2>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
-                <div class="photo-slot" id="slot-0" onclick="takePhoto(0)">
-                    <span id="label-0">📸 Foto Principal</span>
-                    <img id="prev-0" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:16px;">
-                </div>
-                <div class="photo-slot" id="slot-1" onclick="takePhoto(1)">
-                    <span id="label-1">📸 Foto 2</span>
-                    <img id="prev-1" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:16px;">
-                </div>
+    <main id="view-home" class="main-view view-active">
+        <div style="padding:10px 20px;">
+            <input type="text" id="search-bar" class="rr-field" placeholder="🔍 ¿Qué buscas hoy?" oninput="updateFeed()">
+        </div>
+        <div id="feed-container"></div>
+    </main>
+
+    <main id="view-upload" class="main-view">
+        <div class="studio-container">
+            <h2 style="font-weight:900; margin-bottom:20px; font-size:24px;">Crear Publicación</h2>
+            <div class="grid-photos">
+                <div class="photo-box" onclick="handleImage(0)"><img id="prev-0" style="display:none;"><span id="label-0">📸 FOTO 1</span></div>
+                <div class="photo-box" onclick="handleImage(1)"><img id="prev-1" style="display:none;"><span id="label-1">📸 FOTO 2</span></div>
+                <div class="photo-box" onclick="handleImage(2)"><img id="prev-2" style="display:none;"><span id="label-2">📸 FOTO 3</span></div>
+                <div class="photo-box" onclick="handleImage(3)"><img id="prev-3" style="display:none;"><span id="label-3">📸 FOTO 4</span></div>
             </div>
-            <input type="text" id="p-title" placeholder="Título del producto" style="width:100%; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:10px;">
-            <input type="number" id="p-price" placeholder="Precio S/" style="width:100%; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">
-            <select id="p-cat" style="width:100%; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px;">
-                <option value="Venta">🛍️ Venta</option>
-                <option value="Comida">🍲 Comida</option>
-                <option value="Taxi">🚕 Taxi</option>
-                <option value="Servicio">🔧 Servicio</option>
+            <input type="text" id="post-title" class="rr-field" placeholder="Nombre del producto o servicio">
+            <input type="number" id="post-price" class="rr-field" placeholder="Precio S/">
+            <select id="post-cat" class="rr-field">
+                <option value="Venta">🛍️ Venta General</option>
+                <option value="Comida">🍲 Comida / Restaurante</option>
+                <option value="Taxi">🚕 Servicio de Taxi</option>
+                <option value="Servicio">🔧 Técnico / Profesional</option>
             </select>
-            <button class="btn-main" onclick="publishPost()">PUBLICAR AHORA</button>
+            <button onclick="submitToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:20px; font-weight:900; font-size:16px; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);">PUBLICAR AHORA 🚀</button>
         </div>
-    </div>
+    </main>
 
-    <div id="view-chat" class="content-area" style="display:none; flex-direction:column;">
-        <div class="chat-header" id="chat-zone-title">SALA HUANTA</div>
-        <div class="msg-container" id="chat-msgs"></div>
-        <div class="chat-input-bar">
-            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." style="flex:1; border:none; padding:12px; border-radius:20px; background:#f0f0f0;">
-            <button onclick="sendGroupMsg()" style="background:var(--verde-dark); color:white; border:none; width:45px; height:45px; border-radius:50%;">➤</button>
+    <main id="view-chat" class="main-view">
+        <div id="chat-header-name" style="padding:15px 20px; background:var(--verde-dark); color:white; font-weight:800; font-size:13px;">SALA REGIONAL</div>
+        <div class="chat-container" id="chat-display"></div>
+        <div class="chat-input-wrapper">
+            <input type="text" id="chat-msg-input" placeholder="Escribe un mensaje al Imperio..." style="flex:1; border:none; background:#f1f5f9; padding:15px; border-radius:15px; font-weight:600;">
+            <button onclick="sendGroupMsg()" style="background:var(--verde); color:white; border:none; width:55px; height:55px; border-radius:18px; font-size:20px;">➤</button>
         </div>
-    </div>
+    </main>
 
     <nav class="nav-island">
-        <div class="nav-item active" onclick="switchTab('home', this)"><i>🏠</i>VITRINA</div>
-        <div class="nav-item" onclick="switchTab('camera', this)"><i>📸</i>SUBIR</div>
-        <div class="nav-item" onclick="switchTab('chat', this)"><i>💬</i>GRUPAL</div>
+        <div class="nav-link active" onclick="changeTab('home', this)">🏠<br>VITRINA</div>
+        <div class="nav-link" onclick="changeTab('upload', this)">📸<br>SUBIR</div>
+        <div class="nav-link" onclick="changeTab('chat', this)">💬<br>GRUPAL</div>
     </nav>
 </div>
 
 <script>
     let myCity = "";
     let myUser = "";
-    let currentFilter = "Todas";
-    let photos = [null, null];
+    let tempImgs = [null, null, null, null];
     let adminCounter = 0;
 
-    const ZONES = {
-        "Huanta": { lat: -12.93, lon: -74.24 },
+    // COORDENADAS DEL IMPERIO
+    const EMPIRE_ZONES = {
+        "Huanta": { lat: -12.94, lon: -74.24 },
         "Huamanga": { lat: -13.15, lon: -74.22 },
         "VRAEM": { lat: -12.50, lon: -73.80 }
     };
 
-    function initApp() {
-        // 1. Verificar Sesión con registro_entrada.html
+    function boot() {
+        // Conexión con registro_entrada.html
         myUser = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
         if(!myUser) { window.location.href = 'registro_entrada.html'; return; }
-        document.getElementById('user-display').innerText = "CIUDADANO: " + myUser.toUpperCase();
+        document.getElementById('user-tag').innerText = "CIUDADANO: " + myUser.toUpperCase();
 
-        // 2. GPS Inteligente
-        if (navigator.geolocation) {
+        // GPS Inteligente
+        if(navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
                 let { latitude, longitude } = pos.coords;
-                myCity = "Huanta"; // Default por si falla el cálculo
-                for (let z in ZONES) {
-                    let d = Math.hypot(latitude - ZONES[z].lat, longitude - ZONES[z].lon);
-                    if (d < 0.15) { myCity = z; break; }
+                myCity = "Huanta"; // Por defecto
+                for(let zone in EMPIRE_ZONES) {
+                    let dist = Math.sqrt(Math.pow(latitude - EMPIRE_ZONES[zone].lat, 2) + Math.pow(longitude - EMPIRE_ZONES[zone].lon, 2));
+                    if(dist < 0.15) { myCity = zone; break; }
                 }
-                startApp();
-            }, () => { myCity = "Huanta"; startApp(); });
+                ready();
+            }, () => { myCity = "Huanta"; ready(); });
         }
     }
 
-    function startApp() {
-        document.getElementById('gps-screen').style.display = 'none';
-        document.getElementById('chat-zone-title').innerText = "SALA " + myCity.toUpperCase();
-        renderContent();
-        loadMessages();
+    function ready() {
+        document.getElementById('gps-loader').style.display = 'none';
+        document.getElementById('tag-' + myCity.toLowerCase()).classList.add('active-' + myCity.toLowerCase());
+        document.getElementById('chat-header-name').innerText = "SALA OFICIAL: " + myCity.toUpperCase();
         
-        // Sincronización Real-Time (Cada 2 segundos)
+        updateFeed();
+        
+        // SINCRONIZACIÓN REAL-TIME (CADA 2 SEGUNDOS)
         setInterval(() => {
-            if(document.getElementById('view-home').style.display === 'block') renderContent();
-            if(document.getElementById('view-chat').style.display === 'flex') loadMessages();
-        }, 2500);
+            updateFeed();
+            if(document.getElementById('view-chat').style.display === 'flex') updateChat();
+        }, 2000);
     }
 
-    // --- LOGICA DE VITRINA ---
-    function renderContent() {
-        const query = document.getElementById('search-bar').value.toLowerCase();
-        const container = document.getElementById('feed-items');
-        let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
+    // --- LÓGICA DE VITRINA (ELIMINAR Y VER OTROS) ---
+    function updateFeed() {
+        const box = document.getElementById('feed-container');
+        const search = document.getElementById('search-bar').value.toLowerCase();
         
-        let filtered = posts.filter(p => 
-            p.city === myCity && 
-            (currentFilter === "Todas" || p.category === currentFilter) &&
-            p.title.toLowerCase().includes(query)
-        );
+        // Recuperamos TODAS las publicaciones del Imperio
+        let allPosts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
+        
+        let filtered = allPosts.filter(p => p.city === myCity && p.title.toLowerCase().includes(search));
 
-        container.innerHTML = filtered.map(p => `
+        box.innerHTML = filtered.map(p => `
             <div class="post-card">
-                ${(p.user === myUser) ? `<button onclick="deletePost(${p.id})" style="position:absolute; top:10px; left:10px; z-index:10; background:rgba(255,0,0,0.7); color:white; border:none; padding:5px 10px; border-radius:8px; font-size:10px;">Eliminar</button>` : ''}
-                <div class="img-container">
-                    <img src="${p.imgs[0]}">
-                    <div class="price-tag">S/ ${p.price}</div>
+                ${(p.user === myUser || localStorage.getItem('admin_session')) ? `<button class="delete-btn" onclick="removePost(${p.id})">ELIMINAR</button>` : ''}
+                <div class="img-wrapper">
+                    ${p.imgs.map(i => `<img src="${i}">`).join('')}
                 </div>
-                <div style="padding:15px;">
-                    <div style="font-size:12px; color:var(--verde); font-weight:800; margin-bottom:5px;">${p.category.toUpperCase()}</div>
-                    <div style="font-weight:800; font-size:17px; margin-bottom:10px;">${p.title}</div>
-                    <button onclick="contactSeller('${p.user}')" class="btn-main" style="padding:12px; font-size:14px;">Contactar Vendedor</button>
+                <div style="padding:20px;">
+                    <div style="font-size:11px; color:var(--verde); font-weight:800; margin-bottom:5px;">${p.category.toUpperCase()}</div>
+                    <h3 style="font-weight:900; font-size:18px;">${p.title} <span style="color:var(--verde); float:right;">S/ ${p.price}</span></h3>
+                    <p style="font-size:10px; opacity:0.6; margin-top:10px;">Vendedor: ${p.user}</p>
+                    <button onclick="window.location.href='chat_privado.html?to=${p.user}'" style="width:100%; margin-top:15px; padding:14px; background:var(--oscuro); color:white; border-radius:15px; border:none; font-weight:800; font-size:13px;">CONTACTAR POR PRIVADO</button>
                 </div>
             </div>
-        `).join('') || `<div style="text-align:center; padding:50px; opacity:0.5;">No hay anuncios en ${myCity} aún.</div>`;
+        `).join('') || '<div style="text-align:center; padding:100px; opacity:0.4; font-weight:800;">No hay publicaciones en esta zona.</div>';
     }
 
-    function deletePost(id) {
-        if(confirm("¿Borrar anuncio?")) {
+    function removePost(id) {
+        if(confirm("¿Deseas eliminar esta publicación del Imperio?")) {
             let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
             posts = posts.filter(p => p.id !== id);
             localStorage.setItem('empire_posts', JSON.stringify(posts));
-            renderContent();
+            updateFeed();
         }
     }
 
-    function contactSeller(seller) {
-        window.location.href = `chat_privado.html?user=${seller}`;
-    }
-
-    // --- LOGICA DE SUBIDA ---
-    function takePhoto(idx) {
+    // --- LÓGICA DE SUBIDA (4 FOTOS) ---
+    function handleImage(i) {
         let input = document.createElement('input');
         input.type = 'file'; input.accept = 'image/*';
         input.onchange = e => {
             let reader = new FileReader();
             reader.onload = ev => {
-                photos[idx] = ev.target.result;
-                document.getElementById(`prev-${idx}`).src = ev.target.result;
-                document.getElementById(`prev-${idx}`).style.display = 'block';
-                document.getElementById(`label-${idx}`).style.display = 'none';
+                tempImgs[i] = ev.target.result;
+                document.getElementById(`prev-${i}`).src = ev.target.result;
+                document.getElementById(`prev-${i}`).style.display = 'block';
+                document.getElementById(`label-${i}`).style.display = 'none';
             };
             reader.readAsDataURL(e.target.files[0]);
         };
         input.click();
     }
 
-    function publishPost() {
-        const title = document.getElementById('p-title').value;
-        const price = document.getElementById('p-price').value;
-        const cat = document.getElementById('p-cat').value;
+    function submitToEmpire() {
+        const title = document.getElementById('post-title').value;
+        const price = document.getElementById('post-price').value;
+        const cat = document.getElementById('post-cat').value;
+        let finalImgs = tempImgs.filter(img => img !== null);
 
-        if(!title || !price || !photos[0]) return alert("Completa los datos y la foto principal");
+        if(!title || !price || finalImgs.length === 0) return alert("¡Atención! Falta el título, el precio o al menos una foto.");
 
         let posts = JSON.parse(localStorage.getItem('empire_posts') || '[]');
         posts.unshift({
@@ -317,30 +302,29 @@
             user: myUser,
             title, price, category: cat,
             city: myCity,
-            imgs: photos.filter(p => p !== null)
+            imgs: finalImgs
         });
 
         localStorage.setItem('empire_posts', JSON.stringify(posts));
         confetti();
-        resetStudio();
-        switchTab('home', document.querySelectorAll('.nav-item')[0]);
+        
+        // Resetear Formulario
+        document.getElementById('post-title').value = "";
+        document.getElementById('post-price').value = "";
+        tempImgs = [null,null,null,null];
+        document.querySelectorAll('.photo-box img').forEach(img => img.style.display = 'none');
+        document.querySelectorAll('.photo-box span').forEach(s => s.style.display = 'block');
+        
+        changeTab('home', document.querySelectorAll('.nav-link')[0]);
     }
 
-    function resetStudio() {
-        photos = [null, null];
-        document.getElementById('p-title').value = "";
-        document.getElementById('p-price').value = "";
-        document.querySelectorAll('.photo-slot img').forEach(img => img.style.display = 'none');
-        document.querySelectorAll('.photo-slot span').forEach(span => span.style.display = 'block');
-    }
-
-    // --- CHAT GRUPAL ---
-    function loadMessages() {
-        const box = document.getElementById('chat-msgs');
+    // --- CHAT GRUPAL REAL-TIME ---
+    function updateChat() {
+        const box = document.getElementById('chat-display');
         let msgs = JSON.parse(localStorage.getItem('group_chat_' + myCity) || '[]');
         box.innerHTML = msgs.map(m => `
-            <div class="bubble ${m.u === myUser ? 'b-me' : 'b-other'}">
-                <div style="font-size:10px; font-weight:800; color:var(--verde-dark);">${m.u}</div>
+            <div class="bubble ${m.u === myUser ? 'mine' : 'others'}">
+                <div style="font-size:9px; font-weight:900; margin-bottom:3px; opacity:0.8;">${m.u.toUpperCase()}</div>
                 ${m.t}
             </div>
         `).join('');
@@ -348,37 +332,34 @@
     }
 
     function sendGroupMsg() {
-        const inp = document.getElementById('chat-input');
+        const inp = document.getElementById('chat-msg-input');
         if(!inp.value) return;
         let msgs = JSON.parse(localStorage.getItem('group_chat_' + myCity) || '[]');
-        msgs.push({ u: myUser, t: inp.value, time: Date.now() });
+        msgs.push({ u: myUser, t: inp.value });
         localStorage.setItem('group_chat_' + myCity, JSON.stringify(msgs));
         inp.value = "";
-        loadMessages();
+        updateChat();
     }
 
     // --- NAVEGACIÓN ---
-    function switchTab(viewId, el) {
-        document.querySelectorAll('.content-area').forEach(v => v.style.display = 'none');
-        const target = document.getElementById('view-' + viewId);
-        target.style.display = (viewId === 'chat') ? 'flex' : 'block';
+    function changeTab(tab, el) {
+        document.querySelectorAll('.main-view').forEach(v => v.style.display = 'none');
+        const target = document.getElementById('view-' + tab);
+        target.style.display = (tab === 'chat') ? 'flex' : 'block';
         
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         el.classList.add('active');
     }
 
-    function setFilter(f) {
-        currentFilter = f;
-        renderContent();
-    }
-
-    function handleAdmin() {
+    function adminTrigger() {
         adminCounter++;
         if(adminCounter >= 7) window.location.href = 'admin.html';
-        setTimeout(() => adminCounter = 0, 2000);
+        setTimeout(() => adminCounter = 0, 3000);
     }
 
-    window.onload = initApp;
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    window.onload = boot;
 </script>
 </body>
 </html>
