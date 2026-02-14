@@ -3,308 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>R&R Business Chat</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Rantikuy Empire Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --verde-wa: #128c7e;
-            --verde-imperio: #22c55e;
-            --verde-light: #dcfce7;
-            --fondo-wa: #efeae2; /* Color clásico fondo WhatsApp */
-            --oscuro: #1e293b;
-            --blanco: #ffffff;
-            --gris-texto: #64748b;
+            --vibrant-green: #22c55e;
+            --wa-green: #128c7e;
+            --soft-bg: #f1f5f9;
+            --white: #ffffff;
+            --dark: #0f172a;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
+
+        /* CONTENEDOR MAESTRO DESLIZABLE */
+        .app-container { display: flex; width: 200%; height: 100vh; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .show-chat { transform: translateX(-50%); }
+
+        .screen { width: 50%; height: 100%; display: flex; flex-direction: column; background: var(--white); }
+
+        /* HEADER ELITE */
+        .header-pro { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; }
+        .header-pro h1 { font-size: 28px; font-weight: 800; margin: 0; color: var(--vibrant-green); letter-spacing: -1px; }
+
+        /* LISTA DE CHATS (INBOX) */
+        .inbox-area { flex: 1; overflow-y: auto; padding: 15px; background: var(--soft-bg); }
+        .chat-row { 
+            background: var(--white); padding: 16px; border-radius: 24px; display: flex; align-items: center; gap: 15px; margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid transparent; transition: 0.3s;
+        }
+        .chat-row:active { transform: scale(0.97); border-color: var(--vibrant-green); }
+        .avatar-circle { width: 55px; height: 55px; border-radius: 20px; background: linear-gradient(45deg, var(--vibrant-green), #15803d); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; box-shadow: 0 4px 10px rgba(34,197,94,0.3); }
+
+        /* PANTALLA DE CHAT (BUSINESS STYLE) */
+        .chat-view { background: #efeae2 url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: 450px; }
         
-        body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            background: var(--blanco); overflow: hidden;
-        }
+        .chat-top { background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); padding: 10px 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #ddd; z-index: 10; }
+        .btn-back { width: 40px; height: 40px; border-radius: 50%; border: none; background: #f1f5f9; color: var(--dark); cursor: pointer; font-size: 18px; font-weight: 800; }
 
-        /* --- NAVEGACIÓN PRINCIPAL --- */
-        .view-container {
-            display: flex; width: 200%; height: 100vh;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        /* EL APARTADO "CHIDO" DE NEGOCIO */
+        .biz-info { background: var(--vibrant-green); color: white; padding: 8px 15px; font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
 
-        .view-active-chat { transform: translateX(-50%); }
-
-        .screen { width: 50%; height: 100%; display: flex; flex-direction: column; background: var(--blanco); }
-
-        /* --- PANTALLA 1: LISTA DE CHATS --- */
-        .list-header {
-            padding: 20px 15px; background: var(--blanco);
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .list-header h1 { font-size: 24px; font-weight: 800; margin: 0; color: var(--verde-imperio); }
-
-        .chat-list { flex: 1; overflow-y: auto; padding-bottom: 80px; }
-
-        .chat-item {
-            display: flex; align-items: center; padding: 15px;
-            gap: 15px; cursor: pointer; transition: 0.2s;
-            border-bottom: 1px solid #f8fafc;
-        }
-        .chat-item:active { background: #f1f5f9; }
-
-        .avatar-lg { 
-            width: 55px; height: 55px; border-radius: 20px; 
-            background: linear-gradient(135deg, var(--verde-imperio), #15803d);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 800; font-size: 22px;
-        }
-
-        .chat-meta { flex: 1; border-bottom: 0.5px solid #eee; padding-bottom: 10px; }
-        .chat-meta div { display: flex; justify-content: space-between; align-items: center; }
-        .chat-meta b { font-size: 16px; color: var(--oscuro); }
-        .chat-meta span { font-size: 11px; color: var(--gris-texto); }
-        .chat-meta p { margin: 5px 0 0; font-size: 13px; color: var(--gris-texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
-
-        /* --- PANTALLA 2: CHAT INTERNO --- */
-        .chat-screen { background: var(--fondo-wa); position: relative; }
+        .messages-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .msg { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 15px; line-height: 1.4; position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .chat-header {
-            padding: 10px 15px; background: var(--blanco);
-            display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10;
-        }
+        .msg-me { align-self: flex-end; background: #dcf8c6; border-top-right-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .msg-them { align-self: flex-start; background: var(--white); border-top-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-        .back-area { display: flex; align-items: center; cursor: pointer; gap: 5px; }
+        /* STICKERS */
+        .sticker { font-size: 70px; background: none !important; box-shadow: none !important; padding: 0 !important; }
 
-        .msg-area { 
-            flex: 1; padding: 15px; overflow-y: auto; 
-            display: flex; flex-direction: column; gap: 8px;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            background-size: 400px;
-        }
-        
-        /* BUBBLES ESTILO WA BUSINESS */
-        .bubble { 
-            max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 14.5px; 
-            position: relative; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
+        /* BARRA DE ENTRADA PRO */
+        .action-bar { padding: 10px 15px 30px; background: #f0f0f0; display: flex; align-items: center; gap: 8px; }
+        .input-pill { flex: 1; background: var(--white); border-radius: 25px; padding: 5px 15px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .input-pill input { flex: 1; border: none; padding: 10px; outline: none; font-size: 15px; }
+        .btn-send { width: 50px; height: 50px; border-radius: 50%; border: none; background: var(--wa-green); color: var(--white); font-size: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(18,140,126,0.3); transition: 0.2s; }
+        .btn-send:active { transform: scale(0.85) rotate(-10deg); }
 
-        .bubble-out { 
-            align-self: flex-end; background: #e7ffdb; color: #303030; 
-            border-top-right-radius: 0;
-        }
-
-        .bubble-in { 
-            align-self: flex-start; background: var(--blanco); color: #303030; 
-            border-top-left-radius: 0;
-        }
-
-        .bubble img { width: 100%; border-radius: 8px; margin-top: 5px; }
-
-        .time { font-size: 10px; color: #888; text-align: right; margin-top: 4px; display: block; }
-
-        /* TOOLS & INPUT */
-        .quick-bar { display: flex; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; }
-        .q-chip { 
-            padding: 8px 16px; background: var(--blanco); border-radius: 20px; 
-            font-size: 12px; font-weight: 700; color: var(--verde-wa); 
-            border: 1px solid var(--verde-light); white-space: nowrap;
-        }
-
-        .input-box { 
-            padding: 10px 15px 25px; background: #f0f0f0; 
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        .field-group { 
-            flex: 1; background: var(--blanco); border-radius: 25px; 
-            display: flex; align-items: center; padding: 5px 15px;
-        }
-
-        .field-group input { 
-            flex: 1; border: none; padding: 10px; outline: none; font-size: 15px; 
-        }
-
-        .send-btn { 
-            width: 48px; height: 48px; border-radius: 50%; border: none; 
-            background: var(--verde-wa); color: white; font-size: 20px;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .badge { background: var(--verde-imperio); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; }
+        /* ESTADO VACÍO */
+        .empty-state { text-align: center; padding-top: 100px; color: #94a3b8; }
+        .empty-state i { font-size: 60px; display: block; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-<div class="view-container" id="master-view">
+<div class="app-container" id="app-shell">
     
     <div class="screen">
-        <header class="list-header">
-            <h1>Rantikuy Chat</h1>
-            <div class="badge">NEGOCIOS</div>
+        <header class="header-pro">
+            <h1>Imperio Chat</h1>
+            <div style="background:var(--soft-bg); padding:5px 12px; border-radius:15px; font-size:12px; font-weight:800;">NEGOCIOS</div>
         </header>
-        <div class="chat-list" id="inbox-list">
+        <div class="inbox-area" id="inbox-list">
             </div>
-        <button onclick="location.href='index.html'" style="margin: 20px; padding: 15px; border-radius: 15px; border: none; background: var(--oscuro); color: white; font-weight: 800;">VOLVER AL MERCADO</button>
+        <button onclick="location.href='index.html'" style="margin:20px; padding:18px; border-radius:20px; border:none; background:var(--dark); color:white; font-weight:800;">EXPLORAR MERCADO</button>
     </div>
 
-    <div class="screen chat-screen">
-        <header class="chat-header">
-            <div class="back-area" onclick="closeChat()">
-                <span>❮</span>
-                <div class="avatar-lg" id="p-avatar" style="width: 38px; height: 38px; font-size: 14px;">?</div>
+    <div class="screen chat-view">
+        <header class="chat-top">
+            <button class="btn-back" onclick="toggleScreen(false)">❮</button>
+            <div class="avatar-circle" id="chat-avatar" style="width:42px; height:42px; font-size:16px;">?</div>
+            <div style="flex:1">
+                <b id="chat-title" style="font-size:17px; color:var(--dark); display:block;">...</b>
+                <span style="font-size:11px; color:var(--vibrant-green); font-weight:700;">Activo ahora</span>
             </div>
-            <div style="flex: 1;">
-                <b id="p-name" style="font-size: 16px;">Comerciante</b>
-                <div style="font-size: 10px; color: var(--verde-imperio); font-weight: 700;">TIENDA VERIFICADA</div>
-            </div>
-            <button onclick="clearHistory()" style="background: none; border: none;">🗑️</button>
+            <button onclick="wipe()" style="background:none; border:none; font-size:22px;">🧹</button>
         </header>
-
-        <div class="msg-area" id="msg-flow"></div>
-
-        <div class="quick-bar">
-            <div class="q-chip" onclick="fastMsg('¿Está disponible?')">🛍️ ¿Disponible?</div>
-            <div class="q-chip" onclick="fastMsg('¿Haces delivery?')">🛵 ¿Delivery?</div>
-            <div class="q-chip" onclick="fastMsg('¿Aceptas Yape?')">💜 ¿Yape?</div>
+        
+        <div class="biz-info">
+            <span>🤝 ACUERDO COMERCIAL SEGURO</span>
+            <span onclick="alert('Ubicación: Huanta Central')" style="text-decoration:underline">📍 Huanta</span>
         </div>
 
-        <div class="input-box">
-            <div class="field-group">
-                <button onclick="upload()" style="background:none; border:none; font-size:20px;">📷</button>
-                <input type="text" id="main-in" placeholder="Escribe un mensaje..." autocomplete="off">
+        <div class="messages-container" id="msg-box"></div>
+
+        <div style="display:flex; gap:10px; padding:0 15px 10px; overflow-x:auto; scrollbar-width:none;">
+            <button onclick="sendFast('¿Precio mínimo?')" style="padding:8px 15px; border-radius:15px; border:1px solid #ddd; background:white; font-size:12px; white-space:nowrap; font-weight:700;">💰 Precio?</button>
+            <button onclick="sendFast('¿Donde entregas?')" style="padding:8px 15px; border-radius:15px; border:1px solid #ddd; background:white; font-size:12px; white-space:nowrap; font-weight:700;">📍 Entrega?</button>
+            <button onclick="sendSticker('🤝')" style="font-size:20px; background:none; border:none;">🤝</button>
+            <button onclick="sendSticker('✅')" style="font-size:20px; background:none; border:none;">✅</button>
+        </div>
+
+        <div class="action-bar">
+            <div class="input-pill">
+                <input type="text" id="chat-input" placeholder="Escribe un mensaje..." autocomplete="off">
+                <button onclick="pickFile()" style="background:none; border:none; font-size:20px;">📷</button>
             </div>
-            <button class="send-btn" onclick="handleSend()">✈️</button>
+            <button class="btn-send" onclick="doSend()">🚀</button>
         </div>
     </div>
 </div>
 
 <script>
-    const me = localStorage.getItem('rantiy_user') || "Invitado";
-    let activePartner = "";
+    const myName = localStorage.getItem('rantiy_user') || "Yo";
+    let activeP = "";
 
     function init() {
-        renderInbox();
+        refreshInbox();
         
-        // Si vienes de la vitrina con un partner específico
-        const direct = localStorage.getItem('last_chat_partner');
-        if(direct) {
+        // El "Truco" del LocalStorage para conectar con la vitrina
+        const partnerFromVitrina = localStorage.getItem('last_chat_partner');
+        if(partnerFromVitrina) {
             localStorage.removeItem('last_chat_partner');
-            openChat(direct);
+            startChat(partnerFromVitrina);
         }
 
         setInterval(() => {
-            if(activePartner) loadMsgs();
-            renderInbox();
+            refreshInbox();
+            if(activeP) renderMessages();
         }, 3000);
 
-        document.getElementById('main-in').onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
+        document.getElementById('chat-input').onkeypress = e => { if(e.key === 'Enter') doSend(); };
     }
 
-    function renderInbox() {
-        const inbox = document.getElementById('inbox-list');
-        const data = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
-        let html = "";
+    function refreshInbox() {
+        const list = document.getElementById('inbox-list');
+        const db = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
+        const myKeys = Object.keys(db).filter(k => k.includes(myName));
 
-        const myChats = Object.keys(data).filter(key => key.includes(me));
-
-        if(myChats.length === 0) {
-            inbox.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8;">
-                <div style="font-size:50px;">💬</div>
-                <p>No hay mensajes todavía.<br>Inicia una charla en la vitrina.</p>
-            </div>`;
+        if(myKeys.length === 0) {
+            list.innerHTML = `<div class="empty-state"><i>💬</i><p>No hay tratos pendientes.<br>¡Ve a la vitrina y empieza uno!</p></div>`;
             return;
         }
 
-        myChats.forEach(key => {
-            const partnerName = key.replace(me, "").replace("_", "");
-            const msgs = data[key];
-            const last = msgs[msgs.length - 1] || {t: "Sin mensajes", h:""};
-            
-            html += `
-                <div class="chat-item" onclick="openChat('${partnerName}')">
-                    <div class="avatar-lg">${partnerName.charAt(0).toUpperCase()}</div>
-                    <div class="chat-meta">
-                        <div><b>${partnerName}</b> <span>${last.h}</span></div>
-                        <p>${last.type === 'img' ? '📷 Foto' : last.t}</p>
+        list.innerHTML = myKeys.map(k => {
+            const name = k.replace(myName, "").replace("_", "");
+            const last = db[k][db[k].length - 1];
+            return `
+                <div class="chat-row" onclick="startChat('${name}')">
+                    <div class="avatar-circle">${name[0].toUpperCase()}</div>
+                    <div style="flex:1">
+                        <div style="display:flex; justify-content:space-between;">
+                            <b style="font-size:16px;">${name}</b>
+                            <span style="font-size:11px; color:#94a3b8;">${last.h}</span>
+                        </div>
+                        <p style="margin:5px 0 0; font-size:13px; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px;">
+                            ${last.type === 'sticker' ? 'Envió una reacción ' + last.t : last.t}
+                        </p>
                     </div>
                 </div>
             `;
-        });
-        inbox.innerHTML = html;
+        }).join('');
     }
 
-    function openChat(name) {
-        activePartner = name;
-        document.getElementById('p-name').innerText = name;
-        document.getElementById('p-avatar').innerText = name.charAt(0).toUpperCase();
-        document.getElementById('master-view').classList.add('view-active-chat');
-        loadMsgs();
+    function startChat(name) {
+        activeP = name;
+        document.getElementById('chat-title').innerText = name;
+        document.getElementById('chat-avatar').innerText = name[0].toUpperCase();
+        toggleScreen(true);
+        renderMessages();
     }
 
-    function closeChat() {
-        activePartner = "";
-        document.getElementById('master-view').classList.remove('view-active-chat');
+    function toggleScreen(show) {
+        document.getElementById('app-shell').classList.toggle('show-chat', show);
+        if(!show) activeP = "";
     }
 
-    function loadMsgs() {
-        const flow = document.getElementById('msg-flow');
-        const data = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
-        const key = [me, activePartner].sort().join('_');
-        const msgs = data[key] || [];
+    function renderMessages() {
+        const box = document.getElementById('msg-box');
+        const db = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
+        const key = [myName, activeP].sort().join('_');
+        const msgs = db[key] || [];
 
         const html = msgs.map(m => `
-            <div class="bubble ${m.u === me ? 'bubble-out' : 'bubble-in'}">
-                ${m.type === 'img' ? `<img src="${m.t}">` : m.t}
-                <span class="time">${m.h}</span>
+            <div class="msg ${m.u === myName ? 'msg-me' : 'msg-them'} ${m.type === 'sticker' ? 'sticker' : ''}">
+                ${m.type === 'img' ? `<img src="${m.t}" style="width:100%; border-radius:12px;">` : m.t}
+                ${m.type === 'text' ? `<span style="font-size:9px; display:block; text-align:right; margin-top:5px; opacity:0.5;">${m.h}</span>` : ''}
             </div>
         `).join('');
 
-        if(flow.innerHTML !== html) {
-            flow.innerHTML = html;
-            flow.scrollTop = flow.scrollHeight;
+        if(box.innerHTML !== html) {
+            box.innerHTML = html;
+            box.scrollTop = box.scrollHeight;
         }
     }
 
-    function handleSend() {
-        const input = document.getElementById('main-in');
+    function doSend() {
+        const input = document.getElementById('chat-input');
         if(!input.value.trim()) return;
-        save(input.value, 'text');
+        pushMsg(input.value, 'text');
         input.value = "";
     }
 
-    function save(txt, type) {
-        let data = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
-        const key = [me, activePartner].sort().join('_');
-        if(!data[key]) data[key] = [];
+    function sendFast(t) { pushMsg(t, 'text'); }
+    function sendSticker(s) { pushMsg(s, 'sticker'); }
+
+    function pushMsg(txt, type) {
+        let db = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
+        const key = [myName, activeP].sort().join('_');
+        if(!db[key]) db[key] = [];
         
-        data[key].push({
-            u: me, t: txt, type: type, 
-            h: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12: true})
+        db[key].push({
+            u: myName, t: txt, type: type,
+            h: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
         });
         
-        localStorage.setItem('empire_private_chats', JSON.stringify(data));
-        loadMsgs();
+        localStorage.setItem('empire_private_chats', JSON.stringify(db));
+        renderMessages();
     }
 
-    function fastMsg(t) { save(t, 'text'); }
-
-    function upload() {
+    function pickFile() {
         let i = document.createElement('input'); i.type='file'; i.accept='image/*';
         i.onchange = e => {
             let r = new FileReader();
-            r.onload = ev => save(ev.target.result, 'img');
+            r.onload = ev => pushMsg(ev.target.result, 'img');
             r.readAsDataURL(e.target.files[0]);
         };
         i.click();
     }
 
-    function clearHistory() {
-        if(confirm("¿Eliminar este chat?")) {
-            let data = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
-            delete data[[me, activePartner].sort().join('_')];
-            localStorage.setItem('empire_private_chats', JSON.stringify(data));
-            closeChat();
-            renderInbox();
+    function wipe() {
+        if(confirm("¿Borrar historial con este vendedor?")) {
+            let db = JSON.parse(localStorage.getItem('empire_private_chats') || '{}');
+            delete db[[myName, activeP].sort().join('_')];
+            localStorage.setItem('empire_private_chats', JSON.stringify(db));
+            toggleScreen(false);
+            refreshInbox();
         }
     }
 
