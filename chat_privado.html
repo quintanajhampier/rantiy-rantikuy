@@ -38,17 +38,16 @@
         body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-app); overflow: hidden; color: var(--text-main); position: fixed; }
         
         /* ARQUITECTURA DE DESLIZAMIENTO */
-        .app-shell { display: flex; width: 700%; height: 100%; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-        .screen { width: 14.2857%; height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+        .screen { width: 16.6666%; height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
         
         /* POSICIONES */
         .pos-1 { transform: translateX(0%); }
-        .pos-2 { transform: translateX(-14.2857%); }
-        .pos-3 { transform: translateX(-28.5714%); }
-        .pos-4 { transform: translateX(-42.8571%); }
-        .pos-5 { transform: translateX(-57.1428%); }
-        .pos-6 { transform: translateX(-71.4285%); }
-        .pos-7 { transform: translateX(-85.7142%); }
+        .pos-2 { transform: translateX(-16.6666%); }
+        .pos-3 { transform: translateX(-33.3333%); }
+        .pos-4 { transform: translateX(-50.0000%); }
+        .pos-5 { transform: translateX(-66.6666%); }
+        .pos-6 { transform: translateX(-83.3333%); }
 
         /* HEADER */
         .header-main { padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; padding-top: calc(15px + env(safe-area-inset-top)); }
@@ -78,17 +77,17 @@
         .msg.them { align-self: flex-start; background: var(--bg-card); color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
         
         .msg .m-meta { font-size: 9px; opacity: 0.7; align-self: flex-end; margin-top: 4px; }
-        .msg img { width: 100%; border-radius: 12px; margin-top: 5px; cursor: pointer; }
         
-        /* AREA DE ESCRITURA CON FIX DE TECLADO */
+        /* ÁREA DE ESCRITURA FIX */
         .chat-input-area { 
             padding: 10px 15px; 
             background: var(--bg-card); 
             border-top: 1px solid var(--border); 
-            position: relative; 
+            position: sticky;
+            bottom: 0;
             z-index: 1001;
-            width: 100%;
-            transition: transform 0.1s linear;
+            transition: transform 0.1s ease-out;
+            padding-bottom: calc(10px + var(--safe-bottom));
         }
         .input-row { display: flex; gap: 8px; align-items: center; }
         
@@ -96,15 +95,9 @@
         .sticker-panel { display: none; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; background: var(--bg-card); border-top: 1px solid var(--border); max-height: 250px; overflow-y: auto; justify-items: center; }
         .sticker-panel span { font-size: 35px; cursor: pointer; }
 
-        /* GALERIA */
-        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .gallery-item { aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; background: #ddd; position: relative; border: 1px solid var(--border); }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-        .gallery-item .tag { position: absolute; bottom: 4px; left: 4px; font-size: 9px; background: rgba(0,0,0,0.5); color: white; padding: 2px 5px; border-radius: 4px; }
-
         /* DOCK */
         .dock { position: fixed; bottom: 0; width: 100%; background: var(--bg-card); padding: 12px 0 calc(12px + var(--safe-bottom)); display: flex; justify-content: space-around; border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 900; }
-        .dock-btn { border: none; background: none; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; width: 14%; }
+        .dock-btn { border: none; background: none; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; width: 16%; }
         .dock-btn.active { color: var(--p-green); }
         .dock-btn i { font-size: 22px; }
 
@@ -141,14 +134,12 @@
             <div class="attach-menu" id="attach-menu">
                 <div onclick="triggerFile('img')" style="text-align:center;"><div style="background:var(--p-gold); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">🖼️</div><small>Foto</small></div>
                 <div onclick="triggerFile('doc')" style="text-align:center;"><div style="background:var(--p-sky); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">📄</div><small>Doc</small></div>
-                <div onclick="triggerFile('aud')" style="text-align:center;"><div style="background:var(--p-purple); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">🎤</div><small>Audio</small></div>
                 <div onclick="sendLocation()" style="text-align:center;"><div style="background:var(--p-red); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">📍</div><small>GPS</small></div>
             </div>
 
             <div class="sticker-panel" id="sticker-panel">
                 <span onclick="sendSticker('🚀')">🚀</span><span onclick="sendSticker('💰')">💰</span><span onclick="sendSticker('✅')">✅</span><span onclick="sendSticker('📦')">📦</span>
                 <span onclick="sendSticker('🔥')">🔥</span><span onclick="sendSticker('🤝')">🤝</span><span onclick="sendSticker('📍')">📍</span><span onclick="sendSticker('💯')">💯</span>
-                <span onclick="sendSticker('⭐')">⭐</span><span onclick="sendSticker('📞')">📞</span><span onclick="sendSticker('🚨')">🚨</span><span onclick="sendSticker('📈')">📈</span>
             </div>
 
             <div class="chat-input-area" id="input-container">
@@ -204,13 +195,6 @@
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>GALERÍA DEL IMPERIO</b></header>
-        <div class="scroll">
-            <div class="gallery-grid" id="render-gallery"></div>
-        </div>
-    </div>
-
-    <div class="screen">
         <header class="header-main"><b>DATA CENTER</b></header>
         <div class="scroll">
             <div class="card-titan">
@@ -241,9 +225,8 @@
     <button class="dock-btn" onclick="nav(2)"><i>🛍️</i>Stock</button>
     <button class="dock-btn" onclick="nav(3)"><i>👥</i>Socios</button>
     <button class="dock-btn" onclick="nav(4)"><i>🚛</i>Rutas</button>
-    <button class="dock-btn" onclick="nav(5)"><i>🖼️</i>Media</button>
-    <button class="dock-btn" onclick="nav(6)"><i>📊</i>Data</button>
-    <button class="dock-btn" onclick="nav(7)"><i>⚙️</i>Conf</button>
+    <button class="dock-btn" onclick="nav(5)"><i>📊</i>Data</button>
+    <button class="dock-btn" onclick="nav(6)"><i>⚙️</i>Conf</button>
 </nav>
 
 <div class="overlay" id="overlay" onclick="if(event.target==this) closeM()">
@@ -251,29 +234,30 @@
 </div>
 
 <script>
-    // --- FIX DINÁMICO DE TECLADO ---
-    // Este bloque detecta el tamaño real de la pantalla cuando sale el teclado
+    // --- FIX TECLADO PARA MOVER EL INPUT CORRECTAMENTE ---
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', () => {
-            const currentHeight = window.visualViewport.height;
-            const fullHeight = window.innerHeight;
+            const h = window.visualViewport.height;
+            const fullH = window.innerHeight;
             const inputArea = document.getElementById('input-container');
             const chatFlow = document.getElementById('chat-flow');
             
-            if (currentHeight < fullHeight - 50) {
-                // Teclado abierto: movemos el input justo arriba del teclado
-                const keyboardHeight = fullHeight - currentHeight;
-                inputArea.style.transform = `translateY(-${keyboardHeight}px)`;
-                // Bajamos el scroll para ver el último mensaje
-                setTimeout(() => { chatFlow.scrollTop = chatFlow.scrollHeight; }, 100);
+            if (h < fullH - 100) {
+                // Teclado abierto: Calculamos el desplazamiento exacto
+                const offset = fullH - h;
+                inputArea.style.transform = `translateY(-${offset}px)`;
+                // Ajustar el scroll del chat para que no se tape el último mensaje
+                chatFlow.style.paddingBottom = offset + 'px';
+                setTimeout(() => chatFlow.scrollTop = chatFlow.scrollHeight, 50);
             } else {
-                // Teclado cerrado: vuelve a su sitio
+                // Teclado cerrado
                 inputArea.style.transform = `translateY(0)`;
+                chatFlow.style.paddingBottom = '20px';
             }
         });
     }
 
-    // --- DB CON CONTACTO DUEÑO ---
+    // --- DB ACTUALIZADA CON TU NOMBRE Y NÚMERO ---
     let db = JSON.parse(localStorage.getItem('RANTIKUY_EMPIRE_V26')) || {
         caja: 0,
         inventario: [],
@@ -282,7 +266,7 @@
         rutas: [],
         audit: [],
         clientes: [
-            { id: 967593948, name: "Creador Contacto", phone: "967593948", chats: [{u:'THEM', t:'Soporte técnico directo activado.', h:'12:00', type:'text'}], fixed: true }
+            { id: 967593948, name: "QUINTANA Soporte", phone: "967593948", chats: [{u:'THEM', t:'Soporte técnico directo activado para Quintana.', h:'12:00', type:'text'}], fixed: true }
         ],
         currentChatId: null
     };
@@ -294,7 +278,6 @@
         updateUI();
     }
 
-    // --- NAV ---
     function nav(p) {
         document.getElementById('appShell').className = 'app-shell pos-' + p;
         document.querySelectorAll('.dock-btn').forEach((b, i) => b.classList.toggle('active', (i+1)===p));
@@ -305,11 +288,10 @@
         b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     }
 
-    // --- CHAT LOGIC ---
     function openChat(id) {
         db.currentChatId = id;
         const c = db.clientes.find(x => x.id === id);
-        document.getElementById('chat-target-name').innerText = c.name;
+        document.getElementById('chat-target-name').innerText = c.name + " (" + c.phone + ")";
         document.getElementById('chat-conversation-view').style.display = 'flex';
         renderMessages();
     }
@@ -337,13 +319,9 @@
         flow.innerHTML = c.chats.map(m => {
             let html = m.t;
             if(m.type === 'img') {
-                html = `<img src="${m.file}" onclick="window.open('${m.file}')">`;
-            } else if(m.type === 'doc') {
-                html = `<div class="file-link">📄 DOCUMENTO</div><a href="${m.file}" download="Doc_${m.h}.pdf" style="color:inherit">Descargar</a>`;
-            } else if(m.type === 'aud') {
-                html = `<audio controls src="${m.file}" style="width:100%;"></audio>`;
+                html = `<img src="${m.file}" style="width:100%; border-radius:12px;" onclick="window.open('${m.file}')">`;
             } else if(m.type === 'gps') {
-                html = `<div style="color:var(--p-sky); text-decoration:underline;" onclick="window.open('${m.file}')">📍 Ver ubicación en mapa</div>`;
+                html = `<div style="color:var(--p-sky); text-decoration:underline;" onclick="window.open('${m.file}')">📍 Ubicación en mapa</div>`;
             }
             return `<div class="msg ${m.u === 'ME' ? 'me' : 'them'}">${html}<div class="m-meta">${m.h}</div></div>`;
         }).join('');
@@ -362,126 +340,53 @@
         toggleStickers();
     }
 
-    function sendLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                const mapUrl = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                sendMessage('He enviado mi ubicación real', 'gps', mapUrl);
-                toggleAttach();
-            }, () => { alert("Por favor activa el GPS de tu celular."); });
-        }
-    }
-
-    function sendInvite() {
-        const msg = encodeURIComponent("¡Hola! Te invito a formar parte de RANTIKUY EMPIRE. Mi centro de negocios en Huanta.");
-        window.open(`https://wa.me/?text=${msg}`);
-    }
-
-    function triggerFile(type) {
-        activeFileType = type;
-        document.getElementById('hidden-file-input').click();
-        toggleAttach();
-    }
-
-    function processFileUpload(input) {
-        const file = input.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => { sendMessage('', activeFileType, e.target.result); };
-        reader.readAsDataURL(file);
-    }
-
     function sendMessage(text, type, fileData = null) {
         const c = db.clientes.find(x => x.id === db.currentChatId);
         const now = new Date();
         const timeStr = now.getHours() + ':' + (now.getMinutes()<10?'0':'') + now.getMinutes();
-        
         c.chats.push({ u: 'ME', t: text, type: type, file: fileData, h: timeStr });
         save();
         renderMessages();
     }
 
-    // --- UI ENGINE ---
     function updateUI() {
         const totalDeuda = db.deudas.reduce((a, b) => a + b.monto, 0);
         const totalGasto = db.gastos.reduce((a, b) => a + b.monto, 0);
-        
         document.getElementById('ui-caja').innerText = `S/ ${db.caja.toFixed(2)}`;
         document.getElementById('ui-deuda').innerText = `S/ ${totalDeuda.toFixed(2)}`;
         document.getElementById('ui-gasto').innerText = `S/ ${totalGasto.toFixed(2)}`;
         document.getElementById('ui-utilidad').innerText = `S/ ${db.caja.toFixed(2)}`;
         document.getElementById('ui-client-count').innerText = db.clientes.length;
 
-        const meta = 50000;
-        const porc = Math.min((db.caja / meta) * 100, 100);
-        document.getElementById('ui-progress').style.width = porc + '%';
-        document.getElementById('ui-meta-text').innerText = `${porc.toFixed(1)}% de meta (S/ ${meta})`;
-
-        document.getElementById('chat-list-view').innerHTML = db.clientes.map(c => {
-            const last = c.chats[c.chats.length-1];
-            return `
-                <div class="item-row" onclick="openChat(${c.id})" style="${c.fixed ? 'border-left:5px solid var(--p-gold)' : ''}">
-                    <div style="width:55px; height:55px; border-radius:50%; background:linear-gradient(45deg, var(--p-green), var(--p-sky)); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;">${c.name[0]}</div>
-                    <div class="item-info">
-                        <b>${c.name} ${c.fixed ? '⭐' : ''}</b>
-                        <small style="color:var(--text-sub)">${last ? (last.type === 'text' ? last.t.substring(0,25) : '📁 Archivo') : 'Sin mensajes'}</small>
-                    </div>
-                </div>`;
-        }).join('');
+        document.getElementById('chat-list-view').innerHTML = db.clientes.map(c => `
+            <div class="item-row" onclick="openChat(${c.id})" style="${c.fixed ? 'border-left:5px solid var(--p-gold)' : ''}">
+                <div style="width:55px; height:55px; border-radius:50%; background:linear-gradient(45deg, var(--p-green), var(--p-sky)); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;">${c.name[0]}</div>
+                <div class="item-info"><b>${c.name}</b><small>${c.phone}</small></div>
+            </div>`).join('');
 
         document.getElementById('render-stock').innerHTML = db.inventario.map(i => `
             <div class="item-row">
                 <img src="${i.img || 'https://via.placeholder.com/100'}">
                 <div class="item-info"><b>${i.nombre}</b><span>S/ ${i.precio.toFixed(2)}</span></div>
-                <div style="display:flex; flex-direction:column; gap:5px;">
-                    <button onclick="logic_sell(${i.id}, false)" style="background:var(--p-green); border:none; color:white; padding:8px; border-radius:8px; font-size:11px; font-weight:700;">VENDER</button>
-                    <button onclick="logic_sell(${i.id}, true)" style="background:var(--p-gold); border:none; color:white; padding:8px; border-radius:8px; font-size:11px; font-weight:700;">FIAR</button>
-                </div>
+                <button onclick="logic_sell(${i.id}, false)" style="background:var(--p-green); border:none; color:white; padding:8px; border-radius:8px;">VENDER</button>
             </div>`).join('');
-
-        document.getElementById('render-clients').innerHTML = db.clientes.map(c => `
-            <div class="item-row">
-                <div class="item-info"><b>${c.name}</b><small>${c.phone}</small></div>
-                <button onclick="openChat(${c.id})" style="background:var(--p-sky); color:white; border:none; padding:10px 15px; border-radius:12px; font-weight:700;">CHAT</button>
-            </div>`).join('');
-
-        document.getElementById('render-routes').innerHTML = db.rutas.map((r, idx) => `
-            <div class="item-row" style="border-left:6px solid var(--p-purple);">
-                <div class="item-info"><b>📍 ${r.dest}</b><small>${r.obs}</small></div>
-                <button onclick="db.rutas.splice(${idx},1); save();" style="border:none; background:none; color:var(--p-red); font-size:20px;">✕</button>
-            </div>`).join('');
-
-        let galItems = [];
-        db.clientes.forEach(c => c.chats.forEach(m => { if(m.type === 'img') galItems.push(m); }));
-        document.getElementById('render-gallery').innerHTML = galItems.map(m => `
-            <div class="gallery-item"><img src="${m.file}"></div>`).join('');
 
         document.getElementById('render-audit').innerHTML = db.audit.slice().reverse().map(a => `
             <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid var(--border); font-size:13px;">
-                <span>${a.t}</span>
-                <b style="color:${a.m >= 0 ? 'var(--p-green)' : 'var(--p-red)'}">${a.m >= 0 ? '+':''}${a.m.toFixed(2)}</b>
+                <span>${a.t}</span><b style="color:${a.m >= 0 ? 'var(--p-green)' : 'var(--p-red)'}">${a.m.toFixed(2)}</b>
             </div>`).join('');
     }
 
-    // --- LOGIC ---
     function logic_sell(id, isFiado) {
         const idx = db.inventario.findIndex(x => x.id === id);
         const item = db.inventario[idx];
-        if(isFiado) {
-            const cli = prompt("¿Socio para fiar?");
-            if(!cli) return;
-            db.deudas.push({ id: Date.now(), cliente: cli, monto: item.precio });
-            db.audit.push({ t: `Fiado: ${item.nombre} a ${cli}`, m: 0 });
-        } else {
-            db.caja += item.precio;
-            db.audit.push({ t: `Venta: ${item.nombre}`, m: item.precio });
-            confetti({ particleCount: 150, origin: { y: 0.7 } });
-        }
+        db.caja += item.precio;
+        db.audit.push({ t: `Venta: ${item.nombre}`, m: item.precio });
+        confetti({ particleCount: 150, origin: { y: 0.7 } });
         db.inventario.splice(idx, 1);
         save();
     }
 
-    // --- MODALES ---
     function showM(h) { document.getElementById('modal-content').innerHTML = h; document.getElementById('overlay').style.display = 'flex'; }
     function closeM() { document.getElementById('overlay').style.display = 'none'; }
 
@@ -501,42 +406,9 @@
         } else { db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: null }); save(); closeM(); }
     }
 
-    function ui_modalClient() {
-        showM(`<h2>Nuevo Socio</h2><input type="text" id="c-n" class="f-input" placeholder="Nombre"><input type="text" id="c-p" class="f-input" placeholder="WhatsApp"><button class="btn-main" onclick="logic_addClient()">REGISTRAR</button>`);
-    }
-
-    function logic_addClient() {
-        const n = document.getElementById('c-n').value;
-        const p = document.getElementById('c-p').value;
-        if(n) { db.clientes.push({ id: Date.now(), name: n, phone: p, chats: [] }); save(); closeM(); }
-    }
-
-    function ui_modalRoute() {
-        showM(`<h2>Ruta</h2><input type="text" id="r-d" class="f-input" placeholder="Destino"><input type="text" id="r-o" class="f-input" placeholder="Nota"><button class="btn-main" style="background:var(--p-purple);" onclick="logic_addRoute()">LANZAR</button>`);
-    }
-
-    function logic_addRoute() {
-        const d = document.getElementById('r-d').value;
-        const o = document.getElementById('r-o').value;
-        if(d) { db.rutas.push({ dest: d, obs: o }); save(); closeM(); }
-    }
-
-    function ui_modalGasto() {
-        showM(`<h2>Gasto</h2><input type="text" id="g-o" class="f-input" placeholder="Concepto"><input type="number" id="g-m" class="f-input" placeholder="S/"><button class="btn-main" style="background:var(--p-red);" onclick="logic_addGasto()">RESTAR</button>`);
-    }
-
-    function logic_addGasto() {
-        const o = document.getElementById('g-o').value;
-        const m = parseFloat(document.getElementById('g-m').value);
-        if(m > 0) { db.caja -= m; db.gastos.push({ id: Date.now(), monto: m, obs: o }); db.audit.push({ t: `Gasto: ${o}`, m: -m }); save(); closeM(); }
-    }
-
-    function logic_export() { alert(JSON.stringify(db)); }
-    function logic_reset() { if(confirm("¿RESET TOTAL?")) { localStorage.clear(); location.reload(); } }
-    
     function handleSecretTaps() {
         window.taps = (window.taps || 0) + 1;
-        if(window.taps >= 7) { alert("ADMIN MODE ACTIVADO"); window.taps = 0; }
+        if(window.taps >= 7) { alert("ADMIN QUINTANA ACTIVADO"); window.taps = 0; }
         setTimeout(() => window.taps = 0, 3000);
     }
 
