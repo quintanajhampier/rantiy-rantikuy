@@ -80,15 +80,15 @@
         .msg .m-meta { font-size: 9px; opacity: 0.7; align-self: flex-end; margin-top: 4px; }
         .msg img { width: 100%; border-radius: 12px; margin-top: 5px; cursor: pointer; }
         
-        /* AREA DE ESCRITURA CON CORRECCIÓN DE BUG */
+        /* AREA DE ESCRITURA CON FIX DE TECLADO */
         .chat-input-area { 
-            padding: 12px 15px; 
+            padding: 10px 15px; 
             background: var(--bg-card); 
             border-top: 1px solid var(--border); 
-            padding-bottom: calc(15px + var(--safe-bottom)); 
             position: relative; 
             z-index: 1001;
-            transition: transform 0.1s ease-out;
+            width: 100%;
+            transition: transform 0.1s linear;
         }
         .input-row { display: flex; gap: 8px; align-items: center; }
         
@@ -251,15 +251,23 @@
 </div>
 
 <script>
-    // --- FIX BUG TECLADO ---
+    // --- FIX DINÁMICO DE TECLADO ---
+    // Este bloque detecta el tamaño real de la pantalla cuando sale el teclado
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', () => {
-            const h = window.visualViewport.height;
-            document.body.style.height = h + 'px';
+            const currentHeight = window.visualViewport.height;
+            const fullHeight = window.innerHeight;
             const inputArea = document.getElementById('input-container');
-            if (h < window.innerHeight - 100) {
-                inputArea.style.transform = `translateY(-${window.innerHeight - h}px)`;
+            const chatFlow = document.getElementById('chat-flow');
+            
+            if (currentHeight < fullHeight - 50) {
+                // Teclado abierto: movemos el input justo arriba del teclado
+                const keyboardHeight = fullHeight - currentHeight;
+                inputArea.style.transform = `translateY(-${keyboardHeight}px)`;
+                // Bajamos el scroll para ver el último mensaje
+                setTimeout(() => { chatFlow.scrollTop = chatFlow.scrollHeight; }, 100);
             } else {
+                // Teclado cerrado: vuelve a su sitio
                 inputArea.style.transform = `translateY(0)`;
             }
         });
@@ -528,7 +536,7 @@
     
     function handleSecretTaps() {
         window.taps = (window.taps || 0) + 1;
-        if(window.taps >= 7) { alert("ADMIN MODE"); window.taps = 0; }
+        if(window.taps >= 7) { alert("ADMIN MODE ACTIVADO"); window.taps = 0; }
         setTimeout(() => window.taps = 0, 3000);
     }
 
