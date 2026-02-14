@@ -3,260 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rantikuy Business OS</title>
+    <title>Rantikuy Empire - Business OS V9 LEGACY</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --p-green: #22c55e;
-            --p-dark-green: #16a34a;
-            --p-wa: #128c7e;
+            --p-green: #10b981;
+            --p-vibrant-green: #22c55e;
+            --p-gold: #f59e0b;
+            --p-sky: #0ea5e9;
             --p-light: #f8fafc;
             --p-white: #ffffff;
-            --p-dark: #0f172a;
+            --p-dark: #1e293b;
             --p-slate: #64748b;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.1);
-            --safe-area-bottom: env(safe-area-inset-bottom);
+            --p-red: #f43f5e;
+            --p-soft-gold: #fef3c7;
+            --shadow-premium: 0 20px 40px -10px rgba(16, 185, 129, 0.2);
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            scrollbar-width: none;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; scrollbar-width: none; }
         *::-webkit-scrollbar { display: none; }
 
-        body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            background: var(--p-dark); overflow: hidden;
-        }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--p-light); overflow: hidden; color: var(--p-dark); }
 
-        /* --- CONTENEDOR MAESTRO (FLOW DE APP NATIVA) --- */
-        .app-shell {
-            display: flex; width: 200%; height: 100%;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-        }
+        .app-shell { display: flex; width: 200%; height: 100%; transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1); }
         .view-is-chat { transform: translateX(-50%); }
 
-        .screen { 
-            width: 50%; height: 100%; display: flex; flex-direction: column; 
-            background: var(--p-white); position: relative;
-        }
+        .screen { width: 50%; height: 100%; display: flex; flex-direction: column; background: var(--p-white); position: relative; }
 
-        /* --- HEADER PREMIUM --- */
-        .glass-header {
-            padding: 20px 24px; background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(20px); border-bottom: 1px solid #f1f5f9;
-            display: flex; justify-content: space-between; align-items: center;
+        /* HEADER VIBRANTE - ESTILO HUANTA MARKET */
+        .header-main { 
+            padding: 25px 30px; 
+            background: linear-gradient(135deg, var(--p-white) 0%, #f0fdf4 100%);
+            border-bottom: 2px solid #ecfdf5;
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 100;
         }
-        .logo-text { font-size: 24px; font-weight: 800; color: var(--p-dark); letter-spacing: -1px; }
-        .logo-text span { color: var(--p-green); }
+        .header-title { cursor: pointer; user-select: none; }
+        .header-title h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -1.2px; color: var(--p-dark); }
+        .header-title h1 span { color: var(--p-vibrant-green); }
+        .header-title p { margin: 0; font-size: 10px; font-weight: 700; color: var(--p-green); text-transform: uppercase; letter-spacing: 1.5px; }
 
-        /* --- LISTA DE CHATS (MODO MERCADO) --- */
-        .scroll-area { flex: 1; overflow-y: auto; padding: 15px; background: var(--p-light); }
+        /* LISTADO DE NEGOCIOS PRO */
+        .biz-scroll { flex: 1; overflow-y: auto; padding: 20px; background: #fcfdfc; }
+        .biz-card { 
+            background: var(--p-white); padding: 20px; border-radius: 30px; 
+            display: flex; align-items: center; gap: 18px; margin-bottom: 15px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .biz-card:active { transform: scale(0.95); background: #f0fdf4; }
         
-        .chat-card {
-            background: var(--p-white); padding: 18px; border-radius: 28px;
-            display: flex; align-items: center; gap: 16px; margin-bottom: 12px;
-            box-shadow: var(--shadow-sm); border: 1px solid transparent;
-            transition: all 0.3s ease;
+        .biz-img { 
+            width: 70px; height: 70px; border-radius: 22px; 
+            background: linear-gradient(135deg, var(--p-vibrant-green), var(--p-sky));
+            display: flex; align-items: center; justify-content: center; 
+            color: white; font-weight: 800; font-size: 24px; 
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2); position: relative;
         }
-        .chat-card:active { transform: scale(0.96); background: #f1f5f9; }
-        
-        .profile-img { 
-            width: 60px; height: 60px; border-radius: 22px;
-            background: linear-gradient(135deg, var(--p-green), var(--p-dark-green));
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 800; font-size: 22px;
-            box-shadow: 0 8px 16px rgba(34,197,94,0.2);
+        .online-ring { 
+            position: absolute; bottom: -4px; right: -4px; width: 20px; height: 20px; 
+            background: #22c55e; border: 4px solid #fff; border-radius: 50%;
         }
 
-        .chat-details { flex: 1; }
-        .chat-details b { font-size: 17px; color: var(--p-dark); display: block; margin-bottom: 4px; }
-        .chat-details p { font-size: 13px; color: var(--p-slate); margin: 0; display: flex; align-items: center; gap: 4px; }
-
-        .unread-badge { 
-            width: 10px; height: 10px; background: var(--p-green); 
-            border-radius: 50%; box-shadow: 0 0 10px var(--p-green); 
-        }
-
-        /* --- VISTA DE CHAT (WHATSAPP BUSINESS OS) --- */
-        .chat-screen { background: #efeae2 url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: 500px; }
-        
+        /* CHAT ENGINE V9 */
+        .chat-bg { background: #f0f2f5 url('https://www.transparenttextures.com/patterns/cubes.png'); }
         .chat-nav { 
-            background: white; padding: 10px 15px; display: flex; 
-            align-items: center; gap: 12px; border-bottom: 1px solid #ddd;
-        }
-        .back-circle { 
-            width: 42px; height: 42px; border-radius: 50%; border: none;
-            background: #f1f5f9; color: var(--p-dark); font-size: 20px;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px);
+            padding: 15px 25px; display: flex; align-items: center; gap: 15px; 
+            border-bottom: 1px solid #e2e8f0; z-index: 100;
         }
 
-        /* FICHA DE PRODUCTO (LO MÁS PRO) */
-        .deal-card {
-            margin: 10px 15px; padding: 12px; background: rgba(255,255,255,0.9);
-            border-radius: 20px; display: flex; align-items: center; gap: 12px;
-            border: 1px solid var(--p-green); box-shadow: var(--shadow-md);
-            animation: slideDown 0.5s ease;
+        /* BARRA DE CONFIANZA */
+        .trust-meter { height: 4px; background: #e2e8f0; width: 100%; position: relative; overflow: hidden; }
+        .trust-fill { height: 100%; background: var(--p-vibrant-green); width: 65%; transition: 1s; }
+
+        /* NEGOTIATION HUB */
+        .nego-panel { 
+            margin: 15px; background: white; border-radius: 35px; padding: 20px;
+            box-shadow: var(--shadow-premium); border: 1px solid #f1f5f9;
         }
-        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } }
+        .contract-badge {
+            background: var(--p-soft-gold); color: var(--p-gold);
+            padding: 5px 12px; border-radius: 12px; font-size: 10px; font-weight: 800;
+        }
 
-        .deal-thumb { width: 45px; height: 45px; border-radius: 12px; background: #eee; object-fit: cover; }
-        .deal-info b { font-size: 14px; color: var(--p-dark); display: block; }
-        .deal-info span { font-size: 12px; color: var(--p-green); font-weight: 800; }
-
-        .messages-flow { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        
-        /* BUBBLES CON FLOW */
+        /* FLOW DE MENSAJES */
+        .messages-container { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 20px; }
         .bubble { 
-            max-width: 82%; padding: 12px 16px; border-radius: 22px; 
-            font-size: 15px; line-height: 1.5; font-weight: 500;
-            position: relative; animation: messageIn 0.3s ease-out;
+            max-width: 80%; padding: 16px 20px; border-radius: 28px; 
+            font-size: 15px; line-height: 1.5; position: relative; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); animation: msgPop 0.4s ease-out;
         }
-        @keyframes messageIn { from { transform: translateY(10px); opacity: 0; } }
+        @keyframes msgPop { from { transform: scale(0.8); opacity: 0; } }
 
-        .b-me { align-self: flex-end; background: #e7ffdb; color: #111; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .b-them { align-self: flex-start; background: white; color: #111; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .msg-me { align-self: flex-end; background: var(--p-vibrant-green); color: white; border-bottom-right-radius: 4px; }
+        .msg-them { align-self: flex-start; background: white; color: var(--p-dark); border-bottom-left-radius: 4px; }
+
+        /* TARJETA DE OFERTA FORMAL */
+        .offer-box { 
+            background: #fff; border: 2px dashed var(--p-gold); border-radius: 20px; 
+            padding: 15px; margin: 10px 0; text-align: center;
+        }
+        .offer-val { font-size: 28px; font-weight: 900; color: var(--p-dark); display: block; margin: 5px 0; }
+
+        /* DOCK DE ACCIONES PROFESIONALES */
+        .biz-actions { 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; 
+            padding: 15px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0;
+        }
+        .action-node { 
+            background: white; border: 1px solid #e2e8f0; padding: 12px 5px; border-radius: 20px; 
+            font-size: 11px; font-weight: 800; color: var(--p-dark);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s;
+        }
+        .action-node:active { transform: translateY(3px); background: var(--p-vibrant-green); color: white; }
+
+        /* INPUT AREA V9 */
+        .input-wrapper { background: white; padding: 15px 20px calc(20px + var(--safe-bottom)); }
+        .input-field { display: flex; align-items: center; gap: 12px; }
+        .input-capsule { 
+            flex: 1; background: #f1f5f9; border-radius: 35px; 
+            padding: 5px 20px; display: flex; align-items: center; border: 1px solid #e2e8f0;
+        }
+        .input-capsule input { flex: 1; border: none; background: transparent; padding: 14px 0; outline: none; font-size: 15px; font-weight: 600; }
         
-        .bubble img { width: 100%; border-radius: 14px; margin-top: 5px; }
-        .meta-time { font-size: 10px; color: #888; display: block; text-align: right; margin-top: 5px; }
+        .btn-round { width: 55px; height: 55px; border-radius: 50%; border: none; background: var(--p-dark); color: white; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .btn-round:hover { transform: rotate(15deg) scale(1.1); }
+        .btn-green { background: var(--p-vibrant-green); box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3); }
 
-        /* --- INPUT ADAPTABLE AL CELULAR --- */
-        .bottom-shelf { 
-            background: #f0f0f0; padding: 12px 15px calc(15px + var(--safe-area-bottom)); 
-            display: flex; flex-direction: column; gap: 10px;
+        /* MODALES */
+        .full-modal {
+            position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.95);
+            display: none; z-index: 2000; justify-content: center; align-items: center; padding: 25px;
         }
+        .modal-content { background: white; width: 100%; max-width: 450px; border-radius: 40px; padding: 35px; position: relative; }
 
-        .quick-actions { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
-        .q-btn { 
-            padding: 8px 18px; background: white; border-radius: 20px; 
-            font-size: 12px; font-weight: 800; color: var(--p-wa); 
-            border: 1px solid #e2e8f0; white-space: nowrap;
+        /* ADMIN PANEL OVERLAY */
+        #adminPanel {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; color: #0f0; font-family: 'Courier New', monospace;
+            padding: 40px; z-index: 9999; display: none; overflow-y: auto;
         }
-
-        .main-input-row { display: flex; align-items: center; gap: 10px; }
-        .input-container { 
-            flex: 1; background: white; border-radius: 30px; 
-            padding: 5px 18px; display: flex; align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .main-input-row input { 
-            flex: 1; border: none; padding: 12px 5px; outline: none; font-size: 16px; font-weight: 500;
-        }
-        
-        .btn-send-elite { 
-            width: 52px; height: 52px; border-radius: 50%; border: none;
-            background: var(--p-wa); color: white; font-size: 22px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 15px rgba(18,140,126,0.3); transition: 0.3s;
-        }
-        .btn-send-elite:active { transform: scale(0.9) rotate(-15deg); }
-
-        /* MODO VACÍO */
-        .empty-inbox { text-align: center; padding: 120px 40px; }
-        .empty-inbox h2 { font-size: 28px; color: var(--p-slate); margin: 0; }
     </style>
 </head>
 <body>
 
+<div id="adminPanel">
+    <h2>> RANTIKUY_EMPIRE_OS_V9</h2>
+    <p>> Acceso concedido: Lider Supremo</p>
+    <hr>
+    <p>> Base de datos: ONLINE</p>
+    <p>> Servidores Huanta: ACTIVO</p>
+    <div id="dbLog"></div>
+    <button onclick="closeAdmin()" style="background:#0f0; color:#000; border:none; padding:10px; margin-top:20px; font-weight:bold;">SALIR_SISTEMA</button>
+</div>
+
 <div class="app-shell" id="appShell">
     
     <div class="screen">
-        <header class="glass-header">
-            <div class="logo-text">Rantikuy<span>.biz</span></div>
-            <button onclick="location.href='index.html'" style="border:none; background:var(--p-light); padding:10px 15px; border-radius:15px; font-weight:800; color:var(--p-green);">MERCADO</button>
+        <div class="trust-meter"><div class="trust-fill" id="totalTrust"></div></div>
+        <header class="header-main">
+            <div class="header-title" onclick="adminTrigger()">
+                <h1 id="mainTitle">Rantikuy<span>.Empire</span></h1>
+                <p>Centro de Mando Huanta</p>
+            </div>
+            <div id="walletDisplay" style="background: var(--p-soft-gold); padding: 10px 18px; border-radius: 20px; font-weight: 800; font-size: 13px; color: var(--p-gold);">
+                S/ 2,450.00
+            </div>
         </header>
         
-        <div class="scroll-area" id="inbox">
-            </div>
+        <div style="padding: 20px 30px; font-weight: 800; font-size: 13px; color: var(--p-slate); letter-spacing: 1px;">NEGOCIACIONES EN VIVO</div>
+        <div class="biz-scroll" id="inbox"></div>
+
+        <nav style="padding: 20px; background: white; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-around; align-items: center;">
+            <button class="btn-round" style="background:none; color:var(--p-slate);">🏠</button>
+            <button class="btn-round" style="background:var(--p-vibrant-green); color:white; width:65px; height:65px; font-size:28px;">💬</button>
+            <button class="btn-round" style="background:none; color:var(--p-slate);">📦</button>
+            <button class="btn-round" style="background:none; color:var(--p-slate);">👤</button>
+        </nav>
     </div>
 
-    <div class="screen chat-screen">
+    <div class="screen chat-bg">
         <nav class="chat-nav">
-            <button class="back-circle" onclick="goToInbox()">❮</button>
-            <div class="profile-img" id="chatAvatar" style="width:45px; height:45px; font-size:16px;">?</div>
+            <button onclick="goToInbox()" style="border:none; background:none; font-size:24px; color:var(--p-dark);">❮</button>
+            <div class="biz-img" id="chatAvatar" style="width:50px; height:50px; font-size:18px;">?</div>
             <div style="flex:1">
-                <b id="chatName" style="color:var(--p-dark); font-size:17px;">Comerciante</b>
-                <span style="display:block; font-size:11px; color:var(--p-green); font-weight:800;">● CONEXIÓN SEGURA</span>
+                <b id="chatName" style="font-size:18px;">Empresario</b>
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <span style="color:var(--p-vibrant-green); font-size:10px; font-weight:800;">● NEGOCIACIÓN SEGURA</span>
+                </div>
             </div>
-            <button onclick="clearHistory()" style="background:none; border:none; font-size:22px;">⚙️</button>
+            <button class="btn-round" style="width:40px; height:40px; background:#f1f5f9; color:var(--p-dark); font-size:18px;">📞</button>
         </nav>
 
-        <div class="deal-card" id="dealCard">
-            <img src="https://cdn-icons-png.flaticon.com/512/1162/1162456.png" class="deal-thumb">
-            <div class="deal-info">
-                <b>Negociación en curso</b>
-                <span>Punto de entrega: Plaza de Huanta</span>
+        <div class="nego-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <span class="contract-badge" id="negoID">ID: -- -- --</span>
+                <span id="dealStatus" style="background:#dcfce7; color:#166534; padding:5px 12px; border-radius:12px; font-size:10px; font-weight:800;">ACTIVO</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div id="productThumb" style="width:55px; height:55px; border-radius:15px; background:#f8fafc; display:flex; align-items:center; justify-content:center; font-size:24px;">📦</div>
+                <div style="flex:1">
+                    <b id="dealTitle" style="font-size:15px;">Iniciando Trato...</b><br>
+                    <span style="font-size:14px; color:var(--p-vibrant-green); font-weight:800;">S/ <span id="currentPrice">0.00</span></span>
+                </div>
+                <button onclick="confirmDeal()" style="background:var(--p-dark); color:white; border:none; padding:12px 18px; border-radius:18px; font-weight:800; font-size:11px;">CERRAR TRATO</button>
             </div>
         </div>
 
-        <div class="messages-flow" id="msgFlow"></div>
+        <div class="messages-container" id="msgFlow"></div>
 
-        <div class="bottom-shelf">
-            <div class="quick-actions">
-                <button class="q-btn" onclick="fastSend('¿Cuál es el precio final?')">💰 Precio Final</button>
-                <button class="q-btn" onclick="fastSend('¿Dónde nos encontramos?')">📍 Encuentro</button>
-                <button class="q-btn" onclick="fastSend('¿Aceptas transferencia?')">🏦 Pago</button>
+        <div class="biz-actions">
+            <button class="action-node" onclick="openOfferModal()">💰 Ofertar</button>
+            <button class="action-node" onclick="sendQuickMsg('📍 Plaza de Armas?')">📍 Lugar</button>
+            <button class="action-node" onclick="openPaymentModal()">💳 Pagar</button>
+            <button class="action-node" onclick="toggleStickers()">✨ Reacción</button>
+        </div>
+
+        <div class="input-wrapper">
+            <div id="stickerDrawer" style="display:none; grid-template-columns:repeat(5,1fr); gap:15px; margin-bottom:15px; background:#f8fafc; padding:15px; border-radius:25px; border:1px solid #e2e8f0;">
+                <div onclick="sendSticker('🤝')" style="font-size:32px; text-align:center; cursor:pointer;">🤝</div>
+                <div onclick="sendSticker('💎')" style="font-size:32px; text-align:center; cursor:pointer;">💎</div>
+                <div onclick="sendSticker('🔥')" style="font-size:32px; text-align:center; cursor:pointer;">🔥</div>
+                <div onclick="sendSticker('🚀')" style="font-size:32px; text-align:center; cursor:pointer;">🚀</div>
+                <div onclick="sendSticker('✅')" style="font-size:32px; text-align:center; cursor:pointer;">✅</div>
             </div>
-            
-            <div class="main-input-row">
-                <div class="input-container">
-                    <button onclick="pickImg()" style="background:none; border:none; font-size:22px;">📷</button>
-                    <input type="text" id="userInput" placeholder="Escribe al vendedor..." autocomplete="off">
+            <div class="input-field">
+                <button class="btn-round" style="background:#f1f5f9; color:var(--p-dark);" onclick="pickFile()">📎</button>
+                <div class="input-capsule">
+                    <input type="text" id="userInput" placeholder="Escribe tu propuesta comercial...">
                 </div>
-                <button class="btn-send-elite" onclick="processMessage()">🚀</button>
+                <button class="btn-round btn-green" onclick="processMessage()">🚀</button>
             </div>
         </div>
     </div>
 </div>
 
+<div class="full-modal" id="offerModal">
+    <div class="modal-content">
+        <h2 style="margin:0; font-size:24px; letter-spacing:-1px;">Nueva Contraoferta</h2>
+        <p style="color:var(--p-slate); font-size:14px; margin:10px 0 25px;">El vendedor verá esta oferta como una propuesta formal.</p>
+        <div style="background:#f8fafc; padding:25px; border-radius:30px; border:2px solid #e2e8f0; margin-bottom:25px;">
+            <span style="font-weight:900; color:var(--p-vibrant-green); font-size:20px;">S/ </span>
+            <input type="number" id="offerInput" style="background:none; border:none; font-size:38px; font-weight:900; width:80%; outline:none;" placeholder="0.00">
+        </div>
+        <div style="display:flex; gap:15px;">
+            <button onclick="closeModal('offerModal')" style="flex:1; border:none; padding:18px; border-radius:22px; font-weight:800; background:#f1f5f9;">CANCELAR</button>
+            <button onclick="submitOffer()" style="flex:1; border:none; background:var(--p-dark); color:white; padding:18px; border-radius:22px; font-weight:800;">ENVIAR</button>
+        </div>
+    </div>
+</div>
+
+<div class="full-modal" id="paymentModal">
+    <div class="modal-content" style="text-align:center;">
+        <div style="font-size:50px; margin-bottom:10px;">💳</div>
+        <h2 style="margin:0;">Método de Pago</h2>
+        <p style="color:var(--p-slate); margin-bottom:25px;">Selecciona como deseas liquidar el trato.</p>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:25px;">
+            <div onclick="executePayment('YAPE')" style="background:#742284; color:white; padding:20px; border-radius:25px; font-weight:bold; cursor:pointer;">YAPE</div>
+            <div onclick="executePayment('PLIN')" style="background:#00d1ce; color:white; padding:20px; border-radius:25px; font-weight:bold; cursor:pointer;">PLIN</div>
+            <div onclick="executePayment('TRANSF.')" style="background:var(--p-dark); color:white; padding:20px; border-radius:25px; font-weight:bold; cursor:pointer;">TRANSF.</div>
+            <div onclick="executePayment('EFECTIVO')" style="background:var(--p-vibrant-green); color:white; padding:20px; border-radius:25px; font-weight:bold; cursor:pointer;">EFECTIVO</div>
+        </div>
+        <button onclick="closeModal('paymentModal')" style="width:100%; border:none; padding:15px; background:none; font-weight:800; color:var(--p-slate);">VOLVER</button>
+    </div>
+</div>
+
 <script>
-    // --- MOTOR DEL IMPERIO (LÓGICA) ---
-    const APP_USER = localStorage.getItem('rantiy_user') || "Comprador";
+    const APP_USER = localStorage.getItem('rantiy_user') || "Lider_Huanta";
     let ACTIVE_CHAT = "";
+    let ADMIN_TAPS = 0;
+    const DB_KEY = 'empire_v9_db';
 
     function boot() {
         renderInbox();
-        
-        // Listener para el input
         document.getElementById('userInput').onkeypress = e => { if(e.key === 'Enter') processMessage(); };
-
-        // Auto-conectar desde index.html
-        const target = localStorage.getItem('last_chat_partner');
-        if(target) {
-            localStorage.removeItem('last_chat_partner');
-            openChat(target);
-        }
-
-        // Refresco constante (Simulando servidor real)
+        const last = localStorage.getItem('last_chat_partner');
+        if(last) { localStorage.removeItem('last_chat_partner'); openChat(last); }
+        
+        // Efecto visual de wallet
         setInterval(() => {
-            renderInbox();
-            if(ACTIVE_CHAT) renderMessages();
-        }, 2500);
+            const val = 2450 + Math.random() * 10;
+            document.getElementById('walletDisplay').innerText = `S/ ${val.toLocaleString()}`;
+        }, 5000);
+
+        setInterval(() => { renderInbox(); if(ACTIVE_CHAT) renderMessages(); }, 2000);
     }
+
+    // DISPARADOR PANEL ADMIN (7 TAPS)
+    function adminTrigger() {
+        ADMIN_TAPS++;
+        if(ADMIN_TAPS >= 7) {
+            document.getElementById('adminPanel').style.display = 'block';
+            const db = localStorage.getItem(DB_KEY);
+            document.getElementById('dbLog').innerHTML = `<pre>${JSON.stringify(JSON.parse(db), null, 2)}</pre>`;
+            ADMIN_TAPS = 0;
+        }
+        setTimeout(() => { if(ADMIN_TAPS < 7) ADMIN_TAPS = 0; }, 3000);
+    }
+    function closeAdmin() { document.getElementById('adminPanel').style.display = 'none'; }
 
     function renderInbox() {
         const inbox = document.getElementById('inbox');
-        const db = JSON.parse(localStorage.getItem('empire_chats_v3') || '{}');
-        const keys = Object.keys(db).filter(k => k.includes(APP_USER));
-
-        if(keys.length === 0) {
-            inbox.innerHTML = `<div class="empty-inbox"><h2>💬</h2><p>No hay negocios activos.<br>Inicia uno en la Vitrina.</p></div>`;
+        const db = JSON.parse(localStorage.getItem(DB_KEY) || '{}');
+        const chats = Object.keys(db).filter(k => k.includes(APP_USER));
+        
+        if(chats.length === 0) {
+            inbox.innerHTML = `<div style="text-align:center; padding:80px 40px; color:var(--p-slate);"><div style="font-size:50px;">🌱</div><h3>Tu imperio comienza aquí.</h3><p>Busca productos en el mercado para negociar.</p></div>`;
             return;
         }
 
-        inbox.innerHTML = keys.map(k => {
+        inbox.innerHTML = chats.map(k => {
             const partner = k.replace(APP_USER, "").replace("_", "");
-            const last = db[k][db[k].length - 1];
+            const lastMsg = db[k][db[k].length - 1];
             return `
-                <div class="chat-card" onclick="openChat('${partner}')">
-                    <div class="profile-img">${partner[0].toUpperCase()}</div>
-                    <div class="chat-details">
-                        <b>${partner}</b>
-                        <p>${last.type === 'img' ? '📷 Foto enviada' : last.t}</p>
+                <div class="biz-card" onclick="openChat('${partner}')">
+                    <div class="biz-img">${partner[0].toUpperCase()}<div class="online-ring"></div></div>
+                    <div style="flex:1">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <b style="font-size:18px;">${partner}</b>
+                            <span style="font-size:11px; font-weight:800; color:var(--p-slate);">${lastMsg.h}</span>
+                        </div>
+                        <p style="margin:0; font-size:14px; color:var(--p-slate); overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">
+                            ${lastMsg.u === APP_USER ? '<span style="color:var(--p-green)">Tú:</span> ' : ''}${lastMsg.type === 'offer' ? '💰 Propuesta enviada' : lastMsg.t}
+                        </p>
                     </div>
-                    ${last.u !== APP_USER ? '<div class="unread-badge"></div>' : ''}
                 </div>
             `;
         }).join('');
@@ -267,6 +340,8 @@
         document.getElementById('chatName').innerText = name;
         document.getElementById('chatAvatar').innerText = name[0].toUpperCase();
         document.getElementById('appShell').classList.add('view-is-chat');
+        document.getElementById('currentPrice').innerText = (50 + Math.random() * 450).toFixed(2);
+        document.getElementById('negoID').innerText = "ID: " + Math.random().toString(36).substr(2, 9).toUpperCase();
         renderMessages();
     }
 
@@ -277,16 +352,24 @@
 
     function renderMessages() {
         const flow = document.getElementById('msgFlow');
-        const db = JSON.parse(localStorage.getItem('empire_chats_v3') || '{}');
+        const db = JSON.parse(localStorage.getItem(DB_KEY) || '{}');
         const key = [APP_USER, ACTIVE_CHAT].sort().join('_');
         const msgs = db[key] || [];
 
-        const html = msgs.map(m => `
-            <div class="bubble ${m.u === APP_USER ? 'b-me' : 'b-them'}">
-                ${m.type === 'img' ? `<img src="${m.t}">` : m.t}
-                <span class="meta-time">${m.h}</span>
-            </div>
-        `).join('');
+        const html = msgs.map(m => {
+            let body = m.t;
+            if(m.type === 'offer') body = `<div class="offer-box"><span>OFERTA FORMAL</span><b class="offer-val">S/ ${m.t}</b><small>Sujeto a confirmación</small></div>`;
+            if(m.type === 'payment') body = `<div style="background:#dcfce7; padding:15px; border-radius:20px; text-align:center; color:#166534;"><b>✅ PAGO REALIZADO</b><br>Vía ${m.t}<br><small>Ref: #PAY-${Math.floor(Math.random()*9999)}</small></div>`;
+            if(m.type === 'img') body = `<img src="${m.t}" style="width:100%; border-radius:20px; border:2px solid #fff;">`;
+            if(m.type === 'sticker') body = `<div style="font-size:70px; text-align:center;">${m.t}</div>`;
+
+            return `
+                <div class="bubble ${m.u === APP_USER ? 'msg-me' : 'msg-them'}">
+                    ${body}
+                    <div style="font-size:9px; opacity:0.6; text-align:right; margin-top:8px; font-weight:800;">${m.h} ${m.u === APP_USER ? '✓✓' : ''}</div>
+                </div>
+            `;
+        }).join('');
 
         if(flow.innerHTML !== html) {
             flow.innerHTML = html;
@@ -301,41 +384,63 @@
         input.value = "";
     }
 
-    function fastSend(val) { saveToDB(val, 'text'); }
-
     function saveToDB(txt, type) {
-        let db = JSON.parse(localStorage.getItem('empire_chats_v3') || '{}');
+        let db = JSON.parse(localStorage.getItem(DB_KEY) || '{}');
         const key = [APP_USER, ACTIVE_CHAT].sort().join('_');
         if(!db[key]) db[key] = [];
-        
         db[key].push({
-            u: APP_USER, 
-            t: txt, 
-            type: type,
-            h: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12: true})
+            u: APP_USER, t: txt, type: type,
+            h: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
         });
-        
-        localStorage.setItem('empire_chats_v3', JSON.stringify(db));
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
         renderMessages();
     }
 
-    function pickImg() {
-        let i = document.createElement('input'); i.type='file'; i.accept='image/*';
-        i.onchange = e => {
-            let r = new FileReader();
-            r.onload = ev => saveToDB(ev.target.result, 'img');
-            r.readAsDataURL(e.target.files[0]);
-        };
-        i.click();
+    // ACCIONES DE NEGOCIO
+    function openOfferModal() { document.getElementById('offerModal').style.display = 'flex'; }
+    function openPaymentModal() { document.getElementById('paymentModal').style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function submitOffer() {
+        const val = document.getElementById('offerInput').value;
+        if(!val) return;
+        saveToDB(val, 'offer');
+        closeModal('offerModal');
+        document.getElementById('offerInput').value = "";
     }
 
-    function clearHistory() {
-        if(confirm("¿Archivar negociación con " + ACTIVE_CHAT + "?")) {
-            let db = JSON.parse(localStorage.getItem('empire_chats_v3') || '{}');
-            delete db[[APP_USER, ACTIVE_CHAT].sort().join('_')];
-            localStorage.setItem('empire_chats_v3', JSON.stringify(db));
-            goToInbox();
+    function executePayment(method) {
+        saveToDB(method, 'payment');
+        closeModal('paymentModal');
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.8 }, colors: ['#10b981', '#ffffff'] });
+    }
+
+    function confirmDeal() {
+        if(confirm("¿Confirmar contrato y cerrar trato comercial?")) {
+            saveToDB("🤝 TRATO CERRADO. ¡Éxito en el negocio!", "text");
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#f59e0b', '#10b981', '#ffffff'] });
+            document.getElementById('dealStatus').innerText = "CERRADO";
+            document.getElementById('dealStatus').style.background = "var(--p-dark)";
+            document.getElementById('dealStatus').style.color = "white";
         }
+    }
+
+    function sendQuickMsg(t) { saveToDB(t, 'text'); }
+    function sendSticker(s) { saveToDB(s, 'sticker'); toggleStickers(); }
+    function toggleStickers() {
+        const d = document.getElementById('stickerDrawer');
+        d.style.display = d.style.display === 'grid' ? 'none' : 'grid';
+    }
+
+    function pickFile() {
+        let i = document.createElement('input'); i.type='file';
+        i.onchange = e => {
+            const f = e.target.files[0];
+            const r = new FileReader();
+            r.onload = ev => saveToDB(ev.target.result, f.type.includes('image') ? 'img' : 'text');
+            r.readAsDataURL(f);
+        };
+        i.click();
     }
 
     window.onload = boot;
