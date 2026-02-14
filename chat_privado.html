@@ -55,17 +55,22 @@
         .pulse-dot { width: 8px; height: 8px; background: var(--p-green); border-radius: 50%; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
 
-        /* --- CHAT INTELIGENTE --- */
-        .chat-area { flex: 1; overflow-y: auto; padding: 20px; background: #f4f7f9; display: flex; flex-direction: column; gap: 12px; }
-        .msg { max-width: 85%; padding: 15px; border-radius: 24px; font-size: 14.5px; line-height: 1.6; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .msg.me { align-self: flex-end; background: var(--p-green); color: white; border-bottom-right-radius: 4px; }
-        .msg.them { align-self: flex-start; background: white; color: var(--p-dark); border-bottom-left-radius: 4px; border: 1px solid #eef2f6; }
-        .msg-meta { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; opacity: 0.8; display: block; }
+        /* --- CHAT ESTRUCTURA TIPO WHATSAPP --- */
+        #chat-list-view { flex: 1; overflow-y: auto; background: white; }
+        #chat-conversation-view { flex: 1; display: none; flex-direction: column; background: #f0f2f5; position: absolute; inset: 0; z-index: 200; }
         
-        .input-box { padding: 20px; background: white; border-top: 1px solid #eee; display: flex; gap: 12px; padding-bottom: calc(20px + var(--safe-bottom)); }
-        .field { flex: 1; background: #f1f5f9; border: none; padding: 18px 25px; border-radius: 35px; font-size: 16px; outline: none; }
-        .btn-circle { width: 55px; height: 55px; border-radius: 50%; border: none; background: var(--p-green); color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3); }
-
+        .chat-item { padding: 18px 25px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .chat-item:active { background: #f8fafc; }
+        .avatar-circle { width: 50px; height: 50px; border-radius: 50%; background: var(--p-soft-green); color: var(--p-green); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+        
+        .chat-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 14.5px; line-height: 1.4; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .msg.me { align-self: flex-end; background: #dcf8c6; color: #1e293b; border-top-right-radius: 4px; }
+        .msg.them { align-self: flex-start; background: white; color: var(--p-dark); border-top-left-radius: 4px; }
+        
+        .input-box { padding: 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: calc(15px + var(--safe-bottom)); }
+        .field { flex: 1; background: white; border: none; padding: 12px 20px; border-radius: 25px; font-size: 15px; outline: none; }
+        
         /* --- DASHBOARD TITÁN --- */
         .scroll { flex: 1; overflow-y: auto; padding: 25px; padding-bottom: 120px; }
         .card-empire { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 35px; border-radius: 40px; margin-bottom: 30px; position: relative; overflow: hidden; }
@@ -100,7 +105,6 @@
         .f-input:focus { border-color: var(--p-green); }
         .btn-main { width: 100%; padding: 22px; border-radius: 25px; border: none; background: var(--p-green); color: white; font-weight: 800; font-size: 18px; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3); cursor: pointer; }
 
-        /* --- ANALYTICS --- */
         .progress-container { background: #f1f5f9; height: 12px; border-radius: 10px; margin: 20px 0; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--p-green); width: 0%; transition: width 1s ease; }
     </style>
@@ -114,10 +118,19 @@
             <h1 onclick="handleSecretTaps()">Empire<span>.OS</span></h1>
             <div class="badge-live"><div class="pulse-dot"></div> MANDO ACTIVO</div>
         </header>
-        <div class="chat-area" id="chat-flow"></div>
-        <div class="input-box">
-            <input type="text" id="chat-input" class="field" placeholder="Dictar orden..." onkeypress="if(event.key==='Enter') logic_send()">
-            <button class="btn-circle" onclick="logic_send()">🚀</button>
+        
+        <div id="chat-list-view"></div>
+
+        <div id="chat-conversation-view">
+            <header class="header-main" style="padding: 15px 25px;">
+                <button onclick="closeChat()" style="border:none; background:none; font-size:20px;">⬅️</button>
+                <div id="chat-target-name" style="font-weight:800; flex:1; margin-left:15px;">Nombre</div>
+            </header>
+            <div class="chat-area" id="chat-flow"></div>
+            <div class="input-box">
+                <input type="text" id="chat-input" class="field" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') logic_send()">
+                <button class="btn-circle" style="width:45px; height:45px;" onclick="logic_send()">🚀</button>
+            </div>
         </div>
     </div>
 
@@ -209,10 +222,13 @@
         inventario: [],
         deudas: [],
         gastos: [],
-        clientes: [],
+        clientes: [
+            { id: 101, name: "Mayorista Huanta", phone: "987654321", chats: [{u:'THEM', t:'¿Tienes stock de fertilizantes?', h:'10:30'}] },
+            { id: 102, name: "Distribuidora Ayacucho", phone: "912345678", chats: [{u:'THEM', t:'Pedido de mañana listo.', h:'09:15'}] }
+        ],
         rutas: [],
         audit: [],
-        mensajes: [{ u: 'SISTEMA', t: 'OS v22 Titán iniciado. Esperando órdenes.', h: '08:00', me: false }]
+        currentChatId: null
     };
 
     function save() {
@@ -226,21 +242,65 @@
         document.querySelectorAll('.dock-btn').forEach((b, i) => b.classList.toggle('active', (i+1)===p));
     }
 
-    // --- LÓGICA DE COMUNICACIÓN ---
+    // --- LÓGICA DE MENSAJERÍA TIPO WHATSAPP ---
+    function openChat(clientId) {
+        db.currentChatId = clientId;
+        const client = db.clientes.find(c => c.id === clientId);
+        document.getElementById('chat-target-name').innerText = client.name;
+        document.getElementById('chat-conversation-view').style.display = 'flex';
+        renderChatContent();
+    }
+
+    function closeChat() {
+        document.getElementById('chat-conversation-view').style.display = 'none';
+        db.currentChatId = null;
+    }
+
+    function renderChatList() {
+        document.getElementById('chat-list-view').innerHTML = db.clientes.map(c => {
+            const lastMsg = c.chats && c.chats.length > 0 ? c.chats[c.chats.length-1].t : "Sin mensajes";
+            return `
+                <div class="chat-item" onclick="openChat(${c.id})">
+                    <div class="avatar-circle">${c.name[0]}</div>
+                    <div style="flex:1">
+                        <div style="font-weight:700;">${c.name}</div>
+                        <div style="font-size:13px; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:200px;">${lastMsg}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderChatContent() {
+        const client = db.clientes.find(c => c.id === db.currentChatId);
+        if(!client) return;
+        document.getElementById('chat-flow').innerHTML = client.chats.map(m => `
+            <div class="msg ${m.u === 'ME' ? 'me' : 'them'}">
+                ${m.t}
+                <div style="font-size:9px; text-align:right; margin-top:4px; opacity:0.5;">${m.h}</div>
+            </div>
+        `).join('');
+        const area = document.getElementById('chat-flow');
+        area.scrollTop = area.scrollHeight;
+    }
+
     function logic_send() {
         const inp = document.getElementById('chat-input');
-        if(!inp.value.trim()) return;
-        const msg = { u: 'LÍDER', t: inp.value, h: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), me: true };
-        db.mensajes.push(msg);
+        if(!inp.value.trim() || !db.currentChatId) return;
         
-        // Respuesta Inteligente
-        if(inp.value.toLowerCase().includes('caja')) {
-            db.mensajes.push({ u: 'SISTEMA', t: `La liquidez actual es de S/ ${db.caja.toFixed(2)}.`, h: 'Ahora', me: false });
-        }
+        const client = db.clientes.find(c => c.id === db.currentChatId);
+        const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
         
+        client.chats.push({ u: 'ME', t: inp.value, h: time });
+        
+        // Simular respuesta del cliente
+        setTimeout(() => {
+            client.chats.push({ u: 'THEM', t: "Copiado, procesando orden.", h: time });
+            save();
+        }, 1000);
+
         inp.value = '';
         save();
-        document.getElementById('chat-flow').scrollTop = 99999;
     }
 
     // --- FUNCIONES DE NEGOCIO ---
@@ -252,7 +312,6 @@
             const cli = prompt("¿A qué cliente se le fía?");
             if(!cli) return;
             db.deudas.push({ id: Date.now(), cliente: cli, monto: item.precio, item: item.nombre });
-            db.mensajes.push({ u: 'ALERTA', t: `FIADO: ${cli} lleva ${item.nombre} por S/ ${item.precio}`, h: 'Ahora', me: false });
         } else {
             db.caja += item.precio;
             db.audit.push({ t: `Venta: ${item.nombre}`, v: item.precio, type: 'plus' });
@@ -265,34 +324,23 @@
 
     // --- UI RENDERERS ---
     function updateUI() {
-        // Stats
         document.getElementById('ui-caja').innerText = `S/ ${db.caja.toFixed(2)}`;
         document.getElementById('ui-deuda').innerText = `S/ ${db.deudas.reduce((a,b)=>a+b.monto,0).toFixed(2)}`;
         document.getElementById('ui-gasto').innerText = `S/ ${db.gastos.reduce((a,b)=>a+b.monto,0).toFixed(2)}`;
         document.getElementById('ui-utilidad').innerText = `S/ ${db.caja.toFixed(2)}`;
         document.getElementById('ui-client-count').innerText = db.clientes.length;
 
-        // Meta (Progreso)
         const meta = 50000;
         const porc = Math.min((db.caja / meta) * 100, 100);
         document.getElementById('ui-progress').style.width = porc + '%';
         document.getElementById('ui-meta-text').innerText = `${porc.toFixed(1)}% de la meta de S/ 50,000 alcanzada.`;
 
+        renderChatList();
+        if(db.currentChatId) renderChatContent();
         renderStock();
         renderClients();
         renderAudit();
         renderRoutes();
-        renderChat();
-    }
-
-    function renderChat() {
-        document.getElementById('chat-flow').innerHTML = db.mensajes.map(m => `
-            <div class="msg ${m.me?'me':'them'}">
-                <span class="msg-meta">${m.u}</span>
-                ${m.t}
-                <div style="font-size:9px; text-align:right; margin-top:5px; opacity:0.6;">${m.h}</div>
-            </div>
-        `).join('');
     }
 
     function renderStock() {
@@ -314,14 +362,14 @@
     function renderClients() {
         document.getElementById('render-clients').innerHTML = db.clientes.map(c => `
             <div class="item">
-                <div style="width:50px; height:50px; border-radius:50%; background:var(--p-soft-sky); display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--p-sky);">
+                <div class="avatar-circle" style="background:var(--p-soft-sky); color:var(--p-sky);">
                     ${c.name[0]}
                 </div>
                 <div class="item-info">
                     <b>${c.name}</b>
                     <small>${c.phone}</small>
                 </div>
-                <button class="pill" style="background:var(--p-soft-sky); color:var(--p-sky);">Perfil</button>
+                <button class="pill" style="background:var(--p-soft-sky); color:var(--p-sky);" onclick="nav(1); openChat(${c.id})">Mensaje</button>
             </div>
         `).join('');
     }
@@ -367,7 +415,6 @@
         const reader = new FileReader();
         reader.onload = () => {
             db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: reader.result });
-            db.mensajes.push({ u: 'STOCK', t: `Entrada de ${n} registrada.`, h: 'Ahora', me: false });
             save(); closeM();
         };
         if(f) reader.readAsDataURL(f); else {
@@ -389,7 +436,7 @@
         const n = document.getElementById('c-n').value;
         const p = document.getElementById('c-p').value;
         if(!n) return;
-        db.clientes.push({ name: n, phone: p });
+        db.clientes.push({ id: Date.now(), name: n, phone: p, chats: [] });
         save(); closeM();
     }
 
@@ -410,7 +457,6 @@
         save(); closeM();
     }
 
-    // --- UTILIDADES ---
     function showM(h) { document.getElementById('modal-content').innerHTML = h; document.getElementById('overlay').style.display = 'flex'; }
     function closeM() { document.getElementById('overlay').style.display = 'none'; }
     function logic_export() { 
