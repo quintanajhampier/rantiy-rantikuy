@@ -3,416 +3,667 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RANTIY y RANTIKUY EMPIRE OS - ELITE SUPREME</title>
+    <title>RANTIY & RANTIKUY - EMPIRE OS QUINTANA v3.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            /* Paleta Huanta - Light & Vibrant */
-            --bg-app: #f0f2f5;
+            /* Huanta Vibrant Palette */
+            --bg-app: #f8fafc;
             --bg-card: #ffffff;
-            --text-main: #1c1e21;
-            --text-sub: #65676b;
-            --p-green: #10b981;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --p-green: #22c55e;
             --p-gold: #f59e0b;
-            --p-sky: #1877f2;
+            --p-sky: #0ea5e9;
             --p-red: #ef4444;
-            --p-purple: #8b5cf6;
-            --border: #e4e6eb;
-            --msg-me: #dcf8c6;
-            --msg-them: #ffffff;
+            --p-purple: #a855f7;
+            --border: #e2e8f0;
+            --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
         }
 
         [data-theme="dark"] {
-            --bg-app: #0b0f19;
-            --bg-card: #1e293b;
-            --text-main: #f8fafc;
+            --bg-app: #020617;
+            --bg-card: #0f172a;
+            --text-main: #f1f5f9;
             --text-sub: #94a3b8;
-            --border: #334155;
-            --msg-me: #065f46;
-            --msg-them: #334155;
+            --border: #1e293b;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, border-color 0.3s; }
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-app); overflow: hidden; color: var(--text-main); position: fixed; }
-        
-        /* ARQUITECTURA DE DESLIZAMIENTO */
-        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-        .screen { width: 16.6666%; height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
-        
-        /* POSICIONES */
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scrollbar-width: none;
+        }
+        *::-webkit-scrollbar { display: none; }
+
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%; 
+            background: var(--bg-app); overflow: hidden; 
+            color: var(--text-main); position: fixed; 
+        }
+
+        /* SHELL ANIMATION */
+        .app-shell { 
+            display: flex; width: 600%; height: 100%; 
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        .screen { 
+            width: 16.6666%; height: 100%; 
+            display: flex; flex-direction: column; 
+            position: relative; overflow: hidden; 
+        }
+
+        /* POSITIONING */
         .pos-1 { transform: translateX(0%); }
         .pos-2 { transform: translateX(-16.6666%); }
         .pos-3 { transform: translateX(-33.3333%); }
-        .pos-4 { transform: translateX(-50.0000%); }
+        .pos-4 { transform: translateX(-50%); }
         .pos-5 { transform: translateX(-66.6666%); }
         .pos-6 { transform: translateX(-83.3333%); }
 
-        /* HEADER */
-        .header-main { padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; padding-top: calc(15px + env(safe-area-inset-top)); }
-        .brand-text { font-size: 24px; font-weight: 800; background: linear-gradient(90deg, #10b981, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; cursor: pointer; }
-        .scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 140px; -webkit-overflow-scrolling: touch; }
-        
-        /* CARDS */
-        .card-titan { background: var(--bg-card); border-radius: 24px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .hero-gradient { background: linear-gradient(135deg, #10b981 0%, #064e3b 100%); color: white; border: none; }
-        .val-large { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; margin: 10px 0; }
-        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .stat-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 18px; backdrop-filter: blur(5px); }
-
-        /* ITEMS */
-        .item-row { background: var(--bg-card); border-radius: 20px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid var(--border); }
-        .item-row img { width: 65px; height: 65px; border-radius: 15px; object-fit: cover; background: #eee; }
-        .item-info { flex: 1; }
-        .item-info b { font-size: 16px; display: block; }
-        .item-info span { color: var(--p-green); font-weight: 700; }
-
-        /* CHAT PRO OPTIMIZADO */
-        #chat-conversation-view { display: none; position: absolute; inset: 0; z-index: 1000; background: var(--bg-app); flex-direction: column; height: 100%; }
-        .chat-flow { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-image: radial-gradient(var(--border) 0.5px, transparent 0.5px); background-size: 15px 15px; padding-bottom: 20px; }
-        
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 15px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.04); display: flex; flex-direction: column; }
-        .msg.me { align-self: flex-end; background: var(--p-green); color: white; border-bottom-right-radius: 4px; }
-        .msg.them { align-self: flex-start; background: var(--bg-card); color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
-        
-        .msg .m-meta { font-size: 9px; opacity: 0.7; align-self: flex-end; margin-top: 4px; }
-        
-        /* ÁREA DE ESCRITURA FIX */
-        .chat-input-area { 
-            padding: 10px 15px; 
-            background: var(--bg-card); 
-            border-top: 1px solid var(--border); 
-            position: sticky;
-            bottom: 0;
-            z-index: 1001;
-            transition: transform 0.1s ease-out;
-            padding-bottom: calc(10px + var(--safe-bottom));
+        /* VIBRANT HEADER */
+        .header-main { 
+            padding: 20px; background: var(--bg-card); 
+            border-bottom: 1px solid var(--border); 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 100; padding-top: calc(20px + var(--safe-top));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         }
-        .input-row { display: flex; gap: 8px; align-items: center; }
+        .brand-text { 
+            font-size: 22px; font-weight: 900; 
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--p-green), var(--p-sky));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .scroll { 
+            flex: 1; overflow-y: auto; padding: 20px; 
+            padding-bottom: 150px; -webkit-overflow-scrolling: touch; 
+        }
+
+        /* PRO CARDS */
+        .card-titan { 
+            background: var(--bg-card); border-radius: 28px; 
+            padding: 24px; margin-bottom: 20px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            position: relative; overflow: hidden;
+        }
+        .card-titan::after {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 100px; height: 100px; 
+            background: radial-gradient(circle, var(--p-green) 0%, transparent 70%);
+            opacity: 0.05; pointer-events: none;
+        }
+
+        .hero-gradient { 
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%); 
+            color: white; border: none; 
+        }
+
+        .val-large { font-size: 42px; font-weight: 800; letter-spacing: -2px; margin: 10px 0; }
         
-        .attach-menu { display: none; padding: 20px; gap: 20px; justify-content: center; background: var(--bg-card); border-top: 1px solid var(--border); animation: slideUp 0.3s ease; border-radius: 25px 25px 0 0; flex-wrap: wrap; }
-        .sticker-panel { display: none; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; background: var(--bg-card); border-top: 1px solid var(--border); max-height: 250px; overflow-y: auto; justify-items: center; }
-        .sticker-panel span { font-size: 35px; cursor: pointer; }
+        /* DYNAMIC LISTS */
+        .item-row { 
+            background: var(--bg-card); border-radius: 22px; 
+            padding: 16px; margin-bottom: 12px; 
+            display: flex; align-items: center; gap: 16px; 
+            border: 1px solid var(--border);
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* DOCK */
-        .dock { position: fixed; bottom: 0; width: 100%; background: var(--bg-card); padding: 12px 0 calc(12px + var(--safe-bottom)); display: flex; justify-content: space-around; border-top: 1px solid var(--border); backdrop-filter: blur(10px); z-index: 900; }
-        .dock-btn { border: none; background: none; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; width: 16%; }
+        .item-row img { width: 60px; height: 60px; border-radius: 18px; object-fit: cover; background: #f1f5f9; }
+        .item-info { flex: 1; }
+        .item-info b { font-size: 16px; display: block; color: var(--text-main); }
+        .item-info span { color: var(--p-green); font-weight: 700; font-size: 14px; }
+
+        /* CHAT INTERFACE - HIGH LEVEL */
+        #chat-conversation-view { 
+            display: none; position: absolute; inset: 0; 
+            z-index: 1000; background: var(--bg-app); 
+            flex-direction: column; height: 100%; 
+        }
+        .chat-flow { 
+            flex: 1; overflow-y: auto; padding: 20px; 
+            display: flex; flex-direction: column; gap: 14px;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+        }
+
+        .msg { 
+            max-width: 80%; padding: 14px 18px; border-radius: 24px; 
+            font-size: 15px; line-height: 1.5;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .msg.me { 
+            align-self: flex-end; background: var(--p-green); color: white; 
+            border-bottom-right-radius: 4px; 
+        }
+        .msg.them { 
+            align-self: flex-start; background: var(--bg-card); 
+            border: 1px solid var(--border); border-bottom-left-radius: 4px; 
+        }
+
+        /* INPUT AREA FIX - KEYBOARD PRO */
+        .chat-input-area { 
+            padding: 12px 16px; background: var(--bg-card); 
+            border-top: 1px solid var(--border); 
+            padding-bottom: calc(12px + var(--safe-bottom));
+            transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .input-row { display: flex; gap: 10px; align-items: center; }
+
+        .btn-icon {
+            background: var(--bg-app); border: none; 
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer; color: var(--text-sub);
+        }
+
+        /* DOCK MENU */
+        .dock { 
+            position: fixed; bottom: 0; width: 100%; 
+            background: var(--bg-card); padding: 12px 0 calc(12px + var(--safe-bottom)); 
+            display: flex; justify-content: space-around; 
+            border-top: 1px solid var(--border); 
+            backdrop-filter: blur(15px); z-index: 900; 
+        }
+        .dock-btn { 
+            border: none; background: none; color: var(--text-sub); 
+            display: flex; flex-direction: column; align-items: center; 
+            gap: 5px; font-size: 10px; font-weight: 700; width: 16%; 
+        }
         .dock-btn.active { color: var(--p-green); }
-        .dock-btn i { font-size: 22px; }
+        .dock-btn i { font-size: 24px; font-style: normal; }
 
-        /* MODALES */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: flex-end; }
-        .modal { background: var(--bg-card); width: 100%; border-radius: 32px 32px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.4s cubic-bezier(0,1,0.5,1); padding-bottom: 50px; }
-
-        .f-input { width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-main); font-size: 16px; margin-bottom: 12px; outline: none; -webkit-appearance: none; }
-        .btn-main { width: 100%; padding: 18px; border-radius: 18px; border: none; background: var(--p-green); color: white; font-weight: 800; font-size: 16px; cursor: pointer; }
+        /* MODALS & OVERLAYS */
+        .overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); 
+            backdrop-filter: blur(8px); z-index: 2000; 
+            display: none; align-items: flex-end; 
+        }
+        .modal { 
+            background: var(--bg-card); width: 100%; 
+            border-radius: 35px 35px 0 0; padding: 30px; 
+            max-height: 85vh; overflow-y: auto; 
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
 
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .f-input { 
+            width: 100%; padding: 18px; border-radius: 20px; 
+            border: 1px solid var(--border); background: var(--bg-app); 
+            color: var(--text-main); font-size: 16px; margin-bottom: 15px; 
+            outline: none;
+        }
+
+        .btn-main { 
+            width: 100%; padding: 18px; border-radius: 20px; 
+            border: none; background: var(--p-green); 
+            color: white; font-weight: 800; font-size: 16px; 
+            box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4);
+        }
+
+        /* ROUTE TAGS */
+        .tag { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .tag-pending { background: var(--p-gold); color: white; }
+        .tag-done { background: var(--p-green); color: white; }
+
+        /* NOTIFICATIONS */
+        #toaster {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 3000; display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            background: var(--text-main); color: var(--bg-card);
+            padding: 12px 24px; border-radius: 50px; font-size: 14px;
+            font-weight: 600; box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+            animation: toastIn 0.3s ease forwards;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body data-theme="light">
+<body>
+
+<div id="toaster"></div>
 
 <div class="app-shell" id="appShell">
     
     <div class="screen">
         <header class="header-main">
-            <div class="brand-text" onclick="handleSecretTaps()">RANTIKUY</div>
-            <button class="btn-main" style="width:auto; padding:8px 15px; font-size:12px;" onclick="toggleTheme()">🌓 TEMA</button>
+            <div class="brand-text" onclick="logic_adminTap()">RANTIKUY EMPIRE</div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-icon" onclick="toggleTheme()">🌓</button>
+            </div>
         </header>
-        <div id="chat-list-view" class="scroll"></div>
+        <div class="scroll">
+            <div class="card-titan" style="padding:15px; border-color:var(--p-green);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Socio Principal: <b>QUINTANA</b></span>
+                    <span class="tag tag-done">Online</span>
+                </div>
+            </div>
+            <div id="render-chats"></div>
+        </div>
 
         <div id="chat-conversation-view">
             <header class="header-main">
-                <button onclick="closeChat()" style="background:none; border:none; font-size:26px; color:var(--p-green); padding:0 10px;">✕</button>
-                <b id="chat-target-name" style="font-size:18px;">...</b>
-                <div style="width:40px;"></div>
+                <button onclick="closeChat()" class="btn-icon">←</button>
+                <div style="flex:1; margin-left:15px;">
+                    <b id="chat-target-name">Nombre</b><br>
+                    <small id="chat-target-status" style="color:var(--p-green)">En línea</small>
+                </div>
+                <button onclick="logic_call()" class="btn-icon">📞</button>
             </header>
             
             <div class="chat-flow" id="chat-flow"></div>
-            
-            <div class="attach-menu" id="attach-menu">
-                <div onclick="triggerFile('img')" style="text-align:center;"><div style="background:var(--p-gold); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">🖼️</div><small>Foto</small></div>
-                <div onclick="triggerFile('doc')" style="text-align:center;"><div style="background:var(--p-sky); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">📄</div><small>Doc</small></div>
-                <div onclick="sendLocation()" style="text-align:center;"><div style="background:var(--p-red); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">📍</div><small>GPS</small></div>
-            </div>
-
-            <div class="sticker-panel" id="sticker-panel">
-                <span onclick="sendSticker('🚀')">🚀</span><span onclick="sendSticker('💰')">💰</span><span onclick="sendSticker('✅')">✅</span><span onclick="sendSticker('📦')">📦</span>
-                <span onclick="sendSticker('🔥')">🔥</span><span onclick="sendSticker('🤝')">🤝</span><span onclick="sendSticker('📍')">📍</span><span onclick="sendSticker('💯')">💯</span>
-            </div>
 
             <div class="chat-input-area" id="input-container">
+                <div id="attachment-preview" style="display:none; padding:10px; background:var(--bg-app); border-radius:15px; margin-bottom:10px;"></div>
                 <div class="input-row">
-                    <button onclick="toggleAttach()" style="background:none; border:none; font-size:28px; padding:5px;">📎</button>
-                    <input type="text" id="chat-input" class="f-input" placeholder="Negociar..." style="margin-bottom:0;" onkeypress="if(event.key==='Enter') logic_send()">
-                    <button onclick="toggleStickers()" style="background:none; border:none; font-size:28px; padding:5px;">😊</button>
-                    <button onclick="logic_send()" style="background:var(--p-green); color:white; border:none; width:50px; height:50px; border-radius:50%; font-size:22px; flex-shrink:0;">🚀</button>
+                    <button class="btn-icon" onclick="ui_toggleMenu('attach-box')">📎</button>
+                    <input type="text" id="chat-input" class="f-input" placeholder="Escribe un mensaje..." style="margin-bottom:0;" onkeypress="if(event.key==='Enter') logic_sendMessage()">
+                    <button class="btn-main" onclick="logic_sendMessage()" style="width:60px; height:50px; padding:0; display:flex; align-items:center; justify-content:center;">🚀</button>
+                </div>
+                
+                <div id="attach-box" style="display:none; grid-template-columns: repeat(4, 1fr); gap:15px; padding-top:20px; animation: fadeIn 0.3s ease;">
+                    <div onclick="logic_triggerFile('img')" style="text-align:center;"><div class="btn-icon" style="background:var(--p-gold); color:white; margin:0 auto;">🖼️</div><small>Foto</small></div>
+                    <div onclick="logic_triggerFile('cam')" style="text-align:center;"><div class="btn-icon" style="background:var(--p-purple); color:white; margin:0 auto;">📸</div><small>Cámara</small></div>
+                    <div onclick="logic_triggerFile('doc')" style="text-align:center;"><div class="btn-icon" style="background:var(--p-sky); color:white; margin:0 auto;">📄</div><small>Doc</small></div>
+                    <div onclick="logic_sendGPS()" style="text-align:center;"><div class="btn-icon" style="background:var(--p-red); color:white; margin:0 auto;">📍</div><small>GPS</small></div>
                 </div>
             </div>
-            <input type="file" id="hidden-file-input" style="display:none;" onchange="processFileUpload(this)">
+            <input type="file" id="hidden-file" style="display:none" onchange="logic_handleFile(this)">
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>MASTER STOCK</b></header>
+        <header class="header-main"><b>ALMACÉN CENTRAL</b></header>
         <div class="scroll">
             <div class="card-titan hero-gradient">
-                <small>CAPITAL CAJA</small>
-                <div class="val-large" id="ui-caja">S/ 0.00</div>
-                <div class="grid-stats">
-                    <div class="stat-box"><small>Fiados</small><br><b id="ui-deuda">S/ 0.00</b></div>
-                    <div class="stat-box"><small>Gastos</small><br><b id="ui-gasto">S/ 0.00</b></div>
+                <small>VALOR TOTAL STOCK</small>
+                <div class="val-large" id="ui-total-stock">S/ 0.00</div>
+                <div style="display:flex; gap:10px;">
+                    <div class="tag" style="background:rgba(255,255,255,0.2)">Huanta Hub</div>
+                    <div class="tag" style="background:rgba(255,255,255,0.2)" id="ui-items-count">0 Items</div>
                 </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0 20px 0;">
-                <b style="font-size:18px;">Almacén Huanta</b>
-                <button onclick="ui_modalStock()" style="background:var(--p-green); color:white; border:none; padding:10px 20px; border-radius:12px; font-weight:700;">+ PRODUCTO</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <button onclick="ui_modal('stock')" class="btn-main" style="width:48%; background:var(--p-sky);">+ NUEVO</button>
+                <button onclick="ui_modal('scan')" class="btn-main" style="width:48%; background:var(--p-gold);">📸 SCANNER</button>
             </div>
-            <div id="render-stock"></div>
+            <div id="render-inventory"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>SOCIOS ESTRATÉGICOS</b></header>
+        <header class="header-main"><b>RED DE SOCIOS</b></header>
         <div class="scroll">
-            <div class="card-titan" style="background:var(--p-sky); color:white; border:none;">
-                <b>Total de Red: <span id="ui-client-count">0</span> Socios</b><br>
-                <small>Huanta - Ayacucho - VRAEM</small>
+            <div class="card-titan" style="background:var(--p-purple); color:white; border:none;">
+                <b>Crecimiento Mensual</b>
+                <div class="val-large">+12%</div>
+                <small>Estrategia Quintana activa</small>
             </div>
-            <div id="render-clients"></div>
-            <button class="btn-main" onclick="ui_modalClient()" style="margin-top:10px;">REGISTRAR NUEVO SOCIO</button>
+            <div id="render-partners"></div>
+            <button class="btn-main" onclick="ui_modal('partner')" style="margin-top:10px;">VINCULAR NUEVO SOCIO</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>RUTAS DE ENTREGA</b></header>
-        <div class="scroll" id="render-routes"></div>
-        <div style="padding:20px; position:absolute; bottom:110px; width:100%;">
-            <button class="btn-main" style="background:var(--p-purple);" onclick="sendInvite()">MANDAR MI INVITACIÓN</button>
-            <button class="btn-main" style="background:var(--p-gold); margin-top:10px;" onclick="ui_modalRoute()">PROGRAMAR DESPACHO</button>
+        <header class="header-main"><b>LOGÍSTICA VRAEM</b></header>
+        <div class="scroll">
+            <h3>Despachos de Hoy</h3>
+            <div id="render-routes"></div>
+            <div class="card-titan" style="margin-top:20px;">
+                <b>Mapa de Entregas</b>
+                <div style="height:150px; background:#e2e8f0; border-radius:15px; margin-top:10px; display:flex; align-items:center; justify-content:center; color:var(--text-sub);">
+                    Cargando coordenadas GPS...
+                </div>
+            </div>
+        </div>
+        <div style="padding:20px; padding-bottom:110px;">
+            <button class="btn-main" onclick="ui_modal('route')">PROGRAMAR RUTA</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>DATA CENTER</b></header>
+        <header class="header-main"><b>EMPIRE ANALYTICS</b></header>
         <div class="scroll">
             <div class="card-titan">
-                <small>META DE VENTA MENSUAL</small>
-                <div class="val-large" style="color:var(--p-green);" id="ui-utilidad">S/ 0.00</div>
-                <div style="height:12px; background:var(--bg-app); border-radius:10px; margin:15px 0; overflow:hidden;">
-                    <div id="ui-progress" style="height:100%; background:var(--p-green); width:0%;"></div>
+                <small>GANANCIA BRUTA</small>
+                <div class="val-large" id="ui-profit" style="color:var(--p-green)">S/ 0.00</div>
+                <div style="height:8px; background:var(--border); border-radius:10px; overflow:hidden;">
+                    <div id="ui-progress-bar" style="width:45%; height:100%; background:var(--p-green);"></div>
                 </div>
-                <small id="ui-meta-text">Analizando...</small>
+                <p style="font-size:12px; margin-top:10px;" id="ui-advice">Cargando sugerencia de IA...</p>
             </div>
-            <h3>Historial</h3>
-            <div id="render-audit"></div>
+            
+            <h3>Empire Logs (Quintana Edition)</h3>
+            <div id="render-logs"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>CONFIGURACIÓN</b></header>
+        <header class="header-main"><b>PANEL DE CONTROL</b></header>
         <div class="scroll">
-            <button class="f-input" onclick="logic_export()">📦 EXPORTAR BASE DE DATOS</button>
-            <button class="f-input" onclick="ui_modalGasto()" style="color:var(--p-red);">💸 REGISTRAR GASTO EXTRA</button>
-            <button class="f-input" onclick="logic_reset()" style="color:var(--p-red); margin-top:50px; border-color:var(--p-red);">⚠️ FORMATEAR SISTEMA</button>
+            <div class="card-titan">
+                <b>Master: Quintana Admin</b><br>
+                <small>Dispositivo verificado en Huanta</small>
+            </div>
+            <button class="f-input" onclick="logic_backup()">💾 RESPALDAR NUBE (BACKUP)</button>
+            <button class="f-input" onclick="logic_exportCSV()">📊 EXPORTAR A EXCEL</button>
+            <button class="f-input" onclick="logic_resetSystem()" style="color:var(--p-red); border-color:var(--p-red); margin-top:40px;">🧨 DESTRUIR DATOS LOCALES</button>
+            <p style="text-align:center; font-size:10px; color:var(--text-sub);">Version Supreme 3.0.7 - Rantikuy Empire</p>
         </div>
     </div>
 </div>
 
 <nav class="dock">
     <button class="dock-btn active" onclick="nav(1)"><i>💬</i>Mando</button>
-    <button class="dock-btn" onclick="nav(2)"><i>🛍️</i>Stock</button>
-    <button class="dock-btn" onclick="nav(3)"><i>👥</i>Socios</button>
+    <button class="dock-btn" onclick="nav(2)"><i>📦</i>Stock</button>
+    <button class="dock-btn" onclick="nav(3)"><i>🤝</i>Socios</button>
     <button class="dock-btn" onclick="nav(4)"><i>🚛</i>Rutas</button>
-    <button class="dock-btn" onclick="nav(5)"><i>📊</i>Data</button>
-    <button class="dock-btn" onclick="nav(6)"><i>⚙️</i>Conf</button>
+    <button class="dock-btn" onclick="nav(5)"><i>📈</i>Data</button>
+    <button class="dock-btn" onclick="nav(6)"><i>⚙️</i>Panel</button>
 </nav>
 
-<div class="overlay" id="overlay" onclick="if(event.target==this) closeM()">
+<div class="overlay" id="overlay" onclick="if(event.target==this) ui_closeModal()">
     <div class="modal" id="modal-content"></div>
 </div>
 
 <script>
-    // --- FIX TECLADO PARA MOVER EL INPUT CORRECTAMENTE ---
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', () => {
-            const h = window.visualViewport.height;
-            const fullH = window.innerHeight;
-            const inputArea = document.getElementById('input-container');
-            const chatFlow = document.getElementById('chat-flow');
-            
-            if (h < fullH - 100) {
-                // Teclado abierto: Calculamos el desplazamiento exacto
-                const offset = fullH - h;
-                inputArea.style.transform = `translateY(-${offset}px)`;
-                // Ajustar el scroll del chat para que no se tape el último mensaje
-                chatFlow.style.paddingBottom = offset + 'px';
-                setTimeout(() => chatFlow.scrollTop = chatFlow.scrollHeight, 50);
-            } else {
-                // Teclado cerrado
-                inputArea.style.transform = `translateY(0)`;
-                chatFlow.style.paddingBottom = '20px';
-            }
-        });
-    }
-
-    // --- DB ACTUALIZADA CON TU NOMBRE Y NÚMERO ---
-    let db = JSON.parse(localStorage.getItem('RANTIKUY_EMPIRE_V26')) || {
-        caja: 0,
-        inventario: [],
-        deudas: [],
-        gastos: [],
-        rutas: [],
-        audit: [],
-        clientes: [
-            { id: 967593948, name: "QUINTANA Soporte", phone: "967593948", chats: [{u:'THEM', t:'Soporte técnico directo activado para Quintana.', h:'12:00', type:'text'}], fixed: true }
+    // --- DATABASE CORE ---
+    let empireDB = JSON.parse(localStorage.getItem('EMPIRE_DATA_QUINTANA')) || {
+        config: { theme: 'light', admin: 'Quintana', version: 3.0 },
+        caja: 2500.50,
+        stock: [
+            { id: 1, name: 'Saco de Café Premium', price: 180, qty: 10, img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200' }
         ],
-        currentChatId: null
+        partners: [
+            { id: 967593948, name: 'QUINTANA Soporte', phone: '967593948', chat: [] }
+        ],
+        routes: [
+            { id: 101, dest: 'Huanta Centro', status: 'done', driver: 'Carlos M.' }
+        ],
+        logs: [
+            { h: '10:30', t: 'Sistema Iniciado', m: 0 }
+        ],
+        activeChat: null
     };
 
-    let activeFileType = 'text';
+    // --- INITIALIZER ---
+    window.onload = () => {
+        applyTheme();
+        renderAll();
+        initKeyboardFix();
+        notify("Bienvenido al Imperio, Quintana");
+    };
 
     function save() {
-        localStorage.setItem('RANTIKUY_EMPIRE_V26', JSON.stringify(db));
-        updateUI();
+        localStorage.setItem('EMPIRE_DATA_QUINTANA', JSON.stringify(empireDB));
+        renderAll();
     }
 
+    // --- NAVIGATION ---
     function nav(p) {
-        document.getElementById('appShell').className = 'app-shell pos-' + p;
+        document.getElementById('appShell').className = `app-shell pos-${p}`;
         document.querySelectorAll('.dock-btn').forEach((b, i) => b.classList.toggle('active', (i+1)===p));
     }
 
-    function toggleTheme() {
-        const b = document.body;
-        b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    // --- RENDER ENGINE ---
+    function renderAll() {
+        // Render Chats
+        const chatContainer = document.getElementById('render-chats');
+        chatContainer.innerHTML = empireDB.partners.map(p => `
+            <div class="item-row" onclick="openChat(${p.id})">
+                <div style="width:55px; height:55px; border-radius:50%; background:var(--p-sky); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;">${p.name[0]}</div>
+                <div class="item-info">
+                    <b>${p.name}</b>
+                    <small>${p.phone}</small>
+                </div>
+                <div style="font-size:10px; color:var(--text-sub);">Hoy</div>
+            </div>
+        `).join('');
+
+        // Render Stock
+        const invContainer = document.getElementById('render-inventory');
+        let totalVal = 0;
+        invContainer.innerHTML = empireDB.stock.map(s => {
+            totalVal += (s.price * s.qty);
+            return `
+                <div class="item-row">
+                    <img src="${s.img}">
+                    <div class="item-info">
+                        <b>${s.name}</b>
+                        <span>S/ ${s.price.toFixed(2)}</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <small>Cant: ${s.qty}</small><br>
+                        <button onclick="logic_sell(${s.id})" style="border:none; background:var(--p-green); color:white; border-radius:8px; padding:5px 10px; margin-top:5px;">VENDER</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        document.getElementById('ui-total-stock').innerText = `S/ ${totalVal.toFixed(2)}`;
+        document.getElementById('ui-items-count').innerText = `${empireDB.stock.length} Items`;
+
+        // Render Partners
+        document.getElementById('render-partners').innerHTML = empireDB.partners.map(p => `
+            <div class="item-row">
+                <div class="item-info"><b>${p.name}</b><small>Cel: ${p.phone}</small></div>
+                <button class="btn-icon">⚙️</button>
+            </div>
+        `).join('');
+
+        // Render Routes
+        document.getElementById('render-routes').innerHTML = empireDB.routes.map(r => `
+            <div class="item-row">
+                <div class="item-info"><b>${r.dest}</b><small>Chofer: ${r.driver}</small></div>
+                <span class="tag ${r.status==='done'?'tag-done':'tag-pending'}">${r.status}</span>
+            </div>
+        `).join('');
+
+        // Render Logs
+        document.getElementById('render-logs').innerHTML = empireDB.logs.slice(-15).reverse().map(l => `
+            <div style="padding:10px; border-bottom:1px solid var(--border); font-size:12px; display:flex; justify-content:space-between;">
+                <span><b>[${l.h}]</b> ${l.t}</span>
+                <b style="color:${l.m>=0?'var(--p-green)':'var(--p-red)'}">${l.m !== 0 ? 'S/ '+l.m.toFixed(2) : ''}</b>
+            </div>
+        `).join('');
+
+        // UI Analytics
+        document.getElementById('ui-profit').innerText = `S/ ${empireDB.caja.toFixed(2)}`;
+        const advice = ["Invierte en más sacos", "El mercado de Huanta sube los sábados", "Reduce gastos operativos", "Buen ritmo de ventas"];
+        document.getElementById('ui-advice').innerText = "IA Quintana: " + advice[Math.floor(Math.random()*advice.length)];
     }
 
+    // --- CHAT LOGIC ---
     function openChat(id) {
-        db.currentChatId = id;
-        const c = db.clientes.find(x => x.id === id);
-        document.getElementById('chat-target-name').innerText = c.name + " (" + c.phone + ")";
+        empireDB.activeChat = id;
+        const partner = empireDB.partners.find(x => x.id === id);
+        document.getElementById('chat-target-name').innerText = partner.name;
         document.getElementById('chat-conversation-view').style.display = 'flex';
         renderMessages();
     }
 
     function closeChat() { document.getElementById('chat-conversation-view').style.display = 'none'; }
 
-    function toggleAttach() { 
-        const m = document.getElementById('attach-menu');
-        const s = document.getElementById('sticker-panel');
-        m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
-        s.style.display = 'none';
-    }
-
-    function toggleStickers() {
-        const s = document.getElementById('sticker-panel');
-        const m = document.getElementById('attach-menu');
-        s.style.display = s.style.display === 'grid' ? 'none' : 'grid';
-        m.style.display = 'none';
+    function logic_sendMessage() {
+        const input = document.getElementById('chat-input');
+        if(!input.value.trim()) return;
+        const p = empireDB.partners.find(x => x.id === empireDB.activeChat);
+        const now = new Date();
+        const time = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
+        
+        p.chat.push({ u: 'me', t: input.value, h: time, type: 'text' });
+        input.value = '';
+        save();
+        renderMessages();
+        
+        // Bot auto-reply simple
+        setTimeout(() => {
+            p.chat.push({ u: 'them', t: 'Entendido Quintana, proceso la información.', h: time, type: 'text' });
+            save();
+            renderMessages();
+        }, 1500);
     }
 
     function renderMessages() {
-        const c = db.clientes.find(x => x.id === db.currentChatId);
+        const p = empireDB.partners.find(x => x.id === empireDB.activeChat);
         const flow = document.getElementById('chat-flow');
-        if(!c) return;
-        flow.innerHTML = c.chats.map(m => {
-            let html = m.t;
-            if(m.type === 'img') {
-                html = `<img src="${m.file}" style="width:100%; border-radius:12px;" onclick="window.open('${m.file}')">`;
-            } else if(m.type === 'gps') {
-                html = `<div style="color:var(--p-sky); text-decoration:underline;" onclick="window.open('${m.file}')">📍 Ubicación en mapa</div>`;
-            }
-            return `<div class="msg ${m.u === 'ME' ? 'me' : 'them'}">${html}<div class="m-meta">${m.h}</div></div>`;
+        flow.innerHTML = p.chat.map(m => {
+            let content = m.t;
+            if(m.type === 'img') content = `<img src="${m.file}" style="width:100%; border-radius:15px;">`;
+            if(m.type === 'gps') content = `<div onclick="window.open('${m.file}')" style="color:var(--p-sky); font-weight:700;">📍 Ubicación Compartida</div>`;
+            return `<div class="msg ${m.u==='me'?'me':'them'}">${content}<div style="font-size:9px; opacity:0.6; text-align:right; margin-top:5px;">${m.h}</div></div>`;
         }).join('');
         flow.scrollTop = flow.scrollHeight;
     }
 
-    function logic_send() {
-        const input = document.getElementById('chat-input');
-        if(!input.value.trim()) return;
-        sendMessage(input.value, 'text');
-        input.value = '';
+    function logic_sendGPS() {
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                const url = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                const p = empireDB.partners.find(x => x.id === empireDB.activeChat);
+                p.chat.push({ u: 'me', t: 'GPS', h: 'Ahora', type: 'gps', file: url });
+                save();
+                renderMessages();
+                ui_toggleMenu('attach-box');
+            });
+        }
     }
 
-    function sendSticker(s) {
-        sendMessage(`<span style="font-size:40px;">${s}</span>`, 'text');
-        toggleStickers();
+    // --- SYSTEM LOGIC ---
+    function logic_sell(id) {
+        const itemIdx = empireDB.stock.findIndex(x => x.id === id);
+        if(empireDB.stock[itemIdx].qty > 0) {
+            const price = empireDB.stock[itemIdx].price;
+            empireDB.stock[itemIdx].qty--;
+            empireDB.caja += price;
+            empireDB.logs.push({ h: new Date().toLocaleTimeString(), t: `Venta: ${empireDB.stock[itemIdx].name}`, m: price });
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            notify("Venta registrada con éxito");
+            save();
+        } else {
+            notify("Sin stock suficiente!");
+        }
     }
 
-    function sendMessage(text, type, fileData = null) {
-        const c = db.clientes.find(x => x.id === db.currentChatId);
-        const now = new Date();
-        const timeStr = now.getHours() + ':' + (now.getMinutes()<10?'0':'') + now.getMinutes();
-        c.chats.push({ u: 'ME', t: text, type: type, file: fileData, h: timeStr });
-        save();
-        renderMessages();
+    function logic_adminTap() {
+        window.ataps = (window.ataps || 0) + 1;
+        if(window.ataps >= 7) {
+            notify("MODO QUINTANA ELITE ACTIVADO");
+            confetti();
+            window.ataps = 0;
+        }
+        setTimeout(() => window.ataps = 0, 3000);
     }
 
-    function updateUI() {
-        const totalDeuda = db.deudas.reduce((a, b) => a + b.monto, 0);
-        const totalGasto = db.gastos.reduce((a, b) => a + b.monto, 0);
-        document.getElementById('ui-caja').innerText = `S/ ${db.caja.toFixed(2)}`;
-        document.getElementById('ui-deuda').innerText = `S/ ${totalDeuda.toFixed(2)}`;
-        document.getElementById('ui-gasto').innerText = `S/ ${totalGasto.toFixed(2)}`;
-        document.getElementById('ui-utilidad').innerText = `S/ ${db.caja.toFixed(2)}`;
-        document.getElementById('ui-client-count').innerText = db.clientes.length;
-
-        document.getElementById('chat-list-view').innerHTML = db.clientes.map(c => `
-            <div class="item-row" onclick="openChat(${c.id})" style="${c.fixed ? 'border-left:5px solid var(--p-gold)' : ''}">
-                <div style="width:55px; height:55px; border-radius:50%; background:linear-gradient(45deg, var(--p-green), var(--p-sky)); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;">${c.name[0]}</div>
-                <div class="item-info"><b>${c.name}</b><small>${c.phone}</small></div>
-            </div>`).join('');
-
-        document.getElementById('render-stock').innerHTML = db.inventario.map(i => `
-            <div class="item-row">
-                <img src="${i.img || 'https://via.placeholder.com/100'}">
-                <div class="item-info"><b>${i.nombre}</b><span>S/ ${i.precio.toFixed(2)}</span></div>
-                <button onclick="logic_sell(${i.id}, false)" style="background:var(--p-green); border:none; color:white; padding:8px; border-radius:8px;">VENDER</button>
-            </div>`).join('');
-
-        document.getElementById('render-audit').innerHTML = db.audit.slice().reverse().map(a => `
-            <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid var(--border); font-size:13px;">
-                <span>${a.t}</span><b style="color:${a.m >= 0 ? 'var(--p-green)' : 'var(--p-red)'}">${a.m.toFixed(2)}</b>
-            </div>`).join('');
+    function notify(text) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerText = text;
+        document.getElementById('toaster').appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    function logic_sell(id, isFiado) {
-        const idx = db.inventario.findIndex(x => x.id === id);
-        const item = db.inventario[idx];
-        db.caja += item.precio;
-        db.audit.push({ t: `Venta: ${item.nombre}`, m: item.precio });
-        confetti({ particleCount: 150, origin: { y: 0.7 } });
-        db.inventario.splice(idx, 1);
-        save();
+    // --- UI HELPERS ---
+    function ui_modal(type) {
+        const content = document.getElementById('modal-content');
+        if(type === 'stock') {
+            content.innerHTML = `
+                <h2>Nuevo Producto</h2>
+                <input id="new-n" class="f-input" placeholder="Nombre">
+                <input id="new-p" class="f-input" type="number" placeholder="Precio S/">
+                <input id="new-q" class="f-input" type="number" placeholder="Cantidad Inicial">
+                <button class="btn-main" onclick="logic_addItem()">AÑADIR AL IMPERIO</button>
+            `;
+        } else if(type === 'partner') {
+            content.innerHTML = `
+                <h2>Vincular Socio</h2>
+                <input id="soc-n" class="f-input" placeholder="Nombre Completo">
+                <input id="soc-p" class="f-input" type="number" placeholder="Número Celular">
+                <button class="btn-main" onclick="logic_addPartner()">REGISTRAR EN RED</button>
+            `;
+        }
+        document.getElementById('overlay').style.display = 'flex';
     }
 
-    function showM(h) { document.getElementById('modal-content').innerHTML = h; document.getElementById('overlay').style.display = 'flex'; }
-    function closeM() { document.getElementById('overlay').style.display = 'none'; }
+    function ui_closeModal() { document.getElementById('overlay').style.display = 'none'; }
 
-    function ui_modalStock() {
-        showM(`<h2>Mercadería</h2><input type="text" id="in-n" class="f-input" placeholder="Nombre"><input type="number" id="in-p" class="f-input" placeholder="Precio S/"><input type="file" id="in-i" class="f-input" accept="image/*"><button class="btn-main" onclick="logic_addStock()">GUARDAR</button>`);
+    function logic_addItem() {
+        const n = document.getElementById('new-n').value, p = parseFloat(document.getElementById('new-p').value), q = parseInt(document.getElementById('new-q').value);
+        if(n && p) {
+            empireDB.stock.push({ id: Date.now(), name: n, price: p, qty: q, img: 'https://via.placeholder.com/150' });
+            save(); ui_closeModal();
+            notify("Producto añadido");
+        }
     }
 
-    function logic_addStock() {
-        const n = document.getElementById('in-n').value;
-        const p = parseFloat(document.getElementById('in-p').value);
-        const f = document.getElementById('in-i').files[0];
-        if(!n || isNaN(p)) return;
-        if(f) {
-            const r = new FileReader();
-            r.onload = (e) => { db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: e.target.result }); save(); closeM(); };
-            r.readAsDataURL(f);
-        } else { db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: null }); save(); closeM(); }
+    function logic_addPartner() {
+        const n = document.getElementById('soc-n').value, p = document.getElementById('soc-p').value;
+        if(n && p) {
+            empireDB.partners.push({ id: Date.now(), name: n, phone: p, chat: [] });
+            save(); ui_closeModal();
+            notify("Socio vinculado");
+        }
     }
 
-    function handleSecretTaps() {
-        window.taps = (window.taps || 0) + 1;
-        if(window.taps >= 7) { alert("ADMIN QUINTANA ACTIVADO"); window.taps = 0; }
-        setTimeout(() => window.taps = 0, 3000);
+    function initKeyboardFix() {
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', () => {
+                const inputArea = document.getElementById('input-container');
+                const chatFlow = document.getElementById('chat-flow');
+                if (window.visualViewport.height < window.innerHeight - 100) {
+                    const offset = window.innerHeight - window.visualViewport.height;
+                    inputArea.style.transform = `translateY(-${offset}px)`;
+                    chatFlow.style.paddingBottom = (offset + 20) + 'px';
+                    setTimeout(() => chatFlow.scrollTop = chatFlow.scrollHeight, 100);
+                } else {
+                    inputArea.style.transform = 'translateY(0)';
+                    chatFlow.style.paddingBottom = '20px';
+                }
+            });
+        }
     }
 
-    window.onload = updateUI;
+    function toggleTheme() {
+        const b = document.body;
+        const current = b.getAttribute('data-theme');
+        b.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    function ui_toggleMenu(id) {
+        const el = document.getElementById(id);
+        el.style.display = el.style.display === 'none' ? 'grid' : 'none';
+    }
+
+    function logic_resetSystem() {
+        if(confirm("¿Quintana, estás seguro de borrar todo el Imperio?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    function logic_exportCSV() {
+        let csv = "Tipo,Detalle,Monto\n";
+        empireDB.logs.forEach(l => { csv += `Log,${l.t},${l.m}\n`; });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'Empire_Report_Quintana.csv'; a.click();
+    }
+    
+    function applyTheme() {
+        // Podríamos forzar light por defecto según tus instrucciones
+        document.body.setAttribute('data-theme', 'light');
+    }
+
 </script>
 </body>
 </html>
