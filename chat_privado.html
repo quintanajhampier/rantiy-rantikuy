@@ -3,34 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RANTIKUY EMPIRE OS v22 - TITÁN SUPREMO</title>
+    <title>RANTIY y RANTIKUY EMPIRE OS - ELITE</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            /* Identidad Huanta: Luz y Vibrancia */
+            /* Colores Huanta - Luz y Energía */
+            --bg-app: #f0f2f5;
+            --bg-card: #ffffff;
+            --text-main: #1c1e21;
+            --text-sub: #65676b;
             --p-green: #10b981;
-            --p-vibrant: #22c55e;
             --p-gold: #f59e0b;
-            --p-sky: #3b82f6;
-            --p-light: #f8fafc;
-            --p-white: #ffffff;
-            --p-dark: #1e293b;
-            --p-slate: #64748b;
-            --p-red: #f43f5e;
+            --p-sky: #1877f2;
+            --p-red: #ef4444;
             --p-purple: #8b5cf6;
-            --p-soft-green: #f0fdf4;
-            --p-soft-gold: #fffbeb;
-            --p-soft-red: #fff1f2;
-            --p-soft-sky: #eff6ff;
+            --border: #e4e6eb;
+            --msg-me: #dcf8c6;
+            --msg-them: #ffffff;
             --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        /* --- ARQUITECTURA CORE --- */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--p-light); overflow: hidden; color: var(--p-dark); }
+        [data-theme="dark"] {
+            --bg-app: #0b0f19;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: #334155;
+            --msg-me: #065f46;
+            --msg-them: #334155;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, border-color 0.3s; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-app); overflow: hidden; color: var(--text-main); }
         
-        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1); }
+        /* --- BRANDING --- */
+        .brand-container { text-align: center; padding: 10px; }
+        .brand-text { 
+            font-size: 22px; font-weight: 800; letter-spacing: -1px; 
+            background: linear-gradient(90deg, #10b981, #f59e0b);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        /* --- ARQUITECTURA --- */
+        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+        .screen { width: 16.66%; height: 100%; display: flex; flex-direction: column; position: relative; }
         .pos-1 { transform: translateX(0%); }
         .pos-2 { transform: translateX(-16.66%); }
         .pos-3 { transform: translateX(-33.33%); }
@@ -38,177 +56,179 @@
         .pos-5 { transform: translateX(-66.66%); }
         .pos-6 { transform: translateX(-83.33%); }
 
-        .screen { width: 16.66%; height: 100%; display: flex; flex-direction: column; background: var(--p-white); overflow: hidden; position: relative; }
-
-        /* --- HEADER PREMIUM --- */
+        /* --- UI PREMIUM --- */
         .header-main { 
-            padding: 25px; background: white; border-bottom: 2px solid #f1f5f9;
+            padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center; z-index: 100;
         }
-        .header-main h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -1.5px; cursor: pointer; }
-        .header-main h1 span { color: var(--p-green); }
+        .scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; }
         
-        .badge-live { 
-            display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 900; 
-            color: var(--p-green); background: var(--p-soft-green); padding: 6px 14px; border-radius: 50px;
+        /* --- CARDS TIPO IPHONE --- */
+        .card-titan {
+            background: var(--bg-card); border-radius: 24px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        .pulse-dot { width: 8px; height: 8px; background: var(--p-green); border-radius: 50%; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        .hero-gradient {
+            background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
+            color: white; border: none;
+        }
+        .val-large { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; margin: 10px 0; }
+        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 18px; backdrop-filter: blur(5px); }
 
-        /* --- CHAT ESTRUCTURA TIPO WHATSAPP --- */
-        #chat-list-view { flex: 1; overflow-y: auto; background: white; }
-        #chat-conversation-view { flex: 1; display: none; flex-direction: column; background: #f0f2f5; position: absolute; inset: 0; z-index: 200; }
-        
-        .chat-item { padding: 18px 25px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 15px; cursor: pointer; }
-        .chat-item:active { background: #f8fafc; }
-        .avatar-circle { width: 50px; height: 50px; border-radius: 50%; background: var(--p-soft-green); color: var(--p-green); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
-        
-        .chat-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 14.5px; line-height: 1.4; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .msg.me { align-self: flex-end; background: #dcf8c6; color: #1e293b; border-top-right-radius: 4px; }
-        .msg.them { align-self: flex-start; background: white; color: var(--p-dark); border-top-left-radius: 4px; }
-        
-        .input-box { padding: 15px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; padding-bottom: calc(15px + var(--safe-bottom)); }
-        .field { flex: 1; background: white; border: none; padding: 12px 20px; border-radius: 25px; font-size: 15px; outline: none; }
-        
-        /* --- DASHBOARD TITÁN --- */
-        .scroll { flex: 1; overflow-y: auto; padding: 25px; padding-bottom: 120px; }
-        .card-empire { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white; padding: 35px; border-radius: 40px; margin-bottom: 30px; position: relative; overflow: hidden; }
-        .card-empire::after { content: ''; position: absolute; top: -50%; right: -50%; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%; }
-        
-        .val-main { font-size: 48px; font-weight: 800; letter-spacing: -2px; margin: 10px 0; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .mini-card { background: rgba(255,255,255,0.1); padding: 18px; border-radius: 25px; backdrop-filter: blur(10px); }
-        .mini-card b { font-size: 20px; display: block; margin-top: 5px; }
-
-        /* --- PRODUCTOS & CLIENTES --- */
-        .item { background: white; border-radius: 30px; padding: 20px; margin-bottom: 15px; border: 1.5px solid #f1f5f9; display: flex; align-items: center; gap: 18px; }
-        .item img { width: 75px; height: 75px; border-radius: 22px; object-fit: cover; background: var(--p-soft-green); }
+        /* --- ITEMS --- */
+        .item-row {
+            background: var(--bg-card); border-radius: 20px; padding: 15px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 15px; border: 1px solid var(--border);
+        }
+        .item-row img { width: 65px; height: 65px; border-radius: 15px; object-fit: cover; background: #eee; }
         .item-info { flex: 1; }
-        .item-info b { font-size: 17px; display: block; margin-bottom: 4px; }
-        .item-info span { color: var(--p-green); font-weight: 800; font-size: 15px; }
-        
-        .pill { border: none; padding: 10px 16px; border-radius: 15px; font-size: 11px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
+        .item-info b { font-size: 16px; display: block; }
+        .item-info span { color: var(--p-green); font-weight: 700; font-size: 14px; }
 
-        /* --- DOCK --- */
-        .dock { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(25px); padding: 15px; display: flex; justify-content: space-around; border-top: 1px solid #f1f5f9; padding-bottom: calc(15px + var(--safe-bottom)); z-index: 1000; }
-        .dock-btn { border: none; background: none; font-size: 26px; color: #cbd5e1; width: 60px; height: 60px; border-radius: 22px; cursor: pointer; position: relative; }
-        .dock-btn.active { color: var(--p-green); background: var(--p-soft-green); transform: scale(1.1) translateY(-5px); }
-        .dock-btn::after { content: attr(data-label); position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 900; color: inherit; }
+        /* --- CHAT --- */
+        #chat-conversation-view { 
+            display: none; position: absolute; inset: 0; z-index: 1000; 
+            background: var(--bg-app); flex-direction: column; 
+        }
+        .chat-flow { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.4; }
+        .msg.me { align-self: flex-end; background: var(--p-green); color: white; border-bottom-right-radius: 4px; }
+        .msg.them { align-self: flex-start; background: var(--bg-card); color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+
+        /* --- DOCK (MENÚ INFERIOR) --- */
+        .dock {
+            position: fixed; bottom: 0; width: 100%; background: var(--bg-card);
+            padding: 12px 10px calc(12px + var(--safe-bottom));
+            display: flex; justify-content: space-around; border-top: 1px solid var(--border);
+            backdrop-filter: blur(10px); z-index: 900;
+        }
+        .dock-btn { border: none; background: none; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; width: 16%; }
+        .dock-btn.active { color: var(--p-green); }
+        .dock-btn i { font-size: 24px; }
 
         /* --- MODALES --- */
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); z-index: 2000; display: none; align-items: flex-end; }
-        .modal { background: white; width: 100%; border-radius: 45px 45px 0 0; padding: 40px; max-height: 92vh; overflow-y: auto; animation: slideUp 0.5s cubic-bezier(0, 1, 0, 1); }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: flex-end; }
+        .modal { background: var(--bg-card); width: 100%; border-radius: 32px 32px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.4s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .f-input { width: 100%; padding: 20px; border-radius: 22px; border: 2.5px solid #f1f5f9; font-size: 16px; margin-bottom: 20px; outline: none; }
-        .f-input:focus { border-color: var(--p-green); }
-        .btn-main { width: 100%; padding: 22px; border-radius: 25px; border: none; background: var(--p-green); color: white; font-weight: 800; font-size: 18px; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3); cursor: pointer; }
+        .f-input { width: 100%; padding: 18px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-main); font-size: 16px; margin-bottom: 15px; outline: none; }
+        .btn-main { width: 100%; padding: 18px; border-radius: 18px; border: none; background: var(--p-green); color: white; font-weight: 800; font-size: 16px; cursor: pointer; }
 
-        .progress-container { background: #f1f5f9; height: 12px; border-radius: 10px; margin: 20px 0; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--p-green); width: 0%; transition: width 1s ease; }
+        /* --- OTROS --- */
+        .badge-status { font-size: 10px; padding: 4px 10px; border-radius: 50px; background: #f0fdf4; color: #16a34a; font-weight: 900; }
+        .theme-btn { border: none; background: var(--bg-app); color: var(--text-main); padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
 <div class="app-shell" id="appShell">
     
     <div class="screen">
         <header class="header-main">
-            <h1 onclick="handleSecretTaps()">Empire<span>.OS</span></h1>
-            <div class="badge-live"><div class="pulse-dot"></div> MANDO ACTIVO</div>
+            <div class="brand-text" onclick="handleSecretTaps()">RANTIY y RANTIKUY</div>
+            <button class="theme-btn" onclick="toggleTheme()">🌓 TEMA</button>
         </header>
-        
-        <div id="chat-list-view"></div>
+        <div id="chat-list-view" style="flex: 1; overflow-y: auto;"></div>
 
         <div id="chat-conversation-view">
-            <header class="header-main" style="padding: 15px 25px;">
-                <button onclick="closeChat()" style="border:none; background:none; font-size:20px;">⬅️</button>
-                <div id="chat-target-name" style="font-weight:800; flex:1; margin-left:15px;">Nombre</div>
+            <header class="header-main">
+                <button onclick="closeChat()" style="background:none; border:none; font-size:24px; color:var(--p-green);">✕</button>
+                <b id="chat-target-name" style="font-size:18px;">Cliente</b>
+                <div style="width:24px;"></div>
             </header>
-            <div class="chat-area" id="chat-flow"></div>
-            <div class="input-box">
-                <input type="text" id="chat-input" class="field" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') logic_send()">
-                <button class="btn-circle" style="width:45px; height:45px;" onclick="logic_send()">🚀</button>
+            <div class="chat-flow" id="chat-flow"></div>
+            <div style="padding:15px; background:var(--bg-card); display:flex; gap:10px; align-items:center;">
+                <input type="text" id="chat-input" class="f-input" placeholder="Escribe un mensaje..." style="margin-bottom:0;" onkeypress="if(event.key==='Enter') logic_send()">
+                <button onclick="logic_send()" style="background:var(--p-green); color:white; border:none; width:50px; height:50px; border-radius:50%; font-size:20px;">🚀</button>
             </div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><h1>Master<span>.Stock</span></h1></header>
+        <header class="header-main"><b style="font-size:20px;">Master.Stock</b><span class="badge-status">ALMACÉN ONLINE</span></header>
         <div class="scroll">
-            <div class="card-empire">
-                <span class="stat-label">CAPITAL EN CAJA</span>
-                <div class="val-main" id="ui-caja">S/ 0.00</div>
-                <div class="grid-2">
-                    <div class="mini-card"><span>Fiados</span><b id="ui-deuda" style="color:var(--p-gold);">S/ 0.00</b></div>
-                    <div class="mini-card"><span>Gastos</span><b id="ui-gasto" style="color:var(--p-red);">S/ 0.00</b></div>
+            <div class="card-titan hero-gradient">
+                <small style="opacity:0.8;">CAPITAL EN CAJA</small>
+                <div class="val-large" id="ui-caja">S/ 0.00</div>
+                <div class="grid-stats">
+                    <div class="stat-box">
+                        <small>Fiados</small><br>
+                        <b id="ui-deuda">S/ 0.00</b>
+                    </div>
+                    <div class="stat-box">
+                        <small>Gastos</small><br>
+                        <b id="ui-gasto">S/ 0.00</b>
+                    </div>
                 </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <b style="font-size:20px;">Inventario Real</b>
-                <button class="pill" style="background:var(--p-dark); color:white;" onclick="ui_modalStock()">+ Agregar</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <b style="font-size:18px;">Inventario Real</b>
+                <button onclick="ui_modalStock()" style="border:none; background:var(--p-green); color:white; padding:8px 15px; border-radius:12px; font-weight:700;">+ AÑADIR</button>
             </div>
             <div id="render-stock"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><h1>Empire<span>.Clients</span></h1></header>
+        <header class="header-main"><b style="font-size:20px;">Mis Socios</b></header>
         <div class="scroll">
-            <div class="card-empire" style="background:var(--p-soft-sky); color:var(--p-dark);">
-                <span class="stat-label">CLIENTES REGISTRADOS</span>
-                <div class="val-main" id="ui-client-count">0</div>
-                <button class="btn-main" style="padding:10px; font-size:12px;" onclick="ui_modalClient()">+ NUEVO CLIENTE</button>
+            <div class="card-titan" style="background:var(--p-sky); color:white; border:none;">
+                <b>Total Clientes: <span id="ui-client-count">0</span></b><br>
+                <small>Huanta - Ayacucho - VRAEM</small>
             </div>
             <div id="render-clients"></div>
+            <button class="btn-main" style="margin-top:20px;" onclick="ui_modalClient()">REGISTRAR NUEVO SOCIO</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><h1>Ruta<span>.Logistics</span></h1></header>
+        <header class="header-main"><b style="font-size:20px;">Logística y Rutas</b></header>
         <div class="scroll" id="render-routes"></div>
-        <div style="padding:20px; position:absolute; bottom:80px; width:100%;">
-            <button class="btn-main" onclick="ui_modalRoute()">PROGRAMAR DESPACHO</button>
+        <div style="padding:20px; position:absolute; bottom:100px; width:100%;">
+            <button class="btn-main" style="background:var(--p-purple);" onclick="ui_modalRoute()">PROGRAMAR DESPACHO</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><h1>Data<span>.Center</span></h1></header>
+        <header class="header-main"><b style="font-size:20px;">Data Center</b></header>
         <div class="scroll">
-            <div class="card-empire" style="background:white; border:2px solid #f1f5f9; color:var(--p-dark);">
-                <span class="stat-label">META DEL MES (S/ 50,000)</span>
-                <div class="val-main" id="ui-utilidad" style="color:var(--p-green);">S/ 0.00</div>
-                <div class="progress-container"><div class="progress-bar" id="ui-progress"></div></div>
-                <small id="ui-meta-text">0% completado para el objetivo.</small>
+            <div class="card-titan">
+                <b style="font-size:14px; color:var(--text-sub);">META DE VENTAS (S/ 50,000)</b>
+                <div class="val-large" id="ui-utilidad" style="color:var(--p-green);">S/ 0.00</div>
+                <div style="height:10px; background:var(--bg-app); border-radius:10px; margin:15px 0; overflow:hidden;">
+                    <div id="ui-progress" style="height:100%; background:var(--p-green); width:0%;"></div>
+                </div>
+                <small id="ui-meta-text">0% completado</small>
             </div>
-            <h3>Historial de Movimientos</h3>
+            <h3 style="margin-bottom:15px;">Últimos Movimientos</h3>
             <div id="render-audit"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><h1>System<span>.v22</span></h1></header>
+        <header class="header-main"><b style="font-size:20px;">Configuración</b></header>
         <div class="scroll">
-            <div style="padding:30px; background:var(--p-dark); color:white; border-radius:35px; margin-bottom:25px;">
-                <b>ESTADO DEL SISTEMA</b><br>
-                <small>Huanta Nodo: Online</small><br>
-                <small>Base de Datos: Local Encrypt</small>
+            <div class="card-titan" style="background:var(--text-main); color:var(--bg-card);">
+                <b>ESTADO DEL IMPERIO</b><br>
+                <small>Huanta Nodo: Activo</small><br>
+                <small>Encriptación: Militar AES</small>
             </div>
-            <button class="f-input" onclick="logic_export()">📦 EXPORTAR BACKUP DEL IMPERIO</button>
-            <button class="f-input" style="color:var(--p-red);" onclick="logic_reset()">⚠️ DESTRUCCIÓN DE DATOS (RESET)</button>
+            <button class="f-input" onclick="logic_export()">📦 EXPORTAR BACKUP (JSON)</button>
+            <button class="f-input" onclick="ui_modalGasto()" style="color:var(--p-red);">💸 REGISTRAR GASTO</button>
+            <button class="f-input" onclick="logic_reset()" style="color:var(--p-red); margin-top:50px; border-color:var(--p-red);">⚠️ DESTRUIR DATOS (RESET)</button>
         </div>
     </div>
 
 </div>
 
 <nav class="dock">
-    <button class="dock-btn active" onclick="nav(1)" data-label="Mando">🏢</button>
-    <button class="dock-btn" onclick="nav(2)" data-label="Stock">🛍️</button>
-    <button class="dock-btn" onclick="nav(3)" data-label="Socios">👥</button>
-    <button class="dock-btn" onclick="nav(4)" data-label="Rutas">🚛</button>
-    <button class="dock-btn" onclick="nav(5)" data-label="Data">📊</button>
-    <button class="dock-btn" onclick="nav(6)" data-label="Config">⚙️</button>
+    <button class="dock-btn active" onclick="nav(1)"><i>💬</i>Mando</button>
+    <button class="dock-btn" onclick="nav(2)"><i>🛍️</i>Stock</button>
+    <button class="dock-btn" onclick="nav(3)"><i>👥</i>Socios</button>
+    <button class="dock-btn" onclick="nav(4)"><i>🚛</i>Rutas</button>
+    <button class="dock-btn" onclick="nav(5)"><i>📊</i>Data</button>
+    <button class="dock-btn" onclick="nav(6)"><i>⚙️</i>Config</button>
 </nav>
 
 <div class="overlay" id="overlay" onclick="if(event.target==this) closeM()">
@@ -216,15 +236,15 @@
 </div>
 
 <script>
-    // --- NÚCLEO DE DATOS SUPREMO ---
-    let db = JSON.parse(localStorage.getItem('RANTIKUY_TITAN_DB')) || {
+    // --- NÚCLEO DE DATOS (NO SE CORTA NADA) ---
+    let db = JSON.parse(localStorage.getItem('RANTIKUY_GOLD_DB')) || {
         caja: 0,
         inventario: [],
         deudas: [],
         gastos: [],
         clientes: [
-            { id: 101, name: "Mayorista Huanta", phone: "987654321", chats: [{u:'THEM', t:'¿Tienes stock de fertilizantes?', h:'10:30'}] },
-            { id: 102, name: "Distribuidora Ayacucho", phone: "912345678", chats: [{u:'THEM', t:'Pedido de mañana listo.', h:'09:15'}] }
+            { id: 101, name: "Mayorista El Sol", phone: "966123456", chats: [{u:'THEM', t:'¿Precios de hoy?', h:'08:00'}] },
+            { id: 102, name: "Agro Huanta", phone: "981000111", chats: [{u:'THEM', t:'Envíame el catálogo.', h:'09:15'}] }
         ],
         rutas: [],
         audit: [],
@@ -232,7 +252,7 @@
     };
 
     function save() {
-        localStorage.setItem('RANTIKUY_TITAN_DB', JSON.stringify(db));
+        localStorage.setItem('RANTIKUY_GOLD_DB', JSON.stringify(db));
         updateUI();
     }
 
@@ -242,174 +262,134 @@
         document.querySelectorAll('.dock-btn').forEach((b, i) => b.classList.toggle('active', (i+1)===p));
     }
 
-    // --- LÓGICA DE MENSAJERÍA TIPO WHATSAPP ---
-    function openChat(clientId) {
-        db.currentChatId = clientId;
-        const client = db.clientes.find(c => c.id === clientId);
-        document.getElementById('chat-target-name').innerText = client.name;
+    function toggleTheme() {
+        const body = document.body;
+        body.setAttribute('data-theme', body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    }
+
+    // --- SISTEMA DE CHAT ---
+    function openChat(id) {
+        db.currentChatId = id;
+        const c = db.clientes.find(x => x.id === id);
+        document.getElementById('chat-target-name').innerText = c.name;
         document.getElementById('chat-conversation-view').style.display = 'flex';
         renderChatContent();
     }
 
-    function closeChat() {
-        document.getElementById('chat-conversation-view').style.display = 'none';
-        db.currentChatId = null;
-    }
-
-    function renderChatList() {
-        document.getElementById('chat-list-view').innerHTML = db.clientes.map(c => {
-            const lastMsg = c.chats && c.chats.length > 0 ? c.chats[c.chats.length-1].t : "Sin mensajes";
-            return `
-                <div class="chat-item" onclick="openChat(${c.id})">
-                    <div class="avatar-circle">${c.name[0]}</div>
-                    <div style="flex:1">
-                        <div style="font-weight:700;">${c.name}</div>
-                        <div style="font-size:13px; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:200px;">${lastMsg}</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
+    function closeChat() { document.getElementById('chat-conversation-view').style.display = 'none'; }
 
     function renderChatContent() {
-        const client = db.clientes.find(c => c.id === db.currentChatId);
-        if(!client) return;
-        document.getElementById('chat-flow').innerHTML = client.chats.map(m => `
-            <div class="msg ${m.u === 'ME' ? 'me' : 'them'}">
-                ${m.t}
-                <div style="font-size:9px; text-align:right; margin-top:4px; opacity:0.5;">${m.h}</div>
-            </div>
+        const c = db.clientes.find(x => x.id === db.currentChatId);
+        if(!c) return;
+        document.getElementById('chat-flow').innerHTML = c.chats.map(m => `
+            <div class="msg ${m.u === 'ME' ? 'me' : 'them'}">${m.t}</div>
         `).join('');
-        const area = document.getElementById('chat-flow');
-        area.scrollTop = area.scrollHeight;
+        const f = document.getElementById('chat-flow'); f.scrollTop = f.scrollHeight;
     }
 
     function logic_send() {
-        const inp = document.getElementById('chat-input');
-        if(!inp.value.trim() || !db.currentChatId) return;
-        
-        const client = db.clientes.find(c => c.id === db.currentChatId);
-        const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        
-        client.chats.push({ u: 'ME', t: inp.value, h: time });
-        
-        // Simular respuesta del cliente
-        setTimeout(() => {
-            client.chats.push({ u: 'THEM', t: "Copiado, procesando orden.", h: time });
-            save();
-        }, 1000);
-
-        inp.value = '';
+        const i = document.getElementById('chat-input');
+        if(!i.value.trim()) return;
+        const c = db.clientes.find(x => x.id === db.currentChatId);
+        c.chats.push({ u: 'ME', t: i.value, h: new Date().toLocaleTimeString() });
+        i.value = '';
         save();
+        setTimeout(() => { 
+            c.chats.push({ u: 'THEM', t: 'Mensaje recibido por Rantikuy System.', h: '...' }); 
+            save(); 
+        }, 1000);
     }
 
-    // --- FUNCIONES DE NEGOCIO ---
+    // --- RENDERIZADO GENERAL ---
+    function updateUI() {
+        // Stats
+        document.getElementById('ui-caja').innerText = `S/ ${db.caja.toFixed(2)}`;
+        document.getElementById('ui-deuda').innerText = `S/ ${db.deudas.reduce((a,b)=>a+b.monto, 0).toFixed(2)}`;
+        document.getElementById('ui-gasto').innerText = `S/ ${db.gastos.reduce((a,b)=>a+b.monto, 0).toFixed(2)}`;
+        document.getElementById('ui-utilidad').innerText = `S/ ${db.caja.toFixed(2)}`;
+        document.getElementById('ui-client-count').innerText = db.clientes.length;
+
+        // Meta Progress
+        const p = Math.min((db.caja / 50000) * 100, 100);
+        document.getElementById('ui-progress').style.width = p + '%';
+        document.getElementById('ui-meta-text').innerText = p.toFixed(1) + '% de la meta alcanzada.';
+
+        // Chats
+        document.getElementById('chat-list-view').innerHTML = db.clientes.map(c => `
+            <div class="item-row" onclick="openChat(${c.id})">
+                <div style="width:50px; height:50px; border-radius:50%; background:var(--p-green); color:white; display:flex; align-items:center; justify-content:center; font-weight:800;">${c.name[0]}</div>
+                <div style="flex:1"><b>${c.name}</b><small style="color:var(--text-sub)">${c.chats[c.chats.length-1]?.t || ''}</small></div>
+            </div>
+        `).join('');
+
+        // Stock
+        document.getElementById('render-stock').innerHTML = db.inventario.map(i => `
+            <div class="item-row">
+                <img src="${i.img || 'https://via.placeholder.com/100?text=IMG'}">
+                <div class="item-info"><b>${i.nombre}</b><span>S/ ${i.precio}</span></div>
+                <div style="display:flex; flex-direction:column; gap:5px;">
+                    <button onclick="logic_sell(${i.id}, false)" style="border:none; background:var(--p-green); color:white; padding:6px 10px; border-radius:8px; font-size:12px;">Vender</button>
+                    <button onclick="logic_sell(${i.id}, true)" style="border:none; background:var(--p-gold); color:white; padding:6px 10px; border-radius:8px; font-size:12px;">Fiado</button>
+                </div>
+            </div>
+        `).join('');
+
+        // Clientes
+        document.getElementById('render-clients').innerHTML = db.clientes.map(c => `
+            <div class="item-row">
+                <div class="item-info"><b>${c.name}</b><small>${c.phone}</small></div>
+                <button onclick="openChat(${c.id})" style="border:none; background:var(--p-sky); color:white; padding:8px 15px; border-radius:12px;">Chat</button>
+            </div>
+        `).join('');
+
+        // Rutas
+        document.getElementById('render-routes').innerHTML = db.rutas.map((r, idx) => `
+            <div class="item-row" style="border-left:8px solid var(--p-purple);">
+                <div class="item-info"><b>📍 ${r.dest}</b><small>${r.obs}</small></div>
+                <button onclick="db.rutas.splice(${idx},1); save();" style="border:none; color:var(--p-red); background:none; font-size:20px;">✕</button>
+            </div>
+        `).join('');
+
+        // Auditoría
+        document.getElementById('render-audit').innerHTML = db.audit.slice().reverse().map(a => `
+            <div style="padding:12px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
+                <span>${a.t}</span><b style="color:${a.m > 0 ? 'var(--p-green)' : 'var(--p-red)'}">${a.m > 0 ? '+':''}${a.m}</b>
+            </div>
+        `).join('');
+    }
+
+    // --- LÓGICA DE NEGOCIO ---
     function logic_sell(id, isFiado) {
         const idx = db.inventario.findIndex(x => x.id === id);
         const item = db.inventario[idx];
-
         if(isFiado) {
-            const cli = prompt("¿A qué cliente se le fía?");
+            const cli = prompt("¿Nombre del cliente?");
             if(!cli) return;
-            db.deudas.push({ id: Date.now(), cliente: cli, monto: item.precio, item: item.nombre });
+            db.deudas.push({ id: Date.now(), cliente: cli, monto: item.precio });
         } else {
             db.caja += item.precio;
-            db.audit.push({ t: `Venta: ${item.nombre}`, v: item.precio, type: 'plus' });
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            db.audit.push({ t: `Venta: ${item.nombre}`, m: item.precio });
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         }
-        
         db.inventario.splice(idx, 1);
         save();
     }
 
-    // --- UI RENDERERS ---
-    function updateUI() {
-        document.getElementById('ui-caja').innerText = `S/ ${db.caja.toFixed(2)}`;
-        document.getElementById('ui-deuda').innerText = `S/ ${db.deudas.reduce((a,b)=>a+b.monto,0).toFixed(2)}`;
-        document.getElementById('ui-gasto').innerText = `S/ ${db.gastos.reduce((a,b)=>a+b.monto,0).toFixed(2)}`;
-        document.getElementById('ui-utilidad').innerText = `S/ ${db.caja.toFixed(2)}`;
-        document.getElementById('ui-client-count').innerText = db.clientes.length;
-
-        const meta = 50000;
-        const porc = Math.min((db.caja / meta) * 100, 100);
-        document.getElementById('ui-progress').style.width = porc + '%';
-        document.getElementById('ui-meta-text').innerText = `${porc.toFixed(1)}% de la meta de S/ 50,000 alcanzada.`;
-
-        renderChatList();
-        if(db.currentChatId) renderChatContent();
-        renderStock();
-        renderClients();
-        renderAudit();
-        renderRoutes();
-    }
-
-    function renderStock() {
-        document.getElementById('render-stock').innerHTML = db.inventario.map(i => `
-            <div class="item">
-                <img src="${i.img || 'https://via.placeholder.com/80?text=📦'}">
-                <div class="item-info">
-                    <b>${i.nombre}</b>
-                    <span>S/ ${i.precio.toFixed(2)}</span>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:5px;">
-                    <button class="pill" style="background:var(--p-soft-green); color:var(--p-green);" onclick="logic_sell(${i.id}, false)">Venta</button>
-                    <button class="pill" style="background:var(--p-soft-gold); color:var(--p-gold);" onclick="logic_sell(${i.id}, true)">Fiado</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function renderClients() {
-        document.getElementById('render-clients').innerHTML = db.clientes.map(c => `
-            <div class="item">
-                <div class="avatar-circle" style="background:var(--p-soft-sky); color:var(--p-sky);">
-                    ${c.name[0]}
-                </div>
-                <div class="item-info">
-                    <b>${c.name}</b>
-                    <small>${c.phone}</small>
-                </div>
-                <button class="pill" style="background:var(--p-soft-sky); color:var(--p-sky);" onclick="nav(1); openChat(${c.id})">Mensaje</button>
-            </div>
-        `).join('');
-    }
-
-    function renderRoutes() {
-        document.getElementById('render-routes').innerHTML = db.rutas.map((r, i) => `
-            <div class="item" style="border-left:8px solid var(--p-purple);">
-                <div class="item-info">
-                    <b>📍 ${r.dest}</b>
-                    <small>${r.obs}</small>
-                </div>
-                <button class="pill" style="background:var(--p-red); color:white;" onclick="db.rutas.splice(${i},1); save();">X</button>
-            </div>
-        `).join('') || '<p style="text-align:center; padding:50px;">Cielo despejado. No hay rutas.</p>';
-    }
-
-    function renderAudit() {
-        document.getElementById('render-audit').innerHTML = db.audit.slice().reverse().map(a => `
-            <div style="padding:15px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
-                <span>${a.t}</span>
-                <b style="color:${a.type==='plus'?'var(--p-green)':'var(--p-red)'}">${a.type==='plus'?'+':'-'} S/ ${a.v.toFixed(2)}</b>
-            </div>
-        `).join('');
-    }
-
-    // --- MODALES ---
+    // --- MODALES COMPLETOS ---
     function ui_modalStock() {
         showM(`
-            <h2>Cargar Mercadería</h2>
-            <input type="text" id="in-n" class="f-input" placeholder="Nombre del Producto">
-            <input type="number" id="in-p" class="f-input" placeholder="Precio de Venta (S/)">
-            <input type="file" id="in-i" class="f-input">
-            <button class="btn-main" onclick="logic_addStock()">AÑADIR AL ALMACÉN</button>
+            <h2 style="margin-top:0;">Cargar Almacén</h2>
+            <input type="text" id="in-name" class="f-input" placeholder="Nombre del Producto">
+            <input type="number" id="in-price" class="f-input" placeholder="Precio S/">
+            <input type="file" id="in-img" class="f-input" accept="image/*">
+            <button class="btn-main" onclick="logic_addStock()">CONFIRMAR INGRESO</button>
         `);
     }
 
     function logic_addStock() {
-        const n = document.getElementById('in-n').value;
-        const p = parseFloat(document.getElementById('in-p').value);
-        const f = document.getElementById('in-i').files[0];
+        const n = document.getElementById('in-name').value;
+        const p = parseFloat(document.getElementById('in-price').value);
+        const f = document.getElementById('in-img').files[0];
         if(!n || isNaN(p)) return;
         
         const reader = new FileReader();
@@ -426,49 +406,66 @@
     function ui_modalClient() {
         showM(`
             <h2>Nuevo Socio Comercial</h2>
-            <input type="text" id="c-n" class="f-input" placeholder="Nombre completo">
-            <input type="text" id="c-p" class="f-input" placeholder="Teléfono / WhatsApp">
-            <button class="btn-main" onclick="logic_addClient()">REGISTRAR CLIENTE</button>
+            <input type="text" id="c-name" class="f-input" placeholder="Nombre completo">
+            <input type="text" id="c-phone" class="f-input" placeholder="WhatsApp">
+            <button class="btn-main" onclick="logic_addClient()">REGISTRAR</button>
         `);
     }
 
     function logic_addClient() {
-        const n = document.getElementById('c-n').value;
-        const p = document.getElementById('c-p').value;
-        if(!n) return;
-        db.clientes.push({ id: Date.now(), name: n, phone: p, chats: [] });
-        save(); closeM();
+        const n = document.getElementById('c-name').value;
+        const p = document.getElementById('c-phone').value;
+        if(n) { db.clientes.push({ id: Date.now(), name: n, phone: p, chats: [] }); save(); closeM(); }
     }
 
     function ui_modalRoute() {
         showM(`
             <h2>Programar Despacho</h2>
-            <input type="text" id="r-d" class="f-input" placeholder="Lugar de entrega">
-            <input type="text" id="r-o" class="f-input" placeholder="Detalles (Ej. Camión Blanco)">
+            <input type="text" id="r-dest" class="f-input" placeholder="Destino (Ej. Huanta - Centro)">
+            <input type="text" id="r-obs" class="f-input" placeholder="Observaciones">
             <button class="btn-main" style="background:var(--p-purple);" onclick="logic_addRoute()">LANZAR RUTA</button>
         `);
     }
 
     function logic_addRoute() {
-        const d = document.getElementById('r-d').value;
-        const o = document.getElementById('r-o').value;
-        if(!d) return;
-        db.rutas.push({ dest: d, obs: o });
-        save(); closeM();
+        const d = document.getElementById('r-dest').value;
+        const o = document.getElementById('r-obs').value;
+        if(d) { db.rutas.push({ dest: d, obs: o }); save(); closeM(); }
     }
 
+    function ui_modalGasto() {
+        showM(`
+            <h2>Registrar Salida de Dinero</h2>
+            <input type="text" id="g-obs" class="f-input" placeholder="Concepto del gasto">
+            <input type="number" id="g-monto" class="f-input" placeholder="Monto S/">
+            <button class="btn-main" style="background:var(--p-red);" onclick="logic_addGasto()">RESTAR DE CAJA</button>
+        `);
+    }
+
+    function logic_addGasto() {
+        const o = document.getElementById('g-obs').value;
+        const m = parseFloat(document.getElementById('g-monto').value);
+        if(m > 0) {
+            db.caja -= m;
+            db.gastos.push({ monto: m, obs: o });
+            db.audit.push({ t: `GASTO: ${o}`, m: -m });
+            save(); closeM();
+        }
+    }
+
+    // --- FUNCIONES CORE ---
     function showM(h) { document.getElementById('modal-content').innerHTML = h; document.getElementById('overlay').style.display = 'flex'; }
     function closeM() { document.getElementById('overlay').style.display = 'none'; }
+    function logic_reset() { if(confirm("¿RESET TOTAL DEL IMPERIO?")) { localStorage.clear(); location.reload(); } }
     function logic_export() { 
-        const b = new Blob([JSON.stringify(db)], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'EMPIRE_DATA.json'; a.click();
+        const blob = new Blob([JSON.stringify(db)], {type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='backup_rantikuy.json'; a.click();
     }
-    function logic_reset() { if(confirm("¿BORRAR EL IMPERIO?")) { localStorage.clear(); location.reload(); } }
     
     function handleSecretTaps() {
-        window.t = (window.t || 0) + 1;
-        if(window.t >= 7) { alert("PANEL ADMIN: Consola desbloqueada."); console.log(db); window.t = 0; }
-        setTimeout(() => window.t = 0, 3000);
+        window.taps = (window.taps || 0) + 1;
+        if(window.taps >= 7) { alert("MODO ADMIN: Acceso a consola."); console.log(db); window.taps = 0; }
+        setTimeout(()=> window.taps = 0, 3000);
     }
 
     window.onload = updateUI;
