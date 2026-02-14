@@ -35,11 +35,11 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, border-color 0.3s; }
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-app); overflow: hidden; color: var(--text-main); }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-app); overflow: hidden; color: var(--text-main); position: fixed; }
         
         /* ARQUITECTURA DE DESLIZAMIENTO */
         .app-shell { display: flex; width: 700%; height: 100%; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-        .screen { width: 14.2857%; height: 100%; display: flex; flex-direction: column; position: relative; }
+        .screen { width: 14.2857%; height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
         
         /* POSICIONES */
         .pos-1 { transform: translateX(0%); }
@@ -51,9 +51,9 @@
         .pos-7 { transform: translateX(-85.7142%); }
 
         /* HEADER */
-        .header-main { padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .header-main { padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; padding-top: calc(15px + env(safe-area-inset-top)); }
         .brand-text { font-size: 24px; font-weight: 800; background: linear-gradient(90deg, #10b981, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; cursor: pointer; }
-        .scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; }
+        .scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 140px; -webkit-overflow-scrolling: touch; }
         
         /* CARDS */
         .card-titan { background: var(--bg-card); border-radius: 24px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
@@ -69,21 +69,25 @@
         .item-info b { font-size: 16px; display: block; }
         .item-info span { color: var(--p-green); font-weight: 700; }
 
-        /* CHAT PRO */
-        #chat-conversation-view { display: none; position: absolute; inset: 0; z-index: 1000; background: var(--bg-app); flex-direction: column; }
-        .chat-flow { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-image: radial-gradient(var(--border) 0.5px, transparent 0.5px); background-size: 15px 15px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 15px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+        /* CHAT PRO OPTIMIZADO PARA MÓVIL */
+        #chat-conversation-view { display: none; position: absolute; inset: 0; z-index: 1000; background: var(--bg-app); flex-direction: column; height: 100%; }
+        .chat-flow { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-image: radial-gradient(var(--border) 0.5px, transparent 0.5px); background-size: 15px 15px; padding-bottom: 20px; }
+        
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 15px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.04); display: flex; flex-direction: column; }
         .msg.me { align-self: flex-end; background: var(--p-green); color: white; border-bottom-right-radius: 4px; }
         .msg.them { align-self: flex-start; background: var(--bg-card); color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
         
+        .msg .m-meta { font-size: 9px; opacity: 0.7; align-self: flex-end; margin-top: 4px; }
         .msg img { width: 100%; border-radius: 12px; margin-top: 5px; cursor: pointer; }
         .file-link { background: rgba(0,0,0,0.05); padding: 10px; border-radius: 12px; display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; font-size: 13px; margin-top: 5px; border: 1px dashed rgba(0,0,0,0.1); }
         
-        .chat-input-area { padding: 15px; background: var(--bg-card); border-top: 1px solid var(--border); }
-        .input-row { display: flex; gap: 10px; align-items: center; }
+        /* ÁREA DE ESCRITURA ELEVADA PARA TECLADO */
+        .chat-input-area { padding: 12px 15px; background: var(--bg-card); border-top: 1px solid var(--border); padding-bottom: calc(15px + var(--safe-bottom)); position: relative; z-index: 1001; }
+        .input-row { display: flex; gap: 8px; align-items: center; }
         
-        .attach-menu { display: none; padding: 15px; gap: 20px; justify-content: center; background: var(--bg-app); border-radius: 20px 20px 0 0; animation: slideUp 0.3s; border-top: 1px solid var(--border); }
-        .sticker-panel { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; background: var(--bg-card); border-top: 1px solid var(--border); max-height: 200px; overflow-y: auto; }
+        .attach-menu { display: none; padding: 20px; gap: 25px; justify-content: center; background: var(--bg-card); border-top: 1px solid var(--border); animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1); border-radius: 25px 25px 0 0; }
+        .sticker-panel { display: none; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; background: var(--bg-card); border-top: 1px solid var(--border); max-height: 250px; overflow-y: auto; justify-items: center; }
+        .sticker-panel span { font-size: 35px; cursor: pointer; }
 
         /* GALERIA */
         .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -99,9 +103,9 @@
 
         /* MODALES */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: flex-end; }
-        .modal { background: var(--bg-card); width: 100%; border-radius: 32px 32px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.4s cubic-bezier(0,1,0.5,1); }
+        .modal { background: var(--bg-card); width: 100%; border-radius: 32px 32px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.4s cubic-bezier(0,1,0.5,1); padding-bottom: 50px; }
 
-        .f-input { width: 100%; padding: 18px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-main); font-size: 16px; margin-bottom: 15px; outline: none; }
+        .f-input { width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-main); font-size: 16px; margin-bottom: 12px; outline: none; -webkit-appearance: none; }
         .btn-main { width: 100%; padding: 18px; border-radius: 18px; border: none; background: var(--p-green); color: white; font-weight: 800; font-size: 16px; cursor: pointer; }
 
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -120,16 +124,17 @@
 
         <div id="chat-conversation-view">
             <header class="header-main">
-                <button onclick="closeChat()" style="background:none; border:none; font-size:26px; color:var(--p-green);">✕</button>
-                <b id="chat-target-name" style="font-size:18px;">Cargando...</b>
-                <div style="width:26px;"></div>
+                <button onclick="closeChat()" style="background:none; border:none; font-size:26px; color:var(--p-green); padding:0 10px;">✕</button>
+                <b id="chat-target-name" style="font-size:18px;">...</b>
+                <div style="width:40px;"></div>
             </header>
+            
             <div class="chat-flow" id="chat-flow"></div>
             
             <div class="attach-menu" id="attach-menu">
-                <div onclick="triggerFile('img')" style="text-align:center;"><div style="background:var(--p-gold); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:24px;">🖼️</div><small>Foto</small></div>
-                <div onclick="triggerFile('doc')" style="text-align:center;"><div style="background:var(--p-sky); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:24px;">📄</div><small>Doc</small></div>
-                <div onclick="triggerFile('aud')" style="text-align:center;"><div style="background:var(--p-purple); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:24px;">🎤</div><small>Audio</small></div>
+                <div onclick="triggerFile('img')" style="text-align:center;"><div style="background:var(--p-gold); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">🖼️</div><small>Foto</small></div>
+                <div onclick="triggerFile('doc')" style="text-align:center;"><div style="background:var(--p-sky); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">📄</div><small>Doc</small></div>
+                <div onclick="triggerFile('aud')" style="text-align:center;"><div style="background:var(--p-purple); width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:26px; margin-bottom:5px;">🎤</div><small>Audio</small></div>
             </div>
 
             <div class="sticker-panel" id="sticker-panel">
@@ -140,10 +145,10 @@
 
             <div class="chat-input-area">
                 <div class="input-row">
-                    <button onclick="toggleAttach()" style="background:none; border:none; font-size:24px;">📎</button>
-                    <input type="text" id="chat-input" class="f-input" placeholder="Mensaje..." style="margin-bottom:0;" onkeypress="if(event.key==='Enter') logic_send()">
-                    <button onclick="toggleStickers()" style="background:none; border:none; font-size:24px;">😊</button>
-                    <button onclick="logic_send()" style="background:var(--p-green); color:white; border:none; width:48px; height:48px; border-radius:50%; font-size:20px;">🚀</button>
+                    <button onclick="toggleAttach()" style="background:none; border:none; font-size:28px; padding:5px;">📎</button>
+                    <input type="text" id="chat-input" class="f-input" placeholder="Negociar..." style="margin-bottom:0;" onkeypress="if(event.key==='Enter') logic_send()">
+                    <button onclick="toggleStickers()" style="background:none; border:none; font-size:28px; padding:5px;">😊</button>
+                    <button onclick="logic_send()" style="background:var(--p-green); color:white; border:none; width:50px; height:50px; border-radius:50%; font-size:22px; flex-shrink:0;">🚀</button>
                 </div>
             </div>
             <input type="file" id="hidden-file-input" style="display:none;" onchange="processFileUpload(this)">
@@ -184,7 +189,7 @@
     <div class="screen">
         <header class="header-main"><b>RUTAS DE ENTREGA</b></header>
         <div class="scroll" id="render-routes"></div>
-        <div style="padding:20px; position:absolute; bottom:100px; width:100%;">
+        <div style="padding:20px; position:absolute; bottom:110px; width:100%;">
             <button class="btn-main" style="background:var(--p-purple);" onclick="ui_modalRoute()">PROGRAMAR DESPACHO</button>
         </div>
     </div>
@@ -205,9 +210,9 @@
                 <div style="height:12px; background:var(--bg-app); border-radius:10px; margin:15px 0; overflow:hidden;">
                     <div id="ui-progress" style="height:100%; background:var(--p-green); width:0%;"></div>
                 </div>
-                <small id="ui-meta-text">Analizando datos...</small>
+                <small id="ui-meta-text">Analizando...</small>
             </div>
-            <h3>Historial de Movimientos</h3>
+            <h3>Historial</h3>
             <div id="render-audit"></div>
         </div>
     </div>
@@ -215,17 +220,11 @@
     <div class="screen">
         <header class="header-main"><b>CONFIGURACIÓN</b></header>
         <div class="scroll">
-            <div class="card-titan" style="background:var(--text-main); color:white; border:none;">
-                <b>ESTADO DEL SISTEMA</b><br>
-                <small>Nodo: Huanta Market</small><br>
-                <small>Seguridad: AES-256 Rantikuy</small>
-            </div>
             <button class="f-input" onclick="logic_export()">📦 EXPORTAR BASE DE DATOS</button>
             <button class="f-input" onclick="ui_modalGasto()" style="color:var(--p-red);">💸 REGISTRAR GASTO EXTRA</button>
-            <button class="f-input" onclick="logic_reset()" style="color:var(--p-red); margin-top:50px; border-color:var(--p-red);">⚠️ FORMATEAR SISTEMA (RESET)</button>
+            <button class="f-input" onclick="logic_reset()" style="color:var(--p-red); margin-top:50px; border-color:var(--p-red);">⚠️ FORMATEAR SISTEMA</button>
         </div>
     </div>
-
 </div>
 
 <nav class="dock">
@@ -243,7 +242,7 @@
 </div>
 
 <script>
-    // --- BASE DE DATOS COMPLETA (ESTRUCTURA TITÁN) ---
+    // --- DB LIMPIA SIN EJEMPLOS ---
     let db = JSON.parse(localStorage.getItem('RANTIKUY_EMPIRE_V26')) || {
         caja: 0,
         inventario: [],
@@ -251,10 +250,7 @@
         gastos: [],
         rutas: [],
         audit: [],
-        clientes: [
-            { id: 101, name: "Distribuidora Huanta", phone: "966000111", chats: [{u:'THEM', t:'¿Hay stock de fertilizantes?', h:'10:00', type:'text'}] },
-            { id: 102, name: "Agro Inversiones", phone: "981222333", chats: [{u:'THEM', t:'Mándame la boleta de ayer.', h:'11:30', type:'text'}] }
-        ],
+        clientes: [],
         currentChatId: null
     };
 
@@ -265,7 +261,7 @@
         updateUI();
     }
 
-    // --- NAVEGACIÓN ---
+    // --- NAV ---
     function nav(p) {
         document.getElementById('appShell').className = 'app-shell pos-' + p;
         document.querySelectorAll('.dock-btn').forEach((b, i) => b.classList.toggle('active', (i+1)===p));
@@ -276,7 +272,7 @@
         b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
     }
 
-    // --- LÓGICA DE CHAT AVANZADA ---
+    // --- CHAT LOGIC ---
     function openChat(id) {
         db.currentChatId = id;
         const c = db.clientes.find(x => x.id === id);
@@ -289,32 +285,32 @@
 
     function toggleAttach() { 
         const m = document.getElementById('attach-menu');
+        const s = document.getElementById('sticker-panel');
         m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
-        document.getElementById('sticker-panel').style.display = 'none';
+        s.style.display = 'none';
     }
 
     function toggleStickers() {
         const s = document.getElementById('sticker-panel');
+        const m = document.getElementById('attach-menu');
         s.style.display = s.style.display === 'grid' ? 'none' : 'grid';
-        document.getElementById('attach-menu').style.display = 'none';
+        m.style.display = 'none';
     }
 
     function renderMessages() {
         const c = db.clientes.find(x => x.id === db.currentChatId);
         const flow = document.getElementById('chat-flow');
+        if(!c) return;
         flow.innerHTML = c.chats.map(m => {
             let html = m.t;
             if(m.type === 'img') {
-                html = `<img src="${m.file}" onclick="window.open('${m.file}')">
-                        <a href="${m.file}" download="Rantikuy_Imagen.png" class="file-link">📥 Guardar Imagen</a>`;
+                html = `<img src="${m.file}" onclick="window.open('${m.file}')"><a href="${m.file}" download="R_Img_${m.h.replace(/:/g,'-')}.png" class="file-link">📥 Guardar</a>`;
             } else if(m.type === 'doc') {
-                html = `<div class="file-link">📄 DOCUMENTO ADJUNTO</div>
-                        <a href="${m.file}" download="Rantikuy_Doc.pdf" class="file-link">📥 Descargar Archivo</a>`;
+                html = `<div class="file-link">📄 DOCUMENTO</div><a href="${m.file}" download="R_Doc_${m.h.replace(/:/g,'-')}.pdf" class="file-link">📥 Bajar</a>`;
             } else if(m.type === 'aud') {
-                html = `<audio controls src="${m.file}" style="width:100%;"></audio>
-                        <a href="${m.file}" download="Rantikuy_Audio.mp3" class="file-link" style="font-size:10px;">📥 Bajar Audio</a>`;
+                html = `<audio controls src="${m.file}" style="width:100%;"></audio><a href="${m.file}" download="R_Aud_${m.h.replace(/:/g,'-')}.mp3" class="file-link">📥 Bajar</a>`;
             }
-            return `<div class="msg ${m.u === 'ME' ? 'me' : 'them'}">${html}</div>`;
+            return `<div class="msg ${m.u === 'ME' ? 'me' : 'them'}">${html}<div class="m-meta">${m.h}</div></div>`;
         }).join('');
         flow.scrollTop = flow.scrollHeight;
     }
@@ -341,28 +337,28 @@
         const file = input.files[0];
         if(!file) return;
         const reader = new FileReader();
-        reader.onload = (e) => {
-            sendMessage('', activeFileType, e.target.result);
-        };
+        reader.onload = (e) => { sendMessage('', activeFileType, e.target.result); };
         reader.readAsDataURL(file);
     }
 
     function sendMessage(text, type, fileData = null) {
         const c = db.clientes.find(x => x.id === db.currentChatId);
+        const now = new Date();
+        const timeStr = now.toLocaleDateString() + ' ' + now.getHours() + ':' + (now.getMinutes()<10?'0':'') + now.getMinutes();
+        
         c.chats.push({
             u: 'ME',
             t: text,
             type: type,
             file: fileData,
-            h: new Date().toLocaleTimeString()
+            h: timeStr
         });
         save();
         renderMessages();
     }
 
-    // --- RENDERIZADO GENERAL (ESTADÍSTICAS Y MÓDULOS) ---
+    // --- UI ENGINE ---
     function updateUI() {
-        // Caja y Deudas
         const totalDeuda = db.deudas.reduce((a, b) => a + b.monto, 0);
         const totalGasto = db.gastos.reduce((a, b) => a + b.monto, 0);
         
@@ -372,116 +368,85 @@
         document.getElementById('ui-utilidad').innerText = `S/ ${db.caja.toFixed(2)}`;
         document.getElementById('ui-client-count').innerText = db.clientes.length;
 
-        // Progreso Meta
         const meta = 50000;
         const porc = Math.min((db.caja / meta) * 100, 100);
         document.getElementById('ui-progress').style.width = porc + '%';
-        document.getElementById('ui-meta-text').innerText = `${porc.toFixed(1)}% de la meta (S/ ${meta})`;
+        document.getElementById('ui-meta-text').innerText = `${porc.toFixed(1)}% de meta (S/ ${meta})`;
 
-        // Lista de Chats
-        document.getElementById('chat-list-view').innerHTML = db.clientes.map(c => {
+        document.getElementById('chat-list-view').innerHTML = db.clientes.length ? db.clientes.map(c => {
             const last = c.chats[c.chats.length-1];
             return `
                 <div class="item-row" onclick="openChat(${c.id})">
                     <div style="width:55px; height:55px; border-radius:50%; background:linear-gradient(45deg, var(--p-green), var(--p-sky)); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;">${c.name[0]}</div>
                     <div class="item-info">
                         <b>${c.name}</b>
-                        <small style="color:var(--text-sub)">${last?.type === 'text' ? last.t.substring(0,25) : '📁 Archivo multimedia'}</small>
+                        <small style="color:var(--text-sub)">${last ? (last.type === 'text' ? last.t.substring(0,25) : '📁 Archivo') : 'Sin mensajes'}</small>
                     </div>
-                    <div style="font-size:10px; color:var(--text-sub)">${last?.h || ''}</div>
-                </div>
-            `;
-        }).join('');
+                    <div style="font-size:10px; color:var(--text-sub)">${last?.h.split(' ')[1] || ''}</div>
+                </div>`;
+        }).join('') : '<p style="text-align:center; opacity:0.5; margin-top:50px;">Registra un socio para chatear</p>';
 
-        // Inventario
         document.getElementById('render-stock').innerHTML = db.inventario.map(i => `
             <div class="item-row">
-                <img src="${i.img || 'https://via.placeholder.com/100?text=SIN+FOTO'}">
-                <div class="item-info">
-                    <b>${i.nombre}</b>
-                    <span>S/ ${i.precio.toFixed(2)}</span>
-                </div>
+                <img src="${i.img || 'https://via.placeholder.com/100?text=S+F'}">
+                <div class="item-info"><b>${i.nombre}</b><span>S/ ${i.precio.toFixed(2)}</span></div>
                 <div style="display:flex; flex-direction:column; gap:5px;">
                     <button onclick="logic_sell(${i.id}, false)" style="background:var(--p-green); border:none; color:white; padding:8px; border-radius:8px; font-size:11px; font-weight:700;">VENDER</button>
                     <button onclick="logic_sell(${i.id}, true)" style="background:var(--p-gold); border:none; color:white; padding:8px; border-radius:8px; font-size:11px; font-weight:700;">FIAR</button>
                 </div>
-            </div>
-        `).join('');
+            </div>`).join('');
 
-        // Socios
         document.getElementById('render-clients').innerHTML = db.clientes.map(c => `
             <div class="item-row">
                 <div class="item-info"><b>${c.name}</b><small>${c.phone}</small></div>
                 <button onclick="openChat(${c.id})" style="background:var(--p-sky); color:white; border:none; padding:10px 15px; border-radius:12px; font-weight:700;">MENSAJE</button>
-            </div>
-        `).join('');
+            </div>`).join('');
 
-        // Rutas
-        document.getElementById('render-routes').innerHTML = db.rutas.length ? db.rutas.map((r, idx) => `
+        document.getElementById('render-routes').innerHTML = db.rutas.map((r, idx) => `
             <div class="item-row" style="border-left:6px solid var(--p-purple);">
                 <div class="item-info"><b>📍 ${r.dest}</b><small>${r.obs}</small></div>
                 <button onclick="db.rutas.splice(${idx},1); save();" style="border:none; background:none; color:var(--p-red); font-size:20px;">✕</button>
-            </div>
-        `).join('') : '<p style="text-align:center; opacity:0.5;">No hay despachos programados</p>';
+            </div>`).join('');
 
-        // Galería
         let galItems = [];
-        db.clientes.forEach(c => {
-            c.chats.forEach(m => {
-                if(m.type === 'img' || m.type === 'doc') galItems.push(m);
-            });
-        });
+        db.clientes.forEach(c => c.chats.forEach(m => { if(m.type === 'img' || m.type === 'doc') galItems.push(m); }));
         document.getElementById('render-gallery').innerHTML = galItems.map(m => `
             <div class="gallery-item">
                 ${m.type === 'img' ? `<img src="${m.file}">` : `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:var(--p-sky); color:white; font-size:30px;">📄</div>`}
                 <span class="tag">${m.type.toUpperCase()}</span>
-            </div>
-        `).join('');
+            </div>`).join('');
 
-        // Auditoría
         document.getElementById('render-audit').innerHTML = db.audit.slice().reverse().map(a => `
             <div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid var(--border); font-size:13px;">
                 <span>${a.t}</span>
-                <b style="color:${a.m > 0 ? 'var(--p-green)' : 'var(--p-red)'}">${a.m > 0 ? '+':''}${a.m.toFixed(2)}</b>
-            </div>
-        `).join('');
+                <b style="color:${a.m >= 0 ? 'var(--p-green)' : 'var(--p-red)'}">${a.m >= 0 ? '+':''}${a.m.toFixed(2)}</b>
+            </div>`).join('');
     }
 
-    // --- LÓGICA DE NEGOCIO (SIN RECORTES) ---
+    // --- LOGIC ---
     function logic_sell(id, isFiado) {
         const idx = db.inventario.findIndex(x => x.id === id);
         const item = db.inventario[idx];
-        
         if(isFiado) {
-            const cliente = prompt("¿A nombre de qué socio fiamos?");
-            if(!cliente) return;
-            db.deudas.push({ id: Date.now(), cliente: cliente, monto: item.precio });
-            db.audit.push({ t: `Fiado: ${item.nombre} a ${cliente}`, m: 0 });
+            const cli = prompt("¿Socio para fiar?");
+            if(!cli) return;
+            db.deudas.push({ id: Date.now(), cliente: cli, monto: item.precio });
+            db.audit.push({ t: `Fiado: ${item.nombre} a ${cli}`, m: 0 });
         } else {
             db.caja += item.precio;
             db.audit.push({ t: `Venta: ${item.nombre}`, m: item.precio });
-            confetti({ particleCount: 150, spread: 60, origin: { y: 0.7 } });
+            confetti({ particleCount: 150, origin: { y: 0.7 } });
         }
-        
         db.inventario.splice(idx, 1);
         save();
     }
 
-    // --- MODALES (UI DINÁMICA) ---
-    function showM(html) {
-        document.getElementById('modal-content').innerHTML = html;
-        document.getElementById('overlay').style.display = 'flex';
-    }
+    // --- MODALES ---
+    function showM(h) { document.getElementById('modal-content').innerHTML = h; document.getElementById('overlay').style.display = 'flex'; }
     function closeM() { document.getElementById('overlay').style.display = 'none'; }
 
     function ui_modalStock() {
-        showM(`
-            <h2 style="margin-top:0;">Ingreso de Mercadería</h2>
-            <input type="text" id="in-n" class="f-input" placeholder="Nombre del producto">
-            <input type="number" id="in-p" class="f-input" placeholder="Precio S/">
-            <input type="file" id="in-i" class="f-input" accept="image/*">
-            <button class="btn-main" onclick="logic_addStock()">CONFIRMAR ENTRADA</button>
-        `);
+        showM(`<h2>Mercadería</h2><input type="text" id="in-n" class="f-input" placeholder="Nombre"><input type="number" id="in-p" class="f-input" placeholder="Precio S/"><input type="file" id="in-i" class="f-input" accept="image/*"><button class="btn-main" onclick="logic_addStock()">GUARDAR</button>`);
     }
 
     function logic_addStock() {
@@ -489,99 +454,49 @@
         const p = parseFloat(document.getElementById('in-p').value);
         const f = document.getElementById('in-i').files[0];
         if(!n || isNaN(p)) return;
-
         if(f) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: e.target.result });
-                save(); closeM();
-            };
-            reader.readAsDataURL(f);
-        } else {
-            db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: null });
-            save(); closeM();
-        }
+            const r = new FileReader();
+            r.onload = (e) => { db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: e.target.result }); save(); closeM(); };
+            r.readAsDataURL(f);
+        } else { db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: null }); save(); closeM(); }
     }
 
     function ui_modalClient() {
-        showM(`
-            <h2>Nuevo Socio Comercial</h2>
-            <input type="text" id="c-n" class="f-input" placeholder="Nombre completo">
-            <input type="text" id="c-p" class="f-input" placeholder="WhatsApp / Celular">
-            <button class="btn-main" onclick="logic_addClient()">REGISTRAR SOCIO</button>
-        `);
+        showM(`<h2>Nuevo Socio</h2><input type="text" id="c-n" class="f-input" placeholder="Nombre"><input type="text" id="c-p" class="f-input" placeholder="WhatsApp"><button class="btn-main" onclick="logic_addClient()">REGISTRAR</button>`);
     }
 
     function logic_addClient() {
         const n = document.getElementById('c-n').value;
         const p = document.getElementById('c-p').value;
-        if(n) {
-            db.clientes.push({ id: Date.now(), name: n, phone: p, chats: [] });
-            save(); closeM();
-        }
+        if(n) { db.clientes.push({ id: Date.now(), name: n, phone: p, chats: [] }); save(); closeM(); }
     }
 
     function ui_modalRoute() {
-        showM(`
-            <h2>Programar Logística</h2>
-            <input type="text" id="r-d" class="f-input" placeholder="Destino (Ej: Huanta Centro)">
-            <input type="text" id="r-o" class="f-input" placeholder="Nota (Ej: Camión 2)">
-            <button class="btn-main" style="background:var(--p-purple);" onclick="logic_addRoute()">LANZAR RUTA</button>
-        `);
+        showM(`<h2>Ruta</h2><input type="text" id="r-d" class="f-input" placeholder="Destino"><input type="text" id="r-o" class="f-input" placeholder="Nota"><button class="btn-main" style="background:var(--p-purple);" onclick="logic_addRoute()">LANZAR</button>`);
     }
 
     function logic_addRoute() {
         const d = document.getElementById('r-d').value;
         const o = document.getElementById('r-o').value;
-        if(d) {
-            db.rutas.push({ dest: d, obs: o });
-            save(); closeM();
-        }
+        if(d) { db.rutas.push({ dest: d, obs: o }); save(); closeM(); }
     }
 
     function ui_modalGasto() {
-        showM(`
-            <h2>Registrar Salida de Caja</h2>
-            <input type="text" id="g-o" class="f-input" placeholder="Concepto del gasto">
-            <input type="number" id="g-m" class="f-input" placeholder="Monto S/">
-            <button class="btn-main" style="background:var(--p-red);" onclick="logic_addGasto()">RESTAR DE CAJA</button>
-        `);
+        showM(`<h2>Gasto</h2><input type="text" id="g-o" class="f-input" placeholder="Concepto"><input type="number" id="g-m" class="f-input" placeholder="S/"><button class="btn-main" style="background:var(--p-red);" onclick="logic_addGasto()">RESTAR</button>`);
     }
 
     function logic_addGasto() {
         const o = document.getElementById('g-o').value;
         const m = parseFloat(document.getElementById('g-m').value);
-        if(m > 0) {
-            db.caja -= m;
-            db.gastos.push({ id: Date.now(), monto: m, obs: o });
-            db.audit.push({ t: `GASTO: ${o}`, m: -m });
-            save(); closeM();
-        }
+        if(m > 0) { db.caja -= m; db.gastos.push({ id: Date.now(), monto: m, obs: o }); db.audit.push({ t: `Gasto: ${o}`, m: -m }); save(); closeM(); }
     }
 
-    // --- FUNCIONES DE SISTEMA ---
-    function logic_export() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        const dlAnchorElem = document.createElement('a');
-        dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", "rantikuy_backup.json");
-        dlAnchorElem.click();
-    }
-
-    function logic_reset() {
-        if(confirm("¿ESTÁS SEGURO? Se borrará TODO el inventario y capital del imperio.")) {
-            localStorage.clear();
-            location.reload();
-        }
-    }
-
+    function logic_export() { alert(JSON.stringify(db)); }
+    function logic_reset() { if(confirm("¿RESET TOTAL?")) { localStorage.clear(); location.reload(); } }
+    
     function handleSecretTaps() {
         window.taps = (window.taps || 0) + 1;
-        if(window.taps >= 7) {
-            alert("SISTEMA RANTIKUY: Modo Administrador Activado");
-            console.table(db);
-            window.taps = 0;
-        }
+        if(window.taps >= 7) { alert("ADMIN MODE"); window.taps = 0; }
         setTimeout(() => window.taps = 0, 3000);
     }
 
