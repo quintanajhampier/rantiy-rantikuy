@@ -38,6 +38,30 @@
         }
         @keyframes rotate3d { 0%, 100% { transform: perspective(500px) rotateY(0deg); } 50% { transform: perspective(500px) rotateY(30deg); } }
 
+        /* BOTÓN DE CHAT PRIVADO EXTERNO */
+        .btn-mensajes-privados {
+            position: fixed;
+            right: 20px;
+            bottom: 120px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            box-shadow: var(--premium-shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--oscuro);
+            font-weight: 800;
+            font-size: 14px;
+            z-index: 2500;
+            border: 2px solid var(--verde-glow);
+            transition: 0.3s;
+        }
+        .btn-mensajes-privados:active { transform: scale(0.9); }
+        .dot-online { width: 10px; height: 10px; background: var(--verde); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+
         /* --- BÚSQUEDA Y FILTROS --- */
         .search-container { padding: 0 20px; margin-top: 15px; }
         .search-wrapper { position: relative; display: flex; align-items: center; }
@@ -116,6 +140,11 @@
     <div class="gps-loader" id="gps-loader"></div>
     <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--verde);">Iniciando satélites...</p>
 </div>
+
+<a href="chat_privado.html" class="btn-mensajes-privados">
+    <span class="dot-online"></span>
+    💬 MIS CHATS
+</a>
 
 <header class="header">
     <div style="display:flex; align-items:center; gap:18px;">
@@ -257,10 +286,8 @@
             alert("Tu celular no soporta GPS.");
         }
 
-        // LIMPIEZA AUTOMÁTICA DE 30 HORAS
         checkGroupCleanup();
         
-        // SINCRONIZACIÓN EN TIEMPO REAL (Cada 4 segundos refresca todo)
         setInterval(() => {
             renderFeed();
             if(activeLoc) loadGroupMsgs();
@@ -303,7 +330,7 @@
         document.getElementById('gps-msg').style.color = "red";
     }
 
-    // --- VITRINA ---
+    // --- VITRINA (MODIFICADA PARA REDIRIGIR A CHAT_PRIVADO.HTML) ---
     function renderFeed() {
         if(!activeLoc) return;
         const container = document.getElementById('feed-container');
@@ -321,11 +348,19 @@
                     <div class="img-scroll">${imgs}</div>
                     <h3 style="margin:10px 0;">${p.title} <span style="color:var(--verde)">S/ ${p.price}</span></h3>
                     <p style="font-size:12px; opacity:0.7;">${p.extra} <br> <b>Vendedor: ${p.user}</b></p>
-                    <button onclick="openPrivateChat('${p.user}')" style="width:100%; padding:15px; background:var(--oscuro); color:white; border-radius:20px; border:none; font-weight:800; cursor:pointer;">CHATEAR CON VENDEDOR</button>
+                    <button onclick="goToPrivateChat('${p.user}')" style="width:100%; padding:15px; background:var(--oscuro); color:white; border-radius:20px; border:none; font-weight:800; cursor:pointer;">CHATEAR CON VENDEDOR</button>
                     ${p.user === currentUser ? `<button onclick="deletePost(${p.id})" class="delete-btn">BORRAR MI PUBLICACIÓN</button>` : ''}
                 </div>`;
         });
         container.innerHTML = html;
+    }
+
+    // REDIRECCIÓN A LA CARPETA DE CHAT PRIVADO
+    function goToPrivateChat(partner) {
+        if(partner === currentUser) return;
+        // Guardamos el socio en local para que el archivo externo sepa con quién hablar
+        localStorage.setItem('last_chat_partner', partner);
+        window.location.href = 'chat_privado.html';
     }
 
     // --- STUDIO ---
@@ -360,7 +395,6 @@
     function checkGroupCleanup() {
         let last = localStorage.getItem('group_cleanup_time');
         let now = Date.now();
-        // 30 horas = 30 * 60 * 60 * 1000 milisegundos
         if(!last || (now - last) > (30 * 60 * 60 * 1000)) {
             localStorage.setItem('group_messages_Huanta', '[]');
             localStorage.setItem('group_messages_Huamanga', '[]');
@@ -386,9 +420,8 @@
         loadGroupMsgs();
     }
 
-    // --- CHAT PRIVADO AVANZADO ---
+    // --- CHAT PRIVADO INTERNO (Mantenido por si acaso) ---
     let currentChatPartner = "";
-
     function openPrivateChat(partner) {
         if(partner === currentUser) return;
         currentChatPartner = partner;
@@ -402,18 +435,12 @@
         let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
         let chatKey = [currentUser, currentChatPartner].sort().join('_');
         let msgs = all[chatKey] || [];
-        
         area.innerHTML = msgs.map(m => {
             let content = "";
             if (m.type === 'text') content = m.t;
             if (m.type === 'image') content = `<img src="${m.t}" onclick="window.open('${m.t}')">`;
-            if (m.type === 'file') content = `
-                <div class="file-bubble">
-                    <span style="font-size:10px;">📄 DOCUMENTO</span>
-                    <a href="${m.t}" download="${m.name}" class="file-link">📥 BAJAR: ${m.name}</a>
-                </div>`;
+            if (m.type === 'file') content = `<div class="file-bubble"><span style="font-size:10px;">📄 DOCUMENTO</span><a href="${m.t}" download="${m.name}" class="file-link">📥 BAJAR: ${m.name}</a></div>`;
             if (m.type === 'sticker') content = `<span class="sticker">${m.t}</span>`;
-            
             return `<div class="bubble ${m.u===currentUser?'bubble-out':'bubble-in'}">${content}</div>`;
         }).join('');
         area.scrollTop = area.scrollHeight;
@@ -423,32 +450,6 @@
         let t = document.getElementById('p-input').value; if(!t) return;
         savePrivateMsg({u: currentUser, t: t, type: 'text'});
         document.getElementById('p-input').value="";
-    }
-
-    function triggerPrivateCapture(mode) {
-        let input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        if(mode === 'cam') input.capture = 'camera';
-        input.onchange = (e) => {
-            const reader = new FileReader();
-            reader.onload = (ev) => savePrivateMsg({u: currentUser, t: ev.target.result, type: 'image'});
-            reader.readAsDataURL(e.target.files[0]);
-        };
-        input.click();
-    }
-
-    function triggerPrivateFile() {
-        let input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.pdf,.doc,.docx,.xls,.xlsx,.txt';
-        input.onchange = (e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (ev) => savePrivateMsg({u: currentUser, t: ev.target.result, type: 'file', name: file.name});
-            reader.readAsDataURL(file);
-        };
-        input.click();
     }
 
     function savePrivateMsg(msgObj) {
@@ -461,7 +462,7 @@
     }
 
     function clearPrivateChat() {
-        if(!confirm("¿Borrar historial? Esto libera espacio en tu celular.")) return;
+        if(!confirm("¿Borrar historial?")) return;
         let all = JSON.parse(localStorage.getItem('private_messages') || '{}');
         let chatKey = [currentUser, currentChatPartner].sort().join('_');
         delete all[chatKey];
@@ -520,10 +521,8 @@
     }
 
     function addEmoji(e) { document.getElementById('p-input').value += e; }
-    function addSticker(s) { savePrivateMsg({u: currentUser, t: s, type: 'sticker'}); }
     function closePrivate() { document.getElementById('private-modal').style.display='none'; }
 
-    // ADMIN ACCESS: 7 CLICKS EN LOGO
     function checkAdminAccess() {
         adminClicks++;
         if(adminClicks >= 7) { window.location.href='admin.html'; adminClicks=0; }
