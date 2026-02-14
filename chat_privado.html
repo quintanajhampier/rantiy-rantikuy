@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RANTIY y RANTIKUY EMPIRE OS - ELITE</title>
+    <title>RANTIY y RANTIKUY EMPIRE OS - ULTIMATE</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            /* Colores Huanta - Luz y Energía */
             --bg-app: #f0f2f5;
             --bg-card: #ffffff;
             --text-main: #1c1e21;
@@ -37,237 +36,188 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.3s, border-color 0.3s; }
         body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-app); overflow: hidden; color: var(--text-main); }
         
-        /* --- BRANDING --- */
-        .brand-container { text-align: center; padding: 10px; }
-        .brand-text { 
-            font-size: 22px; font-weight: 800; letter-spacing: -1px; 
-            background: linear-gradient(90deg, #10b981, #f59e0b);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-        }
-
-        /* --- ARQUITECTURA --- */
-        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-        .screen { width: 16.66%; height: 100%; display: flex; flex-direction: column; position: relative; }
+        .app-shell { display: flex; width: 700%; height: 100%; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+        .screen { width: 14.285%; height: 100%; display: flex; flex-direction: column; position: relative; }
         .pos-1 { transform: translateX(0%); }
-        .pos-2 { transform: translateX(-16.66%); }
-        .pos-3 { transform: translateX(-33.33%); }
-        .pos-4 { transform: translateX(-50%); }
-        .pos-5 { transform: translateX(-66.66%); }
-        .pos-6 { transform: translateX(-83.33%); }
+        .pos-2 { transform: translateX(-14.285%); }
+        .pos-3 { transform: translateX(-28.57%); }
+        .pos-4 { transform: translateX(-42.85%); }
+        .pos-5 { transform: translateX(-57.14%); }
+        .pos-6 { transform: translateX(-71.42%); }
+        .pos-7 { transform: translateX(-85.71%); }
 
-        /* --- UI PREMIUM --- */
-        .header-main { 
-            padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center; z-index: 100;
-        }
+        .header-main { padding: 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .brand-text { font-size: 22px; font-weight: 800; background: linear-gradient(90deg, #10b981, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; cursor: pointer; }
         .scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; }
         
-        /* --- CARDS TIPO IPHONE --- */
-        .card-titan {
-            background: var(--bg-card); border-radius: 24px; padding: 25px; margin-bottom: 20px;
-            border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .hero-gradient {
-            background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
-            color: white; border: none;
-        }
+        .card-titan { background: var(--bg-card); border-radius: 24px; padding: 25px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .hero-gradient { background: linear-gradient(135deg, #10b981 0%, #064e3b 100%); color: white; border: none; }
         .val-large { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; margin: 10px 0; }
-        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .stat-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 18px; backdrop-filter: blur(5px); }
 
-        /* --- ITEMS --- */
-        .item-row {
-            background: var(--bg-card); border-radius: 20px; padding: 15px; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 15px; border: 1px solid var(--border);
-        }
-        .item-row img { width: 65px; height: 65px; border-radius: 15px; object-fit: cover; background: #eee; }
-        .item-info { flex: 1; }
-        .item-info b { font-size: 16px; display: block; }
-        .item-info span { color: var(--p-green); font-weight: 700; font-size: 14px; }
+        .item-row { background: var(--bg-card); border-radius: 20px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid var(--border); }
+        .item-row img { width: 65px; height: 65px; border-radius: 15px; object-fit: cover; }
 
-        /* --- CHAT --- */
-        #chat-conversation-view { 
-            display: none; position: absolute; inset: 0; z-index: 1000; 
-            background: var(--bg-app); flex-direction: column; 
-        }
-        .chat-flow { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.4; }
+        /* --- CHAT EVOLUTION --- */
+        #chat-conversation-view { display: none; position: absolute; inset: 0; z-index: 1000; background: var(--bg-app); flex-direction: column; }
+        .chat-flow { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-image: radial-gradient(var(--border) 1px, transparent 1px); background-size: 20px 20px; }
+        .msg { max-width: 80%; padding: 12px; border-radius: 18px; position: relative; font-size: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .msg.me { align-self: flex-end; background: var(--p-green); color: white; border-bottom-right-radius: 4px; }
-        .msg.them { align-self: flex-start; background: var(--bg-card); color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+        .msg.them { align-self: flex-start; background: var(--bg-card); color: var(--text-main); border-bottom-left-radius: 4px; }
+        
+        .msg img { width: 100%; border-radius: 12px; margin-bottom: 5px; display: block; }
+        .msg .file-box { background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+        .msg audio { width: 100%; height: 35px; margin-top: 5px; }
 
-        /* --- DOCK (MENÚ INFERIOR) --- */
-        .dock {
-            position: fixed; bottom: 0; width: 100%; background: var(--bg-card);
-            padding: 12px 10px calc(12px + var(--safe-bottom));
-            display: flex; justify-content: space-around; border-top: 1px solid var(--border);
-            backdrop-filter: blur(10px); z-index: 900;
-        }
-        .dock-btn { border: none; background: none; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; width: 16%; }
+        .chat-input-area { padding: 15px; background: var(--bg-card); display: flex; flex-direction: column; gap: 10px; }
+        .input-row { display: flex; gap: 10px; align-items: center; }
+        .attach-menu { display: none; gap: 15px; padding: 10px; justify-content: center; background: var(--bg-app); border-radius: 15px; animation: slideUp 0.3s; }
+
+        /* --- STICKERS --- */
+        .sticker-btn { font-size: 30px; background: none; border: none; cursor: pointer; }
+        .sticker-panel { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 10px; background: var(--bg-card); border-top: 1px solid var(--border); }
+
+        /* --- GALERIA GRID --- */
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .gallery-item { aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; background: #ddd; position: relative; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-item .type-tag { position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 2px 5px; border-radius: 4px; }
+
+        .dock { position: fixed; bottom: 0; width: 100%; background: var(--bg-card); padding: 12px 5px calc(12px + var(--safe-bottom)); display: flex; justify-content: space-around; border-top: 1px solid var(--border); z-index: 900; }
+        .dock-btn { border: none; background: none; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; font-weight: 700; width: 14%; }
         .dock-btn.active { color: var(--p-green); }
-        .dock-btn i { font-size: 24px; }
+        .dock-btn i { font-size: 20px; }
 
-        /* --- MODALES --- */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; display: none; align-items: flex-end; }
-        .modal { background: var(--bg-card); width: 100%; border-radius: 32px 32px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: flex-end; }
+        .modal { background: var(--bg-card); width: 100%; border-radius: 32px 32px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; }
+        
+        .f-input { width: 100%; padding: 15px; border-radius: 14px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-main); margin-bottom: 10px; }
+        .btn-main { width: 100%; padding: 18px; border-radius: 18px; border: none; background: var(--p-green); color: white; font-weight: 800; cursor: pointer; }
 
-        .f-input { width: 100%; padding: 18px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-app); color: var(--text-main); font-size: 16px; margin-bottom: 15px; outline: none; }
-        .btn-main { width: 100%; padding: 18px; border-radius: 18px; border: none; background: var(--p-green); color: white; font-weight: 800; font-size: 16px; cursor: pointer; }
-
-        /* --- OTROS --- */
-        .badge-status { font-size: 10px; padding: 4px 10px; border-radius: 50px; background: #f0fdf4; color: #16a34a; font-weight: 900; }
-        .theme-btn { border: none; background: var(--bg-app); color: var(--text-main); padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
-<body data-theme="light">
+<body>
 
 <div class="app-shell" id="appShell">
-    
     <div class="screen">
-        <header class="header-main">
-            <div class="brand-text" onclick="handleSecretTaps()">RANTIY y RANTIKUY</div>
-            <button class="theme-btn" onclick="toggleTheme()">🌓 TEMA</button>
-        </header>
-        <div id="chat-list-view" style="flex: 1; overflow-y: auto;"></div>
-
+        <header class="header-main"><div class="brand-text" onclick="handleSecretTaps()">RANTIKUY</div><button class="theme-btn" onclick="toggleTheme()">🌓</button></header>
+        <div id="chat-list-view" class="scroll"></div>
         <div id="chat-conversation-view">
-            <header class="header-main">
-                <button onclick="closeChat()" style="background:none; border:none; font-size:24px; color:var(--p-green);">✕</button>
-                <b id="chat-target-name" style="font-size:18px;">Cliente</b>
-                <div style="width:24px;"></div>
-            </header>
+            <header class="header-main"><button onclick="closeChat()" style="background:none; border:none; font-size:24px; color:var(--p-green);">✕</button><b id="chat-target-name">Cliente</b><div></div></header>
             <div class="chat-flow" id="chat-flow"></div>
-            <div style="padding:15px; background:var(--bg-card); display:flex; gap:10px; align-items:center;">
-                <input type="text" id="chat-input" class="f-input" placeholder="Escribe un mensaje..." style="margin-bottom:0;" onkeypress="if(event.key==='Enter') logic_send()">
-                <button onclick="logic_send()" style="background:var(--p-green); color:white; border:none; width:50px; height:50px; border-radius:50%; font-size:20px;">🚀</button>
+            <div class="sticker-panel" id="sticker-panel">
+                <button class="sticker-btn" onclick="sendSticker('🚀')">🚀</button>
+                <button class="sticker-btn" onclick="sendSticker('💰')">💰</button>
+                <button class="sticker-btn" onclick="sendSticker('✅')">✅</button>
+                <button class="sticker-btn" onclick="sendSticker('🤝')">🤝</button>
+                <button class="sticker-btn" onclick="sendSticker('📦')">📦</button>
+                <button class="sticker-btn" onclick="sendSticker('🔥')">🔥</button>
+                <button class="sticker-btn" onclick="sendSticker('📍')">📍</button>
+                <button class="sticker-btn" onclick="sendSticker('📈')">📈</button>
             </div>
+            <div class="chat-input-area">
+                <div class="attach-menu" id="attach-menu">
+                    <button onclick="triggerFile('img')" style="background:var(--p-gold); border:none; color:white; padding:10px; border-radius:50%;">🖼️</button>
+                    <button onclick="triggerFile('doc')" style="background:var(--p-sky); border:none; color:white; padding:10px; border-radius:50%;">📄</button>
+                    <button onclick="triggerFile('aud')" style="background:var(--p-purple); border:none; color:white; padding:10px; border-radius:50%;">🎤</button>
+                </div>
+                <div class="input-row">
+                    <button onclick="toggleAttach()" style="background:none; border:none; font-size:24px;">➕</button>
+                    <input type="text" id="chat-input" class="f-input" placeholder="Mensaje..." style="margin-bottom:0;" onkeypress="if(event.key==='Enter') logic_send()">
+                    <button onclick="toggleStickers()" style="background:none; border:none; font-size:24px;">😊</button>
+                    <button onclick="logic_send()" style="background:var(--p-green); color:white; border:none; width:45px; height:45px; border-radius:50%;">🚀</button>
+                </div>
+            </div>
+            <input type="file" id="hidden-file" style="display:none;" onchange="handleFileUpload(this)">
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b style="font-size:20px;">Master.Stock</b><span class="badge-status">ALMACÉN ONLINE</span></header>
+        <header class="header-main"><b>Master.Stock</b></header>
         <div class="scroll">
             <div class="card-titan hero-gradient">
-                <small style="opacity:0.8;">CAPITAL EN CAJA</small>
-                <div class="val-large" id="ui-caja">S/ 0.00</div>
-                <div class="grid-stats">
-                    <div class="stat-box">
-                        <small>Fiados</small><br>
-                        <b id="ui-deuda">S/ 0.00</b>
-                    </div>
-                    <div class="stat-box">
-                        <small>Gastos</small><br>
-                        <b id="ui-gasto">S/ 0.00</b>
-                    </div>
+                <small>EN CAJA</small><div class="val-large" id="ui-caja">S/ 0.00</div>
+                <div style="display:flex; justify-content:space-between; opacity:0.9;">
+                    <span>Deudas: <b id="ui-deuda">0</b></span>
+                    <span>Gastos: <b id="ui-gasto">0</b></span>
                 </div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <b style="font-size:18px;">Inventario Real</b>
-                <button onclick="ui_modalStock()" style="border:none; background:var(--p-green); color:white; padding:8px 15px; border-radius:12px; font-weight:700;">+ AÑADIR</button>
-            </div>
-            <div id="render-stock"></div>
+            <button class="btn-main" onclick="ui_modalStock()">+ AGREGAR PRODUCTO</button>
+            <div id="render-stock" style="margin-top:20px;"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b style="font-size:20px;">Mis Socios</b></header>
+        <header class="header-main"><b>Mis Socios</b></header>
         <div class="scroll">
-            <div class="card-titan" style="background:var(--p-sky); color:white; border:none;">
-                <b>Total Clientes: <span id="ui-client-count">0</span></b><br>
-                <small>Huanta - Ayacucho - VRAEM</small>
-            </div>
             <div id="render-clients"></div>
-            <button class="btn-main" style="margin-top:20px;" onclick="ui_modalClient()">REGISTRAR NUEVO SOCIO</button>
+            <button class="btn-main" style="margin-top:20px;" onclick="ui_modalClient()">NUEVO SOCIO</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b style="font-size:20px;">Logística y Rutas</b></header>
+        <header class="header-main"><b>Logística</b></header>
         <div class="scroll" id="render-routes"></div>
-        <div style="padding:20px; position:absolute; bottom:100px; width:100%;">
-            <button class="btn-main" style="background:var(--p-purple);" onclick="ui_modalRoute()">PROGRAMAR DESPACHO</button>
+        <button class="btn-main" style="position:absolute; bottom:100px; left:20px; width:calc(100% - 40px); background:var(--p-purple);" onclick="ui_modalRoute()">NUEVA RUTA</button>
+    </div>
+
+    <div class="screen">
+        <header class="header-main"><b>Galería Imperio</b></header>
+        <div class="scroll">
+            <div class="gallery-grid" id="render-gallery"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b style="font-size:20px;">Data Center</b></header>
+        <header class="header-main"><b>Data Center</b></header>
         <div class="scroll">
-            <div class="card-titan">
-                <b style="font-size:14px; color:var(--text-sub);">META DE VENTAS (S/ 50,000)</b>
-                <div class="val-large" id="ui-utilidad" style="color:var(--p-green);">S/ 0.00</div>
-                <div style="height:10px; background:var(--bg-app); border-radius:10px; margin:15px 0; overflow:hidden;">
-                    <div id="ui-progress" style="height:100%; background:var(--p-green); width:0%;"></div>
-                </div>
-                <small id="ui-meta-text">0% completado</small>
-            </div>
-            <h3 style="margin-bottom:15px;">Últimos Movimientos</h3>
+            <div class="card-titan"><div class="val-large" id="ui-utilidad">S/ 0.00</div><div id="ui-progress" style="height:8px; background:var(--p-green); width:0%; border-radius:4px;"></div></div>
+            <h3>Auditoría Total</h3>
             <div id="render-audit"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b style="font-size:20px;">Configuración</b></header>
+        <header class="header-main"><b>Config</b></header>
         <div class="scroll">
-            <div class="card-titan" style="background:var(--text-main); color:var(--bg-card);">
-                <b>ESTADO DEL IMPERIO</b><br>
-                <small>Huanta Nodo: Activo</small><br>
-                <small>Encriptación: Militar AES</small>
-            </div>
-            <button class="f-input" onclick="logic_export()">📦 EXPORTAR BACKUP (JSON)</button>
-            <button class="f-input" onclick="ui_modalGasto()" style="color:var(--p-red);">💸 REGISTRAR GASTO</button>
-            <button class="f-input" onclick="logic_reset()" style="color:var(--p-red); margin-top:50px; border-color:var(--p-red);">⚠️ DESTRUIR DATOS (RESET)</button>
+            <button class="f-input" onclick="logic_export()">📦 RESPALDO JSON</button>
+            <button class="f-input" onclick="ui_modalGasto()" style="color:var(--p-red);">💸 GASTO</button>
+            <button class="f-input" onclick="logic_reset()" style="color:var(--p-red); margin-top:100px;">⚠️ RESET SISTEMA</button>
         </div>
     </div>
-
 </div>
 
 <nav class="dock">
-    <button class="dock-btn active" onclick="nav(1)"><i>💬</i>Mando</button>
+    <button class="dock-btn active" onclick="nav(1)"><i>💬</i>Chats</button>
     <button class="dock-btn" onclick="nav(2)"><i>🛍️</i>Stock</button>
     <button class="dock-btn" onclick="nav(3)"><i>👥</i>Socios</button>
     <button class="dock-btn" onclick="nav(4)"><i>🚛</i>Rutas</button>
-    <button class="dock-btn" onclick="nav(5)"><i>📊</i>Data</button>
-    <button class="dock-btn" onclick="nav(6)"><i>⚙️</i>Config</button>
+    <button class="dock-btn" onclick="nav(5)"><i>🖼️</i>Galeria</button>
+    <button class="dock-btn" onclick="nav(6)"><i>📊</i>Data</button>
+    <button class="dock-btn" onclick="nav(7)"><i>⚙️</i>Conf</button>
 </nav>
 
-<div class="overlay" id="overlay" onclick="if(event.target==this) closeM()">
-    <div class="modal" id="modal-content"></div>
-</div>
+<div class="overlay" id="overlay" onclick="if(event.target==this) closeM()"><div class="modal" id="modal-content"></div></div>
 
 <script>
-    // --- NÚCLEO DE DATOS (NO SE CORTA NADA) ---
-    let db = JSON.parse(localStorage.getItem('RANTIKUY_GOLD_DB')) || {
-        caja: 0,
-        inventario: [],
-        deudas: [],
-        gastos: [],
-        clientes: [
-            { id: 101, name: "Mayorista El Sol", phone: "966123456", chats: [{u:'THEM', t:'¿Precios de hoy?', h:'08:00'}] },
-            { id: 102, name: "Agro Huanta", phone: "981000111", chats: [{u:'THEM', t:'Envíame el catálogo.', h:'09:15'}] }
-        ],
-        rutas: [],
-        audit: [],
+    let db = JSON.parse(localStorage.getItem('RANTIKUY_ULTIMATE_DB')) || {
+        caja: 0, inventario: [], deudas: [], gastos: [], audit: [], rutas: [],
+        clientes: [{ id: 1, name: "Socio Huanta 1", phone: "900", chats: [] }],
         currentChatId: null
     };
 
-    function save() {
-        localStorage.setItem('RANTIKUY_GOLD_DB', JSON.stringify(db));
-        updateUI();
-    }
+    let activeFileType = null;
 
-    // --- NAVEGACIÓN ---
+    function save() { localStorage.setItem('RANTIKUY_ULTIMATE_DB', JSON.stringify(db)); updateUI(); }
+
     function nav(p) {
         document.getElementById('appShell').className = 'app-shell pos-' + p;
         document.querySelectorAll('.dock-btn').forEach((b, i) => b.classList.toggle('active', (i+1)===p));
     }
 
-    function toggleTheme() {
-        const body = document.body;
-        body.setAttribute('data-theme', body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
-    }
+    function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='dark'?'light':'dark'); }
 
-    // --- SISTEMA DE CHAT ---
+    // --- CHAT LOGIC ---
     function openChat(id) {
         db.currentChatId = id;
         const c = db.clientes.find(x => x.id === id);
@@ -275,198 +225,128 @@
         document.getElementById('chat-conversation-view').style.display = 'flex';
         renderChatContent();
     }
-
     function closeChat() { document.getElementById('chat-conversation-view').style.display = 'none'; }
 
     function renderChatContent() {
         const c = db.clientes.find(x => x.id === db.currentChatId);
-        if(!c) return;
-        document.getElementById('chat-flow').innerHTML = c.chats.map(m => `
-            <div class="msg ${m.u === 'ME' ? 'me' : 'them'}">${m.t}</div>
-        `).join('');
+        document.getElementById('chat-flow').innerHTML = c.chats.map(m => {
+            let content = m.t;
+            if(m.type === 'img') content = `<img src="${m.file}"><a href="${m.file}" download="Rantikuy_Foto.jpg" class="file-box">⬇️ Descargar Foto</a>`;
+            if(m.type === 'doc') content = `<a href="${m.file}" download="Documento_Rantikuy.pdf" class="file-box">📄 Documento.pdf ⬇️</a>`;
+            if(m.type === 'aud') content = `<audio controls src="${m.file}"></audio><a href="${m.file}" download="Audio_Rantikuy.mp3" style="font-size:10px; color:inherit;">⬇️ Descargar</a>`;
+            return `<div class="msg ${m.u === 'ME' ? 'me' : 'them'}">${content}</div>`;
+        }).join('');
         const f = document.getElementById('chat-flow'); f.scrollTop = f.scrollHeight;
     }
 
     function logic_send() {
         const i = document.getElementById('chat-input');
         if(!i.value.trim()) return;
-        const c = db.clientes.find(x => x.id === db.currentChatId);
-        c.chats.push({ u: 'ME', t: i.value, h: new Date().toLocaleTimeString() });
+        pushMsg({ u: 'ME', t: i.value, type: 'text' });
         i.value = '';
-        save();
-        setTimeout(() => { 
-            c.chats.push({ u: 'THEM', t: 'Mensaje recibido por Rantikuy System.', h: '...' }); 
-            save(); 
-        }, 1000);
     }
 
-    // --- RENDERIZADO GENERAL ---
+    function sendSticker(s) { pushMsg({ u: 'ME', t: `<span style="font-size:50px;">${s}</span>`, type: 'text' }); toggleStickers(); }
+
+    function pushMsg(msgObj) {
+        const c = db.clientes.find(x => x.id === db.currentChatId);
+        c.chats.push(msgObj);
+        save();
+        renderChatContent();
+    }
+
+    // --- FILE HANDLING ---
+    function toggleAttach() { const m = document.getElementById('attach-menu'); m.style.display = m.style.display==='flex'?'none':'flex'; }
+    function toggleStickers() { const s = document.getElementById('sticker-panel'); s.style.display = s.style.display==='grid'?'none':'grid'; }
+    
+    function triggerFile(type) { activeFileType = type; document.getElementById('hidden-file').click(); toggleAttach(); }
+
+    function handleFileUpload(input) {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            pushMsg({ u: 'ME', t: '', type: activeFileType, file: e.target.result });
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // --- RENDER UI ---
     function updateUI() {
-        // Stats
         document.getElementById('ui-caja').innerText = `S/ ${db.caja.toFixed(2)}`;
-        document.getElementById('ui-deuda').innerText = `S/ ${db.deudas.reduce((a,b)=>a+b.monto, 0).toFixed(2)}`;
-        document.getElementById('ui-gasto').innerText = `S/ ${db.gastos.reduce((a,b)=>a+b.monto, 0).toFixed(2)}`;
+        document.getElementById('ui-deuda').innerText = db.deudas.length;
+        document.getElementById('ui-gasto').innerText = db.gastos.length;
         document.getElementById('ui-utilidad').innerText = `S/ ${db.caja.toFixed(2)}`;
-        document.getElementById('ui-client-count').innerText = db.clientes.length;
 
-        // Meta Progress
-        const p = Math.min((db.caja / 50000) * 100, 100);
-        document.getElementById('ui-progress').style.width = p + '%';
-        document.getElementById('ui-meta-text').innerText = p.toFixed(1) + '% de la meta alcanzada.';
+        // Render Stock
+        document.getElementById('render-stock').innerHTML = db.inventario.map(i => `
+            <div class="item-row">
+                <img src="${i.img || 'https://via.placeholder.com/60'}">
+                <div style="flex:1"><b>${i.nombre}</b><br><span>S/ ${i.precio}</span></div>
+                <button onclick="logic_sell(${i.id})" style="border:none; background:var(--p-green); color:white; padding:10px; border-radius:10px;">Vender</button>
+            </div>
+        `).join('');
 
-        // Chats
+        // Render Chats List
         document.getElementById('chat-list-view').innerHTML = db.clientes.map(c => `
             <div class="item-row" onclick="openChat(${c.id})">
                 <div style="width:50px; height:50px; border-radius:50%; background:var(--p-green); color:white; display:flex; align-items:center; justify-content:center; font-weight:800;">${c.name[0]}</div>
-                <div style="flex:1"><b>${c.name}</b><small style="color:var(--text-sub)">${c.chats[c.chats.length-1]?.t || ''}</small></div>
+                <div><b>${c.name}</b><br><small>${c.chats[c.chats.length-1]?.type || 'Sin mensajes'}</small></div>
             </div>
         `).join('');
 
-        // Stock
-        document.getElementById('render-stock').innerHTML = db.inventario.map(i => `
-            <div class="item-row">
-                <img src="${i.img || 'https://via.placeholder.com/100?text=IMG'}">
-                <div class="item-info"><b>${i.nombre}</b><span>S/ ${i.precio}</span></div>
-                <div style="display:flex; flex-direction:column; gap:5px;">
-                    <button onclick="logic_sell(${i.id}, false)" style="border:none; background:var(--p-green); color:white; padding:6px 10px; border-radius:8px; font-size:12px;">Vender</button>
-                    <button onclick="logic_sell(${i.id}, true)" style="border:none; background:var(--p-gold); color:white; padding:6px 10px; border-radius:8px; font-size:12px;">Fiado</button>
-                </div>
-            </div>
-        `).join('');
+        // Render Gallery
+        let gallHTML = "";
+        db.clientes.forEach(c => {
+            c.chats.forEach(m => {
+                if(m.type === 'img') gallHTML += `<div class="gallery-item"><img src="${m.file}"><span class="type-tag">FOTO</span></div>`;
+                if(m.type === 'doc') gallHTML += `<div class="gallery-item" style="display:flex; align-items:center; justify-content:center; background:var(--p-sky); color:white;">📄<span class="type-tag">DOC</span></div>`;
+            });
+        });
+        document.getElementById('render-gallery').innerHTML = gallHTML;
 
-        // Clientes
-        document.getElementById('render-clients').innerHTML = db.clientes.map(c => `
-            <div class="item-row">
-                <div class="item-info"><b>${c.name}</b><small>${c.phone}</small></div>
-                <button onclick="openChat(${c.id})" style="border:none; background:var(--p-sky); color:white; padding:8px 15px; border-radius:12px;">Chat</button>
-            </div>
-        `).join('');
-
-        // Rutas
-        document.getElementById('render-routes').innerHTML = db.rutas.map((r, idx) => `
-            <div class="item-row" style="border-left:8px solid var(--p-purple);">
-                <div class="item-info"><b>📍 ${r.dest}</b><small>${r.obs}</small></div>
-                <button onclick="db.rutas.splice(${idx},1); save();" style="border:none; color:var(--p-red); background:none; font-size:20px;">✕</button>
-            </div>
-        `).join('');
-
-        // Auditoría
-        document.getElementById('render-audit').innerHTML = db.audit.slice().reverse().map(a => `
-            <div style="padding:12px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
-                <span>${a.t}</span><b style="color:${a.m > 0 ? 'var(--p-green)' : 'var(--p-red)'}">${a.m > 0 ? '+':''}${a.m}</b>
-            </div>
-        `).join('');
+        // Rutas y Auditoria (Igual que antes pero optimizado)
+        document.getElementById('render-routes').innerHTML = db.rutas.map(r => `<div class="item-row">📍 ${r.dest}</div>`).join('');
+        document.getElementById('render-audit').innerHTML = db.audit.slice(-10).reverse().map(a => `<div style="padding:10px; border-bottom:1px solid var(--border);">${a.t} | S/ ${a.m}</div>`).join('');
     }
 
-    // --- LÓGICA DE NEGOCIO ---
-    function logic_sell(id, isFiado) {
+    function logic_sell(id) {
         const idx = db.inventario.findIndex(x => x.id === id);
-        const item = db.inventario[idx];
-        if(isFiado) {
-            const cli = prompt("¿Nombre del cliente?");
-            if(!cli) return;
-            db.deudas.push({ id: Date.now(), cliente: cli, monto: item.precio });
-        } else {
-            db.caja += item.precio;
-            db.audit.push({ t: `Venta: ${item.nombre}`, m: item.precio });
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        }
+        db.caja += db.inventario[idx].precio;
+        db.audit.push({ t: `Venta: ${db.inventario[idx].nombre}`, m: db.inventario[idx].precio });
         db.inventario.splice(idx, 1);
+        confetti({ particleCount: 100 });
         save();
     }
 
-    // --- MODALES COMPLETOS ---
-    function ui_modalStock() {
-        showM(`
-            <h2 style="margin-top:0;">Cargar Almacén</h2>
-            <input type="text" id="in-name" class="f-input" placeholder="Nombre del Producto">
-            <input type="number" id="in-price" class="f-input" placeholder="Precio S/">
-            <input type="file" id="in-img" class="f-input" accept="image/*">
-            <button class="btn-main" onclick="logic_addStock()">CONFIRMAR INGRESO</button>
-        `);
-    }
-
-    function logic_addStock() {
-        const n = document.getElementById('in-name').value;
-        const p = parseFloat(document.getElementById('in-price').value);
-        const f = document.getElementById('in-img').files[0];
-        if(!n || isNaN(p)) return;
-        
-        const reader = new FileReader();
-        reader.onload = () => {
-            db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: reader.result });
-            save(); closeM();
-        };
-        if(f) reader.readAsDataURL(f); else {
-            db.inventario.push({ id: Date.now(), nombre: n, precio: p, img: null });
-            save(); closeM();
-        }
-    }
-
-    function ui_modalClient() {
-        showM(`
-            <h2>Nuevo Socio Comercial</h2>
-            <input type="text" id="c-name" class="f-input" placeholder="Nombre completo">
-            <input type="text" id="c-phone" class="f-input" placeholder="WhatsApp">
-            <button class="btn-main" onclick="logic_addClient()">REGISTRAR</button>
-        `);
-    }
-
-    function logic_addClient() {
-        const n = document.getElementById('c-name').value;
-        const p = document.getElementById('c-phone').value;
-        if(n) { db.clientes.push({ id: Date.now(), name: n, phone: p, chats: [] }); save(); closeM(); }
-    }
-
-    function ui_modalRoute() {
-        showM(`
-            <h2>Programar Despacho</h2>
-            <input type="text" id="r-dest" class="f-input" placeholder="Destino (Ej. Huanta - Centro)">
-            <input type="text" id="r-obs" class="f-input" placeholder="Observaciones">
-            <button class="btn-main" style="background:var(--p-purple);" onclick="logic_addRoute()">LANZAR RUTA</button>
-        `);
-    }
-
-    function logic_addRoute() {
-        const d = document.getElementById('r-dest').value;
-        const o = document.getElementById('r-obs').value;
-        if(d) { db.rutas.push({ dest: d, obs: o }); save(); closeM(); }
-    }
-
-    function ui_modalGasto() {
-        showM(`
-            <h2>Registrar Salida de Dinero</h2>
-            <input type="text" id="g-obs" class="f-input" placeholder="Concepto del gasto">
-            <input type="number" id="g-monto" class="f-input" placeholder="Monto S/">
-            <button class="btn-main" style="background:var(--p-red);" onclick="logic_addGasto()">RESTAR DE CAJA</button>
-        `);
-    }
-
-    function logic_addGasto() {
-        const o = document.getElementById('g-obs').value;
-        const m = parseFloat(document.getElementById('g-monto').value);
-        if(m > 0) {
-            db.caja -= m;
-            db.gastos.push({ monto: m, obs: o });
-            db.audit.push({ t: `GASTO: ${o}`, m: -m });
-            save(); closeM();
-        }
-    }
-
-    // --- FUNCIONES CORE ---
+    // --- MODALES ---
     function showM(h) { document.getElementById('modal-content').innerHTML = h; document.getElementById('overlay').style.display = 'flex'; }
     function closeM() { document.getElementById('overlay').style.display = 'none'; }
-    function logic_reset() { if(confirm("¿RESET TOTAL DEL IMPERIO?")) { localStorage.clear(); location.reload(); } }
-    function logic_export() { 
-        const blob = new Blob([JSON.stringify(db)], {type:'application/json'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='backup_rantikuy.json'; a.click();
+
+    function ui_modalStock() {
+        showM(`<h2>Añadir al Almacén</h2><input id="n" class="f-input" placeholder="Nombre"><input id="p" type="number" class="f-input" placeholder="Precio"><input id="i" type="file" class="f-input"><button class="btn-main" onclick="addS()">GUARDAR</button>`);
     }
-    
-    function handleSecretTaps() {
-        window.taps = (window.taps || 0) + 1;
-        if(window.taps >= 7) { alert("MODO ADMIN: Acceso a consola."); console.log(db); window.taps = 0; }
-        setTimeout(()=> window.taps = 0, 3000);
+    function addS() {
+        const n = document.getElementById('n').value; const p = parseFloat(document.getElementById('p').value);
+        const f = document.getElementById('i').files[0];
+        if(f) {
+            const r = new FileReader(); r.onload = (e) => { db.inventario.push({id:Date.now(), nombre:n, precio:p, img:e.target.result}); save(); closeM(); };
+            r.readAsDataURL(f);
+        } else { db.inventario.push({id:Date.now(), nombre:n, precio:p}); save(); closeM(); }
     }
+
+    function ui_modalClient() { showM(`<h2>Nuevo Socio</h2><input id="cn" class="f-input" placeholder="Nombre"><button class="btn-main" onclick="addC()">CREAR</button>`); }
+    function addC() { const n = document.getElementById('cn').value; if(n){ db.clientes.push({id:Date.now(), name:n, chats:[]}); save(); closeM(); } }
+
+    function ui_modalRoute() { showM(`<h2>Nueva Ruta</h2><input id="rd" class="f-input" placeholder="Destino"><button class="btn-main" onclick="addR()">LANZAR</button>`); }
+    function addR() { const d = document.getElementById('rd').value; if(d){ db.rutas.push({dest:d}); save(); closeM(); } }
+
+    function ui_modalGasto() { showM(`<h2>Gasto</h2><input id="gm" type="number" class="f-input" placeholder="S/"><button class="btn-main" onclick="addG()">RESTAR</button>`); }
+    function addG() { const m = parseFloat(document.getElementById('gm').value); if(m){ db.caja -= m; db.gastos.push({monto:m}); save(); closeM(); } }
+
+    function logic_export() { alert(JSON.stringify(db)); }
+    function logic_reset() { if(confirm("¿Borrar todo?")) { localStorage.clear(); location.reload(); } }
+    function handleSecretTaps() { window.taps = (window.taps || 0) + 1; if(window.taps >= 7) alert("ADMIN MODE"); }
 
     window.onload = updateUI;
 </script>
