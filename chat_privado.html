@@ -3,32 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>EMPIRE OS - QUINTANA ELITE v3.1</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>RANTIY & RANTIKUY - QUINTANA EMPIRE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-app: #f0f2f5;
-            --bg-card: #ffffff;
-            --text-main: #1c1e21;
-            --text-sub: #65676b;
-            --p-green: #25d366;
-            --p-sky: #00a884;
-            --p-blue: #34b7f1;
-            --p-gold: #ffbc00;
-            --p-red: #f15c5c;
-            --border: #e9edef;
+            --bg-dark: #0f172a; /* Negro azulado profundo */
+            --bg-app: #f8fafc;
+            --accent-gold: #d4af37; /* Dorado Clásico */
+            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #f1d592 100%);
+            --dark-gradient: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            --p-green: #10b981;
+            --text-main: #1e293b;
+            --border: #e2e8f0;
             --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
         body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-app); overflow: hidden; position: fixed; }
 
         /* NAVEGACIÓN */
-        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); }
-        .screen { width: 16.6666%; height: 100%; display: flex; flex-direction: column; position: relative; background: var(--bg-app); }
-        
+        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .screen { width: 16.6666%; height: 100%; display: flex; flex-direction: column; position: relative; }
+
         .pos-1 { transform: translateX(0%); }
         .pos-2 { transform: translateX(-16.6666%); }
         .pos-3 { transform: translateX(-33.3333%); }
@@ -36,184 +33,208 @@
         .pos-5 { transform: translateX(-66.6666%); }
         .pos-6 { transform: translateX(-83.3333%); }
 
-        /* HEADER */
+        /* HEADER PREMIUM */
         .header-main { 
-            padding: 15px 20px; background: var(--bg-card); display: flex; justify-content: space-between; align-items: center;
-            padding-top: calc(15px + var(--safe-top)); border-bottom: 1px solid var(--border); z-index: 100;
+            padding: 15px 20px; background: var(--dark-gradient); display: flex; justify-content: space-between; align-items: center;
+            padding-top: calc(20px + var(--safe-top)); border-bottom: 2px solid var(--accent-gold); z-index: 1000;
         }
-        .brand-text { font-size: 22px; font-weight: 800; color: var(--p-sky); cursor: pointer; }
+        .brand-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo-circle { 
+            width: 35px; height: 35px; background: var(--gold-gradient); border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--bg-dark);
+        }
+        .brand-text { font-size: 20px; font-weight: 800; color: white; letter-spacing: 1px; }
+        .brand-text span { color: var(--accent-gold); }
 
-        /* LISTA CHAT */
+        /* LISTA CHAT ESTILO ELITE */
         .chat-list-item {
-            display: flex; align-items: center; padding: 15px 20px; background: var(--bg-card);
-            border-bottom: 1px solid var(--border); cursor: pointer;
+            display: flex; align-items: center; padding: 18px 20px; background: white;
+            border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.3s;
         }
-        .chat-list-item:active { background: #f0f2f5; }
+        .chat-list-item:active { background: #f1f5f9; }
+        .avatar-frame {
+            width: 60px; height: 60px; border-radius: 50%; padding: 2px;
+            background: var(--gold-gradient); margin-right: 15px;
+        }
         .avatar { 
-            width: 55px; height: 55px; border-radius: 50%; margin-right: 15px; 
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; color: white; font-size: 20px;
+            width: 100%; height: 100%; border-radius: 50%; background: var(--bg-dark);
+            display: flex; align-items: center; justify-content: center; color: var(--accent-gold); font-weight: 700;
         }
-        .chat-info { flex: 1; overflow: hidden; }
-        .chat-info b { font-size: 16px; color: var(--text-main); }
-        .chat-info p { font-size: 14px; color: var(--text-sub); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-info { flex: 1; }
+        .chat-info b { font-size: 16px; color: var(--bg-dark); }
+        .chat-info p { font-size: 13px; color: #64748b; margin: 4px 0 0; }
 
-        /* VENTANA CHAT */
-        #chat-window { position: fixed; inset: 0; background: #efeae2; z-index: 2000; display: none; flex-direction: column; }
+        /* BOTONES PREMIUM */
+        .btn-premium {
+            background: var(--dark-gradient); color: white; border: 1px solid var(--accent-gold);
+            padding: 16px; border-radius: 14px; width: 100%; font-weight: 700; font-size: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .btn-premium:active { transform: scale(0.97); }
+        .btn-gold { background: var(--gold-gradient); color: var(--bg-dark); border: none; }
+
+        /* VENTANA CHAT PRIVADO */
+        #chat-window { position: fixed; inset: 0; background: #e5ddd5; z-index: 2000; display: none; flex-direction: column; }
+        .chat-header { background: var(--dark-gradient); padding: 15px; display: flex; align-items: center; color: white; border-bottom: 2px solid var(--accent-gold); }
         .chat-bg { 
             flex: 1; overflow-y: auto; padding: 15px; 
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background: url('https://i.pinimg.com/originals/ab/ab/60/abab600fbc21102953d4530d3dba548e.png'); /* Pattern sutil */
             display: flex; flex-direction: column; gap: 10px;
         }
-        .bubble { max-width: 85%; padding: 10px; border-radius: 12px; font-size: 15px; line-height: 1.4; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-        .bubble.me { align-self: flex-end; background: #d9fdd3; border-top-right-radius: 0; }
-        .bubble.them { align-self: flex-start; background: #ffffff; border-top-left-radius: 0; }
-        .bubble img { max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; }
-
-        .input-bar { background: #f0f2f5; padding: 10px; display: flex; align-items: center; gap: 10px; padding-bottom: calc(10px + var(--safe-bottom)); }
-        .input-field { flex: 1; background: white; border-radius: 25px; padding: 12px 18px; border: none; font-size: 16px; }
+        .bubble { 
+            max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 15px; position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); line-height: 1.4;
+        }
+        .bubble.me { align-self: flex-end; background: #056162; color: white; border-bottom-right-radius: 2px; }
+        .bubble.them { align-self: flex-start; background: white; color: var(--bg-dark); border-bottom-left-radius: 2px; }
+        
+        .chat-input-area { background: #f0f0f0; padding: 10px 15px; display: flex; align-items: center; gap: 10px; padding-bottom: 25px; }
+        .input-box { flex: 1; background: white; border-radius: 25px; padding: 12px 20px; border: none; font-size: 16px; }
 
         /* MENU ⋮ */
         .menu-dots {
-            position: absolute; top: 70px; right: 15px; width: 220px;
-            background: white; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: absolute; top: 75px; right: 15px; width: 240px;
+            background: var(--bg-dark); border-radius: 16px; border: 1px solid var(--accent-gold);
             display: none; flex-direction: column; z-index: 3000; overflow: hidden;
-            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-        .menu-item { padding: 16px 20px; font-weight: 600; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 12px; }
-        .menu-item:active { background: #f5f5f5; }
+        .menu-item { padding: 15px 20px; color: white; border-bottom: 1px solid #2d3748; display: flex; align-items: center; gap: 12px; font-weight: 600; }
+        .menu-item i { color: var(--accent-gold); font-style: normal; }
 
-        /* COMPONENTES */
-        .scroll { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
-        .card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .btn-action { background: var(--p-sky); color: white; border: none; padding: 16px; border-radius: 15px; width: 100%; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .btn-action:active { transform: scale(0.98); opacity: 0.9; }
+        /* CARDS Y CONTENIDO */
+        .scroll { flex: 1; overflow-y: auto; padding: 20px; }
+        .card-elite {
+            background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px;
+            border-left: 5px solid var(--accent-gold); box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .price-tag { color: var(--p-green); font-weight: 800; font-size: 18px; }
 
-        .f-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: #f9f9f9; margin-bottom: 12px; font-size: 15px; }
-        
-        /* OVERLAY */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: flex-end; }
-        .modal { background: white; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        /* OVERLAY MODAL */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal { background: white; width: 100%; border-radius: 25px; padding: 25px; border-top: 5px solid var(--accent-gold); }
 
-        #toaster { position: fixed; top: 30px; width: 100%; display: flex; justify-content: center; z-index: 9999; pointer-events: none; }
-        .toast { background: #1c1e21; color: white; padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        #toast-container { position: fixed; bottom: 100px; width: 100%; display: flex; justify-content: center; z-index: 6000; pointer-events: none; }
+        .toast { background: var(--dark-gradient); color: var(--accent-gold); padding: 12px 25px; border-radius: 50px; border: 1px solid var(--accent-gold); font-weight: 700; }
     </style>
 </head>
 <body>
 
-<div id="toaster"></div>
+<div id="toast-container"></div>
 
 <div class="menu-dots" id="mainMenu">
-    <div class="menu-item" onclick="nav(1); toggleMenu()"><i>💬</i> Mando Chats</div>
-    <div class="menu-item" onclick="nav(2); toggleMenu()"><i>📦</i> Almacén Stock</div>
-    <div class="menu-item" onclick="nav(3); toggleMenu()"><i>🤝</i> Lista Socios</div>
-    <div class="menu-item" onclick="nav(4); toggleMenu()"><i>🚛</i> Logística Rutas</div>
-    <div class="menu-item" onclick="nav(5); toggleMenu()"><i>📊</i> Datos y Profit</div>
-    <div class="menu-item" onclick="nav(6); toggleMenu()"><i>⚙️</i> Panel Elite</div>
+    <div class="menu-item" onclick="nav(1); toggleMenu()"><i>💬</i> Mando de Chats</div>
+    <div class="menu-item" onclick="nav(2); toggleMenu()"><i>📦</i> Almacén Quintana</div>
+    <div class="menu-item" onclick="nav(3); toggleMenu()"><i>🤝</i> Socios de Imperio</div>
+    <div class="menu-item" onclick="nav(4); toggleMenu()"><i>🚚</i> Logística VRAEM</div>
+    <div class="menu-item" onclick="nav(5); toggleMenu()"><i>📈</i> Analytics / Profit</div>
+    <div class="menu-item" onclick="nav(6); toggleMenu()"><i>⚙️</i> Configuración Maestro</div>
 </div>
 
 <div class="app-shell" id="appShell">
     
     <div class="screen">
         <header class="header-main">
-            <div class="brand-text" onclick="logic_adminTap()">RANTIKUY EMPIRE</div>
-            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px; cursor:pointer;">⋮</button>
+            <div class="brand-logo" onclick="logic_adminTap()">
+                <div class="logo-circle">Q</div>
+                <div class="brand-text">RANTIY & <span>RANTIKUY</span></div>
+            </div>
+            <button onclick="toggleMenu()" style="background:none; border:none; color:var(--accent-gold); font-size:24px;">⋮</button>
         </header>
         <div id="chat-list-render" style="flex:1; overflow-y:auto;"></div>
     </div>
 
     <div class="screen">
         <header class="header-main">
-            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
-            <b>STOCK CENTRAL</b>
-            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px;">⋮</button>
+            <button onclick="nav(1)" style="background:none; border:none; color:white; font-size:20px;">←</button>
+            <b style="color:white">ALMACÉN MAESTRO</b>
+            <span></span>
         </header>
         <div class="scroll">
-            <div class="card" style="background: linear-gradient(135deg, var(--p-sky), var(--p-green)); color:white;">
-                <small>VALOR NETO MERCANCÍA</small>
-                <h1 id="ui-stock-total" style="margin:5px 0;">S/ 0.00</h1>
-                <div id="ui-item-count">0 Productos registrados</div>
+            <div class="card-elite" style="background: var(--dark-gradient); border-left: 5px solid var(--accent-gold); color: white;">
+                <small style="color:var(--accent-gold)">VALOR DEL IMPERIO</small>
+                <h1 id="ui-stock-total" style="margin:5px 0; font-size:32px;">S/ 0.00</h1>
+                <small id="ui-item-count">0 Unidades en Stock</small>
             </div>
             <div id="stock-list-render"></div>
-            <button class="btn-action" onclick="ui_openModal('stock')">+ REGISTRAR PRODUCTO</button>
+            <button class="btn-premium btn-gold" onclick="ui_openModal('stock')">＋ REGISTRAR NUEVA MERCANCÍA</button>
         </div>
     </div>
 
     <div class="screen">
         <header class="header-main">
-            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
-            <b>SOCIOS ESTRATÉGICOS</b>
-            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px;">⋮</button>
+            <button onclick="nav(1)" style="background:none; border:none; color:white; font-size:20px;">←</button>
+            <b style="color:white">RED DE SOCIOS</b>
+            <span></span>
         </header>
         <div class="scroll">
             <div id="partners-list-render"></div>
-            <button class="btn-action" onclick="ui_openModal('partner')" style="background:var(--p-blue)">+ VINCULAR SOCIO</button>
+            <button class="btn-premium" onclick="ui_openModal('partner')">🤝 VINCULAR NUEVO ALIADO</button>
         </div>
     </div>
 
     <div class="screen">
         <header class="header-main">
-            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
-            <b>LOGÍSTICA VRAEM</b>
-            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px;">⋮</button>
+            <button onclick="nav(1)" style="background:none; border:none; color:white; font-size:20px;">←</button>
+            <b style="color:white">RUTAS Y DESPACHOS</b>
+            <span></span>
         </header>
         <div class="scroll">
             <div id="routes-list-render"></div>
-            <button class="btn-action" onclick="ui_openModal('route')" style="background:var(--p-gold); color:black;">PROGRAMAR DESPACHO</button>
+            <button class="btn-premium" style="background:#0ea5e9; border:none;" onclick="logic_newRoute()">📍 TRAZAR NUEVA RUTA</button>
         </div>
     </div>
 
     <div class="screen">
         <header class="header-main">
-            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
-            <b>ANALYTICS QUINTANA</b>
-            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px;">⋮</button>
+            <button onclick="nav(1)" style="background:none; border:none; color:white; font-size:20px;">←</button>
+            <b style="color:white">ESTADO FINANCIERO</b>
+            <span></span>
         </header>
         <div class="scroll">
-            <div class="card">
-                <small>TOTAL CAJA (LIQUIDEZ)</small>
-                <h1 id="ui-cash" style="color:var(--p-green)">S/ 0.00</h1>
+            <div class="card-elite">
+                <small>EFECTIVO EN CAJA (HUANTA)</small>
+                <h1 id="ui-cash" style="color:var(--p-green); margin:5px 0;">S/ 0.00</h1>
             </div>
-            <h3>Historial de Movimientos</h3>
+            <h3 style="color:var(--bg-dark)">Movimientos Recientes</h3>
             <div id="logs-render"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main">
-            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
-            <b>CONFIGURACIÓN MAESTRA</b>
-        </header>
+        <header class="header-main"><b style="color:white">PANEL ELITE</b></header>
         <div class="scroll">
-            <div class="card">
-                <b>Admin:</b> Quintana Master<br>
-                <b>Versión:</b> Elite 3.1.5<br>
-                <b>Sede:</b> Huanta, Ayacucho
+            <div class="card-elite" style="text-align:center;">
+                <div class="avatar-frame" style="margin: 0 auto 10px;">
+                    <div class="avatar" style="font-size:24px;">Q</div>
+                </div>
+                <b>ADMINISTRADOR SUPREMO</b><br>
+                <small>Quintana Master</small>
             </div>
-            <button class="f-input" onclick="logic_exportCSV()">📊 EXPORTAR BASE DE DATOS (EXCEL)</button>
-            <button class="f-input" onclick="logic_backup()">☁️ RESPALDO EN NUBE</button>
-            <button class="f-input" onclick="logic_reset()" style="color:var(--p-red); border-color:var(--p-red); margin-top:50px;">🧨 BORRADO TOTAL DE EMERGENCIA</button>
+            <button class="btn-premium" onclick="logic_exportCSV()" style="margin-bottom:15px;">📥 EXPORTAR DATA A EXCEL</button>
+            <button class="btn-premium" onclick="logic_backup()" style="margin-bottom:15px;">☁️ RESPALDO EN NUBE ACTIVO</button>
+            <button class="btn-premium" onclick="logic_reset()" style="background: #be123c; border:none; margin-top:40px;">🧨 ELIMINAR REGISTROS LOCALES</button>
         </div>
     </div>
 </div>
 
 <div id="chat-window">
-    <header class="header-main" style="background:#f0f2f5;">
-        <div style="display:flex; align-items:center;">
-            <button onclick="closeChat()" style="border:none; background:none; font-size:20px; margin-right:10px;">←</button>
-            <div class="avatar" id="chat-head-avatar" style="width:40px; height:40px; font-size:16px;">Q</div>
-            <div style="margin-left:10px;">
-                <b id="chat-head-name">Socio</b><br>
-                <small style="color:var(--p-green)">En línea ahora</small>
-            </div>
+    <div class="chat-header">
+        <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:24px; margin-right:15px;">←</button>
+        <div class="avatar-frame" style="width:40px; height:40px; margin-right:12px;">
+            <div class="avatar" id="chat-avatar" style="font-size:14px;">Q</div>
         </div>
-    </header>
+        <div style="flex:1">
+            <b id="chat-name">Socio</b><br>
+            <small style="color:var(--p-green)">● En línea</small>
+        </div>
+        <div style="font-size:20px; color:var(--accent-gold);">📞 &nbsp; ⋮</div>
+    </div>
     <div class="chat-bg" id="chat-messages"></div>
-    <div class="input-bar">
-        <button onclick="triggerFile()" style="background:none; border:none; font-size:24px;">⊕</button>
-        <input type="text" id="msgInput" class="input-field" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') sendMessage()">
-        <button onclick="sendMessage()" style="border:none; background:var(--p-sky); color:white; width:45px; height:45px; border-radius:50%;">➤</button>
+    <div class="chat-input-area">
+        <button onclick="triggerFile()" style="background:none; border:none; font-size:24px; color:#64748b;">⊕</button>
+        <input type="text" id="msgInput" class="input-box" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()" style="background:var(--p-green); border:none; width:45px; height:45px; border-radius:50%; color:white; font-size:18px;">➤</button>
     </div>
     <input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(this)">
 </div>
@@ -224,36 +245,37 @@
 
 <script>
     // --- DB QUINTANA ---
-    let db = JSON.parse(localStorage.getItem('QUINTANA_DB_SUPREME')) || {
-        cash: 2500.00,
+    let db = JSON.parse(localStorage.getItem('QUINTANA_IMPERIO_V4')) || {
+        cash: 10000.00,
         stock: [
-            { id: 1, name: 'Saco Café Premium', price: 185.00, qty: 20, img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=100' }
+            { id: 1, name: 'Café Premium Saco 50kg', price: 450.00, qty: 15, img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=100' }
         ],
         partners: [
-            { id: 101, name: 'Quintana Soporte', phone: '967593948', lastMsg: 'Sincronizado', msgs: [] }
+            { id: 7, name: 'Socio Huanta Mayorista', phone: '967593948', lastMsg: 'Pedido listo Quintana', msgs: [] }
         ],
         routes: [
-            { id: 1, dest: 'Huanta Centro', status: 'En Camino', driver: 'Juan P.' }
+            { id: 1, dest: 'Ruta Huanta - Ayacucho', status: 'Activa', driver: 'Quintana Master' }
         ],
-        logs: [{ time: '08:00', msg: 'Sistema Iniciado Master' }]
+        logs: []
     };
 
-    function save() { localStorage.setItem('QUINTANA_DB_SUPREME', JSON.stringify(db)); renderAll(); }
+    function save() { localStorage.setItem('QUINTANA_IMPERIO_V4', JSON.stringify(db)); renderAll(); }
 
-    // --- NAVEGACIÓN ---
+    // --- NAV ---
     function nav(p) { document.getElementById('appShell').className = `app-shell pos-${p}`; }
     function toggleMenu() { 
         const m = document.getElementById('mainMenu'); 
         m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; 
     }
 
-    // --- RENDERIZADO ---
+    // --- RENDERS ---
     function renderAll() {
-        // Chats
+        // Chat List
         document.getElementById('chat-list-render').innerHTML = db.partners.map(p => `
             <div class="chat-list-item" onclick="openChat(${p.id})">
-                <div class="avatar" style="background:${stringToColor(p.name)}">${p.name[0]}</div>
-                <div class="chat-info"><b>${p.name}</b><p>${p.lastMsg || 'Sin mensajes'}</p></div>
+                <div class="avatar-frame"><div class="avatar">${p.name[0]}</div></div>
+                <div class="chat-info"><b>${p.name}</b><p>${p.lastMsg}</p></div>
+                <div style="font-size:11px; color:#94a3b8;">Ahora</div>
             </div>
         `).join('');
 
@@ -262,30 +284,24 @@
         document.getElementById('stock-list-render').innerHTML = db.stock.map(s => {
             totalVal += (s.price * s.qty);
             return `
-                <div class="card" style="display:flex; align-items:center; gap:15px; padding:12px;">
-                    <img src="${s.img}" style="width:60px; height:60px; border-radius:12px; object-fit:cover;">
-                    <div style="flex:1"><b>${s.name}</b><br><small>S/ ${s.price} | Stock: ${s.qty}</small></div>
-                    <button onclick="logic_sell(${s.id})" style="background:var(--p-green); color:white; border:none; padding:10px; border-radius:10px; font-weight:700;">VENDER</button>
+                <div class="card-elite" style="display:flex; align-items:center; gap:15px;">
+                    <img src="${s.img}" style="width:70px; height:70px; border-radius:12px; border:1px solid var(--accent-gold);">
+                    <div style="flex:1"><b>${s.name}</b><br><span class="price-tag">S/ ${s.price}</span> <small>| Cant: ${s.qty}</small></div>
+                    <button onclick="logic_sell(${s.id})" style="background:var(--bg-dark); color:var(--accent-gold); border:1px solid var(--accent-gold); padding:10px 15px; border-radius:10px; font-weight:800;">VENDER</button>
                 </div>
             `;
         }).join('');
         document.getElementById('ui-stock-total').innerText = `S/ ${totalVal.toFixed(2)}`;
-        document.getElementById('ui-item-count').innerText = `${db.stock.length} Productos en almacén`;
+        document.getElementById('ui-item-count').innerText = `${db.stock.length} Categorías registradas`;
         document.getElementById('ui-cash').innerText = `S/ ${db.cash.toFixed(2)}`;
 
-        // Socios
-        document.getElementById('partners-list-render').innerHTML = db.partners.map(p => `
-            <div class="card"><b>${p.name}</b><br><small>WhatsApp: ${p.phone}</small></div>
-        `).join('');
-
-        // Rutas
-        document.getElementById('routes-list-render').innerHTML = db.routes.map(r => `
-            <div class="card"><b>Destino: ${r.dest}</b><br><small>Chofer: ${r.driver} | Estado: ${r.status}</small></div>
-        `).join('');
+        // Socios y Rutas
+        document.getElementById('partners-list-render').innerHTML = db.partners.map(p => `<div class="card-elite"><b>${p.name}</b><br><small>WhatsApp: ${p.phone}</small></div>`).join('');
+        document.getElementById('routes-list-render').innerHTML = db.routes.map(r => `<div class="card-elite"><b>${r.dest}</b><br><small>Chofer: ${r.driver} | Estado: ${r.status}</small></div>`).join('');
 
         // Logs
-        document.getElementById('logs-render').innerHTML = db.logs.slice(-10).reverse().map(l => `
-            <div style="font-size:13px; padding:8px; border-bottom:1px solid #ddd;"><b>${l.time}</b>: ${l.msg}</div>
+        document.getElementById('logs-render').innerHTML = db.logs.slice(-8).reverse().map(l => `
+            <div style="padding:10px; border-bottom:1px solid var(--border); font-size:13px;"><b>[${l.time}]</b> ${l.msg}</div>
         `).join('');
     }
 
@@ -294,9 +310,8 @@
     function openChat(id) {
         activeChatId = id;
         const p = db.partners.find(x => x.id === id);
-        document.getElementById('chat-head-name').innerText = p.name;
-        document.getElementById('chat-head-avatar').innerText = p.name[0];
-        document.getElementById('chat-head-avatar').style.background = stringToColor(p.name);
+        document.getElementById('chat-name').innerText = p.name;
+        document.getElementById('chat-avatar').innerText = p.name[0];
         document.getElementById('chat-window').style.display = 'flex';
         renderMessages();
     }
@@ -309,22 +324,26 @@
         const p = db.partners.find(x => x.id === activeChatId);
         const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         p.msgs.push({ u: 'me', t: content, time: time, type: type });
-        p.lastMsg = type === 'img' ? '📷 Foto' : content;
+        p.lastMsg = type === 'img' ? '📷 Imagen' : content;
         if(!text) input.value = '';
         save();
         renderMessages();
+        setTimeout(() => { 
+            p.msgs.push({ u: 'them', t: 'Recibido Master Quintana. En marcha.', time: time, type: 'text' });
+            save(); renderMessages();
+        }, 1200);
     }
 
     function renderMessages() {
         const p = db.partners.find(x => x.id === activeChatId);
         const box = document.getElementById('chat-messages');
         box.innerHTML = p.msgs.map(m => `
-            <div class="bubble ${m.u}">${m.type === 'img' ? `<img src="${m.t}">` : m.t}<div style="font-size:10px; opacity:0.6; text-align:right;">${m.time}</div></div>
+            <div class="bubble ${m.u}">${m.type==='img' ? `<img src="${m.t}" style="width:100%; border-radius:10px;">` : m.t}<div style="font-size:9px; opacity:0.6; text-align:right; margin-top:5px;">${m.time}</div></div>
         `).join('');
         box.scrollTop = box.scrollHeight;
     }
 
-    // --- FILES ---
+    // --- FUNCIONES SISTEMA ---
     function triggerFile() { document.getElementById('fileInput').click(); }
     function handleFileUpload(el) {
         const file = el.files[0];
@@ -334,76 +353,41 @@
         reader.readAsDataURL(file);
     }
 
-    // --- MODALES ---
-    function ui_openModal(mode) {
-        const modal = document.getElementById('modal-content');
-        if(mode === 'stock') {
-            modal.innerHTML = `<h3>Nuevo Producto</h3>
-                <input id="in-n" class="f-input" placeholder="Nombre">
-                <input id="in-p" class="f-input" type="number" placeholder="Precio S/">
-                <input id="in-q" class="f-input" type="number" placeholder="Cantidad">
-                <button class="btn-action" onclick="logic_addStock()">GUARDAR EN ALMACÉN</button>`;
-        } else if(mode === 'partner') {
-            modal.innerHTML = `<h3>Nuevo Socio</h3>
-                <input id="in-sn" class="f-input" placeholder="Nombre Completo">
-                <input id="in-sp" class="f-input" placeholder="Celular">
-                <button class="btn-action" onclick="logic_addPartner()">VINCULAR</button>`;
-        }
-        document.getElementById('overlay').style.display = 'flex';
-    }
-    function ui_closeModal() { document.getElementById('overlay').style.display = 'none'; }
-
-    // --- LOGICA NEGOCIO ---
-    function logic_addStock() {
-        const n = document.getElementById('in-n').value, p = document.getElementById('in-p').value, q = document.getElementById('in-q').value;
-        if(n && p && q) {
-            db.stock.push({ id: Date.now(), name: n, price: parseFloat(p), qty: parseInt(q), img: 'https://via.placeholder.com/100' });
-            save(); ui_closeModal(); toast("Producto Agregado");
-        }
-    }
-
-    function logic_addPartner() {
-        const n = document.getElementById('in-sn').value, p = document.getElementById('in-sp').value;
-        if(n && p) {
-            db.partners.push({ id: Date.now(), name: n, phone: p, lastMsg: '', msgs: [] });
-            save(); ui_closeModal(); toast("Socio Vinculado");
-        }
-    }
-
     function logic_sell(id) {
         const i = db.stock.find(x => x.id === id);
         if(i.qty > 0) {
             i.qty--; db.cash += i.price;
-            db.logs.push({ time: new Date().toLocaleTimeString(), msg: `Venta: ${i.name} S/ ${i.price}` });
-            confetti(); toast("Venta Exitosa"); save();
+            db.logs.push({ time: new Date().toLocaleTimeString(), msg: `VENTA: ${i.name} (+S/ ${i.price})` });
+            confetti(); toast("VENTA REGISTRADA"); save();
         }
     }
 
-    function logic_exportCSV() {
-        let csv = "Tipo,Detalle,Monto\n";
-        db.logs.forEach(l => csv += `Log,${l.msg},${l.time}\n`);
-        const blob = new Blob([csv], {type: 'text/csv'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = 'Empire_Report.csv'; a.click();
+    function ui_openModal(mode) {
+        const modal = document.getElementById('modal-content');
+        modal.innerHTML = `<h3>Nuevo Registro</h3>
+            <input id="f-n" class="input-box" style="width:100%; border:1px solid #ddd; margin-bottom:10px;" placeholder="Nombre">
+            <input id="f-p" class="input-box" style="width:100%; border:1px solid #ddd; margin-bottom:10px;" type="number" placeholder="Precio / Valor">
+            <button class="btn-premium btn-gold" onclick="logic_add('${mode}')">CONFIRMAR REGISTRO</button>`;
+        document.getElementById('overlay').style.display = 'flex';
     }
+    function ui_closeModal() { document.getElementById('overlay').style.display = 'none'; }
 
-    function logic_reset() { if(confirm("¿BORRAR TODO EL IMPERIO?")) { localStorage.clear(); location.reload(); } }
+    function logic_add(mode) {
+        const n = document.getElementById('f-n').value, p = document.getElementById('f-p').value;
+        if(mode === 'stock') db.stock.push({ id: Date.now(), name: n, price: parseFloat(p), qty: 10, img: 'https://via.placeholder.com/100' });
+        if(mode === 'partner') db.partners.push({ id: Date.now(), name: n, phone: p, lastMsg: 'Nuevo Socio', msgs: [] });
+        save(); ui_closeModal(); toast("DATOS GUARDADOS");
+    }
 
     function toast(t) {
         const el = document.createElement('div'); el.className = 'toast'; el.innerText = t;
-        document.getElementById('toaster').appendChild(el);
+        document.getElementById('toast-container').appendChild(el);
         setTimeout(() => el.remove(), 2500);
-    }
-
-    function stringToColor(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        return `hsl(${Math.abs(hash % 360)}, 60%, 50%)`;
     }
 
     function logic_adminTap() {
         window.ataps = (window.ataps || 0) + 1;
-        if(window.ataps >= 7) { confetti(); toast("MODO ELITE: ON"); }
+        if(window.ataps >= 7) { confetti(); toast("MODO QUINTANA ELITE ACTIVO"); }
     }
 
     window.onload = renderAll;
