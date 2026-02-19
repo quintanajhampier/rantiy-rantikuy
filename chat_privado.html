@@ -3,28 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RANTIY & RANTIKUY - QUINTANA EMPIRE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>QUINTANA EMPIRE OS - FULL EDITION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0f172a; /* Negro azulado profundo */
-            --bg-app: #f8fafc;
-            --accent-gold: #d4af37; /* Dorado Clásico */
-            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #f1d592 100%);
-            --dark-gradient: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            --p-green: #10b981;
-            --text-main: #1e293b;
-            --border: #e2e8f0;
+            --p-black: #000000;
+            --p-dark: #0a0a0a;
+            --p-gray: #1a1a1a;
+            --gold: #d4af37;
+            --gold-light: #f1d592;
+            --gold-grad: linear-gradient(135deg, #d4af37 0%, #f1d592 100%);
+            --text-gray: #a0a0a0;
             --safe-top: env(safe-area-inset-top);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-app); overflow: hidden; position: fixed; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s ease; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--p-black); color: white; overflow: hidden; position: fixed; }
 
-        /* NAVEGACIÓN */
-        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .screen { width: 16.6666%; height: 100%; display: flex; flex-direction: column; position: relative; }
+        /* ESTRUCTURA DE NAVEGACIÓN */
+        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .screen { width: 16.6666%; height: 100%; display: flex; flex-direction: column; position: relative; background: var(--p-black); border-right: 1px solid #222; }
 
         .pos-1 { transform: translateX(0%); }
         .pos-2 { transform: translateX(-16.6666%); }
@@ -33,324 +32,330 @@
         .pos-5 { transform: translateX(-66.6666%); }
         .pos-6 { transform: translateX(-83.3333%); }
 
-        /* HEADER PREMIUM */
-        .header-main { 
-            padding: 15px 20px; background: var(--dark-gradient); display: flex; justify-content: space-between; align-items: center;
-            padding-top: calc(20px + var(--safe-top)); border-bottom: 2px solid var(--accent-gold); z-index: 1000;
+        /* HEADERS */
+        .header { 
+            padding: 20px; background: var(--p-dark); display: flex; justify-content: space-between; align-items: center;
+            padding-top: calc(20px + var(--safe-top)); border-bottom: 1px solid var(--gold);
         }
-        .brand-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .logo-circle { 
-            width: 35px; height: 35px; background: var(--gold-gradient); border-radius: 8px; 
-            display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--bg-dark);
-        }
-        .brand-text { font-size: 20px; font-weight: 800; color: white; letter-spacing: 1px; }
-        .brand-text span { color: var(--accent-gold); }
+        .logo-box { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo-sq { width: 38px; height: 38px; background: var(--gold-grad); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; font-size: 20px; }
+        .title { font-weight: 800; font-size: 18px; letter-spacing: 1px; }
+        .title span { color: var(--gold); }
 
-        /* LISTA CHAT ESTILO ELITE */
-        .chat-list-item {
-            display: flex; align-items: center; padding: 18px 20px; background: white;
-            border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.3s;
+        /* LISTA DE CHATS ESTILO WHATSAPP BUSINESS */
+        .chat-list { flex: 1; overflow-y: auto; padding-top: 10px; }
+        .chat-item { 
+            display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #111; cursor: pointer;
         }
-        .chat-list-item:active { background: #f1f5f9; }
-        .avatar-frame {
-            width: 60px; height: 60px; border-radius: 50%; padding: 2px;
-            background: var(--gold-gradient); margin-right: 15px;
+        .chat-item:active { background: #111; }
+        .chat-avatar { 
+            width: 55px; height: 55px; border-radius: 50%; background: var(--p-gray); 
+            display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--gold);
+            border: 1.5px solid var(--gold); margin-right: 15px; overflow: hidden;
         }
-        .avatar { 
-            width: 100%; height: 100%; border-radius: 50%; background: var(--bg-dark);
-            display: flex; align-items: center; justify-content: center; color: var(--accent-gold); font-weight: 700;
-        }
-        .chat-info { flex: 1; }
-        .chat-info b { font-size: 16px; color: var(--bg-dark); }
-        .chat-info p { font-size: 13px; color: #64748b; margin: 4px 0 0; }
+        .chat-detail { flex: 1; border-bottom: 0.5px solid #222; padding-bottom: 10px; }
+        .chat-top { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .chat-top b { font-size: 16px; color: white; }
+        .chat-top span { font-size: 12px; color: var(--gold); }
+        .chat-detail p { margin: 0; font-size: 13px; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* BOTONES PREMIUM */
-        .btn-premium {
-            background: var(--dark-gradient); color: white; border: 1px solid var(--accent-gold);
-            padding: 16px; border-radius: 14px; width: 100%; font-weight: 700; font-size: 15px;
-            display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .btn-premium:active { transform: scale(0.97); }
-        .btn-gold { background: var(--gold-gradient); color: var(--bg-dark); border: none; }
-
-        /* VENTANA CHAT PRIVADO */
-        #chat-window { position: fixed; inset: 0; background: #e5ddd5; z-index: 2000; display: none; flex-direction: column; }
-        .chat-header { background: var(--dark-gradient); padding: 15px; display: flex; align-items: center; color: white; border-bottom: 2px solid var(--accent-gold); }
-        .chat-bg { 
+        /* VENTANA DE CHAT PRIVADO */
+        #chat-window { position: fixed; inset: 0; background: var(--p-black); z-index: 2000; display: none; flex-direction: column; }
+        .chat-body { 
             flex: 1; overflow-y: auto; padding: 15px; 
-            background: url('https://i.pinimg.com/originals/ab/ab/60/abab600fbc21102953d4530d3dba548e.png'); /* Pattern sutil */
-            display: flex; flex-direction: column; gap: 10px;
+            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)), url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            display: flex; flex-direction: column; gap: 8px;
         }
-        .bubble { 
-            max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 15px; position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); line-height: 1.4;
-        }
-        .bubble.me { align-self: flex-end; background: #056162; color: white; border-bottom-right-radius: 2px; }
-        .bubble.them { align-self: flex-start; background: white; color: var(--bg-dark); border-bottom-left-radius: 2px; }
+        .bubble { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 14px; line-height: 1.5; position: relative; }
+        .bubble.me { align-self: flex-end; background: var(--gold); color: black; border-bottom-right-radius: 2px; font-weight: 600; }
+        .bubble.them { align-self: flex-start; background: var(--p-gray); color: white; border-bottom-left-radius: 2px; border: 1px solid #333; }
+        .bubble img { width: 100%; border-radius: 10px; margin-top: 5px; border: 1px solid rgba(0,0,0,0.1); }
         
-        .chat-input-area { background: #f0f0f0; padding: 10px 15px; display: flex; align-items: center; gap: 10px; padding-bottom: 25px; }
-        .input-box { flex: 1; background: white; border-radius: 25px; padding: 12px 20px; border: none; font-size: 16px; }
+        .chat-input { padding: 15px; background: var(--p-dark); display: flex; align-items: center; gap: 10px; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
+        .input-text { flex: 1; background: var(--p-gray); border: 1px solid #333; border-radius: 25px; padding: 12px 20px; color: white; font-size: 15px; }
 
-        /* MENU ⋮ */
+        /* CARDS Y UI DE NEGOCIO */
+        .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        .kpi-card { 
+            background: var(--p-gray); border-radius: 20px; padding: 25px; margin-bottom: 20px; border-left: 4px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .kpi-title { color: var(--gold); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+        .kpi-value { font-size: 32px; font-weight: 900; margin: 10px 0; }
+        
+        .btn-main { 
+            background: var(--gold-grad); color: black; border: none; padding: 18px; border-radius: 15px; 
+            width: 100%; font-weight: 800; font-size: 14px; text-transform: uppercase; cursor: pointer; 
+            box-shadow: 0 5px 15px rgba(212,175,55,0.3);
+        }
+        .btn-main:active { transform: scale(0.98); }
+
+        /* MENÚ FLOTANTE */
         .menu-dots {
-            position: absolute; top: 75px; right: 15px; width: 240px;
-            background: var(--bg-dark); border-radius: 16px; border: 1px solid var(--accent-gold);
-            display: none; flex-direction: column; z-index: 3000; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            position: absolute; top: 75px; right: 20px; width: 250px; background: var(--p-dark);
+            border: 1px solid var(--gold); border-radius: 15px; display: none; flex-direction: column; z-index: 5000; overflow: hidden;
         }
-        .menu-item { padding: 15px 20px; color: white; border-bottom: 1px solid #2d3748; display: flex; align-items: center; gap: 12px; font-weight: 600; }
-        .menu-item i { color: var(--accent-gold); font-style: normal; }
+        .menu-opt { padding: 15px 20px; border-bottom: 1px solid #222; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 14px; }
+        .menu-opt:active { background: var(--p-gray); }
 
-        /* CARDS Y CONTENIDO */
-        .scroll { flex: 1; overflow-y: auto; padding: 20px; }
-        .card-elite {
-            background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px;
-            border-left: 5px solid var(--accent-gold); box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        .price-tag { color: var(--p-green); font-weight: 800; font-size: 18px; }
+        /* MODALES E INPUTS DINÁMICOS */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 6000; display: none; align-items: flex-end; }
+        .modal { background: var(--p-dark); width: 100%; border-radius: 30px 30px 0 0; padding: 30px; border-top: 2px solid var(--gold); }
+        .f-group { margin-bottom: 15px; }
+        .f-group label { display: block; font-size: 12px; color: var(--gold); margin-bottom: 8px; font-weight: 700; }
+        .f-input { width: 100%; background: var(--p-gray); border: 1px solid #333; padding: 15px; border-radius: 12px; color: white; font-size: 16px; }
 
-        /* OVERLAY MODAL */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal { background: white; width: 100%; border-radius: 25px; padding: 25px; border-top: 5px solid var(--accent-gold); }
-
-        #toast-container { position: fixed; bottom: 100px; width: 100%; display: flex; justify-content: center; z-index: 6000; pointer-events: none; }
-        .toast { background: var(--dark-gradient); color: var(--accent-gold); padding: 12px 25px; border-radius: 50px; border: 1px solid var(--accent-gold); font-weight: 700; }
+        #toast { position: fixed; top: 30px; width: 100%; display: flex; justify-content: center; z-index: 9999; pointer-events: none; }
+        .toast-msg { background: var(--gold-grad); color: black; padding: 12px 30px; border-radius: 50px; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-<div id="toast-container"></div>
+<div id="toast"></div>
 
 <div class="menu-dots" id="mainMenu">
-    <div class="menu-item" onclick="nav(1); toggleMenu()"><i>💬</i> Mando de Chats</div>
-    <div class="menu-item" onclick="nav(2); toggleMenu()"><i>📦</i> Almacén Quintana</div>
-    <div class="menu-item" onclick="nav(3); toggleMenu()"><i>🤝</i> Socios de Imperio</div>
-    <div class="menu-item" onclick="nav(4); toggleMenu()"><i>🚚</i> Logística VRAEM</div>
-    <div class="menu-item" onclick="nav(5); toggleMenu()"><i>📈</i> Analytics / Profit</div>
-    <div class="menu-item" onclick="nav(6); toggleMenu()"><i>⚙️</i> Configuración Maestro</div>
+    <div class="menu-opt" onclick="nav(1); hideMenu()">💬 Mensajería Empire</div>
+    <div class="menu-opt" onclick="nav(2); hideMenu()">📦 Almacén Huanta</div>
+    <div class="menu-opt" onclick="nav(3); hideMenu()">🤝 Red de Socios</div>
+    <div class="menu-opt" onclick="nav(4); hideMenu()">📈 Finanzas y Caja</div>
+    <div class="menu-opt" onclick="nav(5); hideMenu()">⚙️ Configuración Admin</div>
 </div>
 
 <div class="app-shell" id="appShell">
     
     <div class="screen">
-        <header class="header-main">
-            <div class="brand-logo" onclick="logic_adminTap()">
-                <div class="logo-circle">Q</div>
-                <div class="brand-text">RANTIY & <span>RANTIKUY</span></div>
+        <header class="header">
+            <div class="logo-box" onclick="logic_tapTitle()">
+                <div class="logo-sq">Q</div>
+                <div class="title">RANTIKUY <span>EMPIRE</span></div>
             </div>
-            <button onclick="toggleMenu()" style="background:none; border:none; color:var(--accent-gold); font-size:24px;">⋮</button>
+            <button onclick="toggleMenu()" style="background:none; border:none; color:var(--gold); font-size:24px;">⋮</button>
         </header>
-        <div id="chat-list-render" style="flex:1; overflow-y:auto;"></div>
+        <div class="chat-list" id="chat-list-ui">
+            </div>
     </div>
 
     <div class="screen">
-        <header class="header-main">
+        <header class="header">
             <button onclick="nav(1)" style="background:none; border:none; color:white; font-size:20px;">←</button>
-            <b style="color:white">ALMACÉN MAESTRO</b>
+            <b class="title">ALMACÉN <span>CENTRAL</span></b>
             <span></span>
         </header>
-        <div class="scroll">
-            <div class="card-elite" style="background: var(--dark-gradient); border-left: 5px solid var(--accent-gold); color: white;">
-                <small style="color:var(--accent-gold)">VALOR DEL IMPERIO</small>
-                <h1 id="ui-stock-total" style="margin:5px 0; font-size:32px;">S/ 0.00</h1>
-                <small id="ui-item-count">0 Unidades en Stock</small>
+        <div class="content">
+            <div class="kpi-card">
+                <div class="kpi-title">Valor en Mercancía</div>
+                <div class="kpi-value" id="stock-total-val">S/ 0.00</div>
+                <small id="stock-count">0 Productos</small>
             </div>
-            <div id="stock-list-render"></div>
-            <button class="btn-premium btn-gold" onclick="ui_openModal('stock')">＋ REGISTRAR NUEVA MERCANCÍA</button>
+            <div id="stock-items-ui"></div>
+            <button class="btn-main" onclick="openDynamicModal('stock')">＋ Registrar Nuevo Producto</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main">
+        <header class="header">
             <button onclick="nav(1)" style="background:none; border:none; color:white; font-size:20px;">←</button>
-            <b style="color:white">RED DE SOCIOS</b>
+            <b class="title">SOCIOS <span>ELITE</span></b>
             <span></span>
         </header>
-        <div class="scroll">
-            <div id="partners-list-render"></div>
-            <button class="btn-premium" onclick="ui_openModal('partner')">🤝 VINCULAR NUEVO ALIADO</button>
+        <div class="content">
+            <div id="partners-ui"></div>
+            <button class="btn-main" onclick="openDynamicModal('partner')">🤝 Vincular Nuevo Socio</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main">
+        <header class="header">
             <button onclick="nav(1)" style="background:none; border:none; color:white; font-size:20px;">←</button>
-            <b style="color:white">RUTAS Y DESPACHOS</b>
+            <b class="title">CAJA <span>HUANTA</span></b>
             <span></span>
         </header>
-        <div class="scroll">
-            <div id="routes-list-render"></div>
-            <button class="btn-premium" style="background:#0ea5e9; border:none;" onclick="logic_newRoute()">📍 TRAZAR NUEVA RUTA</button>
+        <div class="content">
+            <div class="kpi-card">
+                <div class="kpi-title">Liquidez en Caja</div>
+                <div class="kpi-value" style="color:#22c55e" id="cash-val">S/ 0.00</div>
+            </div>
+            <h3 style="color:var(--gold)">Movimientos de Hoy</h3>
+            <div id="logs-ui"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main">
-            <button onclick="nav(1)" style="background:none; border:none; color:white; font-size:20px;">←</button>
-            <b style="color:white">ESTADO FINANCIERO</b>
-            <span></span>
-        </header>
-        <div class="scroll">
-            <div class="card-elite">
-                <small>EFECTIVO EN CAJA (HUANTA)</small>
-                <h1 id="ui-cash" style="color:var(--p-green); margin:5px 0;">S/ 0.00</h1>
+        <header class="header"><b class="title">PANEL <span>MAESTRO</span></b></header>
+        <div class="content">
+            <div class="kpi-card" style="text-align:center">
+                <div class="chat-avatar" style="margin:0 auto 10px;">Q</div>
+                <b>Quintana Master</b><br>
+                <small>Huanta, Ayacucho, Perú</small>
             </div>
-            <h3 style="color:var(--bg-dark)">Movimientos Recientes</h3>
-            <div id="logs-render"></div>
+            <button class="f-input" style="margin-bottom:10px;" onclick="exportData()">📊 Exportar Reporte Mensual</button>
+            <button class="f-input" style="margin-bottom:10px;" onclick="syncCloud()">☁️ Sincronizar con la Nube</button>
+            <button class="f-input" style="color:red; border-color:red; margin-top:30px;" onclick="resetSystem()">🧨 Reiniciar Sistema</button>
         </div>
     </div>
 
-    <div class="screen">
-        <header class="header-main"><b style="color:white">PANEL ELITE</b></header>
-        <div class="scroll">
-            <div class="card-elite" style="text-align:center;">
-                <div class="avatar-frame" style="margin: 0 auto 10px;">
-                    <div class="avatar" style="font-size:24px;">Q</div>
-                </div>
-                <b>ADMINISTRADOR SUPREMO</b><br>
-                <small>Quintana Master</small>
-            </div>
-            <button class="btn-premium" onclick="logic_exportCSV()" style="margin-bottom:15px;">📥 EXPORTAR DATA A EXCEL</button>
-            <button class="btn-premium" onclick="logic_backup()" style="margin-bottom:15px;">☁️ RESPALDO EN NUBE ACTIVO</button>
-            <button class="btn-premium" onclick="logic_reset()" style="background: #be123c; border:none; margin-top:40px;">🧨 ELIMINAR REGISTROS LOCALES</button>
-        </div>
-    </div>
 </div>
 
 <div id="chat-window">
-    <div class="chat-header">
-        <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:24px; margin-right:15px;">←</button>
-        <div class="avatar-frame" style="width:40px; height:40px; margin-right:12px;">
-            <div class="avatar" id="chat-avatar" style="font-size:14px;">Q</div>
+    <div class="header">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:20px;">←</button>
+            <div class="chat-avatar" id="active-avatar" style="width:40px; height:40px; font-size:14px;">Q</div>
+            <b id="active-name">Socio</b>
         </div>
-        <div style="flex:1">
-            <b id="chat-name">Socio</b><br>
-            <small style="color:var(--p-green)">● En línea</small>
-        </div>
-        <div style="font-size:20px; color:var(--accent-gold);">📞 &nbsp; ⋮</div>
+        <span style="color:var(--gold)">⋮</span>
     </div>
-    <div class="chat-bg" id="chat-messages"></div>
-    <div class="chat-input-area">
-        <button onclick="triggerFile()" style="background:none; border:none; font-size:24px; color:#64748b;">⊕</button>
-        <input type="text" id="msgInput" class="input-box" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') sendMessage()">
-        <button onclick="sendMessage()" style="background:var(--p-green); border:none; width:45px; height:45px; border-radius:50%; color:white; font-size:18px;">➤</button>
+    <div class="chat-body" id="chat-msgs-ui"></div>
+    <div class="chat-input">
+        <button onclick="document.getElementById('file-in').click()" style="background:none; border:none; font-size:24px;">⊕</button>
+        <input type="text" id="msg-in" class="input-text" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') sendMsg()">
+        <button onclick="sendMsg()" style="background:var(--gold-grad); border:none; width:45px; height:45px; border-radius:50%; color:black;">➤</button>
     </div>
-    <input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(this)">
+    <input type="file" id="file-in" style="display:none" onchange="handleFile(this)">
 </div>
 
-<div class="overlay" id="overlay" onclick="ui_closeModal()">
-    <div class="modal" id="modal-content" onclick="event.stopPropagation()"></div>
+<div class="overlay" id="overlay" onclick="closeModal()">
+    <div class="modal" id="modal-ui" onclick="event.stopPropagation()">
+        </div>
 </div>
 
 <script>
-    // --- DB QUINTANA ---
-    let db = JSON.parse(localStorage.getItem('QUINTANA_IMPERIO_V4')) || {
-        cash: 10000.00,
+    // --- DATABASE INTEGRAL ---
+    let db = JSON.parse(localStorage.getItem('QUINTANA_EMPIRE_V10')) || {
+        cash: 5000.00,
         stock: [
-            { id: 1, name: 'Café Premium Saco 50kg', price: 450.00, qty: 15, img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=100' }
+            { id: 1, name: 'Café Orgánico Saco', price: 350.00, qty: 10, img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200' }
         ],
         partners: [
-            { id: 7, name: 'Socio Huanta Mayorista', phone: '967593948', lastMsg: 'Pedido listo Quintana', msgs: [] }
+            { id: 7, name: 'Socio Quintana Soporte', phone: '967593948', lastMsg: 'Sistema Listo Master', msgs: [] }
         ],
-        routes: [
-            { id: 1, dest: 'Ruta Huanta - Ayacucho', status: 'Activa', driver: 'Quintana Master' }
-        ],
-        logs: []
+        logs: [{ time: '08:00', msg: 'Apertura de sistema Quintana v10' }]
     };
 
-    function save() { localStorage.setItem('QUINTANA_IMPERIO_V4', JSON.stringify(db)); renderAll(); }
+    function save() { localStorage.setItem('QUINTANA_EMPIRE_V10', JSON.stringify(db)); renderAll(); }
 
-    // --- NAV ---
+    // --- NAVEGACIÓN ---
     function nav(p) { document.getElementById('appShell').className = `app-shell pos-${p}`; }
-    function toggleMenu() { 
-        const m = document.getElementById('mainMenu'); 
-        m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; 
-    }
+    function toggleMenu() { const m = document.getElementById('mainMenu'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
+    function hideMenu() { document.getElementById('mainMenu').style.display = 'none'; }
 
-    // --- RENDERS ---
+    // --- RENDERIZADO COMPLETO ---
     function renderAll() {
-        // Chat List
-        document.getElementById('chat-list-render').innerHTML = db.partners.map(p => `
-            <div class="chat-list-item" onclick="openChat(${p.id})">
-                <div class="avatar-frame"><div class="avatar">${p.name[0]}</div></div>
-                <div class="chat-info"><b>${p.name}</b><p>${p.lastMsg}</p></div>
-                <div style="font-size:11px; color:#94a3b8;">Ahora</div>
+        // Render Chats
+        document.getElementById('chat-list-ui').innerHTML = db.partners.map(p => `
+            <div class="chat-item" onclick="openChat(${p.id})">
+                <div class="chat-avatar">${p.name[0]}</div>
+                <div class="chat-detail">
+                    <div class="chat-top"><b>${p.name}</b><span>12:45</span></div>
+                    <p>${p.lastMsg}</p>
+                </div>
             </div>
         `).join('');
 
-        // Stock
-        let totalVal = 0;
-        document.getElementById('stock-list-render').innerHTML = db.stock.map(s => {
-            totalVal += (s.price * s.qty);
+        // Render Almacén
+        let totalStockVal = 0;
+        document.getElementById('stock-items-ui').innerHTML = db.stock.map(s => {
+            totalStockVal += (s.price * s.qty);
             return `
-                <div class="card-elite" style="display:flex; align-items:center; gap:15px;">
-                    <img src="${s.img}" style="width:70px; height:70px; border-radius:12px; border:1px solid var(--accent-gold);">
-                    <div style="flex:1"><b>${s.name}</b><br><span class="price-tag">S/ ${s.price}</span> <small>| Cant: ${s.qty}</small></div>
-                    <button onclick="logic_sell(${s.id})" style="background:var(--bg-dark); color:var(--accent-gold); border:1px solid var(--accent-gold); padding:10px 15px; border-radius:10px; font-weight:800;">VENDER</button>
+                <div class="kpi-card" style="display:flex; align-items:center; gap:15px; padding:15px;">
+                    <img src="${s.img}" style="width:60px; height:60px; border-radius:10px;">
+                    <div style="flex:1"><b>${s.name}</b><br><small style="color:var(--gold)">S/ ${s.price}</small> | Cant: ${s.qty}</div>
+                    <button onclick="logic_sell(${s.id})" style="background:var(--gold); border:none; padding:8px 12px; border-radius:8px; font-weight:800; color:black;">VENDER</button>
                 </div>
             `;
         }).join('');
-        document.getElementById('ui-stock-total').innerText = `S/ ${totalVal.toFixed(2)}`;
-        document.getElementById('ui-item-count').innerText = `${db.stock.length} Categorías registradas`;
-        document.getElementById('ui-cash').innerText = `S/ ${db.cash.toFixed(2)}`;
+        document.getElementById('stock-total-val').innerText = `S/ ${totalStockVal.toFixed(2)}`;
+        document.getElementById('stock-count').innerText = `${db.stock.length} Productos registrados`;
+        document.getElementById('cash-val').innerText = `S/ ${db.cash.toFixed(2)}`;
 
-        // Socios y Rutas
-        document.getElementById('partners-list-render').innerHTML = db.partners.map(p => `<div class="card-elite"><b>${p.name}</b><br><small>WhatsApp: ${p.phone}</small></div>`).join('');
-        document.getElementById('routes-list-render').innerHTML = db.routes.map(r => `<div class="card-elite"><b>${r.dest}</b><br><small>Chofer: ${r.driver} | Estado: ${r.status}</small></div>`).join('');
+        // Render Socios
+        document.getElementById('partners-ui').innerHTML = db.partners.map(p => `
+            <div class="kpi-card"><b>${p.name}</b><br><small>TEL: ${p.phone}</small></div>
+        `).join('');
 
-        // Logs
-        document.getElementById('logs-render').innerHTML = db.logs.slice(-8).reverse().map(l => `
-            <div style="padding:10px; border-bottom:1px solid var(--border); font-size:13px;"><b>[${l.time}]</b> ${l.msg}</div>
+        // Render Logs
+        document.getElementById('logs-ui').innerHTML = db.logs.slice(-10).reverse().map(l => `
+            <div style="padding:10px; border-bottom:1px solid #222; font-size:13px;"><b style="color:var(--gold)">[${l.time}]</b> ${l.msg}</div>
         `).join('');
     }
 
-    // --- CHAT LOGIC ---
+    // --- LÓGICA DE CHAT ---
     let activeChatId = null;
     function openChat(id) {
         activeChatId = id;
         const p = db.partners.find(x => x.id === id);
-        document.getElementById('chat-name').innerText = p.name;
-        document.getElementById('chat-avatar').innerText = p.name[0];
+        document.getElementById('active-name').innerText = p.name;
+        document.getElementById('active-avatar').innerText = p.name[0];
         document.getElementById('chat-window').style.display = 'flex';
-        renderMessages();
+        renderMsgs();
     }
     function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
 
-    function sendMessage(text = null, type = 'text') {
-        const input = document.getElementById('msgInput');
-        const content = text || input.value;
+    function sendMsg(txt = null, type = 'text') {
+        const input = document.getElementById('msg-in');
+        const content = txt || input.value;
         if(!content) return;
         const p = db.partners.find(x => x.id === activeChatId);
-        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        p.msgs.push({ u: 'me', t: content, time: time, type: type });
-        p.lastMsg = type === 'img' ? '📷 Imagen' : content;
-        if(!text) input.value = '';
-        save();
-        renderMessages();
-        setTimeout(() => { 
-            p.msgs.push({ u: 'them', t: 'Recibido Master Quintana. En marcha.', time: time, type: 'text' });
-            save(); renderMessages();
-        }, 1200);
+        const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        p.msgs.push({ u: 'me', t: content, time: now, type: type });
+        p.lastMsg = type === 'img' ? '📷 Foto enviada' : content;
+        if(!txt) input.value = '';
+        save(); renderMsgs();
+        // Respuesta automática
+        setTimeout(() => {
+            p.msgs.push({ u: 'them', t: 'Entendido, Quintana. Actualizando registros.', time: now, type: 'text' });
+            save(); renderMsgs();
+        }, 1500);
     }
 
-    function renderMessages() {
+    function renderMsgs() {
         const p = db.partners.find(x => x.id === activeChatId);
-        const box = document.getElementById('chat-messages');
+        const box = document.getElementById('chat-msgs-ui');
         box.innerHTML = p.msgs.map(m => `
-            <div class="bubble ${m.u}">${m.type==='img' ? `<img src="${m.t}" style="width:100%; border-radius:10px;">` : m.t}<div style="font-size:9px; opacity:0.6; text-align:right; margin-top:5px;">${m.time}</div></div>
+            <div class="bubble ${m.u}">${m.type==='img' ? `<img src="${m.t}">`: m.t}<div style="font-size:9px; opacity:0.5; text-align:right;">${m.time}</div></div>
         `).join('');
         box.scrollTop = box.scrollHeight;
     }
 
-    // --- FUNCIONES SISTEMA ---
-    function triggerFile() { document.getElementById('fileInput').click(); }
-    function handleFileUpload(el) {
-        const file = el.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => sendMessage(e.target.result, 'img');
-        reader.readAsDataURL(file);
+    // --- MODAL DINÁMICO (PREGUNTAS SEGÚN ELECCIÓN) ---
+    function openDynamicModal(mode) {
+        const ui = document.getElementById('modal-ui');
+        if(mode === 'stock') {
+            ui.innerHTML = `
+                <h2 style="color:var(--gold)">Registrar Mercancía</h2>
+                <div class="f-group"><label>¿Qué producto ingresa?</label><input id="f-n" class="f-input" placeholder="Ej. Café, Cacao..."></div>
+                <div class="f-group"><label>¿Cuál es su precio de venta?</label><input id="f-p" class="f-input" type="number" placeholder="0.00"></div>
+                <div class="f-group"><label>¿Cuántas unidades hay?</label><input id="f-q" class="f-input" type="number" placeholder="10"></div>
+                <button class="btn-main" onclick="logic_addItem('stock')">Guardar en Almacén</button>
+            `;
+        } else if(mode === 'partner') {
+            ui.innerHTML = `
+                <h2 style="color:var(--gold)">Vincular Nuevo Socio</h2>
+                <div class="f-group"><label>Nombre del Aliado</label><input id="f-sn" class="f-input" placeholder="Nombre completo"></div>
+                <div class="f-group"><label>Número de WhatsApp</label><input id="f-sp" class="f-input" placeholder="967..."></div>
+                <button class="btn-main" onclick="logic_addItem('partner')">Vincular al Imperio</button>
+            `;
+        }
+        document.getElementById('overlay').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('overlay').style.display = 'none'; }
+
+    // --- LÓGICA DE NEGOCIO ---
+    function logic_addItem(mode) {
+        if(mode === 'stock') {
+            const n = document.getElementById('f-n').value, p = document.getElementById('f-p').value, q = document.getElementById('f-q').value;
+            if(n && p && q) {
+                db.stock.push({ id: Date.now(), name: n, price: parseFloat(p), qty: parseInt(q), img: 'https://via.placeholder.com/150/1a1a1a/d4af37?text=QUINTANA' });
+                db.logs.push({ time: new Date().toLocaleTimeString(), msg: `Ingreso stock: ${n}` });
+            }
+        } else {
+            const n = document.getElementById('f-n').value, p = document.getElementById('f-p').value;
+            if(n && p) {
+                db.partners.push({ id: Date.now(), name: n, phone: p, lastMsg: 'Nuevo Socio Vinculado', msgs: [] });
+            }
+        }
+        save(); closeModal(); toast("DATOS ACTUALIZADOS MASTER");
     }
 
     function logic_sell(id) {
@@ -358,37 +363,28 @@
         if(i.qty > 0) {
             i.qty--; db.cash += i.price;
             db.logs.push({ time: new Date().toLocaleTimeString(), msg: `VENTA: ${i.name} (+S/ ${i.price})` });
-            confetti(); toast("VENTA REGISTRADA"); save();
+            confetti(); toast("¡VENTA EXITOSA!"); save();
         }
     }
 
-    function ui_openModal(mode) {
-        const modal = document.getElementById('modal-content');
-        modal.innerHTML = `<h3>Nuevo Registro</h3>
-            <input id="f-n" class="input-box" style="width:100%; border:1px solid #ddd; margin-bottom:10px;" placeholder="Nombre">
-            <input id="f-p" class="input-box" style="width:100%; border:1px solid #ddd; margin-bottom:10px;" type="number" placeholder="Precio / Valor">
-            <button class="btn-premium btn-gold" onclick="logic_add('${mode}')">CONFIRMAR REGISTRO</button>`;
-        document.getElementById('overlay').style.display = 'flex';
-    }
-    function ui_closeModal() { document.getElementById('overlay').style.display = 'none'; }
-
-    function logic_add(mode) {
-        const n = document.getElementById('f-n').value, p = document.getElementById('f-p').value;
-        if(mode === 'stock') db.stock.push({ id: Date.now(), name: n, price: parseFloat(p), qty: 10, img: 'https://via.placeholder.com/100' });
-        if(mode === 'partner') db.partners.push({ id: Date.now(), name: n, phone: p, lastMsg: 'Nuevo Socio', msgs: [] });
-        save(); ui_closeModal(); toast("DATOS GUARDADOS");
+    function handleFile(el) {
+        const reader = new FileReader();
+        reader.onload = (e) => sendMsg(e.target.result, 'img');
+        reader.readAsDataURL(el.files[0]);
     }
 
     function toast(t) {
-        const el = document.createElement('div'); el.className = 'toast'; el.innerText = t;
-        document.getElementById('toast-container').appendChild(el);
-        setTimeout(() => el.remove(), 2500);
+        const b = document.getElementById('toast');
+        const e = document.createElement('div'); e.className = 'toast-msg'; e.innerText = t;
+        b.appendChild(e); setTimeout(() => e.remove(), 2500);
     }
 
-    function logic_adminTap() {
-        window.ataps = (window.ataps || 0) + 1;
-        if(window.ataps >= 7) { confetti(); toast("MODO QUINTANA ELITE ACTIVO"); }
+    function logic_tapTitle() {
+        window.taps = (window.taps || 0) + 1;
+        if(window.taps >= 7) { confetti(); toast("MODO ELITE ACTIVADO: QUINTANA"); }
     }
+
+    function resetSystem() { if(confirm("¿BORRAR TODO EL IMPERIO?")) { localStorage.clear(); location.reload(); } }
 
     window.onload = renderAll;
 </script>
