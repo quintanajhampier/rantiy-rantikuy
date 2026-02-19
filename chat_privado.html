@@ -3,60 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RANTIY & RANTIKUY - EMPIRE OS QUINTANA v3.0</title>
+    <title>EMPIRE OS - QUINTANA ELITE v3.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            /* Huanta Vibrant Palette */
-            --bg-app: #f8fafc;
+            --bg-app: #f0f2f5;
             --bg-card: #ffffff;
-            --text-main: #0f172a;
-            --text-sub: #64748b;
-            --p-green: #22c55e;
-            --p-gold: #f59e0b;
-            --p-sky: #0ea5e9;
-            --p-red: #ef4444;
-            --p-purple: #a855f7;
-            --border: #e2e8f0;
+            --text-main: #1c1e21;
+            --text-sub: #65676b;
+            --p-green: #25d366;
+            --p-sky: #00a884;
+            --p-blue: #34b7f1;
+            --p-gold: #ffbc00;
+            --p-red: #f15c5c;
+            --border: #e9edef;
             --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        [data-theme="dark"] {
-            --bg-app: #020617;
-            --bg-card: #0f172a;
-            --text-main: #f1f5f9;
-            --text-sub: #94a3b8;
-            --border: #1e293b;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg-app); overflow: hidden; position: fixed; }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            scrollbar-width: none;
-        }
-        *::-webkit-scrollbar { display: none; }
-
-        body, html { 
-            margin: 0; padding: 0; height: 100%; width: 100%; 
-            background: var(--bg-app); overflow: hidden; 
-            color: var(--text-main); position: fixed; 
-        }
-
-        /* SHELL ANIMATION */
-        .app-shell { 
-            display: flex; width: 600%; height: 100%; 
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        .screen { 
-            width: 16.6666%; height: 100%; 
-            display: flex; flex-direction: column; 
-            position: relative; overflow: hidden; 
-        }
-
-        /* POSITIONING */
+        /* NAVEGACIÓN */
+        .app-shell { display: flex; width: 600%; height: 100%; transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); }
+        .screen { width: 16.6666%; height: 100%; display: flex; flex-direction: column; position: relative; background: var(--bg-app); }
+        
         .pos-1 { transform: translateX(0%); }
         .pos-2 { transform: translateX(-16.6666%); }
         .pos-3 { transform: translateX(-33.3333%); }
@@ -64,606 +36,377 @@
         .pos-5 { transform: translateX(-66.6666%); }
         .pos-6 { transform: translateX(-83.3333%); }
 
-        /* VIBRANT HEADER */
+        /* HEADER */
         .header-main { 
-            padding: 20px; background: var(--bg-card); 
-            border-bottom: 1px solid var(--border); 
-            display: flex; justify-content: space-between; align-items: center; 
-            z-index: 100; padding-top: calc(20px + var(--safe-top));
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            padding: 15px 20px; background: var(--bg-card); display: flex; justify-content: space-between; align-items: center;
+            padding-top: calc(15px + var(--safe-top)); border-bottom: 1px solid var(--border); z-index: 100;
         }
-        .brand-text { 
-            font-size: 22px; font-weight: 900; 
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, var(--p-green), var(--p-sky));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            cursor: pointer;
-        }
+        .brand-text { font-size: 22px; font-weight: 800; color: var(--p-sky); cursor: pointer; }
 
-        .scroll { 
-            flex: 1; overflow-y: auto; padding: 20px; 
-            padding-bottom: 150px; -webkit-overflow-scrolling: touch; 
+        /* LISTA CHAT */
+        .chat-list-item {
+            display: flex; align-items: center; padding: 15px 20px; background: var(--bg-card);
+            border-bottom: 1px solid var(--border); cursor: pointer;
         }
-
-        /* PRO CARDS */
-        .card-titan { 
-            background: var(--bg-card); border-radius: 28px; 
-            padding: 24px; margin-bottom: 20px; 
-            border: 1px solid var(--border); 
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-            position: relative; overflow: hidden;
-        }
-        .card-titan::after {
-            content: ''; position: absolute; top: 0; right: 0;
-            width: 100px; height: 100px; 
-            background: radial-gradient(circle, var(--p-green) 0%, transparent 70%);
-            opacity: 0.05; pointer-events: none;
-        }
-
-        .hero-gradient { 
-            background: linear-gradient(135deg, #059669 0%, #10b981 100%); 
-            color: white; border: none; 
-        }
-
-        .val-large { font-size: 42px; font-weight: 800; letter-spacing: -2px; margin: 10px 0; }
-        
-        /* DYNAMIC LISTS */
-        .item-row { 
-            background: var(--bg-card); border-radius: 22px; 
-            padding: 16px; margin-bottom: 12px; 
-            display: flex; align-items: center; gap: 16px; 
-            border: 1px solid var(--border);
-            animation: fadeIn 0.4s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .item-row img { width: 60px; height: 60px; border-radius: 18px; object-fit: cover; background: #f1f5f9; }
-        .item-info { flex: 1; }
-        .item-info b { font-size: 16px; display: block; color: var(--text-main); }
-        .item-info span { color: var(--p-green); font-weight: 700; font-size: 14px; }
-
-        /* CHAT INTERFACE - HIGH LEVEL */
-        #chat-conversation-view { 
-            display: none; position: absolute; inset: 0; 
-            z-index: 1000; background: var(--bg-app); 
-            flex-direction: column; height: 100%; 
-        }
-        .chat-flow { 
-            flex: 1; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 14px;
-            background: url('https://www.transparenttextures.com/patterns/cubes.png');
-        }
-
-        .msg { 
-            max-width: 80%; padding: 14px 18px; border-radius: 24px; 
-            font-size: 15px; line-height: 1.5;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        }
-        .msg.me { 
-            align-self: flex-end; background: var(--p-green); color: white; 
-            border-bottom-right-radius: 4px; 
-        }
-        .msg.them { 
-            align-self: flex-start; background: var(--bg-card); 
-            border: 1px solid var(--border); border-bottom-left-radius: 4px; 
-        }
-
-        /* INPUT AREA FIX - KEYBOARD PRO */
-        .chat-input-area { 
-            padding: 12px 16px; background: var(--bg-card); 
-            border-top: 1px solid var(--border); 
-            padding-bottom: calc(12px + var(--safe-bottom));
-            transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .input-row { display: flex; gap: 10px; align-items: center; }
-
-        .btn-icon {
-            background: var(--bg-app); border: none; 
-            width: 45px; height: 45px; border-radius: 50%;
+        .chat-list-item:active { background: #f0f2f5; }
+        .avatar { 
+            width: 55px; height: 55px; border-radius: 50%; margin-right: 15px; 
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; cursor: pointer; color: var(--text-sub);
+            font-weight: 700; color: white; font-size: 20px;
         }
+        .chat-info { flex: 1; overflow: hidden; }
+        .chat-info b { font-size: 16px; color: var(--text-main); }
+        .chat-info p { font-size: 14px; color: var(--text-sub); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* DOCK MENU */
-        .dock { 
-            position: fixed; bottom: 0; width: 100%; 
-            background: var(--bg-card); padding: 12px 0 calc(12px + var(--safe-bottom)); 
-            display: flex; justify-content: space-around; 
-            border-top: 1px solid var(--border); 
-            backdrop-filter: blur(15px); z-index: 900; 
+        /* VENTANA CHAT */
+        #chat-window { position: fixed; inset: 0; background: #efeae2; z-index: 2000; display: none; flex-direction: column; }
+        .chat-bg { 
+            flex: 1; overflow-y: auto; padding: 15px; 
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            display: flex; flex-direction: column; gap: 10px;
         }
-        .dock-btn { 
-            border: none; background: none; color: var(--text-sub); 
-            display: flex; flex-direction: column; align-items: center; 
-            gap: 5px; font-size: 10px; font-weight: 700; width: 16%; 
-        }
-        .dock-btn.active { color: var(--p-green); }
-        .dock-btn i { font-size: 24px; font-style: normal; }
+        .bubble { max-width: 85%; padding: 10px; border-radius: 12px; font-size: 15px; line-height: 1.4; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .bubble.me { align-self: flex-end; background: #d9fdd3; border-top-right-radius: 0; }
+        .bubble.them { align-self: flex-start; background: #ffffff; border-top-left-radius: 0; }
+        .bubble img { max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; }
 
-        /* MODALS & OVERLAYS */
-        .overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); 
-            backdrop-filter: blur(8px); z-index: 2000; 
-            display: none; align-items: flex-end; 
-        }
-        .modal { 
-            background: var(--bg-card); width: 100%; 
-            border-radius: 35px 35px 0 0; padding: 30px; 
-            max-height: 85vh; overflow-y: auto; 
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
+        .input-bar { background: #f0f2f5; padding: 10px; display: flex; align-items: center; gap: 10px; padding-bottom: calc(10px + var(--safe-bottom)); }
+        .input-field { flex: 1; background: white; border-radius: 25px; padding: 12px 18px; border: none; font-size: 16px; }
 
+        /* MENU ⋮ */
+        .menu-dots {
+            position: absolute; top: 70px; right: 15px; width: 220px;
+            background: white; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            display: none; flex-direction: column; z-index: 3000; overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .menu-item { padding: 16px 20px; font-weight: 600; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 12px; }
+        .menu-item:active { background: #f5f5f5; }
+
+        /* COMPONENTES */
+        .scroll { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
+        .card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .btn-action { background: var(--p-sky); color: white; border: none; padding: 16px; border-radius: 15px; width: 100%; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .btn-action:active { transform: scale(0.98); opacity: 0.9; }
+
+        .f-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: #f9f9f9; margin-bottom: 12px; font-size: 15px; }
+        
+        /* OVERLAY */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 4000; display: none; align-items: flex-end; }
+        .modal { background: white; width: 100%; border-radius: 30px 30px 0 0; padding: 25px; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .f-input { 
-            width: 100%; padding: 18px; border-radius: 20px; 
-            border: 1px solid var(--border); background: var(--bg-app); 
-            color: var(--text-main); font-size: 16px; margin-bottom: 15px; 
-            outline: none;
-        }
-
-        .btn-main { 
-            width: 100%; padding: 18px; border-radius: 20px; 
-            border: none; background: var(--p-green); 
-            color: white; font-weight: 800; font-size: 16px; 
-            box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4);
-        }
-
-        /* ROUTE TAGS */
-        .tag { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-        .tag-pending { background: var(--p-gold); color: white; }
-        .tag-done { background: var(--p-green); color: white; }
-
-        /* NOTIFICATIONS */
-        #toaster {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 3000; display: flex; flex-direction: column; gap: 10px;
-        }
-        .toast {
-            background: var(--text-main); color: var(--bg-card);
-            padding: 12px 24px; border-radius: 50px; font-size: 14px;
-            font-weight: 600; box-shadow: 0 10px 15px rgba(0,0,0,0.2);
-            animation: toastIn 0.3s ease forwards;
-        }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        #toaster { position: fixed; top: 30px; width: 100%; display: flex; justify-content: center; z-index: 9999; pointer-events: none; }
+        .toast { background: #1c1e21; color: white; padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
 <div id="toaster"></div>
 
+<div class="menu-dots" id="mainMenu">
+    <div class="menu-item" onclick="nav(1); toggleMenu()"><i>💬</i> Mando Chats</div>
+    <div class="menu-item" onclick="nav(2); toggleMenu()"><i>📦</i> Almacén Stock</div>
+    <div class="menu-item" onclick="nav(3); toggleMenu()"><i>🤝</i> Lista Socios</div>
+    <div class="menu-item" onclick="nav(4); toggleMenu()"><i>🚛</i> Logística Rutas</div>
+    <div class="menu-item" onclick="nav(5); toggleMenu()"><i>📊</i> Datos y Profit</div>
+    <div class="menu-item" onclick="nav(6); toggleMenu()"><i>⚙️</i> Panel Elite</div>
+</div>
+
 <div class="app-shell" id="appShell">
     
     <div class="screen">
         <header class="header-main">
             <div class="brand-text" onclick="logic_adminTap()">RANTIKUY EMPIRE</div>
-            <div style="display:flex; gap:10px;">
-                <button class="btn-icon" onclick="toggleTheme()">🌓</button>
-            </div>
+            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px; cursor:pointer;">⋮</button>
+        </header>
+        <div id="chat-list-render" style="flex:1; overflow-y:auto;"></div>
+    </div>
+
+    <div class="screen">
+        <header class="header-main">
+            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
+            <b>STOCK CENTRAL</b>
+            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px;">⋮</button>
         </header>
         <div class="scroll">
-            <div class="card-titan" style="padding:15px; border-color:var(--p-green);">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>Socio Principal: <b>QUINTANA</b></span>
-                    <span class="tag tag-done">Online</span>
-                </div>
+            <div class="card" style="background: linear-gradient(135deg, var(--p-sky), var(--p-green)); color:white;">
+                <small>VALOR NETO MERCANCÍA</small>
+                <h1 id="ui-stock-total" style="margin:5px 0;">S/ 0.00</h1>
+                <div id="ui-item-count">0 Productos registrados</div>
             </div>
-            <div id="render-chats"></div>
-        </div>
-
-        <div id="chat-conversation-view">
-            <header class="header-main">
-                <button onclick="closeChat()" class="btn-icon">←</button>
-                <div style="flex:1; margin-left:15px;">
-                    <b id="chat-target-name">Nombre</b><br>
-                    <small id="chat-target-status" style="color:var(--p-green)">En línea</small>
-                </div>
-                <button onclick="logic_call()" class="btn-icon">📞</button>
-            </header>
-            
-            <div class="chat-flow" id="chat-flow"></div>
-
-            <div class="chat-input-area" id="input-container">
-                <div id="attachment-preview" style="display:none; padding:10px; background:var(--bg-app); border-radius:15px; margin-bottom:10px;"></div>
-                <div class="input-row">
-                    <button class="btn-icon" onclick="ui_toggleMenu('attach-box')">📎</button>
-                    <input type="text" id="chat-input" class="f-input" placeholder="Escribe un mensaje..." style="margin-bottom:0;" onkeypress="if(event.key==='Enter') logic_sendMessage()">
-                    <button class="btn-main" onclick="logic_sendMessage()" style="width:60px; height:50px; padding:0; display:flex; align-items:center; justify-content:center;">🚀</button>
-                </div>
-                
-                <div id="attach-box" style="display:none; grid-template-columns: repeat(4, 1fr); gap:15px; padding-top:20px; animation: fadeIn 0.3s ease;">
-                    <div onclick="logic_triggerFile('img')" style="text-align:center;"><div class="btn-icon" style="background:var(--p-gold); color:white; margin:0 auto;">🖼️</div><small>Foto</small></div>
-                    <div onclick="logic_triggerFile('cam')" style="text-align:center;"><div class="btn-icon" style="background:var(--p-purple); color:white; margin:0 auto;">📸</div><small>Cámara</small></div>
-                    <div onclick="logic_triggerFile('doc')" style="text-align:center;"><div class="btn-icon" style="background:var(--p-sky); color:white; margin:0 auto;">📄</div><small>Doc</small></div>
-                    <div onclick="logic_sendGPS()" style="text-align:center;"><div class="btn-icon" style="background:var(--p-red); color:white; margin:0 auto;">📍</div><small>GPS</small></div>
-                </div>
-            </div>
-            <input type="file" id="hidden-file" style="display:none" onchange="logic_handleFile(this)">
+            <div id="stock-list-render"></div>
+            <button class="btn-action" onclick="ui_openModal('stock')">+ REGISTRAR PRODUCTO</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>ALMACÉN CENTRAL</b></header>
+        <header class="header-main">
+            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
+            <b>SOCIOS ESTRATÉGICOS</b>
+            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px;">⋮</button>
+        </header>
         <div class="scroll">
-            <div class="card-titan hero-gradient">
-                <small>VALOR TOTAL STOCK</small>
-                <div class="val-large" id="ui-total-stock">S/ 0.00</div>
-                <div style="display:flex; gap:10px;">
-                    <div class="tag" style="background:rgba(255,255,255,0.2)">Huanta Hub</div>
-                    <div class="tag" style="background:rgba(255,255,255,0.2)" id="ui-items-count">0 Items</div>
-                </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <button onclick="ui_modal('stock')" class="btn-main" style="width:48%; background:var(--p-sky);">+ NUEVO</button>
-                <button onclick="ui_modal('scan')" class="btn-main" style="width:48%; background:var(--p-gold);">📸 SCANNER</button>
-            </div>
-            <div id="render-inventory"></div>
+            <div id="partners-list-render"></div>
+            <button class="btn-action" onclick="ui_openModal('partner')" style="background:var(--p-blue)">+ VINCULAR SOCIO</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>RED DE SOCIOS</b></header>
+        <header class="header-main">
+            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
+            <b>LOGÍSTICA VRAEM</b>
+            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px;">⋮</button>
+        </header>
         <div class="scroll">
-            <div class="card-titan" style="background:var(--p-purple); color:white; border:none;">
-                <b>Crecimiento Mensual</b>
-                <div class="val-large">+12%</div>
-                <small>Estrategia Quintana activa</small>
-            </div>
-            <div id="render-partners"></div>
-            <button class="btn-main" onclick="ui_modal('partner')" style="margin-top:10px;">VINCULAR NUEVO SOCIO</button>
+            <div id="routes-list-render"></div>
+            <button class="btn-action" onclick="ui_openModal('route')" style="background:var(--p-gold); color:black;">PROGRAMAR DESPACHO</button>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>LOGÍSTICA VRAEM</b></header>
+        <header class="header-main">
+            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
+            <b>ANALYTICS QUINTANA</b>
+            <button onclick="toggleMenu()" style="border:none; background:none; font-size:24px;">⋮</button>
+        </header>
         <div class="scroll">
-            <h3>Despachos de Hoy</h3>
-            <div id="render-routes"></div>
-            <div class="card-titan" style="margin-top:20px;">
-                <b>Mapa de Entregas</b>
-                <div style="height:150px; background:#e2e8f0; border-radius:15px; margin-top:10px; display:flex; align-items:center; justify-content:center; color:var(--text-sub);">
-                    Cargando coordenadas GPS...
-                </div>
+            <div class="card">
+                <small>TOTAL CAJA (LIQUIDEZ)</small>
+                <h1 id="ui-cash" style="color:var(--p-green)">S/ 0.00</h1>
             </div>
-        </div>
-        <div style="padding:20px; padding-bottom:110px;">
-            <button class="btn-main" onclick="ui_modal('route')">PROGRAMAR RUTA</button>
-        </div>
-    </div>
-
-    <div class="screen">
-        <header class="header-main"><b>EMPIRE ANALYTICS</b></header>
-        <div class="scroll">
-            <div class="card-titan">
-                <small>GANANCIA BRUTA</small>
-                <div class="val-large" id="ui-profit" style="color:var(--p-green)">S/ 0.00</div>
-                <div style="height:8px; background:var(--border); border-radius:10px; overflow:hidden;">
-                    <div id="ui-progress-bar" style="width:45%; height:100%; background:var(--p-green);"></div>
-                </div>
-                <p style="font-size:12px; margin-top:10px;" id="ui-advice">Cargando sugerencia de IA...</p>
-            </div>
-            
-            <h3>Empire Logs (Quintana Edition)</h3>
-            <div id="render-logs"></div>
+            <h3>Historial de Movimientos</h3>
+            <div id="logs-render"></div>
         </div>
     </div>
 
     <div class="screen">
-        <header class="header-main"><b>PANEL DE CONTROL</b></header>
+        <header class="header-main">
+            <button onclick="nav(1)" style="border:none; background:none; font-size:20px;">←</button>
+            <b>CONFIGURACIÓN MAESTRA</b>
+        </header>
         <div class="scroll">
-            <div class="card-titan">
-                <b>Master: Quintana Admin</b><br>
-                <small>Dispositivo verificado en Huanta</small>
+            <div class="card">
+                <b>Admin:</b> Quintana Master<br>
+                <b>Versión:</b> Elite 3.1.5<br>
+                <b>Sede:</b> Huanta, Ayacucho
             </div>
-            <button class="f-input" onclick="logic_backup()">💾 RESPALDAR NUBE (BACKUP)</button>
-            <button class="f-input" onclick="logic_exportCSV()">📊 EXPORTAR A EXCEL</button>
-            <button class="f-input" onclick="logic_resetSystem()" style="color:var(--p-red); border-color:var(--p-red); margin-top:40px;">🧨 DESTRUIR DATOS LOCALES</button>
-            <p style="text-align:center; font-size:10px; color:var(--text-sub);">Version Supreme 3.0.7 - Rantikuy Empire</p>
+            <button class="f-input" onclick="logic_exportCSV()">📊 EXPORTAR BASE DE DATOS (EXCEL)</button>
+            <button class="f-input" onclick="logic_backup()">☁️ RESPALDO EN NUBE</button>
+            <button class="f-input" onclick="logic_reset()" style="color:var(--p-red); border-color:var(--p-red); margin-top:50px;">🧨 BORRADO TOTAL DE EMERGENCIA</button>
         </div>
     </div>
 </div>
 
-<nav class="dock">
-    <button class="dock-btn active" onclick="nav(1)"><i>💬</i>Mando</button>
-    <button class="dock-btn" onclick="nav(2)"><i>📦</i>Stock</button>
-    <button class="dock-btn" onclick="nav(3)"><i>🤝</i>Socios</button>
-    <button class="dock-btn" onclick="nav(4)"><i>🚛</i>Rutas</button>
-    <button class="dock-btn" onclick="nav(5)"><i>📈</i>Data</button>
-    <button class="dock-btn" onclick="nav(6)"><i>⚙️</i>Panel</button>
-</nav>
+<div id="chat-window">
+    <header class="header-main" style="background:#f0f2f5;">
+        <div style="display:flex; align-items:center;">
+            <button onclick="closeChat()" style="border:none; background:none; font-size:20px; margin-right:10px;">←</button>
+            <div class="avatar" id="chat-head-avatar" style="width:40px; height:40px; font-size:16px;">Q</div>
+            <div style="margin-left:10px;">
+                <b id="chat-head-name">Socio</b><br>
+                <small style="color:var(--p-green)">En línea ahora</small>
+            </div>
+        </div>
+    </header>
+    <div class="chat-bg" id="chat-messages"></div>
+    <div class="input-bar">
+        <button onclick="triggerFile()" style="background:none; border:none; font-size:24px;">⊕</button>
+        <input type="text" id="msgInput" class="input-field" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()" style="border:none; background:var(--p-sky); color:white; width:45px; height:45px; border-radius:50%;">➤</button>
+    </div>
+    <input type="file" id="fileInput" style="display:none;" onchange="handleFileUpload(this)">
+</div>
 
-<div class="overlay" id="overlay" onclick="if(event.target==this) ui_closeModal()">
-    <div class="modal" id="modal-content"></div>
+<div class="overlay" id="overlay" onclick="ui_closeModal()">
+    <div class="modal" id="modal-content" onclick="event.stopPropagation()"></div>
 </div>
 
 <script>
-    // --- DATABASE CORE ---
-    let empireDB = JSON.parse(localStorage.getItem('EMPIRE_DATA_QUINTANA')) || {
-        config: { theme: 'light', admin: 'Quintana', version: 3.0 },
-        caja: 2500.50,
+    // --- DB QUINTANA ---
+    let db = JSON.parse(localStorage.getItem('QUINTANA_DB_SUPREME')) || {
+        cash: 2500.00,
         stock: [
-            { id: 1, name: 'Saco de Café Premium', price: 180, qty: 10, img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200' }
+            { id: 1, name: 'Saco Café Premium', price: 185.00, qty: 20, img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=100' }
         ],
         partners: [
-            { id: 967593948, name: 'QUINTANA Soporte', phone: '967593948', chat: [] }
+            { id: 101, name: 'Quintana Soporte', phone: '967593948', lastMsg: 'Sincronizado', msgs: [] }
         ],
         routes: [
-            { id: 101, dest: 'Huanta Centro', status: 'done', driver: 'Carlos M.' }
+            { id: 1, dest: 'Huanta Centro', status: 'En Camino', driver: 'Juan P.' }
         ],
-        logs: [
-            { h: '10:30', t: 'Sistema Iniciado', m: 0 }
-        ],
-        activeChat: null
+        logs: [{ time: '08:00', msg: 'Sistema Iniciado Master' }]
     };
 
-    // --- INITIALIZER ---
-    window.onload = () => {
-        applyTheme();
-        renderAll();
-        initKeyboardFix();
-        notify("Bienvenido al Imperio, Quintana");
-    };
+    function save() { localStorage.setItem('QUINTANA_DB_SUPREME', JSON.stringify(db)); renderAll(); }
 
-    function save() {
-        localStorage.setItem('EMPIRE_DATA_QUINTANA', JSON.stringify(empireDB));
-        renderAll();
+    // --- NAVEGACIÓN ---
+    function nav(p) { document.getElementById('appShell').className = `app-shell pos-${p}`; }
+    function toggleMenu() { 
+        const m = document.getElementById('mainMenu'); 
+        m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; 
     }
 
-    // --- NAVIGATION ---
-    function nav(p) {
-        document.getElementById('appShell').className = `app-shell pos-${p}`;
-        document.querySelectorAll('.dock-btn').forEach((b, i) => b.classList.toggle('active', (i+1)===p));
-    }
-
-    // --- RENDER ENGINE ---
+    // --- RENDERIZADO ---
     function renderAll() {
-        // Render Chats
-        const chatContainer = document.getElementById('render-chats');
-        chatContainer.innerHTML = empireDB.partners.map(p => `
-            <div class="item-row" onclick="openChat(${p.id})">
-                <div style="width:55px; height:55px; border-radius:50%; background:var(--p-sky); color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;">${p.name[0]}</div>
-                <div class="item-info">
-                    <b>${p.name}</b>
-                    <small>${p.phone}</small>
-                </div>
-                <div style="font-size:10px; color:var(--text-sub);">Hoy</div>
+        // Chats
+        document.getElementById('chat-list-render').innerHTML = db.partners.map(p => `
+            <div class="chat-list-item" onclick="openChat(${p.id})">
+                <div class="avatar" style="background:${stringToColor(p.name)}">${p.name[0]}</div>
+                <div class="chat-info"><b>${p.name}</b><p>${p.lastMsg || 'Sin mensajes'}</p></div>
             </div>
         `).join('');
 
-        // Render Stock
-        const invContainer = document.getElementById('render-inventory');
+        // Stock
         let totalVal = 0;
-        invContainer.innerHTML = empireDB.stock.map(s => {
+        document.getElementById('stock-list-render').innerHTML = db.stock.map(s => {
             totalVal += (s.price * s.qty);
             return `
-                <div class="item-row">
-                    <img src="${s.img}">
-                    <div class="item-info">
-                        <b>${s.name}</b>
-                        <span>S/ ${s.price.toFixed(2)}</span>
-                    </div>
-                    <div style="text-align:right;">
-                        <small>Cant: ${s.qty}</small><br>
-                        <button onclick="logic_sell(${s.id})" style="border:none; background:var(--p-green); color:white; border-radius:8px; padding:5px 10px; margin-top:5px;">VENDER</button>
-                    </div>
+                <div class="card" style="display:flex; align-items:center; gap:15px; padding:12px;">
+                    <img src="${s.img}" style="width:60px; height:60px; border-radius:12px; object-fit:cover;">
+                    <div style="flex:1"><b>${s.name}</b><br><small>S/ ${s.price} | Stock: ${s.qty}</small></div>
+                    <button onclick="logic_sell(${s.id})" style="background:var(--p-green); color:white; border:none; padding:10px; border-radius:10px; font-weight:700;">VENDER</button>
                 </div>
             `;
         }).join('');
-        document.getElementById('ui-total-stock').innerText = `S/ ${totalVal.toFixed(2)}`;
-        document.getElementById('ui-items-count').innerText = `${empireDB.stock.length} Items`;
+        document.getElementById('ui-stock-total').innerText = `S/ ${totalVal.toFixed(2)}`;
+        document.getElementById('ui-item-count').innerText = `${db.stock.length} Productos en almacén`;
+        document.getElementById('ui-cash').innerText = `S/ ${db.cash.toFixed(2)}`;
 
-        // Render Partners
-        document.getElementById('render-partners').innerHTML = empireDB.partners.map(p => `
-            <div class="item-row">
-                <div class="item-info"><b>${p.name}</b><small>Cel: ${p.phone}</small></div>
-                <button class="btn-icon">⚙️</button>
-            </div>
+        // Socios
+        document.getElementById('partners-list-render').innerHTML = db.partners.map(p => `
+            <div class="card"><b>${p.name}</b><br><small>WhatsApp: ${p.phone}</small></div>
         `).join('');
 
-        // Render Routes
-        document.getElementById('render-routes').innerHTML = empireDB.routes.map(r => `
-            <div class="item-row">
-                <div class="item-info"><b>${r.dest}</b><small>Chofer: ${r.driver}</small></div>
-                <span class="tag ${r.status==='done'?'tag-done':'tag-pending'}">${r.status}</span>
-            </div>
+        // Rutas
+        document.getElementById('routes-list-render').innerHTML = db.routes.map(r => `
+            <div class="card"><b>Destino: ${r.dest}</b><br><small>Chofer: ${r.driver} | Estado: ${r.status}</small></div>
         `).join('');
 
-        // Render Logs
-        document.getElementById('render-logs').innerHTML = empireDB.logs.slice(-15).reverse().map(l => `
-            <div style="padding:10px; border-bottom:1px solid var(--border); font-size:12px; display:flex; justify-content:space-between;">
-                <span><b>[${l.h}]</b> ${l.t}</span>
-                <b style="color:${l.m>=0?'var(--p-green)':'var(--p-red)'}">${l.m !== 0 ? 'S/ '+l.m.toFixed(2) : ''}</b>
-            </div>
+        // Logs
+        document.getElementById('logs-render').innerHTML = db.logs.slice(-10).reverse().map(l => `
+            <div style="font-size:13px; padding:8px; border-bottom:1px solid #ddd;"><b>${l.time}</b>: ${l.msg}</div>
         `).join('');
-
-        // UI Analytics
-        document.getElementById('ui-profit').innerText = `S/ ${empireDB.caja.toFixed(2)}`;
-        const advice = ["Invierte en más sacos", "El mercado de Huanta sube los sábados", "Reduce gastos operativos", "Buen ritmo de ventas"];
-        document.getElementById('ui-advice').innerText = "IA Quintana: " + advice[Math.floor(Math.random()*advice.length)];
     }
 
     // --- CHAT LOGIC ---
+    let activeChatId = null;
     function openChat(id) {
-        empireDB.activeChat = id;
-        const partner = empireDB.partners.find(x => x.id === id);
-        document.getElementById('chat-target-name').innerText = partner.name;
-        document.getElementById('chat-conversation-view').style.display = 'flex';
+        activeChatId = id;
+        const p = db.partners.find(x => x.id === id);
+        document.getElementById('chat-head-name').innerText = p.name;
+        document.getElementById('chat-head-avatar').innerText = p.name[0];
+        document.getElementById('chat-head-avatar').style.background = stringToColor(p.name);
+        document.getElementById('chat-window').style.display = 'flex';
         renderMessages();
     }
+    function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
 
-    function closeChat() { document.getElementById('chat-conversation-view').style.display = 'none'; }
-
-    function logic_sendMessage() {
-        const input = document.getElementById('chat-input');
-        if(!input.value.trim()) return;
-        const p = empireDB.partners.find(x => x.id === empireDB.activeChat);
-        const now = new Date();
-        const time = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
-        
-        p.chat.push({ u: 'me', t: input.value, h: time, type: 'text' });
-        input.value = '';
+    function sendMessage(text = null, type = 'text') {
+        const input = document.getElementById('msgInput');
+        const content = text || input.value;
+        if(!content) return;
+        const p = db.partners.find(x => x.id === activeChatId);
+        const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        p.msgs.push({ u: 'me', t: content, time: time, type: type });
+        p.lastMsg = type === 'img' ? '📷 Foto' : content;
+        if(!text) input.value = '';
         save();
         renderMessages();
-        
-        // Bot auto-reply simple
-        setTimeout(() => {
-            p.chat.push({ u: 'them', t: 'Entendido Quintana, proceso la información.', h: time, type: 'text' });
-            save();
-            renderMessages();
-        }, 1500);
     }
 
     function renderMessages() {
-        const p = empireDB.partners.find(x => x.id === empireDB.activeChat);
-        const flow = document.getElementById('chat-flow');
-        flow.innerHTML = p.chat.map(m => {
-            let content = m.t;
-            if(m.type === 'img') content = `<img src="${m.file}" style="width:100%; border-radius:15px;">`;
-            if(m.type === 'gps') content = `<div onclick="window.open('${m.file}')" style="color:var(--p-sky); font-weight:700;">📍 Ubicación Compartida</div>`;
-            return `<div class="msg ${m.u==='me'?'me':'them'}">${content}<div style="font-size:9px; opacity:0.6; text-align:right; margin-top:5px;">${m.h}</div></div>`;
-        }).join('');
-        flow.scrollTop = flow.scrollHeight;
+        const p = db.partners.find(x => x.id === activeChatId);
+        const box = document.getElementById('chat-messages');
+        box.innerHTML = p.msgs.map(m => `
+            <div class="bubble ${m.u}">${m.type === 'img' ? `<img src="${m.t}">` : m.t}<div style="font-size:10px; opacity:0.6; text-align:right;">${m.time}</div></div>
+        `).join('');
+        box.scrollTop = box.scrollHeight;
     }
 
-    function logic_sendGPS() {
-        if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                const url = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                const p = empireDB.partners.find(x => x.id === empireDB.activeChat);
-                p.chat.push({ u: 'me', t: 'GPS', h: 'Ahora', type: 'gps', file: url });
-                save();
-                renderMessages();
-                ui_toggleMenu('attach-box');
-            });
-        }
+    // --- FILES ---
+    function triggerFile() { document.getElementById('fileInput').click(); }
+    function handleFileUpload(el) {
+        const file = el.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => sendMessage(e.target.result, 'img');
+        reader.readAsDataURL(file);
     }
 
-    // --- SYSTEM LOGIC ---
-    function logic_sell(id) {
-        const itemIdx = empireDB.stock.findIndex(x => x.id === id);
-        if(empireDB.stock[itemIdx].qty > 0) {
-            const price = empireDB.stock[itemIdx].price;
-            empireDB.stock[itemIdx].qty--;
-            empireDB.caja += price;
-            empireDB.logs.push({ h: new Date().toLocaleTimeString(), t: `Venta: ${empireDB.stock[itemIdx].name}`, m: price });
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            notify("Venta registrada con éxito");
-            save();
-        } else {
-            notify("Sin stock suficiente!");
-        }
-    }
-
-    function logic_adminTap() {
-        window.ataps = (window.ataps || 0) + 1;
-        if(window.ataps >= 7) {
-            notify("MODO QUINTANA ELITE ACTIVADO");
-            confetti();
-            window.ataps = 0;
-        }
-        setTimeout(() => window.ataps = 0, 3000);
-    }
-
-    function notify(text) {
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.innerText = text;
-        document.getElementById('toaster').appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-
-    // --- UI HELPERS ---
-    function ui_modal(type) {
-        const content = document.getElementById('modal-content');
-        if(type === 'stock') {
-            content.innerHTML = `
-                <h2>Nuevo Producto</h2>
-                <input id="new-n" class="f-input" placeholder="Nombre">
-                <input id="new-p" class="f-input" type="number" placeholder="Precio S/">
-                <input id="new-q" class="f-input" type="number" placeholder="Cantidad Inicial">
-                <button class="btn-main" onclick="logic_addItem()">AÑADIR AL IMPERIO</button>
-            `;
-        } else if(type === 'partner') {
-            content.innerHTML = `
-                <h2>Vincular Socio</h2>
-                <input id="soc-n" class="f-input" placeholder="Nombre Completo">
-                <input id="soc-p" class="f-input" type="number" placeholder="Número Celular">
-                <button class="btn-main" onclick="logic_addPartner()">REGISTRAR EN RED</button>
-            `;
+    // --- MODALES ---
+    function ui_openModal(mode) {
+        const modal = document.getElementById('modal-content');
+        if(mode === 'stock') {
+            modal.innerHTML = `<h3>Nuevo Producto</h3>
+                <input id="in-n" class="f-input" placeholder="Nombre">
+                <input id="in-p" class="f-input" type="number" placeholder="Precio S/">
+                <input id="in-q" class="f-input" type="number" placeholder="Cantidad">
+                <button class="btn-action" onclick="logic_addStock()">GUARDAR EN ALMACÉN</button>`;
+        } else if(mode === 'partner') {
+            modal.innerHTML = `<h3>Nuevo Socio</h3>
+                <input id="in-sn" class="f-input" placeholder="Nombre Completo">
+                <input id="in-sp" class="f-input" placeholder="Celular">
+                <button class="btn-action" onclick="logic_addPartner()">VINCULAR</button>`;
         }
         document.getElementById('overlay').style.display = 'flex';
     }
-
     function ui_closeModal() { document.getElementById('overlay').style.display = 'none'; }
 
-    function logic_addItem() {
-        const n = document.getElementById('new-n').value, p = parseFloat(document.getElementById('new-p').value), q = parseInt(document.getElementById('new-q').value);
-        if(n && p) {
-            empireDB.stock.push({ id: Date.now(), name: n, price: p, qty: q, img: 'https://via.placeholder.com/150' });
-            save(); ui_closeModal();
-            notify("Producto añadido");
+    // --- LOGICA NEGOCIO ---
+    function logic_addStock() {
+        const n = document.getElementById('in-n').value, p = document.getElementById('in-p').value, q = document.getElementById('in-q').value;
+        if(n && p && q) {
+            db.stock.push({ id: Date.now(), name: n, price: parseFloat(p), qty: parseInt(q), img: 'https://via.placeholder.com/100' });
+            save(); ui_closeModal(); toast("Producto Agregado");
         }
     }
 
     function logic_addPartner() {
-        const n = document.getElementById('soc-n').value, p = document.getElementById('soc-p').value;
+        const n = document.getElementById('in-sn').value, p = document.getElementById('in-sp').value;
         if(n && p) {
-            empireDB.partners.push({ id: Date.now(), name: n, phone: p, chat: [] });
-            save(); ui_closeModal();
-            notify("Socio vinculado");
+            db.partners.push({ id: Date.now(), name: n, phone: p, lastMsg: '', msgs: [] });
+            save(); ui_closeModal(); toast("Socio Vinculado");
         }
     }
 
-    function initKeyboardFix() {
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', () => {
-                const inputArea = document.getElementById('input-container');
-                const chatFlow = document.getElementById('chat-flow');
-                if (window.visualViewport.height < window.innerHeight - 100) {
-                    const offset = window.innerHeight - window.visualViewport.height;
-                    inputArea.style.transform = `translateY(-${offset}px)`;
-                    chatFlow.style.paddingBottom = (offset + 20) + 'px';
-                    setTimeout(() => chatFlow.scrollTop = chatFlow.scrollHeight, 100);
-                } else {
-                    inputArea.style.transform = 'translateY(0)';
-                    chatFlow.style.paddingBottom = '20px';
-                }
-            });
-        }
-    }
-
-    function toggleTheme() {
-        const b = document.body;
-        const current = b.getAttribute('data-theme');
-        b.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
-    }
-
-    function ui_toggleMenu(id) {
-        const el = document.getElementById(id);
-        el.style.display = el.style.display === 'none' ? 'grid' : 'none';
-    }
-
-    function logic_resetSystem() {
-        if(confirm("¿Quintana, estás seguro de borrar todo el Imperio?")) {
-            localStorage.clear();
-            location.reload();
+    function logic_sell(id) {
+        const i = db.stock.find(x => x.id === id);
+        if(i.qty > 0) {
+            i.qty--; db.cash += i.price;
+            db.logs.push({ time: new Date().toLocaleTimeString(), msg: `Venta: ${i.name} S/ ${i.price}` });
+            confetti(); toast("Venta Exitosa"); save();
         }
     }
 
     function logic_exportCSV() {
         let csv = "Tipo,Detalle,Monto\n";
-        empireDB.logs.forEach(l => { csv += `Log,${l.t},${l.m}\n`; });
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = 'Empire_Report_Quintana.csv'; a.click();
-    }
-    
-    function applyTheme() {
-        // Podríamos forzar light por defecto según tus instrucciones
-        document.body.setAttribute('data-theme', 'light');
+        db.logs.forEach(l => csv += `Log,${l.msg},${l.time}\n`);
+        const blob = new Blob([csv], {type: 'text/csv'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'Empire_Report.csv'; a.click();
     }
 
+    function logic_reset() { if(confirm("¿BORRAR TODO EL IMPERIO?")) { localStorage.clear(); location.reload(); } }
+
+    function toast(t) {
+        const el = document.createElement('div'); el.className = 'toast'; el.innerText = t;
+        document.getElementById('toaster').appendChild(el);
+        setTimeout(() => el.remove(), 2500);
+    }
+
+    function stringToColor(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        return `hsl(${Math.abs(hash % 360)}, 60%, 50%)`;
+    }
+
+    function logic_adminTap() {
+        window.ataps = (window.ataps || 0) + 1;
+        if(window.ataps >= 7) { confetti(); toast("MODO ELITE: ON"); }
+    }
+
+    window.onload = renderAll;
 </script>
 </body>
 </html>
