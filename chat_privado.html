@@ -31,36 +31,41 @@
         .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.3s ease-out; }
         .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 170px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-        .card-stock { background: var(--white); border-radius: 28px; margin-bottom: 25px; box-shadow: var(--shadow-3d); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
-        .card-stock-detail { padding: 22px; }
-        .price-badge { background: var(--gradient-main); color: white; padding: 8px 18px; border-radius: 15px; font-weight: 800; font-size: 20px; }
+        /* ALMACÉN DETALLADO */
+        .card-stock { background: var(--white); border-radius: 25px; margin-bottom: 20px; box-shadow: var(--shadow-3d); padding: 20px; border-left: 8px solid var(--emerald-mid); }
+        .card-stock h3 { color: var(--emerald-deep); font-size: 22px; margin-bottom: 8px; }
+        .stock-info { font-size: 14px; color: #555; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .price-badge { background: var(--gradient-main); color: white; padding: 5px 15px; border-radius: 12px; font-weight: 800; font-size: 18px; display: inline-block; margin-top: 10px; }
 
+        /* CONTACTOS ESTILO WHATSAPP */
+        .contact-item { background: white; padding: 18px; border-radius: 22px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .avatar-box { width: 50px; height: 50px; background: var(--soft-sky); color: var(--emerald-mid); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; }
+
+        /* VENTANA DE CHAT */
         #chat-window { position: fixed; inset: 0; background: #f0f4f3; z-index: 5000; display: none; flex-direction: column; }
         .chat-nav { padding: 45px 15px 15px; background: var(--white); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee; }
         .btn-back { font-size: 48px; color: var(--emerald-mid); background: none; border: none; line-height: 0.5; }
         
-        .messages-area { 
-            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; 
-            background-color: #f7f9f8; -webkit-overflow-scrolling: touch;
-        }
-        .msg-bubble { max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.4; position: relative; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-color: #f7f9f8; }
+        .msg-bubble { max-width: 85%; padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.4; }
         .msg-bubble.me { align-self: flex-end; background: var(--gradient-main); color: white; border-bottom-right-radius: 5px; }
-        .msg-bubble.them { align-self: flex-start; background: var(--white); color: #2c3e50; border-bottom-left-radius: 5px; border: 1px solid #e0e0e0; }
+        .msg-bubble.them { align-self: flex-start; background: var(--white); border: 1px solid #e0e0e0; border-bottom-left-radius: 5px; }
 
-        /* INPUT BAR CORREGIDA */
-        .chat-input-box { padding: 10px 15px 30px; background: var(--white); display: flex; align-items: center; gap: 10px; border-top: 1px solid #eee; }
+        /* INPUT BARRA CORREGIDA (No pegada al borde) */
+        .chat-input-box { padding: 10px 15px 35px; background: var(--white); display: flex; align-items: center; gap: 10px; border-top: 1px solid #eee; }
         .btn-action-chat { background: var(--soft-sky); border: none; width: 48px; height: 48px; border-radius: 50%; font-size: 20px; color: var(--emerald-deep); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-        #m-input { flex: 1; border: none; background: #f1f5f4; padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; }
-        #btn-mic { background: #ffede8; color: #ff5252; margin-right: 2px; }
+        #m-input { flex: 1; border: none; background: #f1f5f4; padding: 14px 20px; border-radius: 25px; outline: none; font-size: 16px; }
+        #btn-mic { background: #ffede8; color: #ff5252; margin-right: 5px; }
         .btn-send-main { background: var(--emerald-deep) !important; color: white !important; margin-right: 5px; }
 
         nav { position: fixed; bottom: 0; width: 100%; height: 95px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #f0f0f0; z-index: 4000; }
         .nav-icon { font-size: 32px; color: #d0d7d4; }
         .nav-icon.active { color: var(--emerald-mid); transform: scale(1.1); }
 
+        /* MODALES */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 6000; display: none; align-items: flex-end; }
-        .modal-sheet { background: var(--white); width: 100%; border-radius: 30px 30px 0 0; padding: 30px 20px; }
-        .input-premium { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #ddd; font-size: 16px; }
+        .modal-sheet { background: var(--white); width: 100%; border-radius: 30px 30px 0 0; padding: 30px 20px; max-height: 90vh; overflow-y: auto; }
+        .input-premium { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #ddd; font-size: 16px; outline: none; background: #fafafa; }
     </style>
 </head>
 <body>
@@ -78,9 +83,10 @@
         </div>
         <div id="list-contacts"></div>
     </div>
+
     <div class="screen">
         <h2 style="font-weight:900; font-size:26px; margin-bottom:20px;">Mi Almacén</h2>
-        <button onclick="popProd()" style="background:var(--gradient-main); color:white; border:none; padding:15px; border-radius:20px; width:100%; font-weight:900; margin-bottom:20px;">+ NUEVO PRODUCTO</button>
+        <button onclick="popProd()" style="background:var(--gradient-main); color:white; border:none; padding:18px; border-radius:20px; width:100%; font-weight:900; margin-bottom:25px; box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);">+ NUEVO PRODUCTO</button>
         <div id="list-inventory"></div>
     </div>
 </div>
@@ -88,17 +94,17 @@
 <div id="chat-window">
     <div class="chat-nav">
         <button class="btn-back" onclick="closeChat()">‹</button>
-        <div id="active-av" style="width:45px; height:45px; background:var(--gradient-main); border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-weight:900;">?</div>
+        <div id="active-av" class="avatar-box">?</div>
         <div>
-            <b id="active-name" style="display:block;">Nombre</b>
-            <span id="active-phone" style="font-size:12px; color:gray;"></span>
+            <b id="active-name" style="display:block; font-size:18px;">Nombre</b>
+            <span id="active-phone" style="font-size:12px; color:var(--emerald-mid); font-weight:bold;"></span>
         </div>
     </div>
     <div class="messages-area" id="m-flow"></div>
     <div class="chat-input-box">
         <button class="btn-action-chat" onclick="document.getElementById('u-file').click()">📎</button>
         <input type="file" id="u-file" hidden onchange="handleFile(this)">
-        <input type="text" id="m-input" placeholder="Mensaje..." oninput="checkInput()">
+        <input type="text" id="m-input" placeholder="Escribe un mensaje..." oninput="checkInput()">
         <button class="btn-action-chat" id="btn-mic">🎤</button>
         <button id="btn-send" onclick="sendTxt()" class="btn-action-chat btn-send-main" style="display:none;">➤</button>
     </div>
@@ -114,17 +120,17 @@
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('RR_2026_V4')) || { contacts: [], inventory: [] };
+    let db = JSON.parse(localStorage.getItem('RR_2026_MASTER')) || { contacts: [], inventory: [] };
     let currentID = null;
     let recorder;
     let chunks = [];
     let taps = 0;
 
-    function save() { localStorage.setItem('RR_2026_V4', JSON.stringify(db)); render(); }
+    function save() { localStorage.setItem('RR_2026_MASTER', JSON.stringify(db)); render(); }
     
     function countAdmin() {
         taps++;
-        if(taps === 7) { alert("MODO ADMIN ACTIVADO"); taps=0; }
+        if(taps === 7) { alert("PANEL DE ADMINISTRACIÓN: Huanta 2026"); taps=0; }
         setTimeout(()=> taps=0, 2000);
     }
 
@@ -136,18 +142,11 @@
 
     function checkInput() {
         const val = document.getElementById('m-input').value;
-        const sendBtn = document.getElementById('btn-send');
-        const micBtn = document.getElementById('btn-mic');
-        if(val.length > 0) {
-            sendBtn.style.display = 'flex';
-            micBtn.style.display = 'none';
-        } else {
-            sendBtn.style.display = 'none';
-            micBtn.style.display = 'flex';
-        }
+        document.getElementById('btn-send').style.display = val.length > 0 ? 'flex' : 'none';
+        document.getElementById('btn-mic').style.display = val.length > 0 ? 'none' : 'flex';
     }
 
-    // AUDIO FLUIDO
+    // GESTIÓN DE AUDIO
     async function startRec() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -163,7 +162,7 @@
             recorder.start();
             document.getElementById('btn-mic').style.background = "#ff5252";
             document.getElementById('btn-mic').style.color = "white";
-        } catch(e) { alert("Permite el acceso al micrófono"); }
+        } catch(e) { alert("Error: Activa el permiso del micrófono."); }
     }
 
     function stopRec() {
@@ -174,9 +173,9 @@
         }
     }
 
-    const mic = document.getElementById('btn-mic');
-    mic.onpointerdown = startRec;
-    mic.onpointerup = stopRec;
+    const micBtn = document.getElementById('btn-mic');
+    micBtn.onpointerdown = (e) => { e.preventDefault(); startRec(); };
+    micBtn.onpointerup = (e) => { e.preventDefault(); stopRec(); };
 
     function handleFile(input) {
         const file = input.files[0];
@@ -194,7 +193,7 @@
 
     function sendTxt() {
         const i = document.getElementById('m-input');
-        if (!i.value) return;
+        if (!i.value.trim()) return;
         const c = db.contacts.find(x => x.id === currentID);
         c.msgs.push({ s:'me', t:'txt', v: i.value });
         i.value = ''; checkInput(); save(); renderMsgs();
@@ -203,11 +202,11 @@
     function renderMsgs() {
         const c = db.contacts.find(x => x.id === currentID);
         document.getElementById('m-flow').innerHTML = c.msgs.map(m => {
-            let html = m.v;
-            if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
-            if(m.t === 'audio') html = `<audio controls src="${m.v}" style="width:200px; height:35px;"></audio>`;
-            if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="color:inherit; font-weight:bold;">📄 ${m.n}</a>`;
-            return `<div class="msg-bubble ${m.s}">${html}</div>`;
+            let content = m.v;
+            if(m.t === 'img') content = `<img src="${m.v}" style="width:100%; border-radius:12px;">`;
+            if(m.t === 'audio') content = `<audio controls src="${m.v}" style="width:200px; height:40px;"></audio>`;
+            if(m.t === 'doc') content = `<a href="${m.v}" download="${m.n}" style="color:inherit; font-weight:bold;">📄 ${m.n}</a>`;
+            return `<div class="msg-bubble ${m.s}">${content}</div>`;
         }).join('');
         const f = document.getElementById('m-flow'); f.scrollTop = f.scrollHeight;
     }
@@ -216,7 +215,7 @@
         currentID = id;
         const c = db.contacts.find(x => x.id === id);
         document.getElementById('active-name').innerText = c.name;
-        document.getElementById('active-phone').innerText = c.phone || "";
+        document.getElementById('active-phone').innerText = c.phone || "Sin número";
         document.getElementById('active-av').innerText = c.name[0];
         document.getElementById('chat-window').style.display = 'flex';
         renderMsgs();
@@ -224,50 +223,69 @@
 
     function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
 
+    // MODALES CON MÁS PREGUNTAS (DETALLADOS)
     function popContact() {
         document.getElementById('m-content').innerHTML = `
             <h3 style="margin-bottom:15px; font-weight:900;">Nuevo Cliente</h3>
-            <input id="c-n" class="input-premium" placeholder="Nombre del Cliente">
+            <input id="c-n" class="input-premium" placeholder="Nombre completo">
             <input id="c-p" class="input-premium" placeholder="Número de Celular">
-            <button onclick="addC()" style="width:100%; padding:15px; background:var(--gradient-main); color:white; border:none; border-radius:10px; font-weight:900;">CREAR CHAT</button>
+            <input id="c-d" class="input-premium" placeholder="DNI o RUC (Opcional)">
+            <button onclick="addC()" class="btn-add-main" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">CREAR CONTACTO</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
     function addC() {
-        const n = document.getElementById('c-n').value;
-        const p = document.getElementById('c-p').value;
-        if(!n) return;
-        db.contacts.push({ id:Date.now(), name:n, phone:p, msgs:[] });
+        const name = document.getElementById('c-n').value;
+        const phone = document.getElementById('c-p').value;
+        if(!name) return;
+        db.contacts.push({ id:Date.now(), name, phone, msgs:[] });
         save(); document.getElementById('modal').style.display = 'none';
     }
 
     function popProd() {
         document.getElementById('m-content').innerHTML = `
-            <input id="p-n" class="input-premium" placeholder="Nombre Producto">
-            <input id="p-p" class="input-premium" placeholder="Precio S/">
-            <button onclick="addP()" style="width:100%; padding:15px; background:var(--gradient-main); color:white; border:none; border-radius:10px; font-weight:900;">GUARDAR PRODUCTO</button>
+            <h3 style="margin-bottom:15px; font-weight:900;">Registrar en Almacén</h3>
+            <input id="p-n" class="input-premium" placeholder="Nombre del Producto">
+            <input id="p-p" class="input-premium" placeholder="Precio de Venta (S/)">
+            <input id="p-q" class="input-premium" type="number" placeholder="Cantidad / Stock">
+            <input id="p-l" class="input-premium" placeholder="Ubicación (Pasillo/Tienda)">
+            <input id="p-o" class="input-premium" placeholder="Notas extra">
+            <button onclick="addP()" class="btn-add-main" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">GUARDAR PRODUCTO</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
     function addP() {
-        db.inventory.push({ id:Date.now(), name:document.getElementById('p-n').value, price:document.getElementById('p-p').value });
+        const n = document.getElementById('p-n').value;
+        const p = document.getElementById('p-p').value;
+        const q = document.getElementById('p-q').value;
+        const l = document.getElementById('p-l').value;
+        if(!n || !p) return;
+        db.inventory.push({ id:Date.now(), name:n, price:p, qty:q, loc:l });
         save(); document.getElementById('modal').style.display = 'none';
     }
 
     function render() {
+        // Render Contactos
         document.getElementById('list-contacts').innerHTML = db.contacts.map(c => `
-            <div onclick="openChat(${c.id})" style="background:white; padding:15px; border-radius:20px; margin-bottom:10px; display:flex; align-items:center; gap:15px; box-shadow:0 5px 15px rgba(0,0,0,0.03);">
-                <div style="width:45px; height:45px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:900;">${c.name[0]}</div>
+            <div class="contact-item" onclick="openChat(${c.id})">
+                <div class="avatar-box">${c.name[0]}</div>
                 <div style="flex:1">
-                    <b style="display:block;">${c.name}</b>
-                    <small style="color:gray;">${c.phone || ''}</small>
+                    <b style="font-size:18px;">${c.name}</b>
+                    <div style="font-size:13px; color:var(--emerald-mid); font-weight:600;">${c.phone || ''}</div>
                 </div>
+                <span style="color:#ccc; font-size:24px;">›</span>
             </div>
         `).join('');
+
+        // Render Almacén Detallado
         document.getElementById('list-inventory').innerHTML = db.inventory.map(p => `
-            <div class="card-stock" style="padding:20px;">
-                <h3 style="color:var(--emerald-deep);">${p.name}</h3>
-                <div class="price-badge" style="display:inline-block; margin-top:10px;">S/ ${p.price}</div>
+            <div class="card-stock">
+                <h3>${p.name}</h3>
+                <div class="stock-info">
+                    <span>📦 Stock: <b>${p.qty || '0'}</b></span>
+                    <span>📍 Ubicación: <b>${p.loc || 'N/A'}</b></span>
+                </div>
+                <div class="price-badge">S/ ${p.price}</div>
             </div>
         `).join('');
     }
