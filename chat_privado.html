@@ -4,315 +4,281 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rantiy y Rantikuy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-green: #20bf6b; /* Verde Huanta vibrante */
-            --dark-green: #1b5e20;
-            --soft-blue: #ebf5fb; /* Fondo para contrastes suaves */
-            --accent-blue: #3498db;
+            --vibrant-green: #00d26a; 
+            --deep-green: #0a3d21;
+            --soft-blue: #e3f2fd;
             --pure-white: #ffffff;
-            --bg-light: #f8fafb;
-            --text-main: #2d3436;
-            --shadow-soft: 0 8px 30px rgba(0,0,0,0.05);
+            --ghost-white: #f8fafc;
+            --shadow: 0 10px 25px rgba(0,0,0,0.06);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-light); color: var(--text-main); height: 100vh; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background: var(--ghost-white); color: #1e293b; height: 100vh; overflow: hidden; }
 
-        /* HEADER PREMIUM */
+        /* HEADER */
         header {
-            background: var(--pure-white); padding: 50px 20px 20px;
+            background: var(--pure-white); padding: 50px 20px 15px;
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-bottom: 3px solid var(--vibrant-green);
         }
-        .brand { display: flex; align-items: center; gap: 12px; }
-        .logo-container { 
-            width: 42px; height: 42px; background: var(--primary-green); border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 800; box-shadow: 0 4px 12px rgba(32,191,107,0.3);
-        }
-        .app-title { font-size: 22px; font-weight: 800; color: var(--dark-green); letter-spacing: -0.5px; }
+        .app-name { font-size: 24px; font-weight: 900; color: var(--deep-green); letter-spacing: -1px; }
+        .app-name span { color: var(--vibrant-green); }
 
-        /* NAVEGACIÓN DE PANTALLAS */
-        .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1); }
+        /* BOTÓN VOLVER (Para Almacén) */
+        .btn-return {
+            font-size: 35px; color: var(--vibrant-green); background: none; border: none;
+            cursor: pointer; display: flex; align-items: center; margin-bottom: 15px;
+            font-weight: 900;
+        }
+
+        /* VIEWPORT */
+        .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); }
         .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 160px; overflow-y: auto; }
 
-        /* ALMACÉN: CARDS MEJORADAS */
-        .inventory-card {
-            background: var(--pure-white); border-radius: 24px; margin-bottom: 20px;
-            box-shadow: var(--shadow-soft); overflow: hidden; border: 1px solid rgba(0,0,0,0.02);
+        /* ALMACÉN CARDS */
+        .card-stock {
+            background: var(--pure-white); border-radius: 25px; margin-bottom: 25px;
+            box-shadow: var(--shadow); border: 1px solid #f1f5f9; overflow: hidden;
         }
-        .inventory-img { width: 100%; height: 200px; object-fit: cover; background: #f0f0f0; }
-        .inventory-content { padding: 18px; }
-        .price-tag { 
-            color: var(--primary-green); font-size: 20px; font-weight: 800; 
-            background: var(--soft-blue); padding: 5px 12px; border-radius: 12px;
+        .card-stock img { width: 100%; height: 220px; object-fit: cover; background: #eee; }
+        .card-stock-detail { padding: 20px; }
+        .price-badge { 
+            background: var(--vibrant-green); color: white; padding: 6px 15px; 
+            border-radius: 12px; font-weight: 800; font-size: 18px;
         }
 
-        /* CHAT SISTEMA FUTURISTA */
-        #private-chat { position: fixed; inset: 0; background: var(--bg-light); z-index: 5000; display: none; flex-direction: column; }
-        .chat-header { 
-            padding: 50px 20px 20px; background: var(--pure-white); 
-            display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #eee;
+        /* CHAT VENTAS */
+        #chat-window { position: fixed; inset: 0; background: var(--ghost-white); z-index: 5000; display: none; flex-direction: column; }
+        .chat-nav { 
+            padding: 45px 15px 15px; background: var(--pure-white); 
+            display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
         }
-        .big-back-arrow { font-size: 40px; color: var(--primary-green); border: none; background: none; line-height: 0; padding-right: 10px; cursor: pointer; }
+        .btn-back { font-size: 45px; color: var(--vibrant-green); background: none; border: none; cursor: pointer; line-height: 1; }
         
-        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background: url('https://www.transparenttextures.com/patterns/cubes.png'); }
+        .messages-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
         
-        .bubble { 
-            max-width: 85%; padding: 14px 18px; border-radius: 22px; font-size: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); line-height: 1.5;
+        .msg-bubble { 
+            max-width: 80%; padding: 15px; border-radius: 22px; font-size: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
-        .bubble.me { 
-            align-self: flex-end; background: linear-gradient(135deg, var(--primary-green), #16a085); 
+        .msg-bubble.me { 
+            align-self: flex-end; background: linear-gradient(135deg, var(--vibrant-green), #00b894); 
             color: white; border-bottom-right-radius: 4px;
         }
-        .bubble.them { 
+        .msg-bubble.them { 
             align-self: flex-start; background: var(--pure-white); 
-            color: var(--text-main); border-bottom-left-radius: 4px;
+            color: #333; border-bottom-left-radius: 4px; border: 1px solid #f1f5f9;
         }
 
-        /* BARRA DE ENTRADA CHAT */
-        .input-bar { 
-            padding: 20px; background: var(--pure-white); display: flex; align-items: center; gap: 12px;
-            box-shadow: 0 -10px 25px rgba(0,0,0,0.03);
-        }
-        .icon-btn { 
-            background: var(--soft-blue); border: none; width: 48px; height: 48px; 
-            border-radius: 16px; font-size: 22px; color: var(--accent-blue);
-        }
+        .chat-input-box { padding: 15px 20px 30px; background: var(--pure-white); display: flex; align-items: center; gap: 12px; }
+        .btn-media { background: var(--soft-blue); border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 22px; color: #3498db; }
 
-        /* BOTONES Y FORMULARIOS */
-        .btn-add { 
-            background: var(--primary-green); color: white; border: none; padding: 18px; 
-            border-radius: 18px; width: 100%; font-weight: 800; font-size: 16px;
-            box-shadow: 0 10px 20px rgba(32,191,107,0.2); margin-bottom: 25px;
+        /* BUTTONS */
+        .btn-green { 
+            background: var(--vibrant-green); color: white; border: none; padding: 18px; 
+            border-radius: 20px; width: 100%; font-weight: 800; font-size: 16px; margin-bottom: 20px;
         }
-        .input-field { 
-            width: 100%; padding: 16px; border-radius: 16px; border: 2px solid #f1f3f5; 
-            margin-bottom: 15px; background: #fcfcfc; outline: none; font-size: 16px;
-        }
-        .input-field:focus { border-color: var(--primary-green); }
+        .input-box { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #f1f5f9; margin-bottom: 12px; outline: none; }
 
-        /* NAV INFERIOR */
+        /* NAV PRINCIPAL */
         nav { 
-            position: fixed; bottom: 0; width: 100%; height: 90px; background: var(--pure-white);
-            display: flex; justify-content: space-around; align-items: center; 
-            border-top: 1px solid #eee; z-index: 1000; padding-bottom: 20px;
+            position: fixed; bottom: 0; width: 100%; height: 85px; background: var(--pure-white);
+            display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #f1f5f9;
         }
-        .nav-tab { color: #d1d8e0; font-size: 28px; transition: 0.3s; }
-        .nav-tab.active { color: var(--primary-green); transform: scale(1.2); }
+        .nav-icon { color: #cbd5e1; font-size: 30px; transition: 0.3s; cursor: pointer; }
+        .nav-icon.active { color: var(--vibrant-green); transform: translateY(-5px); }
 
-        /* MODALES */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 6000; display: none; align-items: flex-end; }
-        .modal-card { background: var(--pure-white); width: 100%; border-radius: 32px 32px 0 0; padding: 35px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 6000; display: none; align-items: flex-end; }
+        .modal-inner { background: white; width: 100%; border-radius: 30px 30px 0 0; padding: 30px; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="brand" onclick="checkAdmin(this)">
-        <div class="logo-container">R&R</div>
-        <div class="app-title">Rantiy y Rantikuy</div>
-    </div>
-    <div style="font-size: 11px; font-weight: 800; color: var(--accent-blue); background: var(--soft-blue); padding: 4px 10px; border-radius: 20px;">HUANTA</div>
+<header id="main-header">
+    <div class="app-name" onclick="count7(this)">Rantiy y <span>Rantikuy</span></div>
+    <div style="font-size:12px; font-weight:800; color:var(--vibrant-green)">HUANTA</div>
 </header>
 
-<div class="viewport" id="viewport">
-    <div class="screen">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-            <h2 style="font-weight: 800; font-size: 24px;">Mensajes</h2>
-            <button onclick="openModalContact()" style="background:var(--primary-green); color:white; border:none; width:45px; height:45px; border-radius:15px; font-size:24px;">+</button>
+<div class="viewport" id="vp">
+    <div class="screen" id="screen-index">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="font-weight:900;">Ventas</h2>
+            <button onclick="popC()" style="background:var(--vibrant-green); color:white; border:none; width:40px; height:40px; border-radius:12px; font-size:20px;">+</button>
         </div>
-        <div id="list-contacts"></div>
+        <div id="contacts-list"></div>
     </div>
 
-    <div class="screen">
-        <h2 style="font-weight: 800; font-size: 24px; margin-bottom:20px;">Mi Almacén</h2>
-        <button class="btn-add" onclick="openModalProduct()">+ AGREGAR PRODUCTO</button>
-        <div id="list-inventory"></div>
+    <div class="screen" id="screen-stock">
+        <button class="btn-return" onclick="go(0, document.querySelector('.nav-icon'))">‹ <span style="font-size:16px; margin-left:5px;">Volver al Inicio</span></button>
+        
+        <h2 style="font-weight:900; margin-bottom:20px;">Mi Almacén</h2>
+        <button class="btn-green" onclick="popP()">+ AGREGAR PRODUCTO NUEVO</button>
+        <div id="inventory-list"></div>
     </div>
 </div>
 
-<div id="private-chat">
-    <div class="chat-header">
-        <button class="big-back-arrow" onclick="closeChat()">‹</button>
-        <div id="chat-icon" class="logo-container" style="width:45px; height:45px; font-size:18px;">?</div>
+<div id="chat-window">
+    <div class="chat-nav">
+        <button class="btn-back" onclick="closeChat()">‹</button>
+        <div id="c-avatar" style="width:45px; height:45px; background:var(--vibrant-green); border-radius:15px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px;">?</div>
         <div>
-            <b id="chat-target-name" style="font-size:18px; display:block;">Cargando...</b>
-            <span style="font-size:12px; color:var(--primary-green);">● Chat de Negocios</span>
+            <b id="c-name" style="font-size:18px;">Nombre</b>
+            <span style="display:block; font-size:11px; color:var(--vibrant-green);">Negociando ahora</span>
         </div>
     </div>
-    <div class="chat-messages" id="chat-flow"></div>
-    <div class="input-bar">
-        <button class="icon-btn" onclick="document.getElementById('file-up').click()">🖼️</button>
-        <input type="file" id="file-up" hidden accept="image/*" onchange="handleFile(this)">
-        <input type="text" id="msg-input" placeholder="Escribe un mensaje..." style="flex:1; border:none; background:#f1f3f5; padding:15px; border-radius:15px; outline:none;">
-        <button onclick="send()" style="background:var(--primary-green); border:none; width:50px; height:50px; border-radius:15px; color:white;">➤</button>
+    <div class="messages-area" id="m-flow"></div>
+    <div class="chat-input-box">
+        <button class="btn-media" onclick="document.getElementById('up-file').click()">📎</button>
+        <input type="file" id="up-file" hidden accept="image/*" onchange="sendImg(this)">
+        <input type="text" id="m-input" placeholder="Escribe tu propuesta..." style="flex:1; border:none; background:#f1f5f9; padding:15px; border-radius:15px; outline:none;">
+        <button onclick="sendT()" style="background:var(--vibrant-green); border:none; width:50px; height:50px; border-radius:15px; color:white;">➤</button>
     </div>
 </div>
 
 <nav>
-    <div class="nav-tab active" onclick="switchTab(0, this)">💬</div>
-    <div class="nav-tab" onclick="switchTab(1, this)">📦</div>
+    <div id="nav-msg" class="nav-icon active" onclick="go(0, this)">💬</div>
+    <div id="nav-stock" class="nav-icon" onclick="go(1, this)">📦</div>
 </nav>
 
-<div class="modal-overlay" id="modal-overlay" onclick="this.style.display='none'">
-    <div class="modal-card" onclick="event.stopPropagation()" id="modal-body"></div>
+<div class="modal" id="modal" onclick="this.style.display='none'">
+    <div class="modal-inner" onclick="event.stopPropagation()" id="m-body"></div>
 </div>
 
 <script>
-    let storage = JSON.parse(localStorage.getItem('RR_DATA_V4')) || { contacts: [], inventory: [] };
-    let tapCount = 0;
+    let db = JSON.parse(localStorage.getItem('RR_APP_2026')) || { contacts: [], inventory: [] };
+    let taps = 0;
 
-    function sync() {
-        localStorage.setItem('RR_DATA_V4', JSON.stringify(storage));
-        renderUI();
+    function save() { localStorage.setItem('RR_APP_2026', JSON.stringify(db)); render(); }
+
+    function go(s, el) {
+        document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`;
+        document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
+        if(s === 0) document.getElementById('nav-msg').classList.add('active');
+        else document.getElementById('nav-stock').classList.add('active');
     }
 
-    function switchTab(idx, el) {
-        document.getElementById('viewport').style.transform = `translateX(-${idx * 50}%)`;
-        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
+    function count7() {
+        taps++;
+        if(taps === 7) { alert("MODO ADMINISTRADOR"); taps=0; }
+        setTimeout(()=> taps=0, 2000);
     }
 
-    function checkAdmin() {
-        tapCount++;
-        if(tapCount >= 7) { alert("Modo Administrador: Activado"); tapCount = 0; }
-        setTimeout(() => tapCount = 0, 3000);
-    }
-
-    // GESTIÓN DE ALMACÉN
-    function openModalProduct() {
-        const body = document.getElementById('modal-body');
-        body.innerHTML = `
-            <h3 style="margin-bottom:20px; font-weight:800;">Detalles del Producto</h3>
-            <input id="p-name" class="input-field" placeholder="1. ¿Qué producto es?">
-            <input id="p-qty" class="input-field" type="number" placeholder="2. Cantidad (Stock)">
-            <input id="p-price" class="input-field" type="number" placeholder="3. Precio Unitario (S/)">
-            <input id="p-note" class="input-field" placeholder="4. Ubicación o Nota">
-            <p style="font-size:13px; margin-bottom:10px; color:#666;">Imagen del producto:</p>
-            <input id="p-img" type="file" accept="image/*" class="input-field" style="border:none; padding:0;">
-            <button class="btn-add" onclick="saveProduct()" style="margin-top:10px;">GUARDAR EN TELÉFONO</button>
+    function popP() {
+        document.getElementById('m-body').innerHTML = `
+            <h3 style="margin-bottom:20px">Registro de Producto</h3>
+            <input id="in1" class="input-box" placeholder="Nombre del producto">
+            <input id="in2" class="input-box" type="number" placeholder="Stock">
+            <input id="in3" class="input-box" type="number" placeholder="Precio (S/)">
+            <input id="in4" class="input-box" placeholder="Nota/Ubicación">
+            <input id="in-img" type="file" accept="image/*" class="input-box" style="border:none;">
+            <button class="btn-green" onclick="addP()">GUARDAR EN ALMACÉN</button>
         `;
-        document.getElementById('modal-overlay').style.display = 'flex';
+        document.getElementById('modal').style.display = 'flex';
     }
 
-    function saveProduct() {
-        const file = document.getElementById('p-img').files[0];
+    function addP() {
+        const f = document.getElementById('in-img').files[0];
         const reader = new FileReader();
-        const data = {
-            id: Date.now(),
-            name: document.getElementById('p-name').value,
-            qty: document.getElementById('p-qty').value,
-            price: document.getElementById('p-price').value,
-            note: document.getElementById('p-note').value
-        };
-
-        if(file) {
-            reader.onloadend = () => { data.img = reader.result; storage.inventory.push(data); sync(); };
-            reader.readAsDataURL(file);
+        const item = { id:Date.now(), name:document.getElementById('in1').value, stock:document.getElementById('in2').value, price:document.getElementById('in3').value, note:document.getElementById('in4').value };
+        if(f) {
+            reader.onloadend = () => { item.img = reader.result; db.inventory.push(item); save(); };
+            reader.readAsDataURL(f);
         } else {
-            data.img = ""; storage.inventory.push(data); sync();
+            item.img = ""; db.inventory.push(item); save();
         }
-        document.getElementById('modal-overlay').style.display = 'none';
+        document.getElementById('modal').style.display = 'none';
     }
 
-    // GESTIÓN DE CHAT
-    function openModalContact() {
-        const body = document.getElementById('modal-body');
-        body.innerHTML = `
-            <h3 style="margin-bottom:20px; font-weight:800;">Nuevo Contacto</h3>
-            <input id="c-name" class="input-field" placeholder="Nombre del contacto">
-            <input id="c-tag" class="input-field" placeholder="Etiqueta (Ej: Cliente Huanta)">
-            <button class="btn-add" onclick="saveContact()">AGREGAR A LA LISTA</button>
+    function popC() {
+        document.getElementById('m-body').innerHTML = `
+            <h3 style="margin-bottom:20px">Nuevo Cliente</h3>
+            <input id="cn1" class="input-box" placeholder="Nombre">
+            <input id="cn2" class="input-box" placeholder="Tipo">
+            <button class="btn-green" onclick="addC()">CREAR CHAT</button>
         `;
-        document.getElementById('modal-overlay').style.display = 'flex';
+        document.getElementById('modal').style.display = 'flex';
     }
 
-    function saveContact() {
-        storage.contacts.push({ id: Date.now(), name: document.getElementById('c-name').value, tag: document.getElementById('c-tag').value, chats: [] });
-        sync();
-        document.getElementById('modal-overlay').style.display = 'none';
+    function addC() {
+        db.contacts.push({ id:Date.now(), name:document.getElementById('cn1').value, tag:document.getElementById('cn2').value, msgs:[] });
+        save(); document.getElementById('modal').style.display = 'none';
     }
 
-    let currentChatId = null;
+    let activeID = null;
     function openChat(id) {
-        currentChatId = id;
-        const c = storage.contacts.find(x => x.id === id);
-        document.getElementById('chat-target-name').innerText = c.name;
-        document.getElementById('chat-icon').innerText = c.name[0];
-        document.getElementById('private-chat').style.display = 'flex';
-        renderMsgs();
+        activeID = id;
+        const c = db.contacts.find(x => x.id === id);
+        document.getElementById('c-name').innerText = c.name;
+        document.getElementById('c-avatar').innerText = c.name[0];
+        document.getElementById('chat-window').style.display = 'flex';
+        renderM();
     }
 
-    function closeChat() { document.getElementById('private-chat').style.display = 'none'; }
+    function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
 
-    function send() {
-        const txt = document.getElementById('msg-input');
-        if(!txt.value) return;
-        const c = storage.contacts.find(x => x.id === currentChatId);
-        c.chats.push({ side: 'me', type: 'text', val: txt.value });
-        txt.value = '';
-        sync(); renderMsgs();
+    function sendT() {
+        const i = document.getElementById('m-input');
+        if(!i.value) return;
+        const c = db.contacts.find(x => x.id === activeID);
+        c.msgs.push({ s:'me', t:'txt', v:i.value });
+        i.value = ''; save(); renderM();
     }
 
-    function handleFile(input) {
-        if (input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const c = storage.contacts.find(x => x.id === currentChatId);
-                c.chats.push({ side: 'me', type: 'img', val: e.target.result });
-                sync(); renderMsgs();
+    function sendImg(input) {
+        if(input.files[0]) {
+            const r = new FileReader();
+            r.onload = (e) => {
+                const c = db.contacts.find(x => x.id === activeID);
+                c.msgs.push({ s:'me', t:'img', v:e.target.result });
+                save(); renderM();
             };
-            reader.readAsDataURL(input.files[0]);
+            r.readAsDataURL(input.files[0]);
         }
     }
 
-    function renderMsgs() {
-        const c = storage.contacts.find(x => x.id === currentChatId);
-        const flow = document.getElementById('chat-flow');
-        flow.innerHTML = c.chats.map(m => `
-            <div class="bubble ${m.side}">
-                ${m.type === 'text' ? m.val : `<img src="${m.val}" style="width:100%; border-radius:12px;">`}
+    function renderM() {
+        const c = db.contacts.find(x => x.id === activeID);
+        document.getElementById('m-flow').innerHTML = c.msgs.map(m => `
+            <div class="msg-bubble ${m.s}">
+                ${m.t === 'txt' ? m.v : `<img src="${m.v}" style="width:100%; border-radius:15px; margin-top:5px;">`}
             </div>
         `).join('');
-        flow.scrollTop = flow.scrollHeight;
+        const f = document.getElementById('m-flow'); f.scrollTop = f.scrollHeight;
     }
 
-    function renderUI() {
-        // Render Almacén con Fotos
-        document.getElementById('list-inventory').innerHTML = storage.inventory.map(p => `
-            <div class="inventory-card">
-                ${p.img ? `<img src="${p.img}" class="inventory-img">` : `<div class="inventory-img" style="display:flex; align-items:center; justify-content:center; color:#ccc;">Sin foto</div>`}
-                <div class="inventory-content">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-                        <b style="font-size:18px;">${p.name}</b>
-                        <span class="price-tag">S/ ${p.price}</span>
+    function render() {
+        document.getElementById('inventory-list').innerHTML = db.inventory.map(p => `
+            <div class="card-stock">
+                ${p.img ? `<img src="${p.img}">` : `<div style="height:150px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">Sin Foto</div>`}
+                <div class="card-stock-detail">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="font-size:20px; color:var(--deep-green);">${p.name}</h3>
+                        <div class="price-badge">S/ ${p.price}</div>
                     </div>
-                    <div style="font-size:14px; color:#666;">
-                        <span style="margin-right:15px;">📦 Cantidad: <b>${p.qty}</b></span>
+                    <div style="font-size:14px; color:#64748b; display:flex; gap:15px;">
+                        <span>📦 Stock: <b>${p.stock}</b></span>
                         <span>📍 ${p.note}</span>
                     </div>
                 </div>
             </div>
         `).join('');
 
-        // Render Contactos
-        document.getElementById('list-contacts').innerHTML = storage.contacts.map(c => `
-            <div onclick="openChat(${c.id})" style="background:white; padding:18px; border-radius:22px; display:flex; align-items:center; gap:15px; margin-bottom:12px; box-shadow:var(--shadow-soft);">
-                <div class="logo-container" style="background:var(--soft-blue); color:var(--primary-green); box-shadow:none;">${c.name[0]}</div>
+        document.getElementById('contacts-list').innerHTML = db.contacts.map(c => `
+            <div onclick="openChat(${c.id})" style="background:white; padding:18px; border-radius:20px; display:flex; align-items:center; gap:15px; margin-bottom:15px; box-shadow:var(--shadow);">
+                <div style="width:50px; height:50px; background:var(--soft-blue); color:var(--vibrant-green); border-radius:15px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;">${c.name[0]}</div>
                 <div style="flex:1">
-                    <b style="font-size:16px;">${c.name}</b>
-                    <small style="display:block; color:var(--primary-green); font-weight:600;"># ${c.tag}</small>
+                    <b style="font-size:17px;">${c.name}</b>
+                    <small style="display:block; color:var(--vibrant-green); font-weight:600;"># ${c.tag}</small>
                 </div>
-                <span style="color:#ddd; font-size:24px;">›</span>
+                <span style="color:#e2e8f0; font-size:25px;">›</span>
             </div>
         `).join('');
     }
 
-    window.onload = renderUI;
+    window.onload = render;
 </script>
 </body>
 </html>
