@@ -32,7 +32,6 @@
         .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 170px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
         .card-stock { background: var(--white); border-radius: 28px; margin-bottom: 25px; box-shadow: var(--shadow-3d); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
-        .card-stock img { width: 100%; height: 240px; object-fit: cover; }
         .card-stock-detail { padding: 22px; }
         .price-badge { background: var(--gradient-main); color: white; padding: 8px 18px; border-radius: 15px; font-weight: 800; font-size: 20px; }
 
@@ -48,13 +47,12 @@
         .msg-bubble.me { align-self: flex-end; background: var(--gradient-main); color: white; border-bottom-right-radius: 5px; }
         .msg-bubble.them { align-self: flex-start; background: var(--white); color: #2c3e50; border-bottom-left-radius: 5px; border: 1px solid #e0e0e0; }
 
-        .chat-input-box { padding: 10px 15px 30px; background: var(--white); display: flex; align-items: center; gap: 8px; }
-        .btn-action-chat { background: var(--soft-sky); border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 20px; color: var(--emerald-deep); flex-shrink: 0; }
+        /* INPUT BAR CORREGIDA */
+        .chat-input-box { padding: 10px 15px 30px; background: var(--white); display: flex; align-items: center; gap: 10px; border-top: 1px solid #eee; }
+        .btn-action-chat { background: var(--soft-sky); border: none; width: 48px; height: 48px; border-radius: 50%; font-size: 20px; color: var(--emerald-deep); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
         #m-input { flex: 1; border: none; background: #f1f5f4; padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; }
-
-        /* REPRODUCTOR DE AUDIO MINI */
-        .audio-player { display: flex; align-items: center; gap: 10px; min-width: 160px; }
-        .audio-player button { background: white; border: none; border-radius: 50%; width: 30px; height: 30px; color: var(--emerald-deep); font-size: 12px; }
+        #btn-mic { background: #ffede8; color: #ff5252; margin-right: 2px; }
+        .btn-send-main { background: var(--emerald-deep) !important; color: white !important; margin-right: 5px; }
 
         nav { position: fixed; bottom: 0; width: 100%; height: 95px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #f0f0f0; z-index: 4000; }
         .nav-icon { font-size: 32px; color: #d0d7d4; }
@@ -62,6 +60,7 @@
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 6000; display: none; align-items: flex-end; }
         .modal-sheet { background: var(--white); width: 100%; border-radius: 30px 30px 0 0; padding: 30px 20px; }
+        .input-premium { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #ddd; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -90,15 +89,18 @@
     <div class="chat-nav">
         <button class="btn-back" onclick="closeChat()">‹</button>
         <div id="active-av" style="width:45px; height:45px; background:var(--gradient-main); border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-weight:900;">?</div>
-        <b id="active-name">Nombre</b>
+        <div>
+            <b id="active-name" style="display:block;">Nombre</b>
+            <span id="active-phone" style="font-size:12px; color:gray;"></span>
+        </div>
     </div>
     <div class="messages-area" id="m-flow"></div>
     <div class="chat-input-box">
         <button class="btn-action-chat" onclick="document.getElementById('u-file').click()">📎</button>
         <input type="file" id="u-file" hidden onchange="handleFile(this)">
-        <input type="text" id="m-input" placeholder="Mensaje...">
-        <button class="btn-action-chat" id="btn-mic" style="background:#ffede8;">🎤</button>
-        <button onclick="sendTxt()" class="btn-action-chat" style="background:var(--emerald-deep); color:white;">➤</button>
+        <input type="text" id="m-input" placeholder="Mensaje..." oninput="checkInput()">
+        <button class="btn-action-chat" id="btn-mic">🎤</button>
+        <button id="btn-send" onclick="sendTxt()" class="btn-action-chat btn-send-main" style="display:none;">➤</button>
     </div>
 </div>
 
@@ -112,39 +114,63 @@
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('RR_2026_V3')) || { contacts: [], inventory: [] };
+    let db = JSON.parse(localStorage.getItem('RR_2026_V4')) || { contacts: [], inventory: [] };
     let currentID = null;
     let recorder;
     let chunks = [];
+    let taps = 0;
 
-    function save() { localStorage.setItem('RR_2026_V3', JSON.stringify(db)); render(); }
+    function save() { localStorage.setItem('RR_2026_V4', JSON.stringify(db)); render(); }
+    
+    function countAdmin() {
+        taps++;
+        if(taps === 7) { alert("MODO ADMIN ACTIVADO"); taps=0; }
+        setTimeout(()=> taps=0, 2000);
+    }
+
     function go(s, el) { 
         document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`;
         document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
         el.classList.add('active');
     }
 
-    // AUDIO FLUIDO (Optimizado para no trabar la app)
+    function checkInput() {
+        const val = document.getElementById('m-input').value;
+        const sendBtn = document.getElementById('btn-send');
+        const micBtn = document.getElementById('btn-mic');
+        if(val.length > 0) {
+            sendBtn.style.display = 'flex';
+            micBtn.style.display = 'none';
+        } else {
+            sendBtn.style.display = 'none';
+            micBtn.style.display = 'flex';
+        }
+    }
+
+    // AUDIO FLUIDO
     async function startRec() {
-        if (!navigator.mediaDevices) return alert("Micro no disponible");
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        recorder = new MediaRecorder(stream);
-        chunks = [];
-        recorder.ondataavailable = e => chunks.push(e.data);
-        recorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
-            const reader = new FileReader();
-            reader.onload = () => sendMedia('audio', reader.result);
-            reader.readAsDataURL(blob);
-        };
-        recorder.start();
-        document.getElementById('btn-mic').style.background = "#ff5252";
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            recorder = new MediaRecorder(stream);
+            chunks = [];
+            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+                const reader = new FileReader();
+                reader.onload = () => sendMedia('audio', reader.result);
+                reader.readAsDataURL(blob);
+            };
+            recorder.start();
+            document.getElementById('btn-mic').style.background = "#ff5252";
+            document.getElementById('btn-mic').style.color = "white";
+        } catch(e) { alert("Permite el acceso al micrófono"); }
     }
 
     function stopRec() {
         if (recorder && recorder.state !== "inactive") {
             recorder.stop();
             document.getElementById('btn-mic').style.background = "#ffede8";
+            document.getElementById('btn-mic').style.color = "#ff5252";
         }
     }
 
@@ -171,7 +197,7 @@
         if (!i.value) return;
         const c = db.contacts.find(x => x.id === currentID);
         c.msgs.push({ s:'me', t:'txt', v: i.value });
-        i.value = ''; save(); renderMsgs();
+        i.value = ''; checkInput(); save(); renderMsgs();
     }
 
     function renderMsgs() {
@@ -179,8 +205,8 @@
         document.getElementById('m-flow').innerHTML = c.msgs.map(m => {
             let html = m.v;
             if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
-            if(m.t === 'audio') html = `<div class="audio-player"><audio controls src="${m.v}" style="width:200px; height:30px;"></audio></div>`;
-            if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="color:inherit; text-decoration:underline;">📄 ${m.n}</a>`;
+            if(m.t === 'audio') html = `<audio controls src="${m.v}" style="width:200px; height:35px;"></audio>`;
+            if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="color:inherit; font-weight:bold;">📄 ${m.n}</a>`;
             return `<div class="msg-bubble ${m.s}">${html}</div>`;
         }).join('');
         const f = document.getElementById('m-flow'); f.scrollTop = f.scrollHeight;
@@ -190,29 +216,35 @@
         currentID = id;
         const c = db.contacts.find(x => x.id === id);
         document.getElementById('active-name').innerText = c.name;
+        document.getElementById('active-phone').innerText = c.phone || "";
+        document.getElementById('active-av').innerText = c.name[0];
         document.getElementById('chat-window').style.display = 'flex';
         renderMsgs();
     }
 
     function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
 
-    // MODALES Y RENDER (Sin cambios de diseño)
     function popContact() {
         document.getElementById('m-content').innerHTML = `
-            <input id="c-n" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;" placeholder="Nombre del Cliente">
+            <h3 style="margin-bottom:15px; font-weight:900;">Nuevo Cliente</h3>
+            <input id="c-n" class="input-premium" placeholder="Nombre del Cliente">
+            <input id="c-p" class="input-premium" placeholder="Número de Celular">
             <button onclick="addC()" style="width:100%; padding:15px; background:var(--gradient-main); color:white; border:none; border-radius:10px; font-weight:900;">CREAR CHAT</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
     function addC() {
-        db.contacts.push({ id:Date.now(), name:document.getElementById('c-n').value, msgs:[] });
+        const n = document.getElementById('c-n').value;
+        const p = document.getElementById('c-p').value;
+        if(!n) return;
+        db.contacts.push({ id:Date.now(), name:n, phone:p, msgs:[] });
         save(); document.getElementById('modal').style.display = 'none';
     }
 
     function popProd() {
         document.getElementById('m-content').innerHTML = `
-            <input id="p-n" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;" placeholder="Nombre Producto">
-            <input id="p-p" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;" placeholder="Precio S/">
+            <input id="p-n" class="input-premium" placeholder="Nombre Producto">
+            <input id="p-p" class="input-premium" placeholder="Precio S/">
             <button onclick="addP()" style="width:100%; padding:15px; background:var(--gradient-main); color:white; border:none; border-radius:10px; font-weight:900;">GUARDAR PRODUCTO</button>
         `;
         document.getElementById('modal').style.display = 'flex';
@@ -226,7 +258,10 @@
         document.getElementById('list-contacts').innerHTML = db.contacts.map(c => `
             <div onclick="openChat(${c.id})" style="background:white; padding:15px; border-radius:20px; margin-bottom:10px; display:flex; align-items:center; gap:15px; box-shadow:0 5px 15px rgba(0,0,0,0.03);">
                 <div style="width:45px; height:45px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:900;">${c.name[0]}</div>
-                <b>${c.name}</b>
+                <div style="flex:1">
+                    <b style="display:block;">${c.name}</b>
+                    <small style="color:gray;">${c.phone || ''}</small>
+                </div>
             </div>
         `).join('');
         document.getElementById('list-inventory').innerHTML = db.inventory.map(p => `
