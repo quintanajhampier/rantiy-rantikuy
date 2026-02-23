@@ -7,240 +7,255 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --vibrant-green: #00d26a; 
-            --deep-green: #0a3d21;
-            --soft-blue: #e3f2fd;
-            --pure-white: #ffffff;
-            --ghost-white: #f8fafc;
-            --shadow: 0 10px 25px rgba(0,0,0,0.06);
+            --emerald-light: #2ecc71;
+            --emerald-mid: #27ae60;
+            --emerald-deep: #1b5e20;
+            --soft-sky: #e8f4f8;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --shadow-3d: 0 15px 35px rgba(27, 94, 32, 0.15);
+            --gradient-main: linear-gradient(135deg, var(--emerald-light), var(--emerald-deep));
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background: var(--ghost-white); color: #1e293b; height: 100vh; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #f0f4f3; color: #1a2a21; height: 100vh; overflow: hidden; }
 
-        /* HEADER */
+        /* HEADER PREMIUM */
         header {
-            background: var(--pure-white); padding: 50px 20px 15px;
+            background: var(--white); padding: 50px 20px 15px;
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 3px solid var(--vibrant-green);
+            border-bottom: 4px solid var(--emerald-mid);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        .app-name { font-size: 24px; font-weight: 900; color: var(--deep-green); letter-spacing: -1px; }
-        .app-name span { color: var(--vibrant-green); }
-
-        /* BOTÓN VOLVER (Para Almacén) */
-        .btn-return {
-            font-size: 35px; color: var(--vibrant-green); background: none; border: none;
-            cursor: pointer; display: flex; align-items: center; margin-bottom: 15px;
-            font-weight: 900;
-        }
+        .app-name { font-size: 26px; font-weight: 900; color: var(--emerald-deep); letter-spacing: -1px; }
+        .app-name span { color: var(--emerald-light); }
 
         /* VIEWPORT */
-        .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); }
-        .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 160px; overflow-y: auto; }
+        .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 170px; overflow-y: auto; }
 
-        /* ALMACÉN CARDS */
+        /* ALMACÉN: DISEÑO ESPECIAL */
+        .btn-return {
+            font-size: 40px; color: var(--emerald-mid); background: none; border: none;
+            display: flex; align-items: center; margin-bottom: 10px; font-weight: 900;
+        }
         .card-stock {
-            background: var(--pure-white); border-radius: 25px; margin-bottom: 25px;
-            box-shadow: var(--shadow); border: 1px solid #f1f5f9; overflow: hidden;
+            background: var(--white); border-radius: 28px; margin-bottom: 25px;
+            box-shadow: var(--shadow-3d); overflow: hidden; border: 1px solid rgba(0,0,0,0.05);
+            transition: 0.3s;
         }
-        .card-stock img { width: 100%; height: 220px; object-fit: cover; background: #eee; }
-        .card-stock-detail { padding: 20px; }
+        .card-stock img { width: 100%; height: 240px; object-fit: cover; }
+        .card-stock-detail { padding: 22px; background: var(--white); }
         .price-badge { 
-            background: var(--vibrant-green); color: white; padding: 6px 15px; 
-            border-radius: 12px; font-weight: 800; font-size: 18px;
+            background: var(--gradient-main); color: white; padding: 8px 18px; 
+            border-radius: 15px; font-weight: 800; font-size: 20px; box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
         }
 
-        /* CHAT VENTAS */
-        #chat-window { position: fixed; inset: 0; background: var(--ghost-white); z-index: 5000; display: none; flex-direction: column; }
+        /* CHAT: DISEÑO ADICTIVO */
+        #chat-window { position: fixed; inset: 0; background: #f0f4f3; z-index: 5000; display: none; flex-direction: column; }
         .chat-nav { 
-            padding: 45px 15px 15px; background: var(--pure-white); 
-            display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            padding: 45px 15px 15px; background: var(--white); 
+            display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee;
         }
-        .btn-back { font-size: 45px; color: var(--vibrant-green); background: none; border: none; cursor: pointer; line-height: 1; }
-        
-        .messages-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        
+        .btn-back { font-size: 48px; color: var(--emerald-mid); background: none; border: none; line-height: 0.5; }
+        .messages-area { 
+            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; 
+            background-image: radial-gradient(var(--emerald-light) 0.5px, transparent 0.5px);
+            background-size: 20px 20px; background-color: #f7f9f8;
+        }
         .msg-bubble { 
-            max-width: 80%; padding: 15px; border-radius: 22px; font-size: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            max-width: 82%; padding: 16px 20px; border-radius: 25px; font-size: 15px; line-height: 1.4;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
         }
         .msg-bubble.me { 
-            align-self: flex-end; background: linear-gradient(135deg, var(--vibrant-green), #00b894); 
-            color: white; border-bottom-right-radius: 4px;
+            align-self: flex-end; background: var(--gradient-main); 
+            color: white; border-bottom-right-radius: 5px;
         }
         .msg-bubble.them { 
-            align-self: flex-start; background: var(--pure-white); 
-            color: #333; border-bottom-left-radius: 4px; border: 1px solid #f1f5f9;
+            align-self: flex-start; background: var(--white); 
+            color: #2c3e50; border-bottom-left-radius: 5px; border: 1px solid #e0e0e0;
         }
 
-        .chat-input-box { padding: 15px 20px 30px; background: var(--pure-white); display: flex; align-items: center; gap: 12px; }
-        .btn-media { background: var(--soft-blue); border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 22px; color: #3498db; }
-
-        /* BUTTONS */
-        .btn-green { 
-            background: var(--vibrant-green); color: white; border: none; padding: 18px; 
-            border-radius: 20px; width: 100%; font-weight: 800; font-size: 16px; margin-bottom: 20px;
+        /* INPUT AREA MODERNA */
+        .chat-input-box { 
+            padding: 15px 20px 35px; background: var(--white); display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.03);
         }
-        .input-box { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #f1f5f9; margin-bottom: 12px; outline: none; }
+        .btn-action-chat { 
+            background: var(--soft-sky); border: none; width: 48px; height: 48px; 
+            border-radius: 50%; font-size: 22px; color: var(--emerald-deep); 
+        }
 
-        /* NAV PRINCIPAL */
+        /* BOTONES Y CAMPOS */
+        .btn-primary { 
+            background: var(--gradient-main); color: white; border: none; padding: 20px; 
+            border-radius: 22px; width: 100%; font-weight: 900; font-size: 17px;
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.25); margin-bottom: 25px;
+        }
+        .input-premium { 
+            width: 100%; padding: 18px; border-radius: 18px; border: 2.5px solid #eef2f1; 
+            margin-bottom: 15px; background: #fcfdfd; outline: none; font-size: 16px; transition: 0.3s;
+        }
+        .input-premium:focus { border-color: var(--emerald-light); background: var(--white); }
+
+        /* NAV */
         nav { 
-            position: fixed; bottom: 0; width: 100%; height: 85px; background: var(--pure-white);
-            display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #f1f5f9;
+            position: fixed; bottom: 0; width: 100%; height: 95px; background: var(--white);
+            display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #f0f0f0;
         }
-        .nav-icon { color: #cbd5e1; font-size: 30px; transition: 0.3s; cursor: pointer; }
-        .nav-icon.active { color: var(--vibrant-green); transform: translateY(-5px); }
+        .nav-icon { font-size: 32px; color: #d0d7d4; transition: 0.3s; }
+        .nav-icon.active { color: var(--emerald-mid); transform: scale(1.2); }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 6000; display: none; align-items: flex-end; }
-        .modal-inner { background: white; width: 100%; border-radius: 30px 30px 0 0; padding: 30px; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 6000; display: none; align-items: flex-end; }
+        .modal-sheet { background: var(--white); width: 100%; border-radius: 35px 35px 0 0; padding: 40px 25px; }
     </style>
 </head>
 <body>
 
-<header id="main-header">
-    <div class="app-name" onclick="count7(this)">Rantiy y <span>Rantikuy</span></div>
-    <div style="font-size:12px; font-weight:800; color:var(--vibrant-green)">HUANTA</div>
+<header>
+    <div class="app-name" onclick="countAdmin()">Rantiy y <span>Rantikuy</span></div>
+    <div style="font-size:11px; font-weight:900; background:var(--soft-sky); padding:5px 12px; border-radius:15px; color:var(--emerald-deep)">PRODUCTIVIDAD</div>
 </header>
 
 <div class="viewport" id="vp">
-    <div class="screen" id="screen-index">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="font-weight:900;">Ventas</h2>
-            <button onclick="popC()" style="background:var(--vibrant-green); color:white; border:none; width:40px; height:40px; border-radius:12px; font-size:20px;">+</button>
+    <div class="screen">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+            <h2 style="font-weight:900; font-size:28px;">Ventas</h2>
+            <button onclick="popContact()" style="background:var(--gradient-main); color:white; border:none; width:50px; height:50px; border-radius:18px; font-size:25px; box-shadow:0 8px 15px rgba(39,174,96,0.2)">+</button>
         </div>
-        <div id="contacts-list"></div>
+        <div id="list-contacts"></div>
     </div>
 
-    <div class="screen" id="screen-stock">
-        <button class="btn-return" onclick="go(0, document.querySelector('.nav-icon'))">‹ <span style="font-size:16px; margin-left:5px;">Volver al Inicio</span></button>
-        
-        <h2 style="font-weight:900; margin-bottom:20px;">Mi Almacén</h2>
-        <button class="btn-green" onclick="popP()">+ AGREGAR PRODUCTO NUEVO</button>
-        <div id="inventory-list"></div>
+    <div class="screen">
+        <button class="btn-return" onclick="go(0, document.getElementById('nav-c'))">‹ <span style="font-size:18px; margin-left:8px;">Volver</span></button>
+        <h2 style="font-weight:900; font-size:28px; margin-bottom:20px;">Mi Almacén</h2>
+        <button class="btn-primary" onclick="popProd()">+ REGISTRAR PRODUCTO</button>
+        <div id="list-inventory"></div>
     </div>
 </div>
 
 <div id="chat-window">
     <div class="chat-nav">
         <button class="btn-back" onclick="closeChat()">‹</button>
-        <div id="c-avatar" style="width:45px; height:45px; background:var(--vibrant-green); border-radius:15px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px;">?</div>
+        <div id="active-av" style="width:50px; height:50px; background:var(--gradient-main); border-radius:18px; display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:22px;">?</div>
         <div>
-            <b id="c-name" style="font-size:18px;">Nombre</b>
-            <span style="display:block; font-size:11px; color:var(--vibrant-green);">Negociando ahora</span>
+            <b id="active-name" style="font-size:19px;">Nombre</b>
+            <span style="display:block; font-size:12px; color:var(--emerald-mid); font-weight:600;">En línea para comprar</span>
         </div>
     </div>
     <div class="messages-area" id="m-flow"></div>
     <div class="chat-input-box">
-        <button class="btn-media" onclick="document.getElementById('up-file').click()">📎</button>
-        <input type="file" id="up-file" hidden accept="image/*" onchange="sendImg(this)">
-        <input type="text" id="m-input" placeholder="Escribe tu propuesta..." style="flex:1; border:none; background:#f1f5f9; padding:15px; border-radius:15px; outline:none;">
-        <button onclick="sendT()" style="background:var(--vibrant-green); border:none; width:50px; height:50px; border-radius:15px; color:white;">➤</button>
+        <button class="btn-action-chat" onclick="document.getElementById('file-in').click()">📁</button>
+        <input type="file" id="file-in" hidden accept="image/*" onchange="sendImg(this)">
+        <input type="text" id="m-input" placeholder="Haz una oferta..." style="flex:1; border:none; background:#f1f5f4; padding:18px; border-radius:20px; outline:none; font-size:16px;">
+        <button onclick="sendTxt()" style="background:var(--gradient-main); border:none; width:55px; height:55px; border-radius:20px; color:white; font-size:20px; box-shadow:0 5px 15px rgba(39,174,96,0.3)">➤</button>
     </div>
 </div>
 
 <nav>
-    <div id="nav-msg" class="nav-icon active" onclick="go(0, this)">💬</div>
-    <div id="nav-stock" class="nav-icon" onclick="go(1, this)">📦</div>
+    <div id="nav-c" class="nav-icon active" onclick="go(0, this)">💬</div>
+    <div id="nav-s" class="nav-icon" onclick="go(1, this)">📦</div>
 </nav>
 
-<div class="modal" id="modal" onclick="this.style.display='none'">
-    <div class="modal-inner" onclick="event.stopPropagation()" id="m-body"></div>
+<div class="modal-overlay" id="modal" onclick="this.style.display='none'">
+    <div class="modal-sheet" onclick="event.stopPropagation()" id="m-content"></div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('RR_APP_2026')) || { contacts: [], inventory: [] };
+    let db = JSON.parse(localStorage.getItem('RR_MAX_2026')) || { contacts: [], inventory: [] };
     let taps = 0;
 
-    function save() { localStorage.setItem('RR_APP_2026', JSON.stringify(db)); render(); }
+    function save() { localStorage.setItem('RR_MAX_2026', JSON.stringify(db)); render(); }
 
     function go(s, el) {
         document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`;
         document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
-        if(s === 0) document.getElementById('nav-msg').classList.add('active');
-        else document.getElementById('nav-stock').classList.add('active');
+        el.classList.add('active');
     }
 
-    function count7() {
+    function countAdmin() {
         taps++;
-        if(taps === 7) { alert("MODO ADMINISTRADOR"); taps=0; }
+        if(taps === 7) { alert("PANEL ADMIN ACTIVO"); taps=0; }
         setTimeout(()=> taps=0, 2000);
     }
 
-    function popP() {
-        document.getElementById('m-body').innerHTML = `
-            <h3 style="margin-bottom:20px">Registro de Producto</h3>
-            <input id="in1" class="input-box" placeholder="Nombre del producto">
-            <input id="in2" class="input-box" type="number" placeholder="Stock">
-            <input id="in3" class="input-box" type="number" placeholder="Precio (S/)">
-            <input id="in4" class="input-box" placeholder="Nota/Ubicación">
-            <input id="in-img" type="file" accept="image/*" class="input-box" style="border:none;">
-            <button class="btn-green" onclick="addP()">GUARDAR EN ALMACÉN</button>
+    // ALMACÉN AL MÁXIMO
+    function popProd() {
+        document.getElementById('m-content').innerHTML = `
+            <h3 style="margin-bottom:25px; font-weight:900; font-size:22px; color:var(--emerald-deep)">Registro Maestro</h3>
+            <input id="p1" class="input-premium" placeholder="1. Nombre del producto">
+            <input id="p2" class="input-premium" type="number" placeholder="2. Cantidad total">
+            <input id="p3" class="input-premium" type="number" placeholder="3. Precio Unitario (S/)">
+            <input id="p4" class="input-premium" placeholder="4. Ubicación o Nota">
+            <input id="p-img" type="file" accept="image/*" class="input-premium" style="border:none; padding:0;">
+            <button class="btn-primary" onclick="addProd()">GUARDAR EN EL TELÉFONO</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
 
-    function addP() {
-        const f = document.getElementById('in-img').files[0];
+    function addProd() {
+        const file = document.getElementById('p-img').files[0];
         const reader = new FileReader();
-        const item = { id:Date.now(), name:document.getElementById('in1').value, stock:document.getElementById('in2').value, price:document.getElementById('in3').value, note:document.getElementById('in4').value };
-        if(f) {
-            reader.onloadend = () => { item.img = reader.result; db.inventory.push(item); save(); };
-            reader.readAsDataURL(f);
+        const obj = { id:Date.now(), name:document.getElementById('p1').value, qty:document.getElementById('p2').value, price:document.getElementById('p3').value, note:document.getElementById('p4').value };
+        if(file) {
+            reader.onloadend = () => { obj.img = reader.result; db.inventory.push(obj); save(); };
+            reader.readAsDataURL(file);
         } else {
-            item.img = ""; db.inventory.push(item); save();
+            obj.img = ""; db.inventory.push(obj); save();
         }
         document.getElementById('modal').style.display = 'none';
     }
 
-    function popC() {
-        document.getElementById('m-body').innerHTML = `
-            <h3 style="margin-bottom:20px">Nuevo Cliente</h3>
-            <input id="cn1" class="input-box" placeholder="Nombre">
-            <input id="cn2" class="input-box" placeholder="Tipo">
-            <button class="btn-green" onclick="addC()">CREAR CHAT</button>
+    // CHAT AL MÁXIMO
+    function popContact() {
+        document.getElementById('m-content').innerHTML = `
+            <h3 style="margin-bottom:25px; font-weight:900; font-size:22px;">Nuevo Contacto de Venta</h3>
+            <input id="cn1" class="input-premium" placeholder="Nombre completo">
+            <input id="cn2" class="input-premium" placeholder="Tipo de negocio">
+            <button class="btn-primary" onclick="addContact()">INICIAR CHAT</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
 
-    function addC() {
+    function addContact() {
         db.contacts.push({ id:Date.now(), name:document.getElementById('cn1').value, tag:document.getElementById('cn2').value, msgs:[] });
         save(); document.getElementById('modal').style.display = 'none';
     }
 
-    let activeID = null;
+    let currentID = null;
     function openChat(id) {
-        activeID = id;
+        currentID = id;
         const c = db.contacts.find(x => x.id === id);
-        document.getElementById('c-name').innerText = c.name;
-        document.getElementById('c-avatar').innerText = c.name[0];
+        document.getElementById('active-name').innerText = c.name;
+        document.getElementById('active-av').innerText = c.name[0];
         document.getElementById('chat-window').style.display = 'flex';
-        renderM();
+        renderMsgs();
     }
 
     function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
 
-    function sendT() {
+    function sendTxt() {
         const i = document.getElementById('m-input');
         if(!i.value) return;
-        const c = db.contacts.find(x => x.id === activeID);
+        const c = db.contacts.find(x => x.id === currentID);
         c.msgs.push({ s:'me', t:'txt', v:i.value });
-        i.value = ''; save(); renderM();
+        i.value = ''; save(); renderMsgs();
     }
 
     function sendImg(input) {
         if(input.files[0]) {
             const r = new FileReader();
             r.onload = (e) => {
-                const c = db.contacts.find(x => x.id === activeID);
+                const c = db.contacts.find(x => x.id === currentID);
                 c.msgs.push({ s:'me', t:'img', v:e.target.result });
-                save(); renderM();
+                save(); renderMsgs();
             };
             r.readAsDataURL(input.files[0]);
         }
     }
 
-    function renderM() {
-        const c = db.contacts.find(x => x.id === activeID);
+    function renderMsgs() {
+        const c = db.contacts.find(x => x.id === currentID);
         document.getElementById('m-flow').innerHTML = c.msgs.map(m => `
             <div class="msg-bubble ${m.s}">
                 ${m.t === 'txt' ? m.v : `<img src="${m.v}" style="width:100%; border-radius:15px; margin-top:5px;">`}
@@ -250,30 +265,32 @@
     }
 
     function render() {
-        document.getElementById('inventory-list').innerHTML = db.inventory.map(p => `
+        // Render Almacén
+        document.getElementById('list-inventory').innerHTML = db.inventory.map(p => `
             <div class="card-stock">
-                ${p.img ? `<img src="${p.img}">` : `<div style="height:150px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8;">Sin Foto</div>`}
+                ${p.img ? `<img src="${p.img}">` : `<div style="height:180px; background:#eef2f1; display:flex; align-items:center; justify-content:center; color:#adb5bd;">Sin Imagen</div>`}
                 <div class="card-stock-detail">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <h3 style="font-size:20px; color:var(--deep-green);">${p.name}</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="font-size:22px; color:var(--emerald-deep);">${p.name}</h3>
                         <div class="price-badge">S/ ${p.price}</div>
                     </div>
-                    <div style="font-size:14px; color:#64748b; display:flex; gap:15px;">
-                        <span>📦 Stock: <b>${p.stock}</b></span>
+                    <div style="font-size:15px; color:#576574; display:flex; gap:20px;">
+                        <span>📦 Cantidad: <b>${p.qty}</b></span>
                         <span>📍 ${p.note}</span>
                     </div>
                 </div>
             </div>
         `).join('');
 
-        document.getElementById('contacts-list').innerHTML = db.contacts.map(c => `
-            <div onclick="openChat(${c.id})" style="background:white; padding:18px; border-radius:20px; display:flex; align-items:center; gap:15px; margin-bottom:15px; box-shadow:var(--shadow);">
-                <div style="width:50px; height:50px; background:var(--soft-blue); color:var(--vibrant-green); border-radius:15px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;">${c.name[0]}</div>
+        // Render Chats
+        document.getElementById('list-contacts').innerHTML = db.contacts.map(c => `
+            <div onclick="openChat(${c.id})" style="background:var(--white); padding:20px; border-radius:25px; display:flex; align-items:center; gap:18px; margin-bottom:15px; box-shadow:0 8px 20px rgba(0,0,0,0.03); border: 1px solid #f0f0f0;">
+                <div style="width:55px; height:55px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px;">${c.name[0]}</div>
                 <div style="flex:1">
-                    <b style="font-size:17px;">${c.name}</b>
-                    <small style="display:block; color:var(--vibrant-green); font-weight:600;"># ${c.tag}</small>
+                    <b style="font-size:18px; color:var(--emerald-deep);">${c.name}</b>
+                    <small style="display:block; color:var(--emerald-light); font-weight:800; text-transform:uppercase; font-size:10px; margin-top:2px;">${c.tag}</small>
                 </div>
-                <span style="color:#e2e8f0; font-size:25px;">›</span>
+                <span style="color:#d1d8d5; font-size:28px;">›</span>
             </div>
         `).join('');
     }
