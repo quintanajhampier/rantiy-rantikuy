@@ -29,11 +29,9 @@
         .app-name { font-size: 26px; font-weight: 900; color: var(--emerald-deep); letter-spacing: -1px; }
         .app-name span { color: var(--emerald-light); }
 
-        /* NAVEGACIÓN */
         .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 180px; overflow-y: auto; }
 
-        /* TARJETAS DE ALMACÉN MEJORADAS */
         .card-stock { background: var(--white); border-radius: 25px; margin-bottom: 20px; box-shadow: var(--shadow-3d); padding: 20px; border-top: 5px solid var(--emerald-mid); position: relative; }
         .card-stock h3 { color: var(--emerald-deep); font-size: 22px; margin-bottom: 10px; }
         .stock-tag { background: var(--soft-sky); color: var(--emerald-deep); padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
@@ -41,8 +39,8 @@
         .stock-item { font-size: 14px; color: #666; }
         .stock-item b { color: #333; display: block; font-size: 16px; }
         .stock-note { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #ddd; font-style: italic; color: #555; font-size: 13px; }
+        .prod-img-preview { width: 100%; height: 150px; object-fit: cover; border-radius: 15px; margin-top: 10px; }
 
-        /* CHAT */
         #chat-window { position: fixed; inset: 0; background: #e5ddd5; z-index: 5000; display: none; flex-direction: column; }
         .chat-nav { padding: 45px 15px 15px; background: var(--white); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #ddd; }
         .btn-back { font-size: 40px; color: var(--emerald-mid); background: none; border: none; font-weight: bold; }
@@ -56,13 +54,11 @@
         .btn-tool { background: none; border: none; font-size: 24px; color: #666; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
         #m-input { flex: 1; border: none; background: var(--white); padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; }
         
-        /* BOTONES DE ACCIÓN CHAT */
         .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; margin-right: 5px; }
         .btn-mic { background: var(--emerald-deep); }
         .btn-mic.active { background: #ff3b30; transform: scale(1.2); }
         .btn-send { background: #0084ff; display: none; }
 
-        /* MODALES */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 6000; display: none; align-items: flex-end; }
         .modal-sheet { background: var(--white); width: 100%; border-radius: 30px 30px 0 0; padding: 25px; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -71,6 +67,7 @@
         .form-group label { display: block; font-weight: 800; margin-bottom: 5px; font-size: 14px; color: var(--emerald-deep); }
         .input-p { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; background: #fafafa; outline: none; font-size: 16px; }
         .input-p:focus { border-color: var(--emerald-mid); }
+        .btn-file-dummy { background: var(--soft-sky); color: var(--emerald-deep); padding: 15px; border-radius: 12px; text-align: center; font-weight: 800; cursor: pointer; border: 2px dashed var(--emerald-mid); }
 
         nav { position: fixed; bottom: 0; width: 100%; height: 90px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 4000; }
         .nav-icon { font-size: 28px; color: #ccc; transition: 0.3s; display: flex; flex-direction: column; align-items: center; font-weight: bold; }
@@ -105,10 +102,7 @@
     <div class="chat-nav">
         <button class="btn-back" onclick="closeChat()">‹</button>
         <div id="active-av" style="width:45px; height:45px; background:var(--gradient-main); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:900;">?</div>
-        <div>
-            <b id="active-name" style="display:block; font-size:18px;">Nombre</b>
-            <span id="active-phone" style="font-size:12px; color:var(--emerald-mid);">987654321</span>
-        </div>
+        <div><b id="active-name" style="display:block; font-size:18px;">Nombre</b><span id="active-phone" style="font-size:12px; color:var(--emerald-mid);">987654321</span></div>
     </div>
     <div class="messages-area" id="m-flow"></div>
     <div class="chat-input-box">
@@ -131,22 +125,12 @@
 
 <script>
     let db = JSON.parse(localStorage.getItem('RR_ULTIMATE_2026')) || { contacts: [], inventory: [] };
-    let currentID = null;
-    let rec; let chunks = []; let taps = 0;
+    let currentID = null; let rec; let chunks = []; let taps = 0; let tempProdImg = "";
 
     function save() { localStorage.setItem('RR_ULTIMATE_2026', JSON.stringify(db)); render(); }
-    function go(s, el) { 
-        document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`;
-        document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
-    }
+    function go(s, el) { document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`; document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active')); el.classList.add('active'); }
+    function countAdmin() { taps++; if(taps===7) { alert("PANEL ADMIN: Huanta v3.0"); taps=0; } setTimeout(()=> taps=0, 2000); }
 
-    function countAdmin() {
-        taps++; if(taps===7) { alert("PANEL ADMIN: Huanta v3.0"); taps=0; }
-        setTimeout(()=> taps=0, 2000);
-    }
-
-    // CHAT ENGINE
     function uiInput() {
         const hasTxt = document.getElementById('m-input').value.trim().length > 0;
         document.getElementById('btn-send').style.display = hasTxt ? 'flex' : 'none';
@@ -158,8 +142,7 @@
         e.preventDefault();
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            rec = new MediaRecorder(stream);
-            chunks = [];
+            rec = new MediaRecorder(stream); chunks = [];
             rec.ondataavailable = e => chunks.push(e.data);
             rec.onstop = () => {
                 const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
@@ -167,23 +150,15 @@
                 reader.onload = () => sendMedia('audio', reader.result);
                 reader.readAsDataURL(blob);
             };
-            rec.start();
-            mic.classList.add('active');
+            rec.start(); mic.classList.add('active');
         } catch(err) { alert("Activa el micrófono"); }
     };
-    mic.onpointerup = () => {
-        if(rec && rec.state !== 'inactive') { rec.stop(); mic.classList.remove('active'); }
-    };
+    mic.onpointerup = () => { if(rec && rec.state !== 'inactive') { rec.stop(); mic.classList.remove('active'); } };
 
     function handleFile(input) {
-        const file = input.files[0];
-        if(!file) return;
+        const file = input.files[0]; if(!file) return;
         const reader = new FileReader();
-        reader.onload = () => {
-            const type = file.type.includes('image') ? 'img' : 'doc';
-            sendMedia(type, reader.result, file.name);
-            input.value = ''; // Reset para poder subir la misma foto después
-        };
+        reader.onload = () => { sendMedia(file.type.includes('image') ? 'img' : 'doc', reader.result, file.name); input.value = ''; };
         reader.readAsDataURL(file);
     }
 
@@ -194,8 +169,7 @@
     }
 
     function sendTxt() {
-        const i = document.getElementById('m-input');
-        if(!i.value.trim()) return;
+        const i = document.getElementById('m-input'); if(!i.value.trim()) return;
         const c = db.contacts.find(x => x.id === currentID);
         c.msgs.push({ s:'me', t:'txt', v: i.value, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
         i.value = ''; uiInput(); save(); renderMsgs();
@@ -205,80 +179,67 @@
         const c = db.contacts.find(x => x.id === currentID);
         document.getElementById('m-flow').innerHTML = c.msgs.map(m => {
             let html = m.v;
-            if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px; margin-bottom:5px;">`;
+            if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
             if(m.t === 'audio') html = `<audio controls src="${m.v}" style="width:210px;"></audio>`;
-            if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="display:block; padding:10px; background:#f9f9f9; border-radius:8px; text-decoration:none; color:black;">📄 ${m.n}</a>`;
-            return `<div class="msg-bubble ${m.s}">${html}<div style="font-size:10px; opacity:0.6; text-align:right; margin-top:4px;">${m.time}</div></div>`;
+            if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="display:block; padding:10px; background:#f9f9f9; border-radius:8px; color:black;">📄 ${m.n}</a>`;
+            return `<div class="msg-bubble ${m.s}">${html}<div style="font-size:10px; opacity:0.6; text-align:right;">${m.time}</div></div>`;
         }).join('');
         const f = document.getElementById('m-flow'); f.scrollTop = f.scrollHeight;
     }
 
-    function openChat(id) {
-        currentID = id;
-        const c = db.contacts.find(x => x.id === id);
-        document.getElementById('active-name').innerText = c.name;
-        document.getElementById('active-phone').innerText = c.phone || "Sin número";
-        document.getElementById('active-av').innerText = c.name[0];
-        document.getElementById('chat-window').style.display = 'flex';
-        renderMsgs();
-    }
-
+    function openChat(id) { currentID = id; const c = db.contacts.find(x => x.id === id); document.getElementById('active-name').innerText = c.name; document.getElementById('active-phone').innerText = c.phone || "Sin número"; document.getElementById('active-av').innerText = c.name[0]; document.getElementById('chat-window').style.display = 'flex'; renderMsgs(); }
     function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
 
-    // MODAL CONTACTO (MEJORADO)
     function popContact() {
         document.getElementById('m-content').innerHTML = `
             <h2 style="margin-bottom:20px; font-weight:900;">Registrar Cliente</h2>
-            <div class="form-group"><label>Nombre del Comerciante</label><input id="c-n" class="input-p" placeholder="Ej. Juan Pérez"></div>
-            <div class="form-group"><label>Número de WhatsApp</label><input id="c-p" class="input-p" type="tel" placeholder="987 654 321"></div>
-            <button onclick="addC()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900; font-size:18px;">INICIAR CHAT</button>
+            <div class="form-group"><label>Nombre del Comerciante</label><input id="c-n" class="input-p"></div>
+            <div class="form-group"><label>Número de WhatsApp</label><input id="c-p" class="input-p" type="tel"></div>
+            <button onclick="addC()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">INICIAR CHAT</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
-    function addC() {
-        const n = document.getElementById('c-n').value;
-        const p = document.getElementById('c-p').value;
-        if(!n) return;
-        db.contacts.push({ id:Date.now(), name:n, phone:p, msgs:[] });
-        save(); document.getElementById('modal').style.display = 'none';
-    }
+    function addC() { const n = document.getElementById('c-n').value; if(!n) return; db.contacts.push({ id:Date.now(), name:n, phone:document.getElementById('c-p').value, msgs:[] }); save(); document.getElementById('modal').style.display = 'none'; }
 
-    // MODAL PRODUCTO (ESTE ES EL COMPLETO)
     function popProd() {
+        tempProdImg = "";
         document.getElementById('m-content').innerHTML = `
             <h2 style="margin-bottom:20px; font-weight:900;">Detalles del Producto</h2>
-            <div class="form-group"><label>Nombre del Producto</label><input id="p-n" class="input-p" placeholder="Ej. Zapatillas Urbanas"></div>
+            <div class="form-group"><label>Nombre del Producto</label><input id="p-n" class="input-p"></div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <div class="form-group"><label>Precio Venta</label><input id="p-p" class="input-p" placeholder="S/ 0.00"></div>
-                <div class="form-group"><label>Unidad de Medida</label>
-                    <select id="p-u" class="input-p">
-                        <option value="Unidades">Unidades</option>
-                        <option value="Docenas">Docenas</option>
-                        <option value="Cajas">Cajas</option>
-                        <option value="Sacos">Sacos</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Precio Venta</label><input id="p-p" class="input-p"></div>
+                <div class="form-group"><label>Medida</label><select id="p-u" class="input-p"><option>Unidades</option><option>Docenas</option><option>Cajas</option></select></div>
             </div>
-            <div class="form-group"><label>Cantidad en Stock</label><input id="p-q" class="input-p" type="number" placeholder="0"></div>
-            <div class="form-group"><label>Ubicación / Stand</label><input id="p-l" class="input-p" placeholder="Ej. Pasillo B - Puesto 4"></div>
-            <div class="form-group"><label>Foto del Producto (URL o subir)</label><input id="p-i" class="input-p" placeholder="Link de foto o cargar"></div>
-            <div class="form-group"><label>Nota o Descripción Detallada</label><textarea id="p-o" class="input-p" style="height:100px;" placeholder="Escribe aquí detalles técnicos o de estado..."></textarea></div>
-            <button onclick="addP()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900; font-size:18px;">GUARDAR EN ALMACÉN</button>
+            <div class="form-group"><label>Stock</label><input id="p-q" class="input-p" type="number"></div>
+            <div class="form-group"><label>Ubicación</label><input id="p-l" class="input-p"></div>
+            <div class="form-group">
+                <label>Imagen del Producto</label>
+                <div class="btn-file-dummy" onclick="document.getElementById('p-img-file').click()">📸 SELECCIONAR DE GALERÍA</div>
+                <input type="file" id="p-img-file" hidden accept="image/*" onchange="previewProdImg(this)">
+                <div id="p-preview-container"></div>
+            </div>
+            <div class="form-group"><label>Nota Detallada</label><textarea id="p-o" class="input-p" style="height:80px;"></textarea></div>
+            <button onclick="addP()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">GUARDAR EN ALMACÉN</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
+
+    function previewProdImg(input) {
+        const file = input.files[0]; if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            tempProdImg = e.target.result;
+            document.getElementById('p-preview-container').innerHTML = `<img src="${tempProdImg}" class="prod-img-preview">`;
+        };
+        reader.readAsDataURL(file);
+    }
+
     function addP() {
-        const n = document.getElementById('p-n').value;
-        if(!n) return;
+        const n = document.getElementById('p-n').value; if(!n) return;
         db.inventory.push({ 
-            id:Date.now(), 
-            name:n, 
-            price: document.getElementById('p-p').value,
-            unit: document.getElementById('p-u').value,
-            qty: document.getElementById('p-q').value,
-            loc: document.getElementById('p-l').value,
-            note: document.getElementById('p-o').value,
-            img: document.getElementById('p-i').value || 'https://via.placeholder.com/150'
+            id:Date.now(), name:n, price: document.getElementById('p-p').value, unit: document.getElementById('p-u').value,
+            qty: document.getElementById('p-q').value, loc: document.getElementById('p-l').value, note: document.getElementById('p-o').value,
+            img: tempProdImg || 'https://via.placeholder.com/150'
         });
         save(); document.getElementById('modal').style.display = 'none';
     }
@@ -286,24 +247,21 @@
     function render() {
         document.getElementById('list-contacts').innerHTML = db.contacts.map(c => `
             <div class="card-stock" onclick="openChat(${c.id})" style="border-top:none; border-left:5px solid var(--emerald-mid); display:flex; align-items:center; gap:15px; padding:15px;">
-                <div style="width:50px; height:50px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:20px;">${c.name[0]}</div>
-                <div style="flex:1">
-                    <b style="font-size:18px; display:block;">${c.name}</b>
-                    <small style="color:gray;">${c.phone || 'S/N'}</small>
-                </div>
-                <span style="font-size:20px; color:#ddd;">›</span>
+                <div style="width:50px; height:50px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900;">${c.name[0]}</div>
+                <div style="flex:1"><b>${c.name}</b><small style="display:block; color:gray;">${c.phone || ''}</small></div>
+                <span>›</span>
             </div>
         `).join('');
 
         document.getElementById('list-inventory').innerHTML = db.inventory.map(p => `
             <div class="card-stock">
+                <img src="${p.img}" class="prod-img-preview" style="margin-top:0; margin-bottom:15px; height:180px;">
                 <span class="stock-tag">${p.unit}</span>
                 <h3 style="margin-top:10px;">${p.name}</h3>
                 <div class="stock-grid">
                     <div class="stock-item">Precio:<b>S/ ${p.price}</b></div>
                     <div class="stock-item">Stock:<b>${p.qty}</b></div>
                     <div class="stock-item">Ubicación:<b>${p.loc}</b></div>
-                    <div class="stock-item">ID:<b>#${p.id.toString().slice(-4)}</b></div>
                 </div>
                 ${p.note ? `<div class="stock-note"><b>Nota:</b> ${p.note}</div>` : ''}
             </div>
