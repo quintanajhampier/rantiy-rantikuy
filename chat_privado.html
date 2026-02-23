@@ -7,295 +7,254 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --emerald-light: #2ecc71;
-            --emerald-mid: #27ae60;
-            --emerald-deep: #1b5e20;
-            --soft-sky: #e8f4f8;
-            --white: #ffffff;
-            --glass-bg: rgba(255, 255, 255, 0.9);
-            --shadow-3d: 0 15px 35px rgba(27, 94, 32, 0.15);
-            --gradient-main: linear-gradient(135deg, var(--emerald-light), var(--emerald-deep));
+            --esmeralda-claro: #2ecc71;
+            --esmeralda-intenso: #1b5e20;
+            --blanco-puro: #ffffff;
+            --fondo-app: #f4f7f6;
+            --gradiente-premium: linear-gradient(135deg, #2ecc71 0%, #1b5e20 100%);
+            --sombra-viva: 0 10px 30px rgba(27, 94, 32, 0.15);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #f0f4f3; color: #1a2a21; height: 100vh; overflow: hidden; }
+        body { background: var(--fondo-app); color: #1a2a21; height: 100vh; overflow: hidden; }
 
-        /* HEADER PREMIUM */
+        /* HEADER INTEGRAL */
         header {
-            background: var(--white); padding: 50px 20px 15px;
+            background: var(--blanco-puro); padding: 50px 20px 15px;
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 4px solid var(--emerald-mid);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-bottom: 4px solid var(--esmeralda-claro);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        .app-name { font-size: 26px; font-weight: 900; color: var(--emerald-deep); letter-spacing: -1px; }
-        .app-name span { color: var(--emerald-light); }
+        .app-name { font-size: 26px; font-weight: 900; color: var(--esmeralda-intenso); letter-spacing: -1px; }
+        .app-name span { color: var(--esmeralda-claro); }
 
-        /* VIEWPORT */
-        .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 170px; overflow-y: auto; }
+        /* NAVEGACIÓN */
+        .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 180px; overflow-y: auto; }
 
-        /* ALMACÉN: DISEÑO ESPECIAL */
-        .btn-return {
-            font-size: 40px; color: var(--emerald-mid); background: none; border: none;
-            display: flex; align-items: center; margin-bottom: 10px; font-weight: 900;
-        }
-        .card-stock {
-            background: var(--white); border-radius: 28px; margin-bottom: 25px;
-            box-shadow: var(--shadow-3d); overflow: hidden; border: 1px solid rgba(0,0,0,0.05);
-            transition: 0.3s;
-        }
-        .card-stock img { width: 100%; height: 240px; object-fit: cover; }
-        .card-stock-detail { padding: 22px; background: var(--white); }
-        .price-badge { 
-            background: var(--gradient-main); color: white; padding: 8px 18px; 
-            border-radius: 15px; font-weight: 800; font-size: 20px; box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
-        }
+        /* ALMACÉN ESTILO PREMIUM */
+        .btn-volver { font-size: 45px; color: var(--esmeralda-claro); background: none; border: none; font-weight: 900; display: flex; align-items: center; margin-bottom: 5px; }
+        .card-producto { background: var(--blanco-puro); border-radius: 30px; margin-bottom: 25px; box-shadow: var(--sombra-viva); overflow: hidden; border: 1px solid rgba(0,0,0,0.03); }
+        .info-producto { padding: 22px; }
+        .precio-tag { background: var(--gradiente-premium); color: white; padding: 8px 18px; border-radius: 15px; font-weight: 900; font-size: 20px; }
 
-        /* CHAT: DISEÑO ADICTIVO */
-        #chat-window { position: fixed; inset: 0; background: #f0f4f3; z-index: 5000; display: none; flex-direction: column; }
-        .chat-nav { 
-            padding: 45px 15px 15px; background: var(--white); 
-            display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee;
+        /* VENTANA DE CHAT ESTILO WHATSAPP */
+        #ventana-chat { position: fixed; inset: 0; background: var(--fondo-app); z-index: 5000; display: none; flex-direction: column; }
+        .chat-header { padding: 45px 15px 15px; background: var(--blanco-puro); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee; }
+        .btn-cerrar { font-size: 50px; color: var(--esmeralda-claro); background: none; border: none; line-height: 0.5; }
+        
+        .area-mensajes { 
+            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px;
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); /* Sutil textura de fondo */
         }
-        .btn-back { font-size: 48px; color: var(--emerald-mid); background: none; border: none; line-height: 0.5; }
-        .messages-area { 
-            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; 
-            background-image: radial-gradient(var(--emerald-light) 0.5px, transparent 0.5px);
-            background-size: 20px 20px; background-color: #f7f9f8;
-        }
-        .msg-bubble { 
-            max-width: 82%; padding: 16px 20px; border-radius: 25px; font-size: 15px; line-height: 1.4;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-        }
-        .msg-bubble.me { 
-            align-self: flex-end; background: var(--gradient-main); 
-            color: white; border-bottom-right-radius: 5px;
-        }
-        .msg-bubble.them { 
-            align-self: flex-start; background: var(--white); 
-            color: #2c3e50; border-bottom-left-radius: 5px; border: 1px solid #e0e0e0;
-        }
+        .burbuja { max-width: 85%; padding: 16px 20px; border-radius: 25px; font-size: 16px; line-height: 1.4; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .burbuja.yo { align-self: flex-end; background: var(--gradiente-premium); color: white; border-bottom-right-radius: 5px; }
+        .burbuja.ellos { align-self: flex-start; background: var(--blanco-puro); color: #2c3e50; border-bottom-left-radius: 5px; }
 
-        /* INPUT AREA MODERNA */
-        .chat-input-box { 
-            padding: 15px 20px 35px; background: var(--white); display: flex; align-items: center; gap: 12px;
-            box-shadow: 0 -10px 20px rgba(0,0,0,0.03);
+        /* BARRA DE ENTRADA RECTIFICADA */
+        .barra-input { padding: 10px 15px 30px; background: var(--blanco-puro); display: flex; align-items: center; gap: 10px; border-top: 1px solid #f0f0f0; }
+        
+        .input-container { 
+            flex: 1; background: #f1f5f4; border-radius: 30px; display: flex; align-items: center; padding: 5px 15px;
         }
-        .btn-action-chat { 
-            background: var(--soft-sky); border: none; width: 48px; height: 48px; 
-            border-radius: 50%; font-size: 22px; color: var(--emerald-deep); 
-        }
+        .btn-adjuntar { background: none; border: none; font-size: 24px; color: #7f8c8d; margin-right: 10px; cursor: pointer; }
+        #msj-input { flex: 1; border: none; background: none; padding: 12px 5px; outline: none; font-size: 16px; }
+        
+        .btn-mic-wa { background: var(--gradiente-premium); border: none; width: 50px; height: 50px; border-radius: 50%; color: white; font-size: 22px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-enviar-wa { background: var(--esmeralda-intenso); border: none; width: 50px; height: 50px; border-radius: 50%; color: white; font-size: 20px; display: none; }
 
-        /* BOTONES Y CAMPOS */
-        .btn-primary { 
-            background: var(--gradient-main); color: white; border: none; padding: 20px; 
-            border-radius: 22px; width: 100%; font-weight: 900; font-size: 17px;
-            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.25); margin-bottom: 25px;
+        /* MENÚ DE ADJUNTOS */
+        .pop-adjuntos {
+            position: absolute; bottom: 100px; left: 20px; background: white; 
+            border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+            display: none; flex-direction: column; overflow: hidden; z-index: 6000; border: 1px solid #eee;
         }
-        .input-premium { 
-            width: 100%; padding: 18px; border-radius: 18px; border: 2.5px solid #eef2f1; 
-            margin-bottom: 15px; background: #fcfdfd; outline: none; font-size: 16px; transition: 0.3s;
-        }
-        .input-premium:focus { border-color: var(--emerald-light); background: var(--white); }
+        .opcion { padding: 18px 25px; display: flex; align-items: center; gap: 15px; font-weight: 700; color: #333; transition: 0.2s; }
+        .opcion:active { background: #f9f9f9; }
 
-        /* NAV */
-        nav { 
-            position: fixed; bottom: 0; width: 100%; height: 95px; background: var(--white);
-            display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #f0f0f0;
-        }
-        .nav-icon { font-size: 32px; color: #d0d7d4; transition: 0.3s; }
-        .nav-icon.active { color: var(--emerald-mid); transform: scale(1.2); }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 6000; display: none; align-items: flex-end; }
-        .modal-sheet { background: var(--white); width: 100%; border-radius: 35px 35px 0 0; padding: 40px 25px; }
+        /* BOTONES PRINCIPALES */
+        .btn-principal { background: var(--gradiente-premium); color: white; border: none; padding: 20px; border-radius: 22px; width: 100%; font-weight: 900; font-size: 18px; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(39,174,96,0.2); }
+        
+        /* NAV INFERIOR */
+        nav { position: fixed; bottom: 0; width: 100%; height: 90px; background: var(--blanco-puro); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #f0f0f0; z-index: 4000; }
+        .nav-btn { font-size: 32px; color: #d0d7d4; transition: 0.3s; }
+        .nav-btn.activo { color: var(--esmeralda-claro); transform: scale(1.2); }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="app-name" onclick="countAdmin()">Rantiy y <span>Rantikuy</span></div>
-    <div style="font-size:11px; font-weight:900; background:var(--soft-sky); padding:5px 12px; border-radius:15px; color:var(--emerald-deep)">PRODUCTIVIDAD</div>
+    <div class="app-name" onclick="checkAdmin()">Rantiy y <span>Rantikuy</span></div>
+    <div style="font-size:10px; font-weight:900; background:#e8f4f8; padding:5px 10px; border-radius:10px; color:var(--esmeralda-intenso)">HUANTA 2026</div>
 </header>
 
-<div class="viewport" id="vp">
+<div class="viewport" id="v-port">
     <div class="screen">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-            <h2 style="font-weight:900; font-size:28px;">Ventas</h2>
-            <button onclick="popContact()" style="background:var(--gradient-main); color:white; border:none; width:50px; height:50px; border-radius:18px; font-size:25px; box-shadow:0 8px 15px rgba(39,174,96,0.2)">+</button>
+            <h2 style="font-weight:900; font-size:28px; color: #1a2a21;">Ventas</h2>
+            <button onclick="nuevoChat()" style="background:var(--gradiente-premium); color:white; border:none; width:50px; height:50px; border-radius:18px; font-size:25px; box-shadow: 0 4px 10px rgba(46,204,113,0.3);">+</button>
         </div>
-        <div id="list-contacts"></div>
+        <div id="lista-contactos"></div>
     </div>
 
     <div class="screen">
-        <button class="btn-return" onclick="go(0, document.getElementById('nav-c'))">‹ <span style="font-size:18px; margin-left:8px;">Volver</span></button>
-        <h2 style="font-weight:900; font-size:28px; margin-bottom:20px;">Mi Almacén</h2>
-        <button class="btn-primary" onclick="popProd()">+ REGISTRAR PRODUCTO</button>
-        <div id="list-inventory"></div>
+        <button class="btn-volver" onclick="irA(0, document.getElementById('n-chat'))">‹ <span style="font-size:18px; margin-left:10px; font-weight:600;">Regresar</span></button>
+        <h2 style="font-weight:900; font-size:28px; margin-bottom:20px; color: #1a2a21;">Mi Almacén</h2>
+        <button class="btn-principal" onclick="nuevoProd()">+ REGISTRAR PRODUCTO NUEVO</button>
+        <div id="lista-almacen"></div>
     </div>
 </div>
 
-<div id="chat-window">
-    <div class="chat-nav">
-        <button class="btn-back" onclick="closeChat()">‹</button>
-        <div id="active-av" style="width:50px; height:50px; background:var(--gradient-main); border-radius:18px; display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:22px;">?</div>
-        <div>
-            <b id="active-name" style="font-size:19px;">Nombre</b>
-            <span style="display:block; font-size:12px; color:var(--emerald-mid); font-weight:600;">En línea para comprar</span>
+<div id="ventana-chat">
+    <div class="chat-header">
+        <button class="btn-cerrar" onclick="cerrarChat()">‹</button>
+        <div id="av-chat" style="width:50px; height:50px; background:var(--gradiente-premium); border-radius:18px; display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:22px;">?</div>
+        <div style="flex:1">
+            <b id="nom-chat" style="font-size:19px; color: #1a2a21;">Nombre</b>
+            <span style="display:block; font-size:12px; color:var(--esmeralda-claro); font-weight:700;">NEGOCIANDO</span>
         </div>
     </div>
-    <div class="messages-area" id="m-flow"></div>
-    <div class="chat-input-box">
-        <button class="btn-action-chat" onclick="document.getElementById('file-in').click()">📁</button>
-        <input type="file" id="file-in" hidden accept="image/*" onchange="sendImg(this)">
-        <input type="text" id="m-input" placeholder="Haz una oferta..." style="flex:1; border:none; background:#f1f5f4; padding:18px; border-radius:20px; outline:none; font-size:16px;">
-        <button onclick="sendTxt()" style="background:var(--gradient-main); border:none; width:55px; height:55px; border-radius:20px; color:white; font-size:20px; box-shadow:0 5px 15px rgba(39,174,96,0.3)">➤</button>
+    
+    <div class="area-mensajes" id="msj-flow"></div>
+
+    <div class="pop-adjuntos" id="menu-adj">
+        <div class="opcion" onclick="accionAdjuntar('Galería')">🖼️ Galería y Fotos</div>
+        <div class="opcion" onclick="accionAdjuntar('Documento')">📂 Documentos (Excel/PDF)</div>
+    </div>
+
+    <div class="barra-input">
+        <div class="input-container">
+            <button class="btn-adjuntar" onclick="toggleAdjuntos()">📎</button>
+            <input type="text" id="msj-input" placeholder="Escribe un mensaje..." oninput="toggleBtn()">
+        </div>
+        <button id="btn-audio" class="btn-mic-wa" onclick="alert('Iniciando grabación de audio...')">🎤</button>
+        <button id="btn-enviar" class="btn-enviar-wa" onclick="enviarT()">➤</button>
     </div>
 </div>
 
 <nav>
-    <div id="nav-c" class="nav-icon active" onclick="go(0, this)">💬</div>
-    <div id="nav-s" class="nav-icon" onclick="go(1, this)">📦</div>
+    <div id="n-chat" class="nav-btn activo" onclick="irA(0, this)">💬</div>
+    <div id="n-alm" class="nav-btn" onclick="irA(1, this)">📦</div>
 </nav>
 
-<div class="modal-overlay" id="modal" onclick="this.style.display='none'">
-    <div class="modal-sheet" onclick="event.stopPropagation()" id="m-content"></div>
-</div>
-
 <script>
-    let db = JSON.parse(localStorage.getItem('RR_MAX_2026')) || { contacts: [], inventory: [] };
-    let taps = 0;
+    let datos = JSON.parse(localStorage.getItem('RR_DATA_FINAL')) || { contactos: [], almacen: [] };
+    let clicks = 0;
 
-    function save() { localStorage.setItem('RR_MAX_2026', JSON.stringify(db)); render(); }
+    function guardar() { localStorage.setItem('RR_DATA_FINAL', JSON.stringify(datos)); dibujar(); }
 
-    function go(s, el) {
-        document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`;
-        document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
+    function irA(p, el) {
+        document.getElementById('v-port').style.transform = `translateX(-${p * 50}%)`;
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('activo'));
+        el.classList.add('activo');
     }
 
-    function countAdmin() {
-        taps++;
-        if(taps === 7) { alert("PANEL ADMIN ACTIVO"); taps=0; }
-        setTimeout(()=> taps=0, 2000);
+    function checkAdmin() { 
+        clicks++; 
+        if(clicks === 7) { alert("SISTEMA DE ADMINISTRACIÓN ACTIVADO"); clicks = 0; } 
+        setTimeout(() => clicks = 0, 2000); 
     }
 
-    // ALMACÉN AL MÁXIMO
-    function popProd() {
-        document.getElementById('m-content').innerHTML = `
-            <h3 style="margin-bottom:25px; font-weight:900; font-size:22px; color:var(--emerald-deep)">Registro Maestro</h3>
-            <input id="p1" class="input-premium" placeholder="1. Nombre del producto">
-            <input id="p2" class="input-premium" type="number" placeholder="2. Cantidad total">
-            <input id="p3" class="input-premium" type="number" placeholder="3. Precio Unitario (S/)">
-            <input id="p4" class="input-premium" placeholder="4. Ubicación o Nota">
-            <input id="p-img" type="file" accept="image/*" class="input-premium" style="border:none; padding:0;">
-            <button class="btn-primary" onclick="addProd()">GUARDAR EN EL TELÉFONO</button>
-        `;
-        document.getElementById('modal').style.display = 'flex';
+    function nuevoProd() {
+        let n = prompt("Nombre del producto:");
+        let c = prompt("Cantidad en stock:");
+        let p = prompt("Precio de venta (S/):");
+        let u = prompt("Ubicación o nota:");
+        if(n && c && p) { 
+            datos.almacen.push({id: Date.now(), n, c, p, u}); 
+            guardar(); 
+        }
     }
 
-    function addProd() {
-        const file = document.getElementById('p-img').files[0];
-        const reader = new FileReader();
-        const obj = { id:Date.now(), name:document.getElementById('p1').value, qty:document.getElementById('p2').value, price:document.getElementById('p3').value, note:document.getElementById('p4').value };
-        if(file) {
-            reader.onloadend = () => { obj.img = reader.result; db.inventory.push(obj); save(); };
-            reader.readAsDataURL(file);
+    function nuevoChat() {
+        let n = prompt("Nombre del Cliente:");
+        if(n) { 
+            datos.contactos.push({id: Date.now(), n, msjs: []}); 
+            guardar(); 
+        }
+    }
+
+    /* LÓGICA DE CHAT */
+    function toggleBtn() {
+        const input = document.getElementById('msj-input');
+        const btnAudio = document.getElementById('btn-audio');
+        const btnEnviar = document.getElementById('btn-enviar');
+        if(input.value.length > 0) {
+            btnAudio.style.display = 'none';
+            btnEnviar.style.display = 'flex';
         } else {
-            obj.img = ""; db.inventory.push(obj); save();
+            btnAudio.style.display = 'flex';
+            btnEnviar.style.display = 'none';
         }
-        document.getElementById('modal').style.display = 'none';
     }
 
-    // CHAT AL MÁXIMO
-    function popContact() {
-        document.getElementById('m-content').innerHTML = `
-            <h3 style="margin-bottom:25px; font-weight:900; font-size:22px;">Nuevo Contacto de Venta</h3>
-            <input id="cn1" class="input-premium" placeholder="Nombre completo">
-            <input id="cn2" class="input-premium" placeholder="Tipo de negocio">
-            <button class="btn-primary" onclick="addContact()">INICIAR CHAT</button>
-        `;
-        document.getElementById('modal').style.display = 'flex';
+    function toggleAdjuntos() {
+        const m = document.getElementById('menu-adj');
+        m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
     }
 
-    function addContact() {
-        db.contacts.push({ id:Date.now(), name:document.getElementById('cn1').value, tag:document.getElementById('cn2').value, msgs:[] });
-        save(); document.getElementById('modal').style.display = 'none';
+    function accionAdjuntar(tipo) {
+        alert("Abriendo: " + tipo);
+        toggleAdjuntos();
     }
 
-    let currentID = null;
-    function openChat(id) {
-        currentID = id;
-        const c = db.contacts.find(x => x.id === id);
-        document.getElementById('active-name').innerText = c.name;
-        document.getElementById('active-av').innerText = c.name[0];
-        document.getElementById('chat-window').style.display = 'flex';
-        renderMsgs();
+    let chatActivo = null;
+    function abrirChat(id) {
+        chatActivo = id;
+        let c = datos.contactos.find(x => x.id === id);
+        document.getElementById('nom-chat').innerText = c.n;
+        document.getElementById('av-chat').innerText = c.n[0];
+        document.getElementById('ventana-chat').style.display = 'flex';
+        renderMsjs();
     }
 
-    function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
+    function cerrarChat() { document.getElementById('ventana-chat').style.display = 'none'; }
 
-    function sendTxt() {
-        const i = document.getElementById('m-input');
+    function enviarT() {
+        let i = document.getElementById('msj-input');
         if(!i.value) return;
-        const c = db.contacts.find(x => x.id === currentID);
-        c.msgs.push({ s:'me', t:'txt', v:i.value });
-        i.value = ''; save(); renderMsgs();
+        let c = datos.contactos.find(x => x.id === chatActivo);
+        c.msjs.push({s:'yo', v:i.value});
+        i.value = '';
+        toggleBtn();
+        guardar();
+        renderMsjs();
     }
 
-    function sendImg(input) {
-        if(input.files[0]) {
-            const r = new FileReader();
-            r.onload = (e) => {
-                const c = db.contacts.find(x => x.id === currentID);
-                c.msgs.push({ s:'me', t:'img', v:e.target.result });
-                save(); renderMsgs();
-            };
-            r.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function renderMsgs() {
-        const c = db.contacts.find(x => x.id === currentID);
-        document.getElementById('m-flow').innerHTML = c.msgs.map(m => `
-            <div class="msg-bubble ${m.s}">
-                ${m.t === 'txt' ? m.v : `<img src="${m.v}" style="width:100%; border-radius:15px; margin-top:5px;">`}
-            </div>
+    function renderMsjs() {
+        let c = datos.contactos.find(x => x.id === chatActivo);
+        document.getElementById('msj-flow').innerHTML = c.msjs.map(m => `
+            <div class="burbuja ${m.s}">${m.v}</div>
         `).join('');
-        const f = document.getElementById('m-flow'); f.scrollTop = f.scrollHeight;
+        let f = document.getElementById('msj-flow');
+        f.scrollTop = f.scrollHeight;
     }
 
-    function render() {
-        // Render Almacén
-        document.getElementById('list-inventory').innerHTML = db.inventory.map(p => `
-            <div class="card-stock">
-                ${p.img ? `<img src="${p.img}">` : `<div style="height:180px; background:#eef2f1; display:flex; align-items:center; justify-content:center; color:#adb5bd;">Sin Imagen</div>`}
-                <div class="card-stock-detail">
+    function dibujar() {
+        document.getElementById('lista-almacen').innerHTML = datos.almacen.map(p => `
+            <div class="card-producto">
+                <div class="info-producto">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <h3 style="font-size:22px; color:var(--emerald-deep);">${p.name}</h3>
-                        <div class="price-badge">S/ ${p.price}</div>
+                        <h3 style="font-size:22px; color:var(--esmeralda-intenso);">${p.n}</h3>
+                        <div class="precio-tag">S/ ${p.p}</div>
                     </div>
-                    <div style="font-size:15px; color:#576574; display:flex; gap:20px;">
-                        <span>📦 Cantidad: <b>${p.qty}</b></span>
-                        <span>📍 ${p.note}</span>
+                    <div style="font-size:15px; color:#555; font-weight:600;">
+                        📦 Cantidad: ${p.c} | 📍 ${p.u}
                     </div>
                 </div>
             </div>
         `).join('');
 
-        // Render Chats
-        document.getElementById('list-contacts').innerHTML = db.contacts.map(c => `
-            <div onclick="openChat(${c.id})" style="background:var(--white); padding:20px; border-radius:25px; display:flex; align-items:center; gap:18px; margin-bottom:15px; box-shadow:0 8px 20px rgba(0,0,0,0.03); border: 1px solid #f0f0f0;">
-                <div style="width:55px; height:55px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px;">${c.name[0]}</div>
-                <div style="flex:1">
-                    <b style="font-size:18px; color:var(--emerald-deep);">${c.name}</b>
-                    <small style="display:block; color:var(--emerald-light); font-weight:800; text-transform:uppercase; font-size:10px; margin-top:2px;">${c.tag}</small>
-                </div>
-                <span style="color:#d1d8d5; font-size:28px;">›</span>
+        document.getElementById('lista-contactos').innerHTML = datos.contactos.map(c => `
+            <div onclick="abrirChat(${c.id})" style="background:white; padding:20px; border-radius:25px; display:flex; align-items:center; gap:15px; margin-bottom:15px; box-shadow:0 8px 20px rgba(0,0,0,0.03); border: 1px solid #f0f0f0;">
+                <div style="width:55px; height:55px; background:var(--gradiente-premium); color:white; border-radius:18px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px;">${c.n[0]}</div>
+                <div style="flex:1"><b style="font-size:18px; color:#1a2a21;">${c.n}</b></div>
+                <span style="color:#ddd; font-size:25px;">›</span>
             </div>
         `).join('');
     }
 
-    window.onload = render;
+    window.onload = dibujar;
 </script>
 </body>
 </html>
