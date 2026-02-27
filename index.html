@@ -208,8 +208,7 @@
         <div id="q-box" style="margin-top:20px;"></div>
         <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
-        <textarea id="in-desc" class="rr-field" placeholder="Mínimo 3 datos del producto..."></textarea>
-        <button onclick="uploadToFirebase()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
+        <button onclick="uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
     </div>
 </section>
 
@@ -217,7 +216,7 @@
     <div class="chat-box-ui">
         <div id="group-title" style="padding:20px; background:var(--verde); color:white; font-weight:900; display:flex; justify-content:space-between;">
             <span id="zone-chat-label">SALA REGIONAL</span>
-            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">ONLINE</span>
+            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">AUTO-LIMPIEZA 30H</span>
         </div>
         <div class="msg-area" id="group-msgs"></div>
         <div style="padding:15px; display:flex; gap:10px;">
@@ -234,10 +233,11 @@
 </nav>
 
 <script type="module">
-    // --- FIREBASE CORE ---
+    // --- IMPORTACIÓN DE FIREBASE ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+    // --- CONFIGURACIÓN FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
         authDomain: "rantiy-y-rantikuy.firebaseapp.com",
@@ -247,15 +247,16 @@
         appId: "1:49676513708:web:943ad781c98cb7bac78a09"
     };
 
+    // --- INICIALIZACIÓN ---
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- VARIABLES DE ESTADO ---
+    // --- VARIABLES GLOBALES ---
     let activeLoc = ""; 
     let activeCat = ""; 
     let currentFilter = "Todas"; 
     let capturedFiles = [null,null,null,null]; 
-    let currentUser = localStorage.getItem('rantiy_user') || "Invitado_" + Math.floor(Math.random()*999);
+    let currentUser = "";
 
     const ZONAS = {
         "Huanta": { lat: -12.94, lon: -74.24, r: 0.1 },
@@ -263,114 +264,196 @@
         "VRAEM": { lat: -12.50, lon: -73.80, r: 0.2 }
     };
 
-    // --- GPS ---
-    function initGPS() {
-        navigator.geolocation.watchPosition(pos => {
-            let lat = pos.coords.latitude;
-            let lon = pos.coords.longitude;
-            let found = false;
-            for (let zone in ZONAS) {
-                let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
-                if (d < ZONAS[zone].r) {
-                    activeLoc = zone;
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                document.getElementById('gps-screen').style.display = 'none';
-                document.getElementById('user-tag').innerText = "CIUDADANO: " + currentUser.toUpperCase();
-                document.getElementById('current-zone-text').innerText = activeLoc;
-                document.getElementById('zone-chat-label').innerText = "SALA " + activeLoc.toUpperCase();
-                document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city'));
-                document.getElementById('city-' + activeLoc.toLowerCase()).classList.add('active-city', 'active-' + activeLoc.toLowerCase());
-                syncFirebase();
-            }
-        }, () => {
-            document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS.";
-        });
+    // --- INICIO DE APLICACIÓN ---
+    function init() {
+        currentUser = localStorage.getItem('rantiy_user');
+        if(!currentUser) { window.location.href = 'registro_entrada.html'; return; }
+        document.getElementById('user-tag').innerText = "CIUDADANO: " + currentUser.toUpperCase();
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition(successGPS, errorGPS, {enableHighAccuracy:true});
+        } else {
+            alert("Tu celular no soporta GPS.");
+        }
     }
 
-    // --- SINCRONIZACIÓN FIREBASE ---
-    function syncFirebase() {
-        // Publicaciones
-        onValue(ref(db, 'publicaciones'), snap => {
+    // --- LÓGICA GPS ---
+    function successGPS(pos) {
+        let lat = pos.coords.latitude;
+        let lon = pos.coords.longitude;
+        let found = false;
+
+        for (let zone in ZONAS) {
+            let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
+            if (d < ZONAS[zone].r) {
+                activeLoc = zone;
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            document.getElementById('gps-screen').style.display = 'none';
+            document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
+            let card = document.getElementById('city-' + activeLoc.toLowerCase());
+            if(card) card.classList.add('active-city', 'active-' + activeLoc.toLowerCase());
+            document.getElementById('current-zone-text').innerText = activeLoc;
+            document.getElementById('zone-chat-label').innerText = "SALA " + activeLoc.toUpperCase();
+            
+            // Iniciar sincronización en tiempo real
+            listenToPosts();
+            listenToGroupChat();
+        } else {
+            document.getElementById('gps-loader').style.display = 'none';
+            document.getElementById('gps-msg').innerText = "FUERA DE COBERTURA: Debes estar en Huanta, Huamanga o VRAEM.";
+            document.getElementById('gps-msg').style.color = "red";
+        }
+    }
+
+    function errorGPS() {
+        document.getElementById('gps-loader').style.display = 'none';
+        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS para usar Rantiy y Rantikuy.";
+        document.getElementById('gps-msg').style.color = "red";
+    }
+
+    // --- FIREBASE: ESCUCHAR PUBLICACIONES ---
+    function listenToPosts() {
+        const postsRef = ref(db, 'publicaciones');
+        onValue(postsRef, (snapshot) => {
             const container = document.getElementById('feed-container');
             container.innerHTML = "";
-            const data = snap.val();
-            if(data) {
-                Object.keys(data).reverse().forEach(id => {
-                    const p = data[id];
-                    if(p.zona === activeLoc && (currentFilter === "Todas" || p.categoria === currentFilter)) {
-                        container.innerHTML += `
-                            <div class="post-card">
-                                <div class="img-scroll">${p.fotos ? p.fotos.map(f => `<img src="${f}">`).join('') : ''}</div>
-                                <h3>${p.titulo}</h3>
-                                <p style="color:var(--verde); font-weight:800; font-size:22px;">S/ ${p.precio}</p>
-                                <p>${p.descripcion}</p>
-                                <button onclick="window.chatVendedor('${p.vendedor}')" style="width:100%; padding:15px; border:none; background:var(--oscuro); color:white; border-radius:15px; font-weight:800;">CHATEAR CON EL VENDEDOR</button>
-                            </div>`;
+            const data = snapshot.val();
+            if (data) {
+                Object.keys(data).reverse().forEach(key => {
+                    const post = data[key];
+                    // Solo mostrar si es de la zona del GPS
+                    if (post.zona === activeLoc) {
+                        if (currentFilter === "Todas" || post.categoria === currentFilter) {
+                            renderPostCard(post, key);
+                        }
                     }
                 });
             }
         });
+    }
 
-        // Chat Grupal
-        onValue(ref(db, 'chat_grupal/' + activeLoc), snap => {
-            const list = document.getElementById('group-msgs');
-            list.innerHTML = "";
-            const msgs = snap.val();
-            if(msgs) {
-                Object.values(msgs).forEach(m => {
-                    list.innerHTML += `<div class="bubble ${m.u === currentUser ? 'bubble-out' : 'bubble-in'}"><b>${m.u}:</b><br>${m.t}</div>`;
+    function renderPostCard(post, id) {
+        const container = document.getElementById('feed-container');
+        const card = document.createElement('div');
+        card.className = 'post-card';
+        
+        let imagesHtml = "";
+        if (post.fotos) {
+            imagesHtml = `<div class="img-scroll">` + post.fotos.map(f => `<img src="${f}">`).join('') + `</div>`;
+        }
+
+        card.innerHTML = `
+            ${imagesHtml}
+            <div style="padding:10px;">
+                <h3 style="margin:0; font-weight:800;">${post.titulo}</h3>
+                <p style="color:var(--verde); font-weight:900; font-size:22px; margin:10px 0;">S/ ${post.precio}</p>
+                <div style="display:flex; gap:10px; margin-top:15px;">
+                    <button onclick="irAChatPrivado('${post.vendedor}')" style="flex:1; padding:15px; border:none; background:var(--oscuro); color:white; border-radius:20px; font-weight:800; cursor:pointer;">
+                        💬 CHATEAR CON VENDEDOR
+                    </button>
+                </div>
+                <p style="font-size:10px; opacity:0.5; margin-top:10px;">Vendedor: ${post.vendedor}</p>
+            </div>
+        `;
+        container.appendChild(card);
+    }
+
+    // --- FIREBASE: SUBIR PUBLICACIÓN ---
+    window.uploadToEmpire = function() {
+        const title = document.getElementById('in-title').value;
+        const price = document.getElementById('in-price').value;
+        
+        if(!title || !price || !activeCat) {
+            alert("Completa los datos y elige categoría.");
+            return;
+        }
+
+        const newPostRef = push(ref(db, 'publicaciones'));
+        set(newPostRef, {
+            titulo: title,
+            precio: price,
+            categoria: activeCat,
+            zona: activeLoc,
+            vendedor: currentUser,
+            fotos: capturedFiles.filter(f => f !== null),
+            timestamp: serverTimestamp()
+        }).then(() => {
+            confetti();
+            exitStudio();
+            tab('home', document.querySelector('.nav-btn'));
+            // Limpiar campos
+            document.getElementById('in-title').value = "";
+            document.getElementById('in-price').value = "";
+            capturedFiles = [null,null,null,null];
+            document.querySelectorAll('.drop-zone img').forEach(img => img.style.display = 'none');
+            document.querySelectorAll('[id^="info-"]').forEach(info => info.style.display = 'block');
+        });
+    };
+
+    // --- FIREBASE: CHAT GRUPAL ---
+    function listenToGroupChat() {
+        const chatRef = ref(db, 'chats_grupales/' + activeLoc);
+        onValue(chatRef, (snapshot) => {
+            const area = document.getElementById('group-msgs');
+            area.innerHTML = "";
+            const data = snapshot.val();
+            if (data) {
+                Object.values(data).forEach(msg => {
+                    const isMe = msg.user === currentUser;
+                    area.innerHTML += `
+                        <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}">
+                            <span style="font-size:9px; font-weight:800; display:block; margin-bottom:4px;">${msg.user}</span>
+                            ${msg.text}
+                        </div>
+                    `;
                 });
-                list.scrollTop = list.scrollHeight;
+                area.scrollTop = area.scrollHeight;
             }
         });
     }
 
-    // --- FUNCIONES EXPUESTAS ---
-    window.uploadToFirebase = function() {
-        const titulo = document.getElementById('in-title').value;
-        const precio = document.getElementById('in-price').value;
-        const desc = document.getElementById('in-desc').value;
-        if(!titulo || !precio) return alert("Completa los datos");
-
-        push(ref(db, 'publicaciones'), {
-            titulo, precio, descripcion: desc, zona: activeLoc, 
-            categoria: activeCat, vendedor: currentUser, 
-            fotos: capturedFiles.filter(f => f), fecha: serverTimestamp()
-        }).then(() => {
-            confetti(); exitStudio();
-            tab('home', document.querySelector('.nav-btn'));
-        });
-    };
-
     window.sendGroup = function() {
-        const val = document.getElementById('group-input').value;
-        if(!val) return;
-        push(ref(db, 'chat_grupal/' + activeLoc), { u: currentUser, t: val });
-        document.getElementById('group-input').value = "";
+        const input = document.getElementById('group-input');
+        if(!input.value) return;
+
+        const msgRef = push(ref(db, 'chats_grupales/' + activeLoc));
+        set(msgRef, {
+            user: currentUser,
+            text: input.value,
+            timestamp: serverTimestamp()
+        });
+        input.value = "";
     };
 
-    window.chatVendedor = function(vendedor) {
-        if(vendedor === currentUser) return alert("Es tu publicación");
-        localStorage.setItem('chat_con_vendedor', vendedor);
+    // --- REDIRECCIÓN CHAT PRIVADO ---
+    window.irAChatPrivado = function(vendedor) {
+        if (vendedor === currentUser) {
+            alert("Este es tu propio producto.");
+            return;
+        }
+        // Guardamos el vendedor en memoria para que chat_privado.html sepa con quién hablar
+        localStorage.setItem('vendedor_actual', vendedor);
         window.location.href = 'chat_privado.html';
     };
 
-    window.tab = function(id, el) {
+    // --- STUDIO Y NAVEGACIÓN ---
+    window.tab = function(id, btn) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
-        document.getElementById('view-' + id).classList.add('view-active');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
+        document.getElementById('view-' + id).classList.add('view-active');
+        btn.classList.add('active');
     };
 
-    window.startStudio = function(cat, emoji) {
+    window.startStudio = function(cat, icon) {
         activeCat = cat;
         document.getElementById('main-hub').style.display = 'none';
         document.getElementById('upload-studio').style.display = 'block';
-        document.getElementById('studio-tag').innerText = emoji + " " + cat;
+        document.getElementById('studio-tag').innerText = icon + " " + cat;
     };
 
     window.exitStudio = function() {
@@ -378,20 +461,23 @@
         document.getElementById('upload-studio').style.display = 'none';
     };
 
-    window.capture = function(type, i) {
+    window.capture = function(source, index) {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
-        if(type === 'cam') input.capture = 'environment';
-        input.onchange = e => {
+        if(source === 'cam') input.capture = 'environment';
+        
+        input.onchange = (e) => {
+            const file = e.target.files[0];
             const reader = new FileReader();
-            reader.onload = ev => {
-                capturedFiles[i] = ev.target.result;
-                document.getElementById('img-'+i).src = ev.target.result;
-                document.getElementById('img-'+i).style.display = 'block';
-                document.getElementById('info-'+i).style.display = 'none';
+            reader.onload = (event) => {
+                capturedFiles[index] = event.target.result;
+                const img = document.getElementById('img-' + index);
+                img.src = event.target.result;
+                img.style.display = 'block';
+                document.getElementById('info-' + index).style.display = 'none';
             };
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
         };
         input.click();
     };
@@ -400,10 +486,12 @@
         currentFilter = cat;
         document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
         el.classList.add('filter-active');
-        syncFirebase();
+        listenToPosts();
     };
 
-    initGPS();
+    // Iniciar
+    init();
+
 </script>
 </body>
 </html>
