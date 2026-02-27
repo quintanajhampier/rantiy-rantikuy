@@ -65,8 +65,8 @@
 
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-weight: 800; margin-bottom: 5px; font-size: 14px; color: var(--emerald-deep); }
-        .input-p { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; background: #fafafa; outline: none; font-size: 16px; }
-        .input-p:focus { border-color: var(--emerald-mid); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; background: #fafafa; outline: none; font-size: 16px; }
+        .form-group input:focus { border-color: var(--emerald-mid); }
         .btn-file-dummy { background: var(--soft-sky); color: var(--emerald-deep); padding: 15px; border-radius: 12px; text-align: center; font-weight: 800; cursor: pointer; border: 2px dashed var(--emerald-mid); }
 
         nav { position: fixed; bottom: 0; width: 100%; height: 90px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 4000; }
@@ -123,20 +123,43 @@
     <div class="modal-sheet" onclick="event.stopPropagation()" id="m-content"></div>
 </div>
 
-<script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
+        authDomain: "rantiy-y-rantikuy.firebaseapp.com",
+        projectId: "rantiy-y-rantikuy",
+        storageBucket: "rantiy-y-rantikuy.firebasestorage.app",
+        messagingSenderId: "49676513708",
+        appId: "1:49676513708:web:943ad781c98cb7bac78a09"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const dbFirebase = getFirestore(app);
+
+    // Variables de estado
     let db = JSON.parse(localStorage.getItem('RR_ULTIMATE_2026')) || { contacts: [], inventory: [] };
-    let currentID = null; let rec; let chunks = []; let taps = 0; let tempProdImg = "";
+    let currentID = null; 
+    let rec; 
+    let chunks = []; 
+    let taps = 0; 
+    let tempProdImg = "";
+    let unsubscribeMsgs = null;
 
-    function save() { localStorage.setItem('RR_ULTIMATE_2026', JSON.stringify(db)); render(); }
-    function go(s, el) { document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`; document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active')); el.classList.add('active'); }
-    function countAdmin() { taps++; if(taps===7) { alert("PANEL ADMIN: Huanta v3.0"); taps=0; } setTimeout(()=> taps=0, 2000); }
+    // Funciones básicas
+    window.save = function() { localStorage.setItem('RR_ULTIMATE_2026', JSON.stringify(db)); render(); }
+    window.go = function(s, el) { document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`; document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active')); el.classList.add('active'); }
+    window.countAdmin = function() { taps++; if(taps===7) { alert("PANEL ADMIN: Huanta v3.0"); taps=0; } setTimeout(()=> taps=0, 2000); }
 
-    function uiInput() {
+    window.uiInput = function() {
         const hasTxt = document.getElementById('m-input').value.trim().length > 0;
         document.getElementById('btn-send').style.display = hasTxt ? 'flex' : 'none';
         document.getElementById('btn-mic').style.display = hasTxt ? 'none' : 'flex';
     }
 
+    // Audio y Micrófono
     const mic = document.getElementById('btn-mic');
     mic.onpointerdown = async (e) => {
         e.preventDefault();
@@ -155,76 +178,125 @@
     };
     mic.onpointerup = () => { if(rec && rec.state !== 'inactive') { rec.stop(); mic.classList.remove('active'); } };
 
-    function handleFile(input) {
+    window.handleFile = function(input) {
         const file = input.files[0]; if(!file) return;
         const reader = new FileReader();
         reader.onload = () => { sendMedia(file.type.includes('image') ? 'img' : 'doc', reader.result, file.name); input.value = ''; };
         reader.readAsDataURL(file);
     }
 
-    function sendMedia(t, v, n="") {
-        const c = db.contacts.find(x => x.id === currentID);
-        c.msgs.push({ s:'me', t, v, n, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-        save(); renderMsgs();
+    // --- FIREBASE: ENVIAR MENSAJES ---
+    window.sendMedia = async function(t, v, n="") {
+        if (!currentID) return;
+        await addDoc(collection(dbFirebase, "mensajes_privados"), {
+            chatId: currentID,
+            s: 'me',
+            t: t,
+            v: v,
+            n: n,
+            timestamp: serverTimestamp()
+        });
     }
 
-    function sendTxt() {
-        const i = document.getElementById('m-input'); if(!i.value.trim()) return;
-        const c = db.contacts.find(x => x.id === currentID);
-        c.msgs.push({ s:'me', t:'txt', v: i.value, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-        i.value = ''; uiInput(); save(); renderMsgs();
+    window.sendTxt = async function() {
+        const i = document.getElementById('m-input'); 
+        if(!i.value.trim() || !currentID) return;
+        const val = i.value;
+        i.value = ''; 
+        uiInput();
+        
+        await addDoc(collection(dbFirebase, "mensajes_privados"), {
+            chatId: currentID,
+            s: 'me',
+            t: 'txt',
+            v: val,
+            timestamp: serverTimestamp()
+        });
     }
 
-    function renderMsgs() {
-        const c = db.contacts.find(x => x.id === currentID);
-        document.getElementById('m-flow').innerHTML = c.msgs.map(m => {
-            let html = m.v;
-            if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
-            if(m.t === 'audio') html = `<audio controls src="${m.v}" style="width:210px;"></audio>`;
-            if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="display:block; padding:10px; background:#f9f9f9; border-radius:8px; color:black;">📄 ${m.n}</a>`;
-            return `<div class="msg-bubble ${m.s}">${html}<div style="font-size:10px; opacity:0.6; text-align:right;">${m.time}</div></div>`;
-        }).join('');
-        const f = document.getElementById('m-flow'); f.scrollTop = f.scrollHeight;
+    // --- FIREBASE: ESCUCHAR MENSAJES EN TIEMPO REAL ---
+    window.openChat = function(id) { 
+        currentID = id; 
+        const c = db.contacts.find(x => x.id === id); 
+        document.getElementById('active-name').innerText = c.name; 
+        document.getElementById('active-phone').innerText = c.phone || "Sin número"; 
+        document.getElementById('active-av').innerText = c.name[0]; 
+        document.getElementById('chat-window').style.display = 'flex'; 
+        
+        if (unsubscribeMsgs) unsubscribeMsgs();
+
+        const q = query(
+            collection(dbFirebase, "mensajes_privados"),
+            where("chatId", "==", id),
+            orderBy("timestamp", "asc")
+        );
+
+        unsubscribeMsgs = onSnapshot(q, (snapshot) => {
+            const area = document.getElementById('m-flow');
+            area.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const m = doc.data();
+                let html = m.v;
+                let time = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "...";
+                
+                if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
+                if(m.t === 'audio') html = `<audio controls src="${m.v}" style="width:210px;"></audio>`;
+                if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="display:block; padding:10px; background:#f9f9f9; border-radius:8px; color:black;">📄 ${m.n}</a>`;
+                
+                area.innerHTML += `<div class="msg-bubble ${m.s}">${html}<div style="font-size:10px; opacity:0.6; text-align:right;">${time}</div></div>`;
+            });
+            area.scrollTop = area.scrollHeight;
+        });
     }
 
-    function openChat(id) { currentID = id; const c = db.contacts.find(x => x.id === id); document.getElementById('active-name').innerText = c.name; document.getElementById('active-phone').innerText = c.phone || "Sin número"; document.getElementById('active-av').innerText = c.name[0]; document.getElementById('chat-window').style.display = 'flex'; renderMsgs(); }
-    function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
+    window.closeChat = function() { 
+        document.getElementById('chat-window').style.display = 'none'; 
+        if (unsubscribeMsgs) unsubscribeMsgs();
+    }
 
-    function popContact() {
+    // Registro de Clientes
+    window.popContact = function() {
         document.getElementById('m-content').innerHTML = `
             <h2 style="margin-bottom:20px; font-weight:900;">Registrar Cliente</h2>
-            <div class="form-group"><label>Nombre del Comerciante</label><input id="c-n" class="input-p"></div>
-            <div class="form-group"><label>Número de WhatsApp</label><input id="c-p" class="input-p" type="tel"></div>
+            <div class="form-group"><label>Nombre del Comerciante</label><input id="c-n"></div>
+            <div class="form-group"><label>Número de WhatsApp</label><input id="c-p" type="tel"></div>
             <button onclick="addC()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">INICIAR CHAT</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
-    function addC() { const n = document.getElementById('c-n').value; if(!n) return; db.contacts.push({ id:Date.now(), name:n, phone:document.getElementById('c-p').value, msgs:[] }); save(); document.getElementById('modal').style.display = 'none'; }
+    window.addC = function() { 
+        const n = document.getElementById('c-n').value; 
+        if(!n) return; 
+        db.contacts.push({ id:Date.now(), name:n, phone:document.getElementById('c-p').value, msgs:[] }); 
+        save(); 
+        document.getElementById('modal').style.display = 'none'; 
+    }
 
-    function popProd() {
+    // Almacén y Mercadería
+    window.popProd = function() {
         tempProdImg = "";
         document.getElementById('m-content').innerHTML = `
             <h2 style="margin-bottom:20px; font-weight:900;">Detalles del Producto</h2>
-            <div class="form-group"><label>Nombre del Producto</label><input id="p-n" class="input-p"></div>
+            <div class="form-group"><label>Nombre del Producto</label><input id="p-n"></div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <div class="form-group"><label>Precio Venta</label><input id="p-p" class="input-p"></div>
-                <div class="form-group"><label>Medida</label><select id="p-u" class="input-p"><option>Unidades</option><option>Docenas</option><option>Cajas</option></select></div>
+                <div class="form-group"><label>Precio Venta</label><input id="p-p"></div>
+                <div class="form-group"><label>Medida</label><select id="p-u"><option>Unidades</option><option>Docenas</option><option>Cajas</option></select></div>
             </div>
-            <div class="form-group"><label>Stock</label><input id="p-q" class="input-p" type="number"></div>
-            <div class="form-group"><label>Ubicación</label><input id="p-l" class="input-p"></div>
+            <div class="form-group"><label>Stock</label><input id="p-q" type="number"></div>
+            <div class="form-group"><label>Ubicación</label><input id="p-l"></div>
             <div class="form-group">
                 <label>Imagen del Producto</label>
                 <div class="btn-file-dummy" onclick="document.getElementById('p-img-file').click()">📸 SELECCIONAR DE GALERÍA</div>
                 <input type="file" id="p-img-file" hidden accept="image/*" onchange="previewProdImg(this)">
                 <div id="p-preview-container"></div>
             </div>
-            <div class="form-group"><label>Nota Detallada</label><textarea id="p-o" class="input-p" style="height:80px;"></textarea></div>
+            <div class="form-group"><label>Nota Detallada</label><textarea id="p-o" style="height:80px;"></textarea></div>
             <button onclick="addP()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">GUARDAR EN ALMACÉN</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
 
-    function previewProdImg(input) {
+    window.previewProdImg = function(input) {
         const file = input.files[0]; if(!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -234,7 +306,7 @@
         reader.readAsDataURL(file);
     }
 
-    function addP() {
+    window.addP = function() {
         const n = document.getElementById('p-n').value; if(!n) return;
         db.inventory.push({ 
             id:Date.now(), name:n, price: document.getElementById('p-p').value, unit: document.getElementById('p-u').value,
@@ -244,7 +316,7 @@
         save(); document.getElementById('modal').style.display = 'none';
     }
 
-    function render() {
+    window.render = function() {
         document.getElementById('list-contacts').innerHTML = db.contacts.map(c => `
             <div class="card-stock" onclick="openChat(${c.id})" style="border-top:none; border-left:5px solid var(--emerald-mid); display:flex; align-items:center; gap:15px; padding:15px;">
                 <div style="width:50px; height:50px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900;">${c.name[0]}</div>
@@ -267,7 +339,8 @@
             </div>
         `).join('');
     }
-    window.onload = render;
+
+    render();
 </script>
 </body>
 </html>
