@@ -159,7 +159,7 @@
 <div class="search-container">
     <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas en tu zona?" oninput="renderFeed()">
+        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas en tu zona?" oninput="filterFeed()">
     </div>
 </div>
 
@@ -208,7 +208,7 @@
         <div id="q-box" style="margin-top:20px;"></div>
         <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
-        <button onclick="uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
+        <button onclick="uploadToEmpire()" id="btn-publish" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
     </div>
 </section>
 
@@ -216,7 +216,7 @@
     <div class="chat-box-ui">
         <div id="group-title" style="padding:20px; background:var(--verde); color:white; font-weight:900; display:flex; justify-content:space-between;">
             <span id="zone-chat-label">SALA REGIONAL</span>
-            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">AUTO-LIMPIEZA 30H</span>
+            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">ONLINE</span>
         </div>
         <div class="msg-area" id="group-msgs"></div>
         <div style="padding:15px; display:flex; gap:10px;">
@@ -226,73 +226,50 @@
     </div>
 </section>
 
-<div id="private-modal">
-    <div style="padding:20px; background:var(--oscuro); color:white; display:flex; justify-content:space-between; align-items:center;">
-        <button onclick="closePrivate()" style="background:none; border:none; color:white; font-size:20px;">⬅</button>
-        <span id="p-chat-name" style="font-weight:900;">Cargando...</span>
-        <button onclick="clearPrivateChat()" style="background:#ef4444; border:none; color:white; font-size:10px; padding:8px 12px; border-radius:12px; font-weight:800;">BORRAR</button>
-    </div>
-    
-    <div class="msg-area" id="private-msgs"></div>
-
-    <div class="emoji-panel">
-        <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
-        <button class="emoji-btn" onclick="addEmoji('✅')">✅</button>
-        <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
-        <button class="emoji-btn" onclick="addEmoji('🤝')">🤝</button>
-        <button class="emoji-btn" onclick="addSticker('👑')">👑</button>
-    </div>
-
-    <div class="chat-tools">
-        <button class="tool-btn" onclick="triggerPrivateCapture('cam')">📷</button>
-        <button class="tool-btn" onclick="triggerPrivateCapture('gal')">🖼️</button>
-        <button class="tool-btn" onclick="triggerPrivateFile()">📄</button>
-    </div>
-
-    <div style="padding:15px; display:flex; gap:10px; align-items:center; background:white;">
-        <input type="text" id="p-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe un mensaje...">
-        <button onclick="sendPrivate()" style="background:var(--verde); color:white; border:none; width:60px; height:50px; border-radius:20px; font-size:20px;">✈️</button>
-    </div>
-</div>
-
 <nav class="nav-island">
     <div class="nav-btn active" onclick="tab('home', this)">🏠<br>VITRINA</div>
     <div class="nav-btn" onclick="tab('camera', this)">📸<br>SUBIR</div>
     <div class="nav-btn" onclick="tab('chat', this)">💬<br>GRUPAL</div>
 </nav>
 
-<script>
-    let activeLoc = ""; 
-    let activeCat = ""; 
-    let currentFilter = "Todas"; 
-    let capturedFiles = [null,null,null,null]; 
-    let currentUser = "";
-    let adminClicks = 0;
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const ZONAS = {
-        "Huanta": { lat: -12.94, lon: -74.24, r: 0.05 },
-        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.05 },
-        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.1 }
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
+        authDomain: "rantiy-y-rantikuy.firebaseapp.com",
+        projectId: "rantiy-y-rantikuy",
+        storageBucket: "rantiy-y-rantikuy.firebasestorage.app",
+        messagingSenderId: "49676513708",
+        appId: "1:49676513708:web:943ad781c98cb7bac78a09"
     };
 
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // --- VARIABLES GLOBALES ---
+    window.activeLoc = ""; 
+    window.currentFilter = "Todas"; 
+    window.capturedFiles = [null,null,null,null]; 
+    window.currentUser = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
+
+    const ZONAS = {
+        "Huanta": { lat: -12.94, lon: -74.24, r: 0.15 },
+        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.15 },
+        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.3 }
+    };
+
+    // --- INICIALIZACIÓN ---
     function init() {
-        currentUser = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
-        if(!currentUser) { window.location.href = 'registro_entrada.html'; return; }
-        document.getElementById('user-tag').innerText = "CIUDADANO: " + currentUser.toUpperCase();
+        if(!window.currentUser) { window.location.href = 'registro_entrada.html'; return; }
+        document.getElementById('user-tag').innerText = "CIUDADANO: " + window.currentUser.toUpperCase();
 
         if ("geolocation" in navigator) {
             navigator.geolocation.watchPosition(successGPS, errorGPS, {enableHighAccuracy:true});
         } else {
             alert("Tu celular no soporta GPS.");
         }
-
-        checkGroupCleanup();
-        
-        setInterval(() => {
-            renderFeed();
-            if(activeLoc) loadGroupMsgs();
-            if(document.getElementById('private-modal').style.display === 'flex') loadPrivateMsgs();
-        }, 4000);
     }
 
     function successGPS(pos) {
@@ -303,7 +280,7 @@
         for (let zone in ZONAS) {
             let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
             if (d < ZONAS[zone].r) {
-                activeLoc = zone;
+                window.activeLoc = zone;
                 found = true;
                 break;
             }
@@ -312,11 +289,14 @@
         if (found) {
             document.getElementById('gps-screen').style.display = 'none';
             document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
-            let card = document.getElementById('city-' + activeLoc.toLowerCase());
-            if(card) card.classList.add('active-city', 'active-' + activeLoc.toLowerCase());
-            document.getElementById('current-zone-text').innerText = activeLoc;
-            document.getElementById('zone-chat-label').innerText = "SALA " + activeLoc.toUpperCase();
-            renderFeed();
+            let card = document.getElementById('city-' + window.activeLoc.toLowerCase());
+            if(card) card.classList.add('active-city', 'active-' + window.activeLoc.toLowerCase());
+            document.getElementById('current-zone-text').innerText = window.activeLoc;
+            document.getElementById('zone-chat-label').innerText = "SALA " + window.activeLoc.toUpperCase();
+            
+            // Iniciar Escuchas de Firebase
+            listenToFeed();
+            listenToGroupChat();
         } else {
             document.getElementById('gps-loader').style.display = 'none';
             document.getElementById('gps-msg').innerText = "FUERA DE COBERTURA: Debes estar en Huanta, Huamanga o VRAEM.";
@@ -330,8 +310,167 @@
         document.getElementById('gps-msg').style.color = "red";
     }
 
-    // --- VITRINA (MODIFICADA PARA REDIRIGIR A CHAT_PRIVADO.HTML) ---
-    function renderFeed() {
-        if(!activeLoc) return;
-        const container = document.getElementById('feed-container');
-        const search = document.getElementById
+    // --- FIREBASE: VITRINA EN TIEMPO REAL ---
+    function listenToFeed() {
+        const q = query(
+            collection(db, "publicaciones"), 
+            where("zona", "==", window.activeLoc),
+            orderBy("timestamp", "desc")
+        );
+
+        onSnapshot(q, (snapshot) => {
+            const container = document.getElementById('feed-container');
+            container.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const p = doc.data();
+                if(window.currentFilter !== "Todas" && p.categoria !== window.currentFilter) return;
+
+                const card = document.createElement('div');
+                card.className = "post-card";
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <b style="color:var(--verde)">${p.categoria}</b>
+                        <small style="opacity:0.5">${new Date(p.timestamp?.toDate()).toLocaleTimeString()}</small>
+                    </div>
+                    <div class="img-scroll">
+                        ${p.fotos.map(f => `<img src="${f}">`).join('')}
+                    </div>
+                    <h3 style="margin:10px 0 5px 0;">${p.titulo}</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:20px; font-weight:800; color:var(--oscuro);">S/ ${p.precio}</span>
+                        <a href="chat_privado.html?vendedor=${encodeURIComponent(p.usuario)}" style="background:var(--oscuro); color:white; padding:10px 20px; border-radius:15px; text-decoration:none; font-weight:800; font-size:12px;">CHATEAR CON VENDEDOR</a>
+                    </div>
+                    <p style="font-size:10px; margin-top:10px; opacity:0.6;">Vendido por: ${p.usuario}</p>
+                `;
+                container.appendChild(card);
+            });
+        });
+    }
+
+    // --- FIREBASE: CHAT GRUPAL EN TIEMPO REAL ---
+    function listenToGroupChat() {
+        const q = query(
+            collection(db, "chats_grupales"),
+            where("zona", "==", window.activeLoc),
+            orderBy("timestamp", "asc"),
+            limit(50)
+        );
+
+        onSnapshot(q, (snapshot) => {
+            const area = document.getElementById('group-msgs');
+            area.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const m = doc.data();
+                const isMe = m.user === window.currentUser;
+                const div = document.createElement('div');
+                div.className = `bubble ${isMe ? 'bubble-out' : 'bubble-in'}`;
+                div.innerHTML = `<small style="display:block; font-size:9px; opacity:0.7;">${m.user}</small>${m.text}`;
+                area.appendChild(div);
+            });
+            area.scrollTop = area.scrollHeight;
+        });
+    }
+
+    // --- FUNCIONES DE ACCIÓN ---
+    window.sendGroup = async () => {
+        const input = document.getElementById('group-input');
+        if(!input.value.trim()) return;
+        
+        await addDoc(collection(db, "chats_grupales"), {
+            zona: window.activeLoc,
+            user: window.currentUser,
+            text: input.value,
+            timestamp: serverTimestamp()
+        });
+        input.value = "";
+    };
+
+    window.uploadToEmpire = async () => {
+        const title = document.getElementById('in-title').value;
+        const price = document.getElementById('in-price').value;
+        const fotos = window.capturedFiles.filter(f => f !== null);
+
+        if(!title || !price || fotos.length === 0) {
+            alert("Completa el título, precio y al menos una foto.");
+            return;
+        }
+
+        const btn = document.getElementById('btn-publish');
+        btn.innerText = "SUBIENDO...";
+        btn.disabled = true;
+
+        await addDoc(collection(db, "publicaciones"), {
+            titulo: title,
+            precio: price,
+            categoria: window.activeCat,
+            fotos: fotos,
+            usuario: window.currentUser,
+            zona: window.activeLoc,
+            timestamp: serverTimestamp()
+        });
+
+        confetti();
+        exitStudio();
+        tab('home', document.querySelectorAll('.nav-btn')[0]);
+        btn.innerText = "PUBLICAR EN RANTIKUY 🚀";
+        btn.disabled = false;
+    };
+
+    // --- LÓGICA DE UI (ESTUDIO, TABS, ETC) ---
+    window.tab = (name, el) => {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
+        document.getElementById('view-' + name).classList.add('view-active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+    };
+
+    window.startStudio = (cat, emoji) => {
+        window.activeCat = cat;
+        document.getElementById('main-hub').style.display = 'none';
+        document.getElementById('upload-studio').style.display = 'block';
+        document.getElementById('studio-tag').innerText = emoji + " Publicar " + cat;
+    };
+
+    window.exitStudio = () => {
+        document.getElementById('main-hub').style.display = 'block';
+        document.getElementById('upload-studio').style.display = 'none';
+        window.capturedFiles = [null,null,null,null];
+        for(let i=0; i<4; i++) {
+            document.getElementById('img-'+i).style.display = 'none';
+            document.getElementById('info-'+i).style.display = 'block';
+        }
+    };
+
+    window.capture = (type, idx) => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        if(type === 'cam') input.capture = 'environment';
+        
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = r => {
+                window.capturedFiles[idx] = r.target.result;
+                document.getElementById('img-'+idx).src = r.target.result;
+                document.getElementById('img-'+idx).style.display = 'block';
+                document.getElementById('info-'+idx).style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    };
+
+    window.filterByCat = (cat, el) => {
+        window.currentFilter = cat;
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
+        el.classList.add('filter-active');
+        listenToFeed(); // Recargar con filtro
+    };
+
+    init();
+</script>
+
+</body>
+</html>
+1
