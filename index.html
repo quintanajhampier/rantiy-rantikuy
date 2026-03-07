@@ -6,9 +6,9 @@
     <title>Rantiy y Rantikuy - Imperio Huanta</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
 
     <style>
         :root {
@@ -90,9 +90,10 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- VITRINA / CARDS --- */
-        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; }
+        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; position: relative; }
         .img-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
-        .img-scroll img { width: 100%; height: 230px; object-fit: cover; border-radius: 25px; flex-shrink: 0; }
+        .img-scroll img { width: 100%; height: 230px; object-fit: cover; border-radius: 25px; flex-shrink: 0; background: #eee; }
+        .loading-overlay { position: absolute; top: 15px; left: 15px; right: 15px; height: 230px; background: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; border-radius: 25px; z-index: 5; }
 
         /* --- STUDIO SUBIDA --- */
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
@@ -113,33 +114,19 @@
         .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
         .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .bubble img { width: 100%; border-radius: 15px; margin-top: 5px; cursor: pointer; }
-        .sticker { font-size: 50px; display: block; }
-
-        #private-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; }
-
+        
         /* --- NAV ISLAND --- */
         .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
         .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
         .nav-btn.active { color: var(--verde); }
-        
-        .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 12px; border-radius: 15px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 10px; }
-        .emoji-panel { display: flex; gap: 10px; padding: 10px; overflow-x: auto; background: #f1f5f9; }
-        .emoji-btn { font-size: 20px; cursor: pointer; border: none; background: none; }
 
-        /* --- HERRAMIENTAS CHAT --- */
-        .chat-tools { display: flex; gap: 10px; padding: 10px 20px; background: white; border-top: 1px solid #eee; }
-        .tool-btn { background: #f1f5f9; border: none; padding: 12px; border-radius: 18px; font-size: 18px; cursor: pointer; flex: 1; transition: 0.2s; }
-        .tool-btn:active { background: var(--verde-glow); }
-        .file-bubble { display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; }
-        .file-link { color: var(--verde); font-weight: 800; text-decoration: none; font-size: 12px; }
-
-        /* --- NUEVO ESTILO DE CARGA --- */
-        .btn-loading { background: #94a3b8 !important; pointer-events: none; position: relative; }
-        .btn-loading::after { content: ""; position: absolute; width: 20px; height: 20px; border: 3px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; margin-left: 10px; }
+        /* STATUS DE CARGA */
+        #upload-status-bar { position: fixed; top: 0; left: 0; height: 4px; background: var(--verde); z-index: 9999; transition: width 0.3s; width: 0%; }
     </style>
 </head>
-<body onload="init()">
+<body>
+
+<div id="upload-status-bar"></div>
 
 <div id="gps-screen">
     <div class="logo-rr" style="width:100px; height:100px; font-size:40px; margin-bottom:20px;">R&R</div>
@@ -156,7 +143,7 @@
 
 <header class="header">
     <div style="display:flex; align-items:center; gap:18px;">
-        <div class="logo-rr" onclick="checkAdminAccess()">R&R</div>
+        <div class="logo-rr">R&R</div>
         <div>
             <div style="font-weight: 900; font-size: 20px;">Rantiy y Rantikuy</div>
             <div id="user-tag" style="font-size: 10px; color: var(--verde); font-weight: 800;">CIUDADANO: CARGANDO...</div>
@@ -216,7 +203,7 @@
         <div id="q-box" style="margin-top:20px;"></div>
         <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
-        <button id="btn-publish-final" onclick="uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
+        <button id="btn-publish" onclick="uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
     </div>
 </section>
 
@@ -224,7 +211,7 @@
     <div class="chat-box-ui">
         <div id="group-title" style="padding:20px; background:var(--verde); color:white; font-weight:900; display:flex; justify-content:space-between;">
             <span id="zone-chat-label">SALA REGIONAL</span>
-            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">AUTO-LIMPIEZA 30H</span>
+            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">TIEMPO REAL</span>
         </div>
         <div class="msg-area" id="group-msgs"></div>
         <div style="padding:15px; display:flex; gap:10px;">
@@ -240,156 +227,232 @@
     <div class="nav-btn" onclick="tab('chat', this)">💬<br>GRUPAL</div>
 </nav>
 
-<input type="file" id="hidden-input" style="display:none" accept="image/*">
+<input type="file" id="global-input" style="display:none" accept="image/*">
 
 <script>
     // --- CONFIGURACIÓN FIREBASE (REEMPLAZA CON TUS DATOS) ---
     const firebaseConfig = {
         apiKey: "TU_API_KEY",
         authDomain: "tu-app.firebaseapp.com",
+        databaseURL: "https://tu-app-default-rtdb.firebaseio.com",
         projectId: "tu-app",
         storageBucket: "tu-app.appspot.com",
-        messagingSenderId: "ID",
-        appId: "APP_ID"
+        messagingSenderId: "12345",
+        appId: "1:12345:web:6789"
     };
+    
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const db = firebase.database();
     const storage = firebase.storage();
 
     let activeLoc = ""; 
     let activeCat = ""; 
     let currentFilter = "Todas"; 
     let capturedFiles = [null,null,null,null]; 
-    let currentUser = "";
+    let currentUser = localStorage.getItem('rantiy_user') || "Usuario";
 
     const ZONAS = {
-        "Huanta": { lat: -12.94, lon: -74.24, r: 0.05 },
-        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.05 },
-        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.1 }
+        "Huanta": { lat: -12.94, lon: -74.24, r: 0.1 },
+        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.1 },
+        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.2 }
     };
 
     function init() {
-        currentUser = localStorage.getItem('rantiy_user');
-        if(!currentUser) { window.location.href = 'registro_entrada.html'; return; }
+        if(!localStorage.getItem('rantiy_user')) { window.location.href = 'registro_entrada.html'; return; }
         document.getElementById('user-tag').innerText = "CIUDADANO: " + currentUser.toUpperCase();
 
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition(successGPS, errorGPS, {enableHighAccuracy:true});
         }
         
-        // Listeners en tiempo real para el feed
-        db.collection("publicaciones").orderBy("timestamp", "desc").onSnapshot(() => {
-            renderFeed();
-        });
+        listenToFirebase();
     }
 
     function successGPS(pos) {
         let lat = pos.coords.latitude;
         let lon = pos.coords.longitude;
         let found = false;
+
         for (let zone in ZONAS) {
             let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
-            if (d < ZONAS[zone].r) { activeLoc = zone; found = true; break; }
+            if (d < ZONAS[zone].r) {
+                activeLoc = zone;
+                found = true;
+                break;
+            }
         }
+
         if (found) {
             document.getElementById('gps-screen').style.display = 'none';
             document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
             let card = document.getElementById('city-' + activeLoc.toLowerCase());
             if(card) card.classList.add('active-city', 'active-' + activeLoc.toLowerCase());
             document.getElementById('current-zone-text').innerText = activeLoc;
+            document.getElementById('zone-chat-label').innerText = "SALA " + activeLoc.toUpperCase();
             renderFeed();
+            listenToGroupChat();
         } else {
-            document.getElementById('gps-msg').innerText = "FUERA DE COBERTURA: Huanta, Huamanga o VRAEM solamente.";
+            document.getElementById('gps-loader').style.display = 'none';
+            document.getElementById('gps-msg').innerText = "FUERA DE COBERTURA: Solo disponible en Ayacucho.";
+            document.getElementById('gps-msg').style.color = "red";
         }
     }
 
     function errorGPS() {
-        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS para usar la aplicación.";
+        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS para entrar.";
     }
 
-    // --- OPTIMIZADOR DE IMÁGENES (LA MAGIA PARA QUE SEA RÁPIDO) ---
-    async function compressImage(file) {
+    // --- ESCUCHA TIEMPO REAL FIREBASE ---
+    function listenToFirebase() {
+        db.ref('publicaciones').on('value', () => {
+            renderFeed();
+        });
+    }
+
+    function listenToGroupChat() {
+        if(!activeLoc) return;
+        db.ref('chats_grupales/' + activeLoc).limitToLast(20).on('value', snapshot => {
+            const container = document.getElementById('group-msgs');
+            container.innerHTML = "";
+            snapshot.forEach(child => {
+                const m = child.val();
+                const side = m.user === currentUser ? 'bubble-out' : 'bubble-in';
+                container.innerHTML += `<div class="bubble ${side}"><b>${m.user}:</b><br>${m.text}</div>`;
+            });
+            container.scrollTop = container.scrollHeight;
+        });
+    }
+
+    // --- RENDERIZADO DE VITRINA ---
+    function renderFeed() {
+        if(!activeLoc) return;
+        const container = document.getElementById('feed-container');
+        const search = document.getElementById('main-search').value.toLowerCase();
+        
+        db.ref('publicaciones').once('value', snapshot => {
+            container.innerHTML = "";
+            snapshot.forEach(child => {
+                const p = child.val();
+                if(p.zona !== activeLoc) return;
+                if(currentFilter !== "Todas" && p.cat !== currentFilter) return;
+                if(search && !p.title.toLowerCase().includes(search)) return;
+
+                const card = `
+                    <div class="post-card">
+                        ${p.status === 'uploading' ? '<div class="loading-overlay">⌛ Subiendo fotos...</div>' : ''}
+                        <div class="img-scroll">
+                            ${p.imgs ? p.imgs.map(img => `<img src="${img}">`).join('') : '<div style="width:100%; height:230px; background:#f1f5f9; border-radius:25px; display:flex; align-items:center; justify-content:center;">Sin fotos</div>'}
+                        </div>
+                        <h3 style="margin:10px 0 5px 0;">${p.title}</h3>
+                        <div style="color:var(--verde); font-weight:800; font-size:18px;">S/ ${p.price}</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:5px;">Vendedor: ${p.user}</div>
+                        <button onclick="irAChatPrivado('${p.user}', '${p.title}')" style="width:100%; margin-top:15px; padding:12px; border:none; border-radius:15px; background:var(--oscuro); color:white; font-weight:700;">💬 CHATEAR CON VENDEDOR</button>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        });
+    }
+
+    function irAChatPrivado(vendedor, producto) {
+        // Guardamos los datos en localStorage para que chat_privado.html sepa con quién hablar
+        localStorage.setItem('chat_con', vendedor);
+        localStorage.setItem('chat_producto', producto);
+        window.location.href = "chat_privado.html";
+    }
+
+    // --- LÓGICA DE SUBIDA TIPO WHATSAPP ---
+    async function uploadToEmpire() {
+        const title = document.getElementById('in-title').value;
+        const price = document.getElementById('in-price').value;
+        if(!title || !price) { alert("Llena los datos."); return; }
+
+        const btn = document.getElementById('btn-publish');
+        btn.disabled = true;
+        btn.innerText = "INICIANDO ENVÍO...";
+
+        // 1. Crear registro inmediato en la DB (Texto primero)
+        const postID = db.ref('publicaciones').push().key;
+        const postData = {
+            id: postID,
+            title: title,
+            price: price,
+            user: currentUser,
+            zona: activeLoc,
+            cat: activeCat,
+            status: 'uploading',
+            timestamp: Date.now()
+        };
+
+        await db.ref('publicaciones/' + postID).set(postData);
+
+        // 2. Volver a la vitrina de inmediato (Lógica fluida)
+        tab('home', document.querySelectorAll('.nav-btn')[0]);
+        exitStudio();
+
+        // 3. Subir imágenes en "segundo plano"
+        let uploadedUrls = [];
+        const filesToUpload = capturedFiles.filter(f => f !== null);
+        
+        if(filesToUpload.length === 0) {
+            await db.ref('publicaciones/' + postID).update({ status: 'ready' });
+            return;
+        }
+
+        for(let i=0; i < filesToUpload.length; i++) {
+            const file = filesToUpload[i];
+            const bar = document.getElementById('upload-status-bar');
+            bar.style.width = ((i+1)/filesToUpload.length * 100) + "%";
+
+            // Compresión básica antes de subir
+            const compressed = await compressImage(file);
+            const storageRef = storage.ref(`posts/${postID}/img_${i}.jpg`);
+            await storageRef.put(compressed);
+            const url = await storageRef.getDownloadURL();
+            uploadedUrls.push(url);
+        }
+
+        // 4. Actualizar publicación con las URLs finales
+        await db.ref('publicaciones/' + postID).update({
+            imgs: uploadedUrls,
+            status: 'ready'
+        });
+
+        document.getElementById('upload-status-bar').style.width = "0%";
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    }
+
+    // --- COMPRESIÓN DE IMAGEN ---
+    function compressImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = (event) => {
+            reader.onload = event => {
                 const img = new Image();
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const max_size = 800; // Tamaño máximo para que suba volando
-                    if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } }
-                    else { if (height > max_size) { width *= max_size / height; height = max_size; } }
-                    canvas.width = width;
-                    canvas.height = height;
+                    const MAX_WIDTH = 800;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.6); // 60% calidad
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob((blob) => {
+                        resolve(blob);
+                    }, 'image/jpeg', 0.7);
                 };
             };
         });
     }
 
-    async function uploadToEmpire() {
-        const title = document.getElementById('in-title').value;
-        const price = document.getElementById('in-price').value;
-        const btn = document.getElementById('btn-publish-final');
-
-        if (!title || !price || !capturedFiles.some(f => f !== null)) {
-            alert("Completa los datos y sube al menos una foto.");
-            return;
-        }
-
-        btn.classList.add('btn-loading');
-        btn.innerText = "SUBIENDO A LA NUBE...";
-
-        try {
-            const imageUrls = [];
-            // Subida ultra-rápida con compresión
-            for (let i = 0; i < capturedFiles.length; i++) {
-                if (capturedFiles[i]) {
-                    const compressed = await compressImage(capturedFiles[i]);
-                    const ref = storage.ref(`posts/${Date.now()}_${i}.jpg`);
-                    await ref.put(compressed);
-                    const url = await ref.getDownloadURL();
-                    imageUrls.push(url);
-                }
-            }
-
-            // Guardar en Firestore
-            await db.collection("publicaciones").add({
-                titulo: title,
-                precio: price,
-                vendedor: currentUser,
-                zona: activeLoc,
-                categoria: activeCat,
-                fotos: imageUrls,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            exitStudio();
-            tab('home', document.querySelectorAll('.nav-btn')[0]);
-            alert("¡Publicado con éxito!");
-
-        } catch (error) {
-            console.error(error);
-            alert("Internet muy lento. Por favor, revisa tu señal y vuelve a intentar.");
-        } finally {
-            btn.classList.remove('btn-loading');
-            btn.innerText = "PUBLICAR EN RANTIKUY 🚀";
-        }
-    }
-
-    // --- FUNCIONES DE NAVEGACIÓN Y STUDIO (SIN CAMBIOS PARA NO PERDER AVANCE) ---
-    function tab(viewId, el) {
+    // --- FUNCIONES DE NAVEGACIÓN Y STUDIO ---
+    function tab(view, btn) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
-        document.getElementById('view-' + viewId).classList.add('view-active');
+        document.getElementById('view-' + view).classList.add('view-active');
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        if(viewId === 'home') renderFeed();
+        btn.classList.add('active');
+        if(view === 'home') renderFeed();
     }
 
     function startStudio(cat, emoji) {
@@ -398,13 +461,20 @@
         document.getElementById('upload-studio').style.display = 'block';
         document.getElementById('studio-tag').innerText = emoji + " NUEVA " + cat.toUpperCase();
         
-        // Preguntas extra para el vendedor
+        // Generar preguntas dinámicas según categoría
         const qBox = document.getElementById('q-box');
-        qBox.innerHTML = `
-            <input type="text" class="rr-field extra-q" placeholder="Marca / Modelo">
-            <input type="text" class="rr-field extra-q" placeholder="Estado (Nuevo/Usado)">
-            <input type="text" class="rr-field extra-q" placeholder="Stock disponible">
-        `;
+        qBox.innerHTML = "";
+        if(cat === 'Venta') {
+            qBox.innerHTML = `
+                <input type="text" class="rr-field extra-q" placeholder="Estado (Nuevo/Usado)">
+                <input type="text" class="rr-field extra-q" placeholder="Talla o Medida">
+            `;
+        } else if(cat === 'Taxi') {
+            qBox.innerHTML = `
+                <input type="text" class="rr-field extra-q" placeholder="Modelo del Vehículo">
+                <input type="text" class="rr-field extra-q" placeholder="Placa (Opcional)">
+            `;
+        }
     }
 
     function exitStudio() {
@@ -418,14 +488,17 @@
     }
 
     function capture(type, idx) {
-        const input = document.getElementById('hidden-input');
+        const input = document.getElementById('global-input');
+        if(type === 'cam') input.setAttribute('capture', 'environment');
+        else input.removeAttribute('capture');
+        
         input.onchange = (e) => {
             const file = e.target.files[0];
             if(file) {
                 capturedFiles[idx] = file;
                 const reader = new FileReader();
-                reader.onload = (re) => {
-                    document.getElementById('img-'+idx).src = re.target.result;
+                reader.onload = (rs) => {
+                    document.getElementById('img-'+idx).src = rs.target.result;
                     document.getElementById('img-'+idx).style.display = 'block';
                     document.getElementById('info-'+idx).style.display = 'none';
                 };
@@ -435,52 +508,25 @@
         input.click();
     }
 
-    function filterByCat(cat, el) {
+    function sendGroup() {
+        const txt = document.getElementById('group-input').value;
+        if(!txt || !activeLoc) return;
+        db.ref('chats_grupales/' + activeLoc).push({
+            user: currentUser,
+            text: txt,
+            timestamp: Date.now()
+        });
+        document.getElementById('group-input').value = "";
+    }
+
+    function filterByCat(cat, btn) {
         currentFilter = cat;
         document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
-        el.classList.add('filter-active');
+        btn.classList.add('filter-active');
         renderFeed();
     }
 
-    async function renderFeed() {
-        if(!activeLoc) return;
-        const container = document.getElementById('feed-container');
-        const search = document.getElementById('main-search').value.toLowerCase();
-        
-        container.innerHTML = '<p style="text-align:center;">Actualizando vitrina...</p>';
-
-        let query = db.collection("publicaciones").where("zona", "==", activeLoc);
-        
-        const snapshot = await query.get();
-        container.innerHTML = "";
-
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            if (currentFilter !== 'Todas' && data.categoria !== currentFilter) return;
-            if (search && !data.titulo.toLowerCase().includes(search)) return;
-
-            const card = document.createElement('div');
-            card.className = 'post-card';
-            card.innerHTML = `
-                <div class="img-scroll">
-                    ${data.fotos.map(f => `<img src="${f}">`).join('')}
-                </div>
-                <div style="padding:10px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3 style="margin:0; font-weight:800;">${data.titulo}</h3>
-                        <span style="color:var(--verde); font-weight:900; font-size:18px;">S/ ${data.precio}</span>
-                    </div>
-                    <p style="font-size:12px; opacity:0.6;">Vendedor: ${data.vendedor}</p>
-                    <button onclick="window.location.href='chat_privado.html?vendedor=${data.vendedor}'" style="width:100%; padding:15px; background:var(--verde-glow); color:var(--verde); border:none; border-radius:15px; font-weight:800; margin-top:10px;">CHATEAR CON VENDEDOR</button>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-
-        if(container.innerHTML === "") {
-            container.innerHTML = '<p style="text-align:center; opacity:0.5;">No hay publicaciones en esta zona aún.</p>';
-        }
-    }
+    window.onload = init;
 </script>
 
 </body>
