@@ -109,26 +109,11 @@
         .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
         .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .bubble img { width: 100%; border-radius: 15px; margin-top: 5px; cursor: pointer; }
-        .sticker { font-size: 50px; display: block; }
-
-        #private-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; }
 
         /* --- NAV ISLAND --- */
         .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
         .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
         .nav-btn.active { color: var(--verde); }
-        
-        .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 12px; border-radius: 15px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 10px; }
-        .emoji-panel { display: flex; gap: 10px; padding: 10px; overflow-x: auto; background: #f1f5f9; }
-        .emoji-btn { font-size: 20px; cursor: pointer; border: none; background: none; }
-
-        /* --- HERRAMIENTAS CHAT --- */
-        .chat-tools { display: flex; gap: 10px; padding: 10px 20px; background: white; border-top: 1px solid #eee; }
-        .tool-btn { background: #f1f5f9; border: none; padding: 12px; border-radius: 18px; font-size: 18px; cursor: pointer; flex: 1; transition: 0.2s; }
-        .tool-btn:active { background: var(--verde-glow); }
-        .file-bubble { display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; }
-        .file-link { color: var(--verde); font-weight: 800; text-decoration: none; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -159,16 +144,16 @@
 <div class="search-container">
     <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas en tu zona?" oninput="filterFeed()">
+        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas en tu zona?">
     </div>
 </div>
 
 <div class="filter-bar">
-    <div class="filter-chip filter-active" onclick="filterByCat('Todas', this)">✨ Todas</div>
-    <div class="filter-chip" onclick="filterByCat('Comida', this)">🍲 Comida</div>
-    <div class="filter-chip" onclick="filterByCat('Venta', this)">👕 Venta</div>
-    <div class="filter-chip" onclick="filterByCat('Taxi', this)">🚗 Taxi</div>
-    <div class="filter-chip" onclick="filterByCat('Servicio', this)">⚡ Servicio</div>
+    <div class="filter-chip filter-active" id="filter-all">✨ Todas</div>
+    <div class="filter-chip" id="filter-comida">🍲 Comida</div>
+    <div class="filter-chip" id="filter-venta">👕 Venta</div>
+    <div class="filter-chip" id="filter-taxi">🚗 Taxi</div>
+    <div class="filter-chip" id="filter-servicio">⚡ Servicio</div>
 </div>
 
 <div class="city-bar">
@@ -205,10 +190,17 @@
             <div class="drop-zone"><div id="info-2">3</div><img id="img-2" style="display:none;"><div class="source-chooser"><button onclick="capture('cam',2)">📷</button><button onclick="capture('gal',2)">🖼️</button></div></div>
             <div class="drop-zone"><div id="info-3">4</div><img id="img-3" style="display:none;"><div class="source-chooser"><button onclick="capture('cam',3)">📷</button><button onclick="capture('gal',3)">🖼️</button></div></div>
         </div>
-        <div id="q-box" style="margin-top:20px;"></div>
-        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
-        <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
-        <button onclick="uploadToEmpire()" id="btn-publish" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
+        
+        <div id="q-box" style="margin-top:20px;">
+            <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces? (Ej. Zapatillas Nike)">
+            <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
+            <input type="text" id="in-stock" class="rr-field" placeholder="Cantidad disponible (Stock)">
+            <input type="text" id="in-medidas" class="rr-field" placeholder="Tallas o Medidas">
+            <input type="text" id="in-referencia" class="rr-field" placeholder="Referencia de tu ubicación">
+            <textarea id="in-nota" class="rr-field" style="height:100px;" placeholder="Nota detallada para el comprador..."></textarea>
+        </div>
+
+        <button id="btn-publish-final" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
     </div>
 </section>
 
@@ -221,7 +213,7 @@
         <div class="msg-area" id="group-msgs"></div>
         <div style="padding:15px; display:flex; gap:10px;">
             <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe al grupo...">
-            <button onclick="sendGroup()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
+            <button id="btn-send-group" style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
         </div>
     </div>
 </section>
@@ -234,7 +226,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot, orderBy, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
@@ -248,11 +240,11 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // --- VARIABLES GLOBALES ---
-    window.activeLoc = ""; 
-    window.currentFilter = "Todas"; 
-    window.capturedFiles = [null,null,null,null]; 
-    window.currentUser = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
+    // --- VARIABLES ---
+    let activeLoc = "";
+    let activeCat = "Venta";
+    let capturedFiles = [null,null,null,null];
+    let currentUser = localStorage.getItem('rantiy_user') || "Invitado";
 
     const ZONAS = {
         "Huanta": { lat: -12.94, lon: -74.24, r: 0.15 },
@@ -260,163 +252,141 @@
         "VRAEM": { lat: -12.50, lon: -73.80, r: 0.3 }
     };
 
-    // --- INICIALIZACIÓN ---
-    function init() {
-        if(!window.currentUser) { window.location.href = 'registro_entrada.html'; return; }
-        document.getElementById('user-tag').innerText = "CIUDADANO: " + window.currentUser.toUpperCase();
-
+    // --- GPS ---
+    function initGPS() {
         if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition(successGPS, errorGPS, {enableHighAccuracy:true});
-        } else {
-            alert("Tu celular no soporta GPS.");
+            navigator.geolocation.watchPosition(pos => {
+                let lat = pos.coords.latitude;
+                let lon = pos.coords.longitude;
+                let found = false;
+                for (let zone in ZONAS) {
+                    let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
+                    if (d < ZONAS[zone].r) { activeLoc = zone; found = true; break; }
+                }
+                if (found) {
+                    document.getElementById('gps-screen').style.display = 'none';
+                    document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
+                    document.getElementById('city-' + activeLoc.toLowerCase()).classList.add('active-city', 'active-' + activeLoc.toLowerCase());
+                    document.getElementById('current-zone-text').innerText = activeLoc;
+                    document.getElementById('zone-chat-label').innerText = "SALA " + activeLoc.toUpperCase();
+                    startListeners();
+                }
+            }, err => {
+                document.getElementById('gps-msg').innerText = "Activa el GPS para entrar.";
+            }, {enableHighAccuracy: true});
         }
     }
 
-    function successGPS(pos) {
-        let lat = pos.coords.latitude;
-        let lon = pos.coords.longitude;
-        let found = false;
-
-        for (let zone in ZONAS) {
-            let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
-            if (d < ZONAS[zone].r) {
-                window.activeLoc = zone;
-                found = true;
-                break;
-            }
-        }
-
-        if (found) {
-            document.getElementById('gps-screen').style.display = 'none';
-            document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
-            let card = document.getElementById('city-' + window.activeLoc.toLowerCase());
-            if(card) card.classList.add('active-city', 'active-' + window.activeLoc.toLowerCase());
-            document.getElementById('current-zone-text').innerText = window.activeLoc;
-            document.getElementById('zone-chat-label').innerText = "SALA " + window.activeLoc.toUpperCase();
-            
-            // Iniciar Escuchas de Firebase
-            listenToFeed();
-            listenToGroupChat();
-        } else {
-            document.getElementById('gps-loader').style.display = 'none';
-            document.getElementById('gps-msg').innerText = "FUERA DE COBERTURA: Debes estar en Huanta, Huamanga o VRAEM.";
-            document.getElementById('gps-msg').style.color = "red";
-        }
-    }
-
-    function errorGPS() {
-        document.getElementById('gps-loader').style.display = 'none';
-        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS para usar Rantiy y Rantikuy.";
-        document.getElementById('gps-msg').style.color = "red";
-    }
-
-    // --- FIREBASE: VITRINA EN TIEMPO REAL ---
-    function listenToFeed() {
-        const q = query(
-            collection(db, "publicaciones"), 
-            where("zona", "==", window.activeLoc),
-            orderBy("timestamp", "desc")
-        );
-
-        onSnapshot(q, (snapshot) => {
-            const container = document.getElementById('feed-container');
-            container.innerHTML = "";
-            snapshot.forEach((doc) => {
+    // --- FIREBASE LISTENERS ---
+    function startListeners() {
+        // Vitrina Online filtrada por GPS
+        const qFeed = query(collection(db, "posts"), where("zona", "==", activeLoc), orderBy("timestamp", "desc"));
+        onSnapshot(qFeed, (snap) => {
+            const cont = document.getElementById('feed-container');
+            cont.innerHTML = "";
+            snap.forEach(doc => {
                 const p = doc.data();
-                if(window.currentFilter !== "Todas" && p.categoria !== window.currentFilter) return;
-
-                const card = document.createElement('div');
-                card.className = "post-card";
-                card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <b style="color:var(--verde)">${p.categoria}</b>
-                        <small style="opacity:0.5">${new Date(p.timestamp?.toDate()).toLocaleTimeString()}</small>
-                    </div>
-                    <div class="img-scroll">
-                        ${p.fotos.map(f => `<img src="${f}">`).join('')}
-                    </div>
-                    <h3 style="margin:10px 0 5px 0;">${p.titulo}</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:20px; font-weight:800; color:var(--oscuro);">S/ ${p.precio}</span>
-                        <a href="chat_privado.html?vendedor=${encodeURIComponent(p.usuario)}" style="background:var(--oscuro); color:white; padding:10px 20px; border-radius:15px; text-decoration:none; font-weight:800; font-size:12px;">CHATEAR CON VENDEDOR</a>
-                    </div>
-                    <p style="font-size:10px; margin-top:10px; opacity:0.6;">Vendido por: ${p.usuario}</p>
-                `;
-                container.appendChild(card);
+                cont.innerHTML += `
+                    <div class="post-card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <b style="color:var(--verde)">${p.cat}</b>
+                            <small style="opacity:0.5">${p.user}</small>
+                        </div>
+                        <div class="img-scroll">${p.fotos.map(f => `<img src="${f}">`).join('')}</div>
+                        <h3>${p.title}</h3>
+                        <div style="background:#f1f5f9; padding:10px; border-radius:15px; margin:10px 0; font-size:12px;">
+                            <b>Stock:</b> ${p.stock || '1'} | <b>Tallas:</b> ${p.medidas || 'N/A'}<br>
+                            <b>Ref:</b> ${p.referencia || 'En tienda'}
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:20px; font-weight:800;">S/ ${p.price}</span>
+                            <a href="chat_privado.html?vendedor=${p.user}" style="background:var(--oscuro); color:white; padding:12px 25px; border-radius:18px; text-decoration:none; font-weight:800; font-size:14px;">CHATER</a>
+                        </div>
+                    </div>`;
             });
         });
-    }
 
-    // --- FIREBASE: CHAT GRUPAL EN TIEMPO REAL ---
-    function listenToGroupChat() {
-        const q = query(
-            collection(db, "chats_grupales"),
-            where("zona", "==", window.activeLoc),
-            orderBy("timestamp", "asc"),
-            limit(50)
-        );
-
-        onSnapshot(q, (snapshot) => {
+        // Chat Grupal Online
+        const qChat = query(collection(db, "chat_grupal"), where("zona", "==", activeLoc), orderBy("timestamp", "asc"));
+        onSnapshot(qChat, (snap) => {
             const area = document.getElementById('group-msgs');
             area.innerHTML = "";
-            snapshot.forEach((doc) => {
+            snap.forEach(doc => {
                 const m = doc.data();
-                const isMe = m.user === window.currentUser;
-                const div = document.createElement('div');
-                div.className = `bubble ${isMe ? 'bubble-out' : 'bubble-in'}`;
-                div.innerHTML = `<small style="display:block; font-size:9px; opacity:0.7;">${m.user}</small>${m.text}`;
-                area.appendChild(div);
+                const isMe = m.user === currentUser;
+                area.innerHTML += `<div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}"><small style="display:block; font-size:9px; opacity:0.7;">${m.user}</small>${m.text}</div>`;
             });
             area.scrollTop = area.scrollHeight;
         });
     }
 
-    // --- FUNCIONES DE ACCIÓN ---
-    window.sendGroup = async () => {
+    // --- SUBIR PRODUCTO (FIREBASE + LOCAL) ---
+    document.getElementById('btn-publish-final').onclick = async () => {
+        const title = document.getElementById('in-title').value;
+        const price = document.getElementById('in-price').value;
+        const stock = document.getElementById('in-stock').value;
+        const medidas = document.getElementById('in-medidas').value;
+        const referencia = document.getElementById('in-referencia').value;
+        const nota = document.getElementById('in-nota').value;
+        const fotos = capturedFiles.filter(f => f !== null);
+
+        if(!title || !price || fotos.length === 0) {
+            alert("⚠️ Por favor, pon al menos el nombre, precio y una foto.");
+            return;
+        }
+
+        const btn = document.getElementById('btn-publish-final');
+        btn.innerText = "SUBIENDO A LA NUBE...";
+        btn.disabled = true;
+
+        const nuevoPost = {
+            title, price, stock, medidas, referencia, nota,
+            cat: activeCat,
+            fotos,
+            user: currentUser,
+            zona: activeLoc,
+            timestamp: serverTimestamp()
+        };
+
+        try {
+            // 1. Guardar en Firebase
+            await addDoc(collection(db, "posts"), nuevoPost);
+            
+            // 2. Guardar en LocalStorage (Respaldo)
+            let misPosts = JSON.parse(localStorage.getItem('mis_publicaciones') || "[]");
+            misPosts.push(nuevoPost);
+            localStorage.setItem('mis_publicaciones', JSON.stringify(misPosts));
+
+            confetti();
+            exitStudio();
+            tab('home', document.querySelectorAll('.nav-btn')[0]);
+            
+            // Limpiar campos
+            document.querySelectorAll('.rr-field').forEach(f => f.value = "");
+            capturedFiles = [null,null,null,null];
+            document.querySelectorAll('.drop-zone img').forEach(i => i.style.display = 'none');
+            document.querySelectorAll('.drop-zone div[id^="info"]').forEach(d => d.style.display = 'block');
+
+        } catch (e) {
+            console.error(e);
+            alert("Error al conectar con Firebase. Revisa tu internet.");
+        } finally {
+            btn.innerText = "PUBLICAR EN RANTIKUY 🚀";
+            btn.disabled = false;
+        }
+    };
+
+    // Enviar Chat Grupal
+    document.getElementById('btn-send-group').onclick = async () => {
         const input = document.getElementById('group-input');
         if(!input.value.trim()) return;
-        
-        await addDoc(collection(db, "chats_grupales"), {
-            zona: window.activeLoc,
-            user: window.currentUser,
-            text: input.value,
-            timestamp: serverTimestamp()
+        await addDoc(collection(db, "chat_grupal"), {
+            zona: activeLoc, user: currentUser, text: input.value, timestamp: serverTimestamp()
         });
         input.value = "";
     };
 
-    window.uploadToEmpire = async () => {
-        const title = document.getElementById('in-title').value;
-        const price = document.getElementById('in-price').value;
-        const fotos = window.capturedFiles.filter(f => f !== null);
-
-        if(!title || !price || fotos.length === 0) {
-            alert("Completa el título, precio y al menos una foto.");
-            return;
-        }
-
-        const btn = document.getElementById('btn-publish');
-        btn.innerText = "SUBIENDO...";
-        btn.disabled = true;
-
-        await addDoc(collection(db, "publicaciones"), {
-            titulo: title,
-            precio: price,
-            categoria: window.activeCat,
-            fotos: fotos,
-            usuario: window.currentUser,
-            zona: window.activeLoc,
-            timestamp: serverTimestamp()
-        });
-
-        confetti();
-        exitStudio();
-        tab('home', document.querySelectorAll('.nav-btn')[0]);
-        btn.innerText = "PUBLICAR EN RANTIKUY 🚀";
-        btn.disabled = false;
-    };
-
-    // --- LÓGICA DE UI (ESTUDIO, TABS, ETC) ---
+    // --- FUNCIONES DE UI (GLOBALES) ---
     window.tab = (name, el) => {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
         document.getElementById('view-' + name).classList.add('view-active');
@@ -425,52 +395,37 @@
     };
 
     window.startStudio = (cat, emoji) => {
-        window.activeCat = cat;
+        activeCat = cat;
         document.getElementById('main-hub').style.display = 'none';
         document.getElementById('upload-studio').style.display = 'block';
-        document.getElementById('studio-tag').innerText = emoji + " Publicar " + cat;
+        document.getElementById('studio-tag').innerText = emoji + " Nuevo " + cat;
     };
 
     window.exitStudio = () => {
         document.getElementById('main-hub').style.display = 'block';
         document.getElementById('upload-studio').style.display = 'none';
-        window.capturedFiles = [null,null,null,null];
-        for(let i=0; i<4; i++) {
-            document.getElementById('img-'+i).style.display = 'none';
-            document.getElementById('info-'+i).style.display = 'block';
-        }
     };
 
     window.capture = (type, idx) => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        if(type === 'cam') input.capture = 'environment';
-        
-        input.onchange = e => {
-            const file = e.target.files[0];
+        const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+        if(type==='cam') inp.capture = 'environment';
+        inp.onchange = e => {
             const reader = new FileReader();
             reader.onload = r => {
-                window.capturedFiles[idx] = r.target.result;
+                capturedFiles[idx] = r.target.result;
                 document.getElementById('img-'+idx).src = r.target.result;
                 document.getElementById('img-'+idx).style.display = 'block';
                 document.getElementById('info-'+idx).style.display = 'none';
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(e.target.files[0]);
         };
-        input.click();
+        inp.click();
     };
 
-    window.filterByCat = (cat, el) => {
-        window.currentFilter = cat;
-        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
-        el.classList.add('filter-active');
-        listenToFeed(); // Recargar con filtro
-    };
+    // Iniciar App
+    document.getElementById('user-tag').innerText = "CIUDADANO: " + currentUser.toUpperCase();
+    initGPS();
 
-    init();
 </script>
-
 </body>
 </html>
-1
