@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rantiy-Rantikuy OS | Módulo Principal</title>
+    <title>Rantiy-Rantikuy | App Oficial</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
@@ -20,156 +20,150 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: #0b0f1a; color: #e2e8f0; overflow-x: hidden; padding-bottom: 120px; }
 
-        /* --- PANTALLA GPS Y CARGA --- */
-        #splash-gps {
-            position: fixed; inset: 0; background: #ffffff; z-index: 10000;
+        /* --- PANTALLAS DE BLOQUEO (REGISTRO Y GPS) --- */
+        .fullscreen-overlay {
+            position: fixed; inset: 0; background: #050a14; z-index: 10000;
             display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;
         }
-        .logo-gps { width: 120px; height: 120px; background: #00d084; border-radius: 35px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 36px; margin-bottom: 30px; box-shadow: 0 20px 40px rgba(0, 208, 132, 0.3); }
-        .gps-status { color: #64748b; font-size: 15px; font-weight: 600; margin-top: 15px; }
-        .gps-error { color: #ef4444; font-weight: 800; margin-top: 20px; font-size: 16px; display: none; }
+        .logo-big { width: 100px; height: 100px; background: var(--rr-brand); border-radius: 30px; display: flex; align-items: center; justify-content: center; color: var(--rr-deep); font-weight: 900; font-size: 32px; margin-bottom: 25px; box-shadow: 0 0 40px rgba(0, 245, 155, 0.3); }
+        
+        .auth-box { background: #1a2235; padding: 30px; border-radius: 30px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.05); }
+        .input-rr { width: 100%; background: #0b0f1a; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 20px; color: white; font-weight: 600; margin-bottom: 15px; outline: none; transition: 0.3s; }
+        .input-rr:focus { border-color: var(--rr-brand); }
+        .btn-rr-main { width: 100%; background: var(--rr-brand); color: var(--rr-deep); padding: 18px; border-radius: 20px; border: none; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-rr-main:active { transform: scale(0.95); }
 
-        /* --- HEADER PROFESIONAL --- */
+        .gps-spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--rr-brand); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-top: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .gps-error { color: #ef4444; font-weight: 800; margin-top: 20px; font-size: 14px; background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 15px; display: none; }
+
+        /* --- HEADER --- */
         header {
-            background: rgba(10, 15, 26, 0.9); backdrop-filter: blur(15px);
+            background: rgba(10, 15, 26, 0.95); backdrop-filter: blur(15px);
             padding: 20px; position: sticky; top: 0; z-index: 2000;
             display: flex; align-items: center; justify-content: space-between;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .main-brand { display: flex; align-items: center; gap: 15px; }
         .logo-rr { width: 50px; height: 50px; background: var(--rr-brand); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: var(--rr-deep); font-weight: 900; font-size: 22px; cursor: pointer; }
-        
-        .user-hub { display: flex; align-items: center; gap: 12px; }
-        .wallet-neon {
-            background: #1a2235; border: 1px solid var(--rr-brand); padding: 8px 15px; border-radius: 14px;
-            font-size: 13px; font-weight: 800; color: var(--rr-brand); display: flex; align-items: center; gap: 8px; cursor: pointer;
-        }
+        .location-tag { display: flex; flex-direction: column; }
+        .location-tag span:first-child { font-size: 18px; font-weight: 900; color: white; }
+        .location-tag span:last-child { font-size: 10px; font-weight: 800; color: var(--rr-brand); letter-spacing: 1px; }
 
-        /* --- SELECTOR DE PROVINCIAS --- */
-        .location-bar { padding: 15px; display: flex; gap: 10px; flex-direction: column; background: #0b0f1a; }
-        .dept-select { background: #1a2235; color: white; padding: 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); font-weight: 700; outline: none; }
-        .city-slider { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; }
-        .city-slider::-webkit-scrollbar { display: none; }
-        .city-box { padding: 10px 20px; background: #161c2d; border-radius: 15px; white-space: nowrap; font-size: 12px; font-weight: 700; color: #64748b; transition: 0.3s; cursor: pointer; }
-        .city-box.active { background: var(--rr-brand); color: var(--rr-deep); }
-
-        /* --- VITRINA (POSTS) --- */
+        /* --- VITRINA --- */
         .feed-container { padding: 20px; display: grid; grid-template-columns: 1fr; gap: 25px; }
-        .rr-card { background: #1a2235; border-radius: 35px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: 0.4s; }
+        .rr-card { background: #1a2235; border-radius: 35px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
         .media-holder { width: 100%; height: 320px; background: #050a14; position: relative; }
         .media-holder img { width: 100%; height: 100%; object-fit: cover; }
         .price-tag { position: absolute; bottom: 20px; left: 20px; background: var(--rr-brand); color: var(--rr-deep); padding: 12px 25px; border-radius: 20px; font-weight: 900; font-size: 22px; }
         .card-body { padding: 25px; }
-        .btn-rr { flex: 1; padding: 18px; border-radius: 22px; border: none; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; width: 100%; margin-top:10px; }
-        .btn-chat-privado { background: var(--rr-accent); color: white; }
-        .btn-sold { background: var(--rr-brand); color: var(--rr-deep); }
+        .seller-info { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .seller-avatar { width: 40px; height: 40px; background: #232d45; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--rr-brand); }
+        .btn-chat-privado { background: var(--rr-accent); color: white; width: 100%; padding: 18px; border-radius: 20px; border: none; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
 
-        /* --- CHAT PÚBLICO --- */
-        .chat-space { height: calc(100vh - 270px); display: flex; flex-direction: column; padding: 15px; }
+        /* --- CHAT PÚBLICO LOCAL --- */
+        .chat-space { height: calc(100vh - 200px); display: flex; flex-direction: column; padding: 15px; }
         .chat-main { flex: 1; background: #161c2d; border-radius: 35px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.05); }
+        .chat-header { padding: 15px 20px; background: #1a2235; font-weight: 800; font-size: 13px; text-align: center; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .chat-scroll { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .chat-bubble { padding: 15px 22px; border-radius: 25px; font-size: 14px; max-width: 85%; }
+        .chat-bubble { padding: 15px 20px; border-radius: 25px; font-size: 14px; max-width: 85%; position: relative; }
+        .bubble-name { font-size: 10px; font-weight: 800; margin-bottom: 5px; opacity: 0.7; display: block; }
         .bubble-me { background: var(--rr-brand); color: var(--rr-deep); align-self: flex-end; border-bottom-right-radius: 4px; }
         .bubble-other { background: #232d45; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .chat-tools { padding: 20px; background: #1a2235; display: flex; gap: 10px; }
-        .chat-in { flex: 1; background: #0b0f1a; border: 1px solid rgba(255,255,255,0.1); padding: 16px 20px; border-radius: 20px; color: white; font-weight: 600; width: 100%; }
+        .chat-tools { padding: 15px; background: #1a2235; display: flex; gap: 10px; align-items: center; }
+        .chat-btn { width: 55px; height: 55px; border-radius: 20px; background: var(--rr-brand); color: var(--rr-deep); border: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
 
         /* --- DOCK NAVEGACIÓN --- */
-        .dock { position: fixed; bottom: 30px; left: 20px; right: 20px; background: rgba(26, 34, 53, 0.95); backdrop-filter: blur(20px); border-radius: 35px; padding: 15px; display: flex; justify-content: space-around; z-index: 4000; border: 1px solid rgba(255,255,255,0.05); }
-        .dock-link { color: #64748b; font-size: 10px; font-weight: 800; background: none; border: none; transition: 0.3s; display:flex; flex-direction:column; align-items:center; }
+        .dock { position: fixed; bottom: 25px; left: 20px; right: 20px; background: rgba(26, 34, 53, 0.95); backdrop-filter: blur(20px); border-radius: 30px; padding: 15px; display: flex; justify-content: space-around; z-index: 4000; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .dock-link { color: #64748b; font-size: 10px; font-weight: 800; background: none; border: none; transition: 0.3s; display:flex; flex-direction:column; align-items:center; cursor: pointer; }
         .dock-link.active { color: var(--rr-brand); transform: translateY(-5px); }
-        .dock-link i { font-size: 24px; margin-bottom: 5px; }
-
-        /* --- MODALES --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #1a2235; width: 100%; max-width: 450px; border-radius: 40px; padding: 30px; }
-        .upload-preview { width: 100%; height: 200px; border-radius: 20px; object-fit: cover; margin-bottom: 20px; display: none; border: 2px solid var(--rr-brand); }
+        .dock-link i { font-size: 22px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
-<div id="splash-gps">
-    <div class="logo-gps">R&R</div>
-    <h1 style="color:#0a0f18; font-weight:900; font-size:28px;">Rantiy y Rantikuy</h1>
-    <p class="gps-status" id="gps-text">Detectando tu ubicación real en el mapa...</p>
-    <p class="gps-error" id="gps-error">FUERA DE COBERTURA: Provincia no detectada.</p>
-    <button id="btn-manual-gps" onclick="cerrarSplashGps()" style="display:none; margin-top:20px; padding:15px 30px; background:#0a0f18; color:white; border:none; border-radius:20px; font-weight:800;">Elegir Manualmente</button>
-</div>
-
-<div id="modal-yape" class="modal">
-    <div class="modal-content">
-        <h2 style="font-weight:900; font-size:24px; margin-bottom:10px;">💳 Recarga Rantiy</h2>
-        <div style="background:#0b0f1a; padding:20px; border-radius:25px; text-align:center; margin-bottom:20px;">
-            <p style="font-weight:800; color:var(--rr-brand); margin-bottom:10px;">YAPEA AL: 901198050</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=901198050" style="width:130px; border-radius:15px; border: 3px solid white;">
-        </div>
-        <input type="number" id="yape-op-code" class="chat-in" style="margin-bottom:15px;" placeholder="Cód. Operación">
-        <button class="btn-rr btn-sold" onclick="reportYape()">CONFIRMAR</button>
-        <button onclick="closeModal('modal-yape')" style="width:100%; background:none; border:none; color:#64748b; margin-top:15px; font-weight:800;">Cerrar</button>
+<div id="screen-auth" class="fullscreen-overlay" style="display:none;">
+    <div class="logo-big">R&R</div>
+    <h1 style="color:white; font-weight:900; font-size:26px; margin-bottom:10px;">Rantiy-Rantikuy</h1>
+    <p style="color:#94a3b8; font-size:14px; margin-bottom:30px;">Identifícate para entrar a la comunidad.</p>
+    
+    <div class="auth-box">
+        <input type="text" id="reg-name" class="input-rr" placeholder="Tu Nombre o Apodo">
+        <input type="number" id="reg-phone" class="input-rr" placeholder="Número de WhatsApp">
+        <button class="btn-rr-main" onclick="guardarRegistro()">ENTRAR AL SISTEMA</button>
     </div>
 </div>
 
-<header>
-    <div class="main-brand">
-        <div class="logo-rr" onclick="hitAdmin()">R&R</div>
-        <div>
-            <h1 id="top-provincia" style="font-size:16px; font-weight:800;">...</h1>
-            <span style="font-size:10px; font-weight:800; color:var(--rr-brand);">GPS ACTIVO</span>
-        </div>
-    </div>
-    <div class="user-hub">
-        <div class="wallet-neon" onclick="openModal('modal-yape')">
-            <i class="fas fa-bolt"></i> <span id="my-credits">0</span> CR
-        </div>
-    </div>
-</header>
-
-<div class="location-bar">
-    <select id="dept-selector" class="dept-select" onchange="renderProvincias(this.value)"></select>
-    <div class="city-slider" id="city-bar"></div>
+<div id="screen-gps" class="fullscreen-overlay" style="display:none;">
+    <div class="logo-big"><i class="fas fa-map-marker-alt"></i></div>
+    <h1 style="color:white; font-weight:900; font-size:24px; margin-bottom:10px;">Rastreo Satelital</h1>
+    <p style="color:#94a3b8; font-size:14px; max-width: 300px;">El sistema te conectará exclusivamente a la vitrina y chat de tu provincia actual.</p>
+    
+    <div class="gps-spinner" id="gps-loader"></div>
+    <p class="gps-error" id="gps-error-msg">
+        <i class="fas fa-exclamation-triangle"></i> ERROR: Debes encender el GPS de tu celular y dar permisos al navegador para entrar a la app.
+        <br><br><button onclick="detectarGPS()" class="btn-rr-main" style="padding:10px; font-size:12px;">REINTENTAR</button>
+    </p>
 </div>
 
-<main id="page-home" class="view">
-    <div class="feed-container" id="main-vitrina"></div>
-</main>
-
-<section id="page-sell" class="view" style="display:none; padding:20px;">
-    <div style="background:#1a2235; padding:30px; border-radius:35px;">
-        <h2 style="font-weight:900; margin-bottom:20px;">Vender Algo</h2>
-        <input type="file" id="file-sell" hidden accept="image/*,video/*" onchange="previewMedia(this, 'preview-sell')">
-        <div onclick="document.getElementById('file-sell').click()" id="drop-area" style="width:100%; height:200px; border:3px dashed #232d45; border-radius:25px; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:20px; background:#0b0f1a; cursor:pointer;">
-            <img id="preview-sell" class="upload-preview">
-            <div id="upload-txt"><i class="fas fa-camera" style="font-size:30px; color:var(--rr-brand); margin-bottom:10px;"></i><p>Foto / Galería</p></div>
-        </div>
-        <input type="text" id="sell-title" class="chat-in" style="margin-bottom:15px;" placeholder="Título del producto">
-        <input type="number" id="sell-price" class="chat-in" style="margin-bottom:20px;" placeholder="Precio S/">
-        <button class="btn-rr btn-sold" onclick="deployProduct()">PUBLICAR EN LA VITRINA</button>
-    </div>
-</section>
-
-<section id="page-chat" class="view" style="display:none;">
-    <div class="chat-space">
-        <div class="chat-main">
-            <div style="padding:15px; background:#0b0f1a; font-weight:800; font-size:12px;">GRUPO PÚBLICO: <span id="chat-city">...</span></div>
-            <div class="chat-scroll" id="chat-box"></div>
-            <div class="chat-tools">
-                <input type="text" id="chat-input" class="chat-in" placeholder="Mensaje público...">
-                <button class="btn-rr btn-sold" style="width:60px; padding:0;" onclick="sendGroupMsg()"><i class="fas fa-paper-plane"></i></button>
+<div id="app-core" style="display:none;">
+    <header>
+        <div class="main-brand">
+            <div class="logo-rr" onclick="hitAdmin()">R&R</div>
+            <div class="location-tag">
+                <span id="ui-provincia">Detectando...</span>
+                <span>📍 ZONA BLOQUEADA</span>
             </div>
         </div>
-    </div>
-</section>
+    </header>
 
-<nav class="dock">
-    <button class="dock-link active" onclick="nav('home', this)"><i class="fas fa-store"></i>VITRINA</button>
-    <button class="dock-link" onclick="nav('sell', this)"><i class="fas fa-plus-circle"></i>VENDER</button>
-    <button class="dock-link" onclick="nav('chat', this)"><i class="fas fa-users"></i>COMUNIDAD</button>
-    <button class="dock-link" onclick="irChatPrivado()"><i class="fas fa-envelope"></i>PRIVADOS</button>
-</nav>
+    <main id="page-home" class="view">
+        <div class="feed-container" id="main-vitrina"></div>
+    </main>
+
+    <section id="page-sell" class="view" style="display:none; padding:20px;">
+        <div style="background:#1a2235; padding:30px; border-radius:35px;">
+            <h2 style="font-weight:900; margin-bottom:20px; color:white;">Vender en <span id="sell-city-name">tu ciudad</span></h2>
+            
+            <input type="file" id="file-sell" hidden accept="image/*" onchange="previewMedia(this, 'preview-sell')">
+            <div onclick="document.getElementById('file-sell').click()" style="width:100%; height:220px; border:3px dashed #232d45; border-radius:25px; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:20px; background:#0b0f1a; cursor:pointer; overflow:hidden;">
+                <img id="preview-sell" style="width:100%; height:100%; object-fit:cover; display:none;">
+                <div id="upload-txt"><i class="fas fa-camera" style="font-size:35px; color:var(--rr-brand); margin-bottom:10px;"></i><p style="color:#64748b; font-weight:700;">Subir Foto</p></div>
+            </div>
+            
+            <input type="text" id="sell-title" class="input-rr" placeholder="¿Qué estás vendiendo?">
+            <input type="number" id="sell-price" class="input-rr" placeholder="Precio en Soles (S/)">
+            <button class="btn-rr-main" onclick="deployProduct()">PUBLICAR AHORA</button>
+        </div>
+    </section>
+
+    <section id="page-chat" class="view" style="display:none;">
+        <div class="chat-space">
+            <div class="chat-main">
+                <div class="chat-header">
+                    <i class="fas fa-users" style="color:var(--rr-brand); margin-right:5px;"></i> 
+                    CHAT COMUNITARIO: <span id="chat-city" style="color:white;">...</span>
+                </div>
+                <div class="chat-scroll" id="chat-box"></div>
+                <div class="chat-tools">
+                    <input type="text" id="chat-input" class="input-rr" style="margin-bottom:0;" placeholder="Escribe un mensaje...">
+                    <button class="chat-btn" onclick="sendGroupMsg()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <nav class="dock">
+        <button class="dock-link active" onclick="nav('home', this)"><i class="fas fa-store"></i>VITRINA</button>
+        <button class="dock-link" onclick="nav('sell', this)"><i class="fas fa-plus-circle"></i>VENDER</button>
+        <button class="dock-link" onclick="nav('chat', this)"><i class="fas fa-comments"></i>ZONA CHAT</button>
+        <button class="dock-link" onclick="irChatPrivado()"><i class="fas fa-envelope"></i>PRIVADOS</button>
+    </nav>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
@@ -181,35 +175,12 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    window.db = db;
-    window.f = { collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, updateDoc, increment };
-
-    // Sincronización de Billetera
-    window.syncWallet = (uid) => {
-        onSnapshot(doc(db, "v4_users", uid), (snap) => {
-            if(snap.exists()){
-                window.currentUser = snap.data();
-                document.getElementById('my-credits').innerText = window.currentUser.credits || 0;
-            } else {
-                addDoc(collection(db, "v4_users"), { uid, credits: 0 });
-            }
-        });
-    };
+    window.db = getFirestore(app);
+    window.f = { collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp };
 </script>
 
 <script>
-    // --- 1. SEGURIDAD Y ENRUTAMIENTO (AUTH GUARD) ---
-    // Simulamos verificación. Si tu registro_entrada.html guarda un item en localStorage, lo leemos aquí.
-    let miSession = localStorage.getItem('rr_usuario_registrado');
-    if(!miSession) {
-        // Descomenta la siguiente línea en producción para forzar el login
-        // window.location.href = 'registro_entrada.html';
-        miSession = "U-" + Math.random().toString(36).substr(2, 9); // Fallback temporal
-        localStorage.setItem('rr_usuario_registrado', miSession);
-    }
-    
-    // --- 2. BASE DE DATOS GEOGRÁFICA (196 PROVINCIAS) ---
+    // --- BASE DE DATOS GEOGRÁFICA DE LAS 196 PROVINCIAS ---
     const DB_PERU = {
         "Amazonas": ["Chachapoyas", "Bagua", "Bongará", "Condorcanqui", "Luya", "Rodríguez de Mendoza", "Utcubamba"],
         "Áncash": ["Huaraz", "Aija", "Antonio Raymondi", "Asunción", "Bolognesi", "Carhuaz", "Carlos Fermín Fitzcarrald", "Casma", "Corongo", "Huari", "Huarmey", "Huaylas", "Mariscal Luzuriaga", "Ocros", "Pallasca", "Pomabamba", "Recuay", "Santa", "Sihuas", "Yungay"],
@@ -238,19 +209,59 @@
         "Ucayali": ["Coronel Portillo", "Atalaya", "Padre Abad", "Purús"]
     };
 
-    let activeProvincia = "";
+    // VARIABLES GLOBALES
+    let miPerfil = null;
+    let miProvincia = "";
     let base64Temp = "";
     let adminClicks = 0;
 
+    // --- FLUJO DE INICIO SEGURO ---
     window.onload = () => {
-        initSelects();
-        detectarGPS();
-        // Esperamos que firebase cargue
-        setTimeout(() => { if(window.syncWallet) window.syncWallet(miSession); }, 1500);
+        verificarAlmacenamientoLocal();
     };
 
-    // --- 3. MOTOR GPS INVERSO (OPENSTREETMAP NOMINATIM) ---
+    function verificarAlmacenamientoLocal() {
+        const data = localStorage.getItem('rr_perfil_v5');
+        if (data) {
+            miPerfil = JSON.parse(data);
+            iniciarGPS();
+        } else {
+            document.getElementById('screen-auth').style.display = 'flex';
+        }
+    }
+
+    function guardarRegistro() {
+        const nombre = document.getElementById('reg-name').value.trim();
+        const telefono = document.getElementById('reg-phone').value.trim();
+
+        if (nombre.length < 2 || telefono.length < 7) {
+            alert("Completa tus datos reales para entrar a Rantiy-Rantikuy.");
+            return;
+        }
+
+        miPerfil = {
+            uid: "U-" + Math.random().toString(36).substr(2, 9),
+            nombre: nombre,
+            telefono: telefono
+        };
+
+        // Guardado persistente en el celular
+        localStorage.setItem('rr_perfil_v5', JSON.stringify(miPerfil));
+        
+        document.getElementById('screen-auth').style.display = 'none';
+        iniciarGPS();
+    }
+
+    // --- MOTOR DE GEOFENCING ESTRICTO ---
+    function iniciarGPS() {
+        document.getElementById('screen-gps').style.display = 'flex';
+        detectarGPS();
+    }
+
     function detectarGPS() {
+        document.getElementById('gps-loader').style.display = 'block';
+        document.getElementById('gps-error-msg').style.display = 'none';
+
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 try {
@@ -259,13 +270,12 @@
                     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
                     const data = await res.json();
                     
-                    // Extraer provincia/ciudad de la respuesta GPS
                     const loc = data.address.county || data.address.city || data.address.town || data.address.state;
                     
-                    if(ubicarEnSistema(loc)) {
-                        cerrarSplashGps();
+                    if(buscarProvinciaEnDB(loc)) {
+                        arrancarSistemaPrincipal();
                     } else {
-                        throw new Error("No coincide con provincias de Perú.");
+                        mostrarErrorGps();
                     }
                 } catch (error) {
                     mostrarErrorGps();
@@ -278,14 +288,12 @@
         }
     }
 
-    function ubicarEnSistema(nombreGPS) {
+    function buscarProvinciaEnDB(nombreGPS) {
+        if(!nombreGPS) return false;
         for (const [dept, provs] of Object.entries(DB_PERU)) {
             for (const prov of provs) {
-                // Limpieza básica para match (ignorar tildes)
                 if(nombreGPS.toLowerCase().includes(prov.toLowerCase())) {
-                    document.getElementById('dept-selector').value = dept;
-                    renderProvincias(dept);
-                    setProvincia(prov);
+                    miProvincia = prov.toUpperCase();
                     return true;
                 }
             }
@@ -294,76 +302,67 @@
     }
 
     function mostrarErrorGps() {
-        document.getElementById('gps-text').style.display = 'none';
-        document.getElementById('gps-error').style.display = 'block';
-        document.getElementById('btn-manual-gps').style.display = 'inline-block';
+        document.getElementById('gps-loader').style.display = 'none';
+        document.getElementById('gps-error-msg').style.display = 'block';
     }
 
-    function cerrarSplashGps() {
-        document.getElementById('splash-gps').style.display = 'none';
-        // Si no se ubicó nada, por defecto Huancayo
-        if(!activeProvincia) {
-            document.getElementById('dept-selector').value = "Junín";
-            renderProvincias("Junín");
-            setProvincia("Huancayo");
-        }
+    // --- ARRANQUE DEL SISTEMA REALTIME ---
+    function arrancarSistemaPrincipal() {
+        document.getElementById('screen-gps').style.display = 'none';
+        document.getElementById('app-core').style.display = 'block';
+        
+        document.getElementById('ui-provincia').innerText = miProvincia;
+        document.getElementById('sell-city-name').innerText = miProvincia;
+        document.getElementById('chat-city').innerText = miProvincia;
+
+        // Esperar a que Firebase inicialice en el módulo
+        const chequearFirebase = setInterval(() => {
+            if(window.f && window.db) {
+                clearInterval(chequearFirebase);
+                escucharVitrinaTiempoReal();
+                escucharChatTiempoReal();
+            }
+        }, 500);
     }
 
-    // --- 4. RENDERIZADO DE DEPARTAMENTOS Y PROVINCIAS ---
-    function initSelects() {
-        const select = document.getElementById('dept-selector');
-        for (const dept in DB_PERU) {
-            const opt = document.createElement('option');
-            opt.value = dept; opt.innerText = dept;
-            select.appendChild(opt);
-        }
-    }
+    // --- CORE REALTIME: VITRINA ---
+    function escucharVitrinaTiempoReal() {
+        // La consulta ahora exige estrictamente la provincia bloqueada por el GPS
+        const q = window.f.query(
+            window.f.collection(window.db, "v5_vitrina"), 
+            window.f.where("provincia", "==", miProvincia), 
+            window.f.orderBy("date", "desc")
+        );
 
-    function renderProvincias(dept) {
-        const bar = document.getElementById('city-bar');
-        bar.innerHTML = "";
-        DB_PERU[dept].forEach(prov => {
-            const b = document.createElement('div');
-            b.className = `city-box`;
-            b.id = `prov-${prov.replace(/\s+/g, '')}`;
-            b.innerText = prov.toUpperCase();
-            b.onclick = () => setProvincia(prov);
-            bar.appendChild(b);
+        window.f.onSnapshot(q, (snap) => {
+            const feed = document.getElementById('main-vitrina');
+            feed.innerHTML = "";
+            snap.forEach(d => {
+                const p = d.data();
+                feed.innerHTML += `
+                    <div class="rr-card">
+                        <div class="media-holder"><img src="${p.img}">
+                            <div class="price-tag">S/ ${p.price}</div>
+                        </div>
+                        <div class="card-body">
+                            <h3 style="font-weight:900; font-size:20px; color:white; margin-bottom:15px;">${p.title}</h3>
+                            <div class="seller-info">
+                                <div class="seller-avatar">${p.nombreCorto}</div>
+                                <div>
+                                    <p style="color:white; font-weight:700; font-size:14px;">Vendedor Verificado</p>
+                                    <p style="color:#64748b; font-size:12px;">📍 ZONA: ${p.provincia}</p>
+                                </div>
+                            </div>
+                            <button class="btn-chat-privado" onclick="irChatPrivado('${p.uid}')">
+                                <i class="fas fa-comment-dots"></i> ESCRIBIR AL PRIVADO
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
         });
     }
 
-    function setProvincia(prov) {
-        activeProvincia = prov;
-        document.getElementById('top-provincia').innerText = prov;
-        document.getElementById('chat-city').innerText = prov.toUpperCase();
-        
-        document.querySelectorAll('.city-box').forEach(x => x.classList.remove('active'));
-        const activeBox = document.getElementById(`prov-${prov.replace(/\s+/g, '')}`);
-        if(activeBox) activeBox.classList.add('active');
-        
-        loadVitrina();
-        loadChat();
-    }
-
-    // --- 5. ENRUTAMIENTO A TUS ARCHIVOS EXTERNOS ---
-    function hitAdmin() {
-        adminClicks++;
-        if(adminClicks >= 10) {
-            // REDIRECCIÓN DIRECTA A TU PANEL DE ADMIN EXISTENTE
-            window.location.href = 'admin.html';
-        }
-    }
-
-    function irChatPrivado(uidVendedor = null) {
-        // ENLACE A TU ARCHIVO DE CHAT PRIVADO
-        if(uidVendedor) {
-            window.location.href = `chat_privado.html?chat_con=${uidVendedor}`;
-        } else {
-            window.location.href = `chat_privado.html`;
-        }
-    }
-
-    // --- 6. CORE DE NEGOCIO (VITRINA Y MULTIMEDIA) ---
     function previewMedia(input, previewId) {
         const file = input.files[0];
         const reader = new FileReader();
@@ -377,92 +376,90 @@
         reader.readAsDataURL(file);
     }
 
-    function loadVitrina() {
-        if(!window.f) return setTimeout(loadVitrina, 500);
-        const q = window.f.query(window.f.collection(window.db, "v4_vitrina"), window.f.where("provincia", "==", activeProvincia), window.f.orderBy("date", "desc"));
-        window.f.onSnapshot(q, (snap) => {
-            const feed = document.getElementById('main-vitrina');
-            feed.innerHTML = "";
-            snap.forEach(d => {
-                const p = d.data();
-                feed.innerHTML += `
-                    <div class="rr-card">
-                        <div class="media-holder"><img src="${p.img}">
-                            <div class="price-tag">S/ ${p.price}</div>
-                        </div>
-                        <div class="card-body">
-                            <h3 style="font-weight:900; font-size:22px; margin-bottom:10px;">${p.title}</h3>
-                            <p style="font-size:12px; color:#64748b; margin-bottom:15px;">📍 ${p.provincia}</p>
-                            <button class="btn-rr btn-chat-privado" onclick="irChatPrivado('${p.uid}')">
-                                <i class="fas fa-envelope"></i> ENVIAR MENSAJE PRIVADO
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-        });
-    }
-
     async function deployProduct() {
-        if((window.currentUser?.credits || 0) < 1) return openModal('modal-yape');
         const title = document.getElementById('sell-title').value;
         const price = document.getElementById('sell-price').value;
-        if(!title || !price || !base64Temp) return alert("Completa todos los datos y foto.");
+        
+        if(!title || !price || !base64Temp) return alert("Sube la foto y llena los datos.");
 
-        await window.f.addDoc(window.f.collection(window.db, "v4_vitrina"), {
-            title, price, img: base64Temp, uid: miSession,
-            provincia: activeProvincia, date: window.f.serverTimestamp()
+        await window.f.addDoc(window.f.collection(window.db, "v5_vitrina"), {
+            title: title, 
+            price: price, 
+            img: base64Temp, 
+            uid: miPerfil.uid,
+            nombreCorto: miPerfil.nombre.substring(0, 2).toUpperCase(),
+            provincia: miProvincia, 
+            date: window.f.serverTimestamp()
         });
 
-        await window.f.updateDoc(window.f.doc(window.db, "v4_users", miSession), { credits: window.f.increment(-1) });
-        confetti(); alert("¡Publicado en " + activeProvincia + "!");
+        confetti();
+        document.getElementById('sell-title').value = "";
+        document.getElementById('sell-price').value = "";
         nav('home', document.querySelector('.dock-link'));
     }
 
-    // --- 7. COMUNIDAD / CHAT GRUPAL ---
-    function loadChat() {
-        if(!window.f) return;
-        const q = window.f.query(window.f.collection(window.db, "v4_chat"), window.f.where("provincia", "==", activeProvincia), window.f.orderBy("date", "asc"));
+    // --- CORE REALTIME: CHAT DE COMUNIDAD ---
+    function escucharChatTiempoReal() {
+        const q = window.f.query(
+            window.f.collection(window.db, "v5_chat"), 
+            window.f.where("provincia", "==", miProvincia), 
+            window.f.orderBy("date", "asc")
+        );
+
         window.f.onSnapshot(q, snap => {
             const box = document.getElementById('chat-box');
             box.innerHTML = "";
             snap.forEach(d => {
                 const m = d.data();
-                const isMe = m.uid === miSession;
-                box.innerHTML += `<div class="chat-bubble ${isMe ? 'bubble-me' : 'bubble-other'}"><b>${isMe?'Tú':m.uid.substr(0,5)}:</b><br>${m.txt}</div>`;
+                const isMe = m.uid === miPerfil.uid;
+                box.innerHTML += `
+                    <div class="chat-bubble ${isMe ? 'bubble-me' : 'bubble-other'}">
+                        <span class="bubble-name">${isMe ? 'Tú' : m.nombre}</span>
+                        ${m.txt}
+                    </div>
+                `;
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
     async function sendGroupMsg() {
-        const txt = document.getElementById('chat-input').value;
+        const input = document.getElementById('chat-input');
+        const txt = input.value.trim();
         if(!txt) return;
-        await window.f.addDoc(window.f.collection(window.db, "v4_chat"), {
-            uid: miSession, txt, provincia: activeProvincia, date: window.f.serverTimestamp()
+        
+        // Se borra el input de inmediato para sensación de rapidez
+        input.value = ""; 
+
+        await window.f.addDoc(window.f.collection(window.db, "v5_chat"), {
+            uid: miPerfil.uid, 
+            nombre: miPerfil.nombre,
+            txt: txt, 
+            provincia: miProvincia, 
+            date: window.f.serverTimestamp()
         });
-        document.getElementById('chat-input').value = "";
     }
 
-    async function reportYape() {
-        const code = document.getElementById('yape-op-code').value;
-        if(code.length < 5) return alert("Código inválido");
-        await window.f.addDoc(window.f.collection(window.db, "v4_audit"), {
-            uid: miSession, code, status: "pending", date: window.f.serverTimestamp()
-        });
-        alert("Pago enviado. El Admin aprobará pronto.");
-        closeModal('modal-yape');
-    }
-
-    // UI Tools
+    // --- ENRUTAMIENTO (TUS CARPETAS EXTERNAS) ---
     function nav(id, el) {
         document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
         document.getElementById('page-'+id).style.display = 'block';
         document.querySelectorAll('.dock-link').forEach(d => d.classList.remove('active'));
         el.classList.add('active');
     }
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function hitAdmin() {
+        adminClicks++;
+        if(adminClicks >= 10) window.location.href = 'admin.html';
+    }
+
+    function irChatPrivado(uidVendedor = null) {
+        if(uidVendedor && uidVendedor !== miPerfil.uid) {
+            window.location.href = `chat_privado.html?chat_con=${uidVendedor}`;
+        } else {
+            window.location.href = `chat_privado.html`;
+        }
+    }
 </script>
 
 </body>
