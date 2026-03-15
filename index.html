@@ -2,182 +2,281 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rantiy y Rantikuy - Imperio de Negocios</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rantiy-Rantikuy | El Imperio del Comercio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    
     <style>
         :root {
-            --verde: #22c55e; --verde-glow: #dcfce7;
-            --naranja: #f97316; --oscuro: #1e293b;
-            --glass: rgba(255, 255, 255, 0.96);
+            --verde-peru: #22c55e;
+            --verde-deep: #15803d;
+            --oscuro: #0f172a;
             --oro: #fbbf24;
-            --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            --plata: #94a3b8;
+            --glass: rgba(255, 255, 255, 0.95);
+            --sombra: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
-        body { background: #f1f5f9; margin: 0; padding-bottom: 140px; overflow-x: hidden; color: var(--oscuro); }
+        /* --- RESET Y BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f1f5f9; color: var(--oscuro); overflow-x: hidden; line-height: 1.5; padding-bottom: 100px; }
 
-        /* --- PANTALLA DE CARGA / GPS --- */
-        #gps-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-        .gps-loader { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--verde); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* --- ANIMACIONES --- */
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* --- HEADER Y BILLETERA --- */
-        .header {
-            background: var(--glass); backdrop-filter: blur(25px); padding: 18px 25px;
+        /* --- PANTALLA DE CARGA PROFESIONAL --- */
+        #loading-screen {
+            position: fixed; inset: 0; background: white; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .loader-logo {
+            width: 100px; height: 100px; background: var(--verde-peru); border-radius: 30px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 40px; font-weight: 900; animation: pulse 2s infinite;
+        }
+
+        /* --- HEADER DINÁMICO --- */
+        header {
+            background: var(--glass); backdrop-filter: blur(10px);
+            padding: 15px 20px; position: sticky; top: 0; z-index: 1000;
             display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-bottom: 1px solid #e2e8f0;
         }
-        .wallet-pill {
-            background: var(--oscuro); color: white; padding: 8px 15px; border-radius: 20px;
-            font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 8px;
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand-icon { width: 40px; height: 40px; background: var(--oscuro); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; cursor: pointer; }
+        .brand-text h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+        .brand-text span { font-size: 10px; color: var(--verde-peru); font-weight: 700; text-transform: uppercase; }
+
+        .wallet-card {
+            background: var(--oscuro); color: white; padding: 8px 15px; border-radius: 15px;
+            display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px;
         }
 
-        /* --- NAVEGACIÓN CIUDADES --- */
-        .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
-        .city-card { 
-            background: white; min-width: 130px; padding: 20px; border-radius: 28px; 
-            display: flex; flex-direction: column; align-items: center; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.03); border: 3px solid transparent; transition: 0.3s;
+        /* --- SELECTOR DE CIUDADES --- */
+        .city-nav {
+            padding: 15px 20px; display: flex; gap: 10px; overflow-x: auto;
+            scrollbar-width: none; background: #f8fafc;
         }
-        .active-city { border-color: var(--verde); background: var(--verde-glow); transform: scale(1.05); }
-
-        /* --- VITRINA DE PAGO --- */
-        .post-card { background: white; border-radius: 35px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 25px; position: relative; }
-        .badge-premium { position: absolute; top: 25px; right: 25px; background: var(--oro); color: black; padding: 5px 12px; border-radius: 12px; font-size: 10px; font-weight: 900; z-index: 10; }
-        .img-container { width: 100%; height: 250px; background: #eee; border-radius: 25px; overflow: hidden; }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* --- MODAL DE PAGOS (LA MÁQUINA DE DINERO) --- */
-        #payment-modal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 5000; 
-            display: none; align-items: center; justify-content: center; padding: 20px;
+        .city-nav::-webkit-scrollbar { display: none; }
+        .city-item {
+            padding: 10px 20px; background: white; border-radius: 15px; white-space: nowrap;
+            font-size: 12px; font-weight: 800; color: #64748b; border: 2px solid transparent;
+            transition: 0.3s; cursor: pointer;
         }
-        .modal-content { 
-            background: white; width: 100%; max-width: 400px; border-radius: 40px; padding: 30px; 
-            text-align: center; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .city-item.active {
+            background: var(--verde-peru); color: white; border-color: var(--verde-deep);
+            transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.4);
         }
-        @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .price-card { border: 2px solid #f1f5f9; padding: 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
-        .price-card.selected { border-color: var(--verde); background: var(--verde-glow); }
+        /* --- VITRINA DE PRODUCTOS --- */
+        .feed { padding: 15px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .post {
+            background: white; border-radius: 25px; overflow: hidden;
+            box-shadow: var(--sombra); border: 1px solid rgba(255,255,255,0.5);
+            position: relative; animation: fadeIn 0.5s ease;
+        }
+        .post-badge {
+            position: absolute; top: 15px; right: 15px; background: var(--oro);
+            color: var(--oscuro); padding: 5px 12px; border-radius: 10px;
+            font-size: 10px; font-weight: 900; z-index: 10;
+        }
+        .post-img { width: 100%; height: 280px; position: relative; background: #cbd5e1; }
+        .post-img img { width: 100%; height: 100%; object-fit: cover; }
+        .post-price {
+            position: absolute; bottom: 15px; left: 15px;
+            background: var(--verde-peru); color: white; padding: 10px 20px;
+            border-radius: 18px; font-weight: 900; font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .post-content { padding: 20px; }
+        .post-title { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
+        .post-location { font-size: 11px; color: #64748b; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 4px; }
+        
+        .btn-contact {
+            width: 100%; padding: 15px; background: var(--oscuro); color: white;
+            border: none; border-radius: 18px; font-weight: 800; font-size: 14px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
 
-        /* --- STUDIO DE SUBIDA --- */
-        .rr-field { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; font-size: 15px; }
-        .btn-main { width: 100%; padding: 20px; background: var(--verde); color: white; border: none; border-radius: 25px; font-weight: 900; font-size: 16px; cursor: pointer; }
+        /* --- CHAT REGIONAL --- */
+        .chat-view { height: calc(100vh - 180px); display: flex; flex-direction: column; padding: 15px; }
+        .chat-box {
+            flex: 1; background: white; border-radius: 30px; margin-bottom: 15px;
+            box-shadow: var(--sombra); display: flex; flex-direction: column; overflow: hidden;
+        }
+        .chat-header { padding: 15px 25px; background: var(--verde-peru); color: white; font-weight: 800; font-size: 14px; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 12px 18px; border-radius: 20px; font-size: 14px; max-width: 80%; position: relative; }
+        .msg-me { background: var(--verde-peru); color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
+        .msg-other { background: #f1f5f9; color: var(--oscuro); align-self: flex-start; border-bottom-left-radius: 5px; }
+        .msg-user { font-size: 9px; font-weight: 800; display: block; margin-bottom: 4px; opacity: 0.8; }
+        
+        .chat-input-area { display: flex; gap: 10px; }
+        .chat-input { flex: 1; padding: 15px 20px; border-radius: 20px; border: 2px solid #e2e8f0; font-weight: 600; }
+        .btn-send { width: 55px; height: 55px; background: var(--verde-peru); color: white; border: none; border-radius: 20px; font-size: 20px; }
 
-        /* --- BOTONES FLOTANTES --- */
-        .nav-island { position: fixed; bottom: 30px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 40px; display: flex; justify-content: space-around; padding: 20px; z-index: 3000; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-        .nav-btn { color: #94a3b8; text-align: center; font-size: 10px; font-weight: 800; }
-        .nav-btn.active { color: var(--verde); }
+        /* --- MODALES DE NEGOCIO --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9);
+            z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-card {
+            background: white; width: 100%; max-width: 450px; border-radius: 35px;
+            padding: 30px; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-title { font-size: 24px; font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
+        
+        .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .price-option {
+            padding: 20px; border: 2px solid #f1f5f9; border-radius: 20px; text-align: center;
+            cursor: pointer; transition: 0.3s;
+        }
+        .price-option.active { border-color: var(--verde-peru); background: var(--verde-glow); }
 
-        /* --- CHAT GRUPAL --- */
-        .chat-container { height: 60vh; display: flex; flex-direction: column; background: white; border-radius: 40px; overflow: hidden; }
-        .messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px 18px; border-radius: 20px; max-width: 80%; font-size: 14px; }
-        .my-msg { background: var(--verde); color: white; align-self: flex-end; }
-        .other-msg { background: #f1f5f9; align-self: flex-start; }
+        /* --- STUDIO DE CARGA (VENTAS) --- */
+        .studio-field { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #f1f5f9; margin-bottom: 15px; font-weight: 700; }
+        .studio-btn { width: 100%; padding: 18px; background: var(--verde-peru); color: white; border: none; border-radius: 20px; font-weight: 900; cursor: pointer; }
+
+        /* --- NAV BAR --- */
+        .bottom-nav {
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: var(--oscuro); border-radius: 25px; padding: 15px;
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 4000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .nav-link { color: #94a3b8; text-decoration: none; font-size: 10px; font-weight: 800; text-align: center; border: none; background: none; }
+        .nav-link.active { color: var(--verde-peru); }
+        .nav-link i { font-size: 20px; display: block; margin-bottom: 5px; }
+
+        /* --- ADMIN STYLE --- */
+        .admin-log { background: #1e293b; color: #38bdf8; padding: 10px; border-radius: 10px; font-family: monospace; font-size: 11px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="gps-screen">
-    <div class="gps-loader"></div>
-    <h2 style="margin-top:20px; font-weight:900;">Rantiy y Rantikuy</h2>
-    <p id="gps-status">Sincronizando con satélites...</p>
+<div id="loading-screen">
+    <div class="loader-logo">R&R</div>
+    <p style="margin-top: 20px; font-weight: 800; color: #64748b;">Conectando con el comercio local...</p>
 </div>
 
-<div id="payment-modal">
-    <div class="modal-content">
-        <h2 style="font-weight: 900; margin-bottom: 10px;">¡Impulsa tu Negocio!</h2>
-        <p style="font-size: 13px; opacity: 0.7;">Publicar en la vitrina de <span id="target-city">Huancayo</span> tiene un costo mínimo.</p>
+<div id="modal-payment" class="modal-overlay">
+    <div class="modal-card">
+        <h2 class="modal-title">💰 Recargar Créditos</h2>
+        <p style="font-size: 13px; color: #64748b;">Publicar en la vitrina de <b>Rantiy-Rantikuy</b> te da alcance masivo.</p>
         
-        <div class="price-grid">
-            <div class="price-card selected" onclick="selectPlan(1, 1)">
+        <div class="pricing-grid">
+            <div class="price-option active" onclick="selectPlan(1, 1, this)">
                 <div style="font-size: 20px;">🪙</div>
-                <div style="font-weight: 800;">1 Post</div>
-                <div style="color: var(--verde); font-weight: 900;">S/ 1.00</div>
+                <div style="font-weight: 800;">1 Crédito</div>
+                <div style="color: var(--verde-peru); font-weight: 900;">S/ 1.00</div>
             </div>
-            <div class="price-card" onclick="selectPlan(10, 5)">
-                <div style="font-size: 20px;">🚀</div>
-                <div style="font-weight: 800;">10 Posts</div>
-                <div style="color: var(--verde); font-weight: 900;">S/ 5.00</div>
+            <div class="price-option" onclick="selectPlan(10, 5, this)">
+                <div style="font-size: 20px;">🔥</div>
+                <div style="font-weight: 800;">10 Créditos</div>
+                <div style="color: var(--verde-peru); font-weight: 900;">S/ 5.00</div>
             </div>
         </div>
 
-        <div style="background: #f8fafc; padding: 15px; border-radius: 20px; margin-bottom: 20px;">
-            <p style="font-weight: 800; font-size: 12px; margin-bottom: 10px;">YAPE AL: <b>987 654 321</b></p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=YAPE_RANTIKUY" style="width: 120px; border-radius: 10px;">
+        <div style="background: #f8fafc; padding: 20px; border-radius: 25px; text-align: center; margin-bottom: 20px;">
+            <p style="font-weight: 800; margin-bottom: 10px;">YAPE AL: <b>900 000 000</b></p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=YAPE_RANTIKUY" style="width: 130px; border-radius: 15px;">
         </div>
 
-        <input type="number" id="pay-code" class="rr-field" placeholder="N° de Operación (8 dígitos)">
-        <button class="btn-main" onclick="processPayment()">ACTIVAR PUBLICACIÓN</button>
-        <button style="margin-top:15px; background:none; border:none; color:gray; font-weight:700;" onclick="closePayment()">Luego</button>
+        <input type="number" id="pay-op-code" class="studio-field" placeholder="Número de Operación (8 dígitos)">
+        <button class="studio-btn" onclick="execPayment()">CONFIRMAR RECARGA</button>
+        <button style="width:100%; background:none; border:none; margin-top:15px; font-weight:700; color:gray;" onclick="closeModal('modal-payment')">Cerrar</button>
     </div>
 </div>
 
-<header class="header">
-    <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:45px; height:45px; background:var(--verde); border-radius:15px; display:flex; align-items:center; justify-content:center; color:white; font-weight:900;">R&R</div>
-        <div id="city-label" style="font-weight:900; font-size:18px;">...</div>
+<div id="modal-admin" class="modal-overlay">
+    <div class="modal-card" style="background: var(--oscuro); color: white;">
+        <h2 class="modal-title">🛡️ Panel de Control</h2>
+        <div id="admin-payments-list" style="max-height: 300px; overflow-y: auto;"></div>
+        <button class="studio-btn" style="margin-top: 20px;" onclick="closeModal('modal-admin')">Cerrar Consola</button>
     </div>
-    <div class="wallet-pill">
-        <span>🪙</span>
-        <span id="user-credits">0 Créditos</span>
+</div>
+
+<header>
+    <div class="brand">
+        <div class="brand-icon" id="master-logo" onclick="handleAdmin()">R&R</div>
+        <div class="brand-text">
+            <h1 id="header-city">Cargando...</h1>
+            <span>Rantiy-Rantikuy</span>
+        </div>
+    </div>
+    <div class="wallet-card" onclick="openModal('modal-payment')">
+        🪙 <span id="balance-txt">0</span> Créditos
     </div>
 </header>
 
-<div class="city-bar" id="city-list">
-    </div>
+<nav class="city-nav" id="city-nav-bar"></nav>
 
-<main id="view-home" class="view" style="padding: 0 20px;">
-    <div id="feed-container"></div>
+<main id="view-home" class="view">
+    <div class="feed" id="main-feed"></div>
 </main>
 
-<section id="view-upload" class="view" style="display:none; padding: 20px;">
-    <div style="background:white; padding:30px; border-radius:40px; box-shadow: var(--premium-shadow);">
-        <h2 style="font-weight:900;">Nueva Venta</h2>
-        <div id="photo-preview" style="width:100%; height:150px; border:3px dashed #cbd5e1; border-radius:25px; margin-bottom:20px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <span style="font-weight:800; color:#94a3b8;">📸 Toca para subir foto</span>
+<section id="view-sell" class="view" style="display:none; padding: 20px;">
+    <div style="background:white; padding:30px; border-radius:35px; box-shadow: var(--sombra);">
+        <h2 style="font-weight:900; margin-bottom:20px;">¿Qué estás Rantikuy?</h2>
+        
+        <div id="image-drop" style="width:100%; height:200px; border:3px dashed #e2e8f0; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; background:#f8fafc; cursor:pointer;">
+            <span style="font-weight:800; color:#94a3b8;">📸 Añadir Foto</span>
         </div>
-        <input type="text" id="post-title" class="rr-field" placeholder="¿Qué vendes?">
-        <input type="number" id="post-price" class="rr-field" placeholder="Precio S/">
-        <select id="post-cat" class="rr-field">
-            <option value="Comida">🍲 Comida</option>
-            <option value="Ropa">👕 Ropa / Ventas</option>
-            <option value="Servicio">⚡ Servicio / Técnico</option>
-            <option value="Taxi">🚕 Taxi / Fletes</option>
-        </select>
-        <button class="btn-main" onclick="validateAndUpload()">PUBLICAR EN VITRINA</button>
-        <p style="font-size:11px; text-align:center; margin-top:15px; opacity:0.6;">* El 1% de comisión se descuenta al vender.</p>
+
+        <input type="text" id="sell-title" class="studio-field" placeholder="Título del producto">
+        <input type="number" id="sell-price" class="studio-field" placeholder="Precio (S/)">
+        
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <select id="sell-cat" class="studio-field" style="margin:0;">
+                <option value="Ventas">🛍️ Ventas</option>
+                <option value="Comida">🍲 Comida</option>
+                <option value="Servicio">🔧 Servicio</option>
+                <option value="Taxi">🚕 Taxi</option>
+            </select>
+            <div style="background:#f1f5f9; padding:15px; border-radius:15px; font-weight:800; font-size:12px; display:flex; align-items:center;">
+                📍 <span id="sell-city-label">...</span>
+            </div>
+        </div>
+
+        <div style="padding:15px; background:#fff7ed; border-radius:15px; border:1px solid #ffedd5; margin-bottom:20px;">
+            <label style="display:flex; align-items:center; gap:10px; font-weight:800; font-size:13px; color:#c2410c;">
+                <input type="checkbox" id="is-premium"> 💎 Alcance Nacional (2 Créditos)
+            </label>
+        </div>
+
+        <button class="studio-btn" onclick="tryPublish()">PUBLICAR AHORA</button>
     </div>
 </section>
 
-<section id="view-chat" class="view" style="display:none; padding: 20px;">
-    <div class="chat-container">
-        <div style="background:var(--verde); color:white; padding:15px 25px; font-weight:800; display:flex; justify-content:space-between;">
-            <span>SALA GRUPAL</span>
-            <span style="font-size:10px; opacity:0.8;">GRATIS</span>
-        </div>
-        <div class="messages" id="chat-msgs"></div>
-        <div style="padding:15px; display:flex; gap:10px;">
-            <input type="text" id="chat-input" class="rr-field" style="margin:0;" placeholder="Escribe al grupo...">
-            <button onclick="sendGroupMsg()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
+<section id="view-chat" class="view" style="display:none;">
+    <div class="chat-view">
+        <div class="chat-box">
+            <div class="chat-header">COMUNIDAD <span id="chat-city-name">...</span></div>
+            <div class="chat-messages" id="chat-msg-list"></div>
+            <div style="padding:15px; background:#f8fafc; border-top:1px solid #e2e8f0;">
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input-msg" class="chat-input" placeholder="Escribe al grupo...">
+                    <button class="btn-send" onclick="sendChatMsg()">✈️</button>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<nav class="nav-island">
-    <div class="nav-btn active" onclick="switchTab('home', this)">🏠<br>VITRINA</div>
-    <div class="nav-btn" onclick="switchTab('upload', this)">📸<br>VENDER</div>
-    <div class="nav-btn" onclick="switchTab('chat', this)">💬<br>CHAT</div>
+<nav class="bottom-nav">
+    <button class="nav-link active" onclick="navigate('home', this)"><i>🏠</i>VITRINA</button>
+    <button class="nav-link" onclick="navigate('sell', this)"><i>🛍️</i>VENDER</button>
+    <button class="nav-link" onclick="navigate('chat', this)"><i>💬</i>CHAT</button>
 </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, updateDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, getDoc, updateDoc, increment, or } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
@@ -191,169 +290,171 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // EXPORTAR A GLOBAL PARA EL PROFESOR
+    // EXPORTAR AL OBJETO WINDOW PARA USO GLOBAL
     window.db = db;
-    window.fs = { collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, updateDoc, getDoc, increment };
+    window.api = { collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, getDoc, updateDoc, increment, or };
 
-    // CARGAR CRÉDITOS DEL USUARIO
-    window.loadUserData = async (userId) => {
-        const userRef = doc(db, "usuarios", userId);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-            document.getElementById('user-credits').innerText = userSnap.data().creditos + " Créditos";
-            return userSnap.data().creditos;
-        } else {
-            // Crear usuario si no existe
-            await addDoc(collection(db, "usuarios"), { id: userId, creditos: 0 });
+    // FUNCIÓN DE VERIFICACIÓN DE USUARIO
+    window.syncUser = async (uid) => {
+        const uRef = doc(db, "usuarios", uid);
+        const snap = await getDoc(uRef);
+        if(!snap.exists()) {
+            await addDoc(collection(db, "usuarios"), { uid: uid, creditos: 0, fecha: serverTimestamp() });
             return 0;
         }
+        document.getElementById('balance-txt').innerText = snap.data().creditos || 0;
+        return snap.data().creditos;
     };
 </script>
 
 <script>
     let activeCity = "Huancayo";
-    let myUser = localStorage.getItem('rantiy_user') || "User_" + Math.floor(Math.random()*1000);
-    localStorage.setItem('rantiy_user', myUser);
+    let myUid = localStorage.getItem('rantiy_v1_uid') || "U-" + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('rantiy_v1_uid', myUid);
+    
+    let adminTapCount = 0;
+    let selectedPlanCredits = 1;
+    let selectedPlanPrice = 1;
 
-    const ZONAS = [
-        "Huanta", "Huamanga", "Pichari", "Pangoa", "Huancayo", "Satipo", "San Miguel", 
-        "Kimbiri", "Mazamari", "La Merced", "Tarma", "Jauja", "Chanchamayo", "Oxapampa",
-        "Vitarte", "SJL", "Comas", "Ate", "Trujillo", "Cusco"
+    const CIUDADES_ESTRATEGICAS = [
+        "Huanta", "Huamanga", "Pichari", "Pangoa", "Huancayo", "Satipo", "Kimbiri", 
+        "San Miguel", "Mazamari", "La Merced", "Tarma", "Jauja", "SJL", "Vitarte", 
+        "Ate", "Chiclayo", "Trujillo", "Cusco", "Pucallpa", "Iquitos"
     ];
 
     window.onload = () => {
-        renderCities();
-        startGPS();
-        window.loadUserData(myUser);
+        buildCityNav();
+        detectLocation();
+        window.syncUser(myUid);
     };
 
-    function renderCities() {
-        const list = document.getElementById('city-list');
-        ZONAS.forEach(z => {
-            list.innerHTML += `<div class="city-card" onclick="setCity('${z}')" id="card-${z}"><label>${z}</label></div>`;
+    function buildCityNav() {
+        const nav = document.getElementById('city-nav-bar');
+        CIUDADES_ESTRATEGICAS.forEach(city => {
+            const btn = document.createElement('div');
+            btn.className = `city-item ${city === activeCity ? 'active' : ''}`;
+            btn.id = `nav-${city}`;
+            btn.innerText = city.toUpperCase();
+            btn.onclick = () => switchCity(city);
+            nav.appendChild(btn);
         });
     }
 
-    function setCity(city) {
+    function detectLocation() {
+        // En un escenario real, usamos navigator.geolocation.
+        // Como estamos en Huancayo, forzamos el inicio ahí.
+        setTimeout(() => {
+            switchCity("Huancayo");
+            document.getElementById('loading-screen').style.display = 'none';
+        }, 1500);
+    }
+
+    function switchCity(city) {
         activeCity = city;
-        document.getElementById('city-label').innerText = city.toUpperCase();
-        document.getElementById('target-city').innerText = city;
-        document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city'));
-        document.getElementById('card-'+city).classList.add('active-city');
-        loadFeed();
-        loadChat();
-    }
-
-    function startGPS() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                // Aquí iría tu lógica de lat/lon para detectar ciudad automáticamente
-                // Por ahora forzamos Huancayo para pruebas
-                setCity("Huancayo");
-                document.getElementById('gps-screen').style.display = 'none';
-            }, () => {
-                setCity("Huancayo"); // Fallback
-                document.getElementById('gps-screen').style.display = 'none';
-            });
-        }
-    }
-
-    // --- LÓGICA DE DINERO (PAGOS) ---
-    let selectedPrice = 1;
-    let selectedCredits = 1;
-
-    function selectPlan(creds, price) {
-        selectedCredits = creds;
-        selectedPrice = price;
-        // Visualmente seleccionamos
-    }
-
-    function openPayment() {
-        document.getElementById('payment-modal').style.display = 'flex';
-    }
-
-    function closePayment() {
-        document.getElementById('payment-modal').style.display = 'none';
-    }
-
-    async function processPayment() {
-        const code = document.getElementById('pay-code').value;
-        if(code.length < 8) { alert("Ingresa un código de Yape válido."); return; }
-
-        // Aquí la "Automatización":
-        // 1. Guardamos la transacción en Firebase para que tú la veas.
-        // 2. Le damos los créditos al usuario al instante para que no espere.
-        // 3. Tú luego revisas en tu panel de Admin y si el código no existe, lo baneas.
+        document.getElementById('header-city').innerText = city;
+        document.getElementById('chat-city-name').innerText = city.toUpperCase();
+        document.getElementById('sell-city-label').innerText = city;
         
-        const userRef = window.fs.doc(window.db, "usuarios", myUser);
-        await window.fs.updateDoc(userRef, {
-            creditos: window.fs.increment(selectedCredits)
+        document.querySelectorAll('.city-item').forEach(el => el.classList.remove('active'));
+        document.getElementById(`nav-${city}`).classList.add('active');
+        
+        refreshFeed();
+        refreshChat();
+    }
+
+    // --- SISTEMA DE COBRO Y CRÉDITOS ---
+    function selectPlan(creds, price, el) {
+        selectedPlanCredits = creds;
+        selectedPlanPrice = price;
+        document.querySelectorAll('.price-option').forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    async function execPayment() {
+        const code = document.getElementById('pay-op-code').value;
+        if(code.length < 7) return alert("Número de operación no válido");
+
+        // Guardar registro de pago para el Admin
+        await window.api.addDoc(window.api.collection(window.db, "pagos_audit"), {
+            uid: myUid,
+            codigo: code,
+            monto: selectedPlanPrice,
+            creditos: selectedPlanCredits,
+            fecha: window.api.serverTimestamp(),
+            ciudad: activeCity
         });
 
-        await window.fs.addDoc(window.fs.collection(window.db, "pagos_pendientes"), {
-            usuario: myUser,
-            codigo: code,
-            monto: selectedPrice,
-            fecha: window.fs.serverTimestamp()
-        });
+        // Automatización: Se otorga el crédito (Tú lo auditas después)
+        const uRef = window.api.doc(window.db, "usuarios", myUid);
+        await window.api.updateDoc(uRef, { creditos: window.api.increment(selectedPlanCredits) });
 
         confetti();
-        alert("¡Pago procesado! Créditos añadidos.");
-        window.loadUserData(myUser);
-        closePayment();
+        alert("¡Recarga Exitosa! Tus créditos están disponibles.");
+        closeModal('modal-payment');
+        window.syncUser(myUid);
     }
 
-    // --- LÓGICA DE VITRINA ---
-    async function validateAndUpload() {
-        const creds = await window.loadUserData(myUser);
-        if(creds <= 0) {
-            openPayment();
+    // --- LÓGICA DE PUBLICACIÓN ---
+    async function tryPublish() {
+        const userCredits = await window.syncUser(myUid);
+        const cost = document.getElementById('is-premium').checked ? 2 : 1;
+
+        if(userCredits < cost) {
+            alert("No tienes suficientes créditos para esta publicación.");
+            openModal('modal-payment');
             return;
         }
 
-        const title = document.getElementById('post-title').value;
-        const price = document.getElementById('post-price').value;
+        const title = document.getElementById('sell-title').value;
+        const price = document.getElementById('sell-price').value;
+        if(!title || !price) return alert("Completa los datos del producto.");
 
-        await window.fs.addDoc(window.fs.collection(window.db, "posts"), {
+        await window.api.addDoc(window.api.collection(window.db, "vitrina_posts"), {
             titulo: title,
             precio: price,
             ciudad: activeCity,
-            usuario: myUser,
-            fecha: window.fs.serverTimestamp(),
-            estado: "Activo"
+            uid: myUid,
+            premium: document.getElementById('is-premium').checked,
+            categoria: document.getElementById('sell-cat').value,
+            fecha: window.api.serverTimestamp()
         });
 
-        // Restar crédito
-        const userRef = window.fs.doc(window.db, "usuarios", myUser);
-        await window.fs.updateDoc(userRef, { creditos: window.fs.increment(-1) });
+        // Descontar pago
+        const uRef = window.api.doc(window.db, "usuarios", myUid);
+        await window.api.updateDoc(uRef, { creditos: window.api.increment(-cost) });
 
-        alert("¡Publicado en la vitrina de " + activeCity + "!");
-        switchTab('home', document.querySelector('.nav-btn'));
-        window.loadUserData(myUser);
+        alert("¡Producto Rantikuy con éxito!");
+        navigate('home', document.querySelector('.nav-link'));
+        window.syncUser(myUid);
     }
 
-    function loadFeed() {
-        const q = window.fs.query(
-            window.fs.collection(window.db, "posts"), 
-            window.fs.where("ciudad", "==", activeCity), 
-            window.fs.orderBy("fecha", "desc")
+    // --- CARGA DE DATOS (FEED Y CHAT) ---
+    function refreshFeed() {
+        const q = window.api.query(
+            window.api.collection(window.db, "vitrina_posts"),
+            window.api.or(
+                window.api.where("ciudad", "==", activeCity),
+                window.api.where("premium", "==", true)
+            ),
+            window.api.orderBy("fecha", "desc")
         );
 
-        window.fs.onSnapshot(q, (snap) => {
-            const container = document.getElementById('feed-container');
+        window.api.onSnapshot(q, snap => {
+            const container = document.getElementById('main-feed');
             container.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
                 container.innerHTML += `
-                    <div class="post-card">
-                        <div class="img-container">
-                            <img src="https://via.placeholder.com/400x250?text=${p.titulo}">
+                    <div class="post" style="${p.premium ? 'border: 2px solid var(--oro)' : ''}">
+                        ${p.premium ? '<div class="post-badge">💎 NACIONAL</div>' : ''}
+                        <div class="post-img">
+                            <img src="https://via.placeholder.com/400x280/f1f5f9/64748b?text=${p.titulo}">
+                            <div class="post-price">S/ ${p.precio}</div>
                         </div>
-                        <div style="padding:15px;">
-                            <h3 style="margin:0; font-weight:900;">${p.titulo}</h3>
-                            <div style="color:var(--verde); font-weight:900; font-size:20px;">S/ ${p.precio}</div>
-                            <div style="font-size:10px; opacity:0.5;">Vendedor: ${p.usuario}</div>
-                            <button onclick="contactar()" style="width:100%; margin-top:15px; padding:12px; border:none; border-radius:15px; background:var(--oscuro); color:white; font-weight:800;">CONTACTAR</button>
+                        <div class="post-content">
+                            <h3 class="post-title">${p.titulo}</h3>
+                            <div class="post-location">📍 ${p.ciudad} • ${p.categoria}</div>
+                            <button class="btn-contact" onclick="openWhatsApp('${p.uid}')">HABLAR CON VENDEDOR</button>
                         </div>
                     </div>
                 `;
@@ -361,42 +462,78 @@
         });
     }
 
-    function switchTab(id, el) {
-        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
-        document.getElementById('view-' + id).style.display = 'block';
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
+    function refreshChat() {
+        const q = window.api.query(
+            window.api.collection(window.db, "chat_regional"),
+            window.api.where("ciudad", "==", activeCity),
+            window.api.orderBy("fecha", "asc")
+        );
+        window.api.onSnapshot(q, snap => {
+            const list = document.getElementById('chat-msg-list');
+            list.innerHTML = "";
+            snap.forEach(doc => {
+                const m = doc.data();
+                const isMe = m.uid === myUid;
+                list.innerHTML += `
+                    <div class="msg ${isMe ? 'msg-me' : 'msg-other'}">
+                        <span class="msg-user">${isMe ? 'Tú' : m.uid.substr(0,6)}</span>
+                        ${m.texto}
+                    </div>
+                `;
+            });
+            list.scrollTop = list.scrollHeight;
+        });
     }
 
-    // --- CHAT GRUPAL (GRATIS) ---
-    async function sendGroupMsg() {
-        const input = document.getElementById('chat-input');
+    async function sendChatMsg() {
+        const input = document.getElementById('chat-input-msg');
         if(!input.value) return;
-        await window.fs.addDoc(window.fs.collection(window.db, "mensajes_grupa"), {
+        await window.api.addDoc(window.api.collection(window.db, "chat_regional"), {
+            uid: myUid,
             texto: input.value,
-            usuario: myUser,
             ciudad: activeCity,
-            fecha: window.fs.serverTimestamp()
+            fecha: window.api.serverTimestamp()
         });
         input.value = "";
     }
 
-    function loadChat() {
-        const q = window.fs.query(
-            window.fs.collection(window.db, "mensajes_grupa"), 
-            window.fs.where("ciudad", "==", activeCity), 
-            window.fs.orderBy("fecha", "asc")
-        );
-        window.fs.onSnapshot(q, snap => {
-            const div = document.getElementById('chat-msgs');
-            div.innerHTML = "";
+    // --- NAVEGACIÓN Y UI ---
+    function navigate(viewId, el) {
+        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+        document.getElementById('view-' + viewId).style.display = 'block';
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function handleAdmin() {
+        adminTapCount++;
+        if(adminTapCount >= 10) {
+            openModal('modal-admin');
+            loadAdminPanel();
+            adminTapCount = 0;
+        }
+    }
+
+    function loadAdminPanel() {
+        const q = window.api.query(window.api.collection(window.db, "pagos_audit"), window.api.orderBy("fecha", "desc"));
+        window.api.onSnapshot(q, snap => {
+            const list = document.getElementById('admin-payments-list');
+            list.innerHTML = "";
             snap.forEach(d => {
-                const m = d.data();
-                const isMe = m.usuario === myUser;
-                div.innerHTML += `<div class="bubble ${isMe?'my-msg':'other-msg'}">${m.texto}</div>`;
+                const p = d.data();
+                list.innerHTML += `<div class="admin-log">
+                    💰 S/ ${p.monto} | Cod: ${p.codigo} | User: ${p.uid.substr(0,8)}<br>
+                    <button style="color:red; background:none; border:none;" onclick="alert('Funciones de borrado activas')">ELIMINAR TRANSACCIÓN</button>
+                </div>`;
             });
-            div.scrollTop = div.scrollHeight;
         });
+    }
+
+    function openWhatsApp(uid) {
+        alert("Iniciando chat privado con el vendedor " + uid);
     }
 </script>
 
