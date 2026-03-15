@@ -3,280 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rantiy-Rantikuy | El Imperio del Comercio</title>
+    <title>Rantiy-Rantikuy | Sistema de Comercio Inteligente</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
-            --verde-peru: #22c55e;
-            --verde-deep: #15803d;
-            --oscuro: #0f172a;
-            --oro: #fbbf24;
-            --plata: #94a3b8;
-            --glass: rgba(255, 255, 255, 0.95);
-            --sombra: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --peru-green: #10b981;
+            --peru-deep: #064e3b;
+            --yape-purple: #742284;
+            --night: #0f172a;
+            --gold: #fbbf24;
+            --danger: #ef4444;
+            --glass: rgba(255, 255, 255, 0.98);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
-        /* --- RESET Y BASE --- */
+        /* --- ARQUITECTURA BASE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: #f1f5f9; color: var(--oscuro); overflow-x: hidden; line-height: 1.5; padding-bottom: 100px; }
+        body { background: #f8fafc; color: var(--night); overflow-x: hidden; padding-bottom: 110px; }
 
-        /* --- ANIMACIONES --- */
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        /* --- PANTALLA DE CARGA PROFESIONAL --- */
-        #loading-screen {
-            position: fixed; inset: 0; background: white; z-index: 9999;
+        /* --- LOADING SCREEN --- */
+        #loader {
+            position: fixed; inset: 0; background: white; z-index: 10000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .loader-logo {
-            width: 100px; height: 100px; background: var(--verde-peru); border-radius: 30px;
+        .pulse-logo {
+            width: 90px; height: 90px; background: var(--peru-green); border-radius: 25px;
             display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 40px; font-weight: 900; animation: pulse 2s infinite;
+            color: white; font-size: 35px; font-weight: 900; animation: pulse 1.5s infinite;
         }
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); } 100% { transform: scale(1); } }
 
-        /* --- HEADER DINÁMICO --- */
+        /* --- HEADER & WALLET --- */
         header {
-            background: var(--glass); backdrop-filter: blur(10px);
-            padding: 15px 20px; position: sticky; top: 0; z-index: 1000;
+            background: var(--glass); backdrop-filter: blur(15px);
+            padding: 15px 20px; position: sticky; top: 0; z-index: 2000;
             display: flex; align-items: center; justify-content: space-between;
             border-bottom: 1px solid #e2e8f0;
         }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .brand-icon { width: 40px; height: 40px; background: var(--oscuro); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; cursor: pointer; }
-        .brand-text h1 { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
-        .brand-text span { font-size: 10px; color: var(--verde-peru); font-weight: 700; text-transform: uppercase; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .logo-box { width: 45px; height: 45px; background: var(--night); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; cursor: pointer; }
+        .brand-info h1 { font-size: 17px; font-weight: 800; letter-spacing: -0.5px; }
+        .brand-info span { font-size: 10px; color: var(--peru-green); font-weight: 800; text-transform: uppercase; }
 
-        .wallet-card {
-            background: var(--oscuro); color: white; padding: 8px 15px; border-radius: 15px;
-            display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px;
+        .top-stats { display: flex; gap: 8px; }
+        .stat-pill {
+            background: #f1f5f9; padding: 8px 12px; border-radius: 12px;
+            font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 6px;
+        }
+        .stat-pill.money { background: var(--night); color: white; border: 1px solid var(--gold); }
+
+        /* --- CIUDADES NAVEGABLES --- */
+        .city-scroll {
+            padding: 15px 20px; display: flex; gap: 12px; overflow-x: auto;
+            scrollbar-width: none; background: #fff; border-bottom: 1px solid #f1f5f9;
+        }
+        .city-scroll::-webkit-scrollbar { display: none; }
+        .city-chip {
+            padding: 10px 22px; background: #f1f5f9; border-radius: 18px; white-space: nowrap;
+            font-size: 12px; font-weight: 700; color: #64748b; transition: 0.4s; cursor: pointer;
+        }
+        .city-chip.active {
+            background: var(--peru-green); color: white;
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3); transform: translateY(-2px);
         }
 
-        /* --- SELECTOR DE CIUDADES --- */
-        .city-nav {
-            padding: 15px 20px; display: flex; gap: 10px; overflow-x: auto;
-            scrollbar-width: none; background: #f8fafc;
+        /* --- VITRINA (EL MOTOR DE VENTAS) --- */
+        .feed { padding: 20px; display: flex; flex-direction: column; gap: 25px; }
+        .card {
+            background: white; border-radius: 30px; overflow: hidden;
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;
+            position: relative; transition: 0.3s;
         }
-        .city-nav::-webkit-scrollbar { display: none; }
-        .city-item {
-            padding: 10px 20px; background: white; border-radius: 15px; white-space: nowrap;
-            font-size: 12px; font-weight: 800; color: #64748b; border: 2px solid transparent;
-            transition: 0.3s; cursor: pointer;
+        .card:active { transform: scale(0.98); }
+        .premium-tag {
+            position: absolute; top: 20px; right: 20px; background: var(--gold);
+            color: black; padding: 6px 14px; border-radius: 12px;
+            font-size: 10px; font-weight: 900; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .city-item.active {
-            background: var(--verde-peru); color: white; border-color: var(--verde-deep);
-            transform: scale(1.05); box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.4);
+        .card-img { width: 100%; height: 300px; background: #e2e8f0; position: relative; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; }
+        .card-price {
+            position: absolute; bottom: 20px; left: 20px;
+            background: var(--peru-green); color: white; padding: 12px 22px;
+            border-radius: 20px; font-weight: 900; font-size: 22px;
         }
-
-        /* --- VITRINA DE PRODUCTOS --- */
-        .feed { padding: 15px; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .post {
-            background: white; border-radius: 25px; overflow: hidden;
-            box-shadow: var(--sombra); border: 1px solid rgba(255,255,255,0.5);
-            position: relative; animation: fadeIn 0.5s ease;
-        }
-        .post-badge {
-            position: absolute; top: 15px; right: 15px; background: var(--oro);
-            color: var(--oscuro); padding: 5px 12px; border-radius: 10px;
-            font-size: 10px; font-weight: 900; z-index: 10;
-        }
-        .post-img { width: 100%; height: 280px; position: relative; background: #cbd5e1; }
-        .post-img img { width: 100%; height: 100%; object-fit: cover; }
-        .post-price {
-            position: absolute; bottom: 15px; left: 15px;
-            background: var(--verde-peru); color: white; padding: 10px 20px;
-            border-radius: 18px; font-weight: 900; font-size: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .post-content { padding: 20px; }
-        .post-title { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
-        .post-location { font-size: 11px; color: #64748b; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 4px; }
+        .card-content { padding: 25px; }
+        .card-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: var(--night); }
+        .card-meta { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 12px; font-weight: 600; margin-bottom: 20px; }
         
-        .btn-contact {
-            width: 100%; padding: 15px; background: var(--oscuro); color: white;
-            border: none; border-radius: 18px; font-weight: 800; font-size: 14px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+        .btn-group { display: flex; gap: 10px; }
+        .btn-action {
+            flex: 1; padding: 16px; border-radius: 18px; border: none;
+            font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
         }
+        .btn-wa { background: #25d366; color: white; }
+        .btn-sold { background: var(--night); color: white; }
 
-        /* --- CHAT REGIONAL --- */
-        .chat-view { height: calc(100vh - 180px); display: flex; flex-direction: column; padding: 15px; }
-        .chat-box {
-            flex: 1; background: white; border-radius: 30px; margin-bottom: 15px;
-            box-shadow: var(--sombra); display: flex; flex-direction: column; overflow: hidden;
+        /* --- CHAT REGIONAL (TIEMPO REAL) --- */
+        .chat-container { height: calc(100vh - 200px); display: flex; flex-direction: column; padding: 15px; }
+        .chat-display {
+            flex: 1; background: white; border-radius: 35px; margin-bottom: 15px;
+            box-shadow: var(--shadow-xl); overflow: hidden; display: flex; flex-direction: column;
         }
-        .chat-header { padding: 15px 25px; background: var(--verde-peru); color: white; font-weight: 800; font-size: 14px; }
-        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .msg { padding: 12px 18px; border-radius: 20px; font-size: 14px; max-width: 80%; position: relative; }
-        .msg-me { background: var(--verde-peru); color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
-        .msg-other { background: #f1f5f9; color: var(--oscuro); align-self: flex-start; border-bottom-left-radius: 5px; }
-        .msg-user { font-size: 9px; font-weight: 800; display: block; margin-bottom: 4px; opacity: 0.8; }
-        
-        .chat-input-area { display: flex; gap: 10px; }
-        .chat-input { flex: 1; padding: 15px 20px; border-radius: 20px; border: 2px solid #e2e8f0; font-weight: 600; }
-        .btn-send { width: 55px; height: 55px; background: var(--verde-peru); color: white; border: none; border-radius: 20px; font-size: 20px; }
+        .chat-msgs { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .bubble { padding: 14px 20px; border-radius: 22px; font-size: 14px; max-width: 85%; line-height: 1.4; }
+        .bubble.me { background: var(--peru-green); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bubble.other { background: #f1f5f9; color: var(--night); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg-info { font-size: 9px; font-weight: 800; margin-bottom: 4px; display: block; opacity: 0.7; }
 
-        /* --- MODALES DE NEGOCIO --- */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9);
+        /* --- SISTEMA DE PAGO Y VENTAS --- */
+        .modal {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95);
             z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px;
         }
-        .modal-card {
-            background: white; width: 100%; max-width: 450px; border-radius: 35px;
-            padding: 30px; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-height: 90vh; overflow-y: auto;
+        .modal-body {
+            background: white; width: 100%; max-width: 480px; border-radius: 40px;
+            padding: 35px; max-height: 90vh; overflow-y: auto; position: relative;
         }
-        .modal-title { font-size: 24px; font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
-        
-        .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .price-option {
-            padding: 20px; border: 2px solid #f1f5f9; border-radius: 20px; text-align: center;
-            cursor: pointer; transition: 0.3s;
-        }
-        .price-option.active { border-color: var(--verde-peru); background: var(--verde-glow); }
+        .input-rr { width: 100%; padding: 18px 25px; border-radius: 20px; border: 2px solid #f1f5f9; margin-bottom: 15px; font-weight: 700; font-size: 15px; }
+        .btn-primary { width: 100%; padding: 20px; background: var(--peru-green); color: white; border: none; border-radius: 22px; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3); }
 
-        /* --- STUDIO DE CARGA (VENTAS) --- */
-        .studio-field { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #f1f5f9; margin-bottom: 15px; font-weight: 700; }
-        .studio-btn { width: 100%; padding: 18px; background: var(--verde-peru); color: white; border: none; border-radius: 20px; font-weight: 900; cursor: pointer; }
+        .price-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .price-card { padding: 20px; border: 3px solid #f1f5f9; border-radius: 25px; text-align: center; cursor: pointer; }
+        .price-card.active { border-color: var(--peru-green); background: #f0fdf4; }
 
-        /* --- NAV BAR --- */
-        .bottom-nav {
-            position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: var(--oscuro); border-radius: 25px; padding: 15px;
+        /* --- NAVEGACIÓN INFERIOR --- */
+        .dock {
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            background: var(--night); border-radius: 30px; padding: 18px;
             display: flex; justify-content: space-around; align-items: center;
-            z-index: 4000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 4000; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
-        .nav-link { color: #94a3b8; text-decoration: none; font-size: 10px; font-weight: 800; text-align: center; border: none; background: none; }
-        .nav-link.active { color: var(--verde-peru); }
-        .nav-link i { font-size: 20px; display: block; margin-bottom: 5px; }
+        .dock-item { color: #64748b; text-decoration: none; font-size: 10px; font-weight: 800; text-align: center; border: none; background: none; transition: 0.3s; }
+        .dock-item.active { color: var(--peru-green); transform: translateY(-5px); }
+        .dock-item i { font-size: 22px; display: block; margin-bottom: 6px; }
 
-        /* --- ADMIN STYLE --- */
-        .admin-log { background: #1e293b; color: #38bdf8; padding: 10px; border-radius: 10px; font-family: monospace; font-size: 11px; margin-top: 10px; }
+        /* --- ADMIN LOGS --- */
+        .admin-box { background: #0f172a; border-radius: 20px; padding: 20px; color: #4ade80; font-family: monospace; font-size: 12px; }
+        .debt-warning { background: #fef2f2; border: 1px solid #fee2e2; padding: 15px; border-radius: 15px; color: var(--danger); font-weight: 800; font-size: 12px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-<div id="loading-screen">
-    <div class="loader-logo">R&R</div>
-    <p style="margin-top: 20px; font-weight: 800; color: #64748b;">Conectando con el comercio local...</p>
-</div>
+<div id="loader"><div class="pulse-logo">R&R</div><p style="margin-top:20px; font-weight:800; color:#94a3b8;">Sincronizando Mercado Real...</p></div>
 
-<div id="modal-payment" class="modal-overlay">
-    <div class="modal-card">
-        <h2 class="modal-title">💰 Recargar Créditos</h2>
-        <p style="font-size: 13px; color: #64748b;">Publicar en la vitrina de <b>Rantiy-Rantikuy</b> te da alcance masivo.</p>
+<div id="modal-pay" class="modal">
+    <div class="modal-body">
+        <h2 style="font-weight:900; font-size:24px; margin-bottom:10px;">💳 Recargar Rantiy</h2>
+        <p style="font-size:13px; color:#64748b; margin-bottom:25px;">Usa tus créditos para publicar en la vitrina nacional.</p>
         
-        <div class="pricing-grid">
-            <div class="price-option active" onclick="selectPlan(1, 1, this)">
-                <div style="font-size: 20px;">🪙</div>
-                <div style="font-weight: 800;">1 Crédito</div>
-                <div style="color: var(--verde-peru); font-weight: 900;">S/ 1.00</div>
+        <div class="price-picker">
+            <div class="price-card active" onclick="selPlan(1, 1, this)">
+                <div style="font-size:24px;">💰</div>
+                <div style="font-weight:900;">1 Post</div>
+                <div style="color:var(--peru-green); font-weight:900;">S/ 1.00</div>
             </div>
-            <div class="price-option" onclick="selectPlan(10, 5, this)">
-                <div style="font-size: 20px;">🔥</div>
-                <div style="font-weight: 800;">10 Créditos</div>
-                <div style="color: var(--verde-peru); font-weight: 900;">S/ 5.00</div>
+            <div class="price-card" onclick="selPlan(10, 5, this)">
+                <div style="font-size:24px;">🚀</div>
+                <div style="font-weight:900;">10 Posts</div>
+                <div style="color:var(--peru-green); font-weight:900;">S/ 5.00</div>
             </div>
         </div>
 
-        <div style="background: #f8fafc; padding: 20px; border-radius: 25px; text-align: center; margin-bottom: 20px;">
-            <p style="font-weight: 800; margin-bottom: 10px;">YAPE AL: <b>900 000 000</b></p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=YAPE_RANTIKUY" style="width: 130px; border-radius: 15px;">
+        <div style="background:#f8fafc; padding:25px; border-radius:30px; text-align:center; margin-bottom:25px; border:1px solid #e2e8f0;">
+            <p style="font-weight:800; font-size:14px; margin-bottom:15px;">YAPE AL TITULAR:</p>
+            <h3 style="color:var(--yape-purple); font-weight:900; margin-bottom:15px;">900 000 000</h3>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=YAPE_RANTIKUY" style="width:140px; border-radius:20px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">
         </div>
 
-        <input type="number" id="pay-op-code" class="studio-field" placeholder="Número de Operación (8 dígitos)">
-        <button class="studio-btn" onclick="execPayment()">CONFIRMAR RECARGA</button>
-        <button style="width:100%; background:none; border:none; margin-top:15px; font-weight:700; color:gray;" onclick="closeModal('modal-payment')">Cerrar</button>
+        <input type="number" id="pay-code" class="input-rr" placeholder="Número de Operación Yape">
+        <button class="btn-primary" onclick="confirmPayment()">ACTIVAR CRÉDITOS</button>
+        <button onclick="closeMod('modal-pay')" style="width:100%; background:none; border:none; margin-top:15px; font-weight:700; color:#94a3b8;">Volver</button>
     </div>
 </div>
 
-<div id="modal-admin" class="modal-overlay">
-    <div class="modal-card" style="background: var(--oscuro); color: white;">
-        <h2 class="modal-title">🛡️ Panel de Control</h2>
-        <div id="admin-payments-list" style="max-height: 300px; overflow-y: auto;"></div>
-        <button class="studio-btn" style="margin-top: 20px;" onclick="closeModal('modal-admin')">Cerrar Consola</button>
+<div id="modal-admin" class="modal">
+    <div class="modal-body" style="background:var(--night); color:white;">
+        <h2 style="font-weight:900; margin-bottom:20px;">🛡️ Consola de Auditoría</h2>
+        <div id="admin-logs" class="admin-box" style="height:300px; overflow-y:auto; margin-bottom:20px;"></div>
+        <button class="btn-primary" onclick="closeMod('modal-admin')">Cerrar Sistema</button>
     </div>
 </div>
 
 <header>
     <div class="brand">
-        <div class="brand-icon" id="master-logo" onclick="handleAdmin()">R&R</div>
-        <div class="brand-text">
-            <h1 id="header-city">Cargando...</h1>
+        <div class="logo-box" id="logo-trigger" onclick="adminAuth()">R&R</div>
+        <div class="brand-info">
+            <h1 id="active-city-display">Huancayo</h1>
             <span>Rantiy-Rantikuy</span>
         </div>
     </div>
-    <div class="wallet-card" onclick="openModal('modal-payment')">
-        🪙 <span id="balance-txt">0</span> Créditos
+    <div class="top-stats">
+        <div class="stat-pill">🛒 <span id="debt-txt">S/ 0.00</span></div>
+        <div class="stat-pill money" onclick="openMod('modal-pay')">🪙 <span id="credits-txt">0</span></div>
     </div>
 </header>
 
-<nav class="city-nav" id="city-nav-bar"></nav>
+<div class="city-scroll" id="city-bar"></div>
 
-<main id="view-home" class="view">
-    <div class="feed" id="main-feed"></div>
+<main id="view-home" class="page-view">
+    <div class="feed" id="feed-main"></div>
 </main>
 
-<section id="view-sell" class="view" style="display:none; padding: 20px;">
-    <div style="background:white; padding:30px; border-radius:35px; box-shadow: var(--sombra);">
-        <h2 style="font-weight:900; margin-bottom:20px;">¿Qué estás Rantikuy?</h2>
+<section id="view-sell" class="page-view" style="display:none; padding:20px;">
+    <div style="background:white; padding:35px; border-radius:40px; box-shadow:var(--shadow-xl);">
+        <h2 style="font-weight:900; margin-bottom:10px;">Rantikuy Ahora</h2>
+        <div id="debt-alert" class="debt-warning" style="display:none;">⚠️ Tienes comisiones pendientes. Paga el 1% para seguir vendiendo.</div>
         
-        <div id="image-drop" style="width:100%; height:200px; border:3px dashed #e2e8f0; border-radius:25px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; background:#f8fafc; cursor:pointer;">
-            <span style="font-weight:800; color:#94a3b8;">📸 Añadir Foto</span>
+        <div onclick="alert('Funcionalidad de cámara lista')" style="width:100%; height:200px; border:3px dashed #e2e8f0; border-radius:30px; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:25px; background:#f8fafc;">
+            <i class="fas fa-camera" style="font-size:30px; color:#cbd5e1; margin-bottom:10px;"></i>
+            <span style="font-weight:800; color:#94a3b8;">Subir Fotos del Producto</span>
         </div>
 
-        <input type="text" id="sell-title" class="studio-field" placeholder="Título del producto">
-        <input type="number" id="sell-price" class="studio-field" placeholder="Precio (S/)">
+        <input type="text" id="sell-title" class="input-rr" placeholder="¿Qué estás vendiendo?">
+        <input type="number" id="sell-price" class="input-rr" placeholder="Precio S/">
+        <input type="number" id="sell-phone" class="input-rr" placeholder="Tu WhatsApp (ej: 912345678)">
         
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <select id="sell-cat" class="studio-field" style="margin:0;">
+        <div style="display:flex; gap:12px; margin-bottom:25px;">
+            <select id="sell-cat" class="input-rr" style="margin:0;">
                 <option value="Ventas">🛍️ Ventas</option>
                 <option value="Comida">🍲 Comida</option>
-                <option value="Servicio">🔧 Servicio</option>
-                <option value="Taxi">🚕 Taxi</option>
+                <option value="Servicio">🔧 Servicios</option>
+                <option value="Taxi">🚕 Transporte</option>
             </select>
-            <div style="background:#f1f5f9; padding:15px; border-radius:15px; font-weight:800; font-size:12px; display:flex; align-items:center;">
-                📍 <span id="sell-city-label">...</span>
-            </div>
         </div>
 
-        <div style="padding:15px; background:#fff7ed; border-radius:15px; border:1px solid #ffedd5; margin-bottom:20px;">
-            <label style="display:flex; align-items:center; gap:10px; font-weight:800; font-size:13px; color:#c2410c;">
-                <input type="checkbox" id="is-premium"> 💎 Alcance Nacional (2 Créditos)
+        <div style="padding:20px; background:#f0fdf4; border-radius:20px; margin-bottom:25px; border:1px solid #dcfce7;">
+            <label style="display:flex; align-items:center; gap:12px; font-weight:800; font-size:14px; color:var(--peru-deep);">
+                <input type="checkbox" id="sell-premium" style="width:20px; height:20px;"> 💎 Alcance Nacional (2 Créditos)
             </label>
         </div>
 
-        <button class="studio-btn" onclick="tryPublish()">PUBLICAR AHORA</button>
+        <button class="btn-primary" onclick="pushToEmpire()">LANZAR A LA VITRINA</button>
     </div>
 </section>
 
-<section id="view-chat" class="view" style="display:none;">
-    <div class="chat-view">
-        <div class="chat-box">
-            <div class="chat-header">COMUNIDAD <span id="chat-city-name">...</span></div>
-            <div class="chat-messages" id="chat-msg-list"></div>
-            <div style="padding:15px; background:#f8fafc; border-top:1px solid #e2e8f0;">
-                <div class="chat-input-area">
-                    <input type="text" id="chat-input-msg" class="chat-input" placeholder="Escribe al grupo...">
-                    <button class="btn-send" onclick="sendChatMsg()">✈️</button>
+<section id="view-chat" class="page-view" style="display:none;">
+    <div class="chat-container">
+        <div class="chat-display">
+            <div style="padding:15px 25px; background:var(--night); color:white; font-weight:800; font-size:12px;">SALA DE COMERCIO: <span id="chat-city">...</span></div>
+            <div class="chat-msgs" id="chat-list"></div>
+            <div style="padding:20px; background:white; border-top:1px solid #f1f5f9;">
+                <div style="display:flex; gap:12px;">
+                    <input type="text" id="chat-in" class="input-rr" style="margin:0;" placeholder="Escribe al grupo...">
+                    <button class="btn-primary" style="width:65px; padding:0; border-radius:20px;" onclick="sendTalk()">✈️</button>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<nav class="bottom-nav">
-    <button class="nav-link active" onclick="navigate('home', this)"><i>🏠</i>VITRINA</button>
-    <button class="nav-link" onclick="navigate('sell', this)"><i>🛍️</i>VENDER</button>
-    <button class="nav-link" onclick="navigate('chat', this)"><i>💬</i>CHAT</button>
+<nav class="dock">
+    <button class="dock-item active" onclick="nav('home', this)"><i class="fas fa-store"></i>VITRINA</button>
+    <button class="dock-item" onclick="nav('sell', this)"><i class="fas fa-plus-circle"></i>VENDER</button>
+    <button class="dock-item" onclick="nav('chat', this)"><i class="fas fa-comments"></i>CHAT</button>
 </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, getDoc, updateDoc, increment, or } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, getDoc, updateDoc, increment, or, deleteDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
@@ -290,171 +279,172 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // EXPORTAR AL OBJETO WINDOW PARA USO GLOBAL
     window.db = db;
-    window.api = { collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, getDoc, updateDoc, increment, or };
+    window.f = { collection, addDoc, onSnapshot, query, orderBy, where, serverTimestamp, doc, getDoc, updateDoc, increment, or, deleteDoc };
 
-    // FUNCIÓN DE VERIFICACIÓN DE USUARIO
-    window.syncUser = async (uid) => {
-        const uRef = doc(db, "usuarios", uid);
-        const snap = await getDoc(uRef);
-        if(!snap.exists()) {
-            await addDoc(collection(db, "usuarios"), { uid: uid, creditos: 0, fecha: serverTimestamp() });
-            return 0;
-        }
-        document.getElementById('balance-txt').innerText = snap.data().creditos || 0;
-        return snap.data().creditos;
+    // SYNC USUARIO EN TIEMPO REAL
+    window.syncProfile = (uid) => {
+        const uRef = doc(db, "users_v2", uid);
+        onSnapshot(uRef, (snap) => {
+            if(snap.exists()){
+                const d = snap.data();
+                document.getElementById('credits-txt').innerText = d.credits || 0;
+                document.getElementById('debt-txt').innerText = "S/ " + (d.commissions || 0).toFixed(2);
+                window.currentUserData = d;
+                if(d.commissions > 10) document.getElementById('debt-alert').style.display = 'block';
+            } else {
+                addDoc(collection(db, "users_v2"), { uid: uid, credits: 1, commissions: 0 });
+            }
+        });
     };
 </script>
 
 <script>
     let activeCity = "Huancayo";
-    let myUid = localStorage.getItem('rantiy_v1_uid') || "U-" + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('rantiy_v1_uid', myUid);
+    let myUid = localStorage.getItem('rr_pro_uid') || "USER-" + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('rr_pro_uid', myUid);
     
-    let adminTapCount = 0;
-    let selectedPlanCredits = 1;
-    let selectedPlanPrice = 1;
+    let adminTaps = 0;
+    let planCreds = 1, planPrice = 1;
 
-    const CIUDADES_ESTRATEGICAS = [
-        "Huanta", "Huamanga", "Pichari", "Pangoa", "Huancayo", "Satipo", "Kimbiri", 
-        "San Miguel", "Mazamari", "La Merced", "Tarma", "Jauja", "SJL", "Vitarte", 
-        "Ate", "Chiclayo", "Trujillo", "Cusco", "Pucallpa", "Iquitos"
-    ];
+    const CITIES = ["Huanta", "Huamanga", "Pichari", "Pangoa", "Huancayo", "Satipo", "Mazamari", "La Merced", "Tarma", "Jauja", "SJL", "Vitarte", "Ate", "Chiclayo", "Trujillo", "Cusco"];
 
     window.onload = () => {
-        buildCityNav();
-        detectLocation();
-        window.syncUser(myUid);
+        initCityBar();
+        window.syncProfile(myUid);
+        setTimeout(() => {
+            document.getElementById('loader').style.display = 'none';
+            setCity("Huancayo");
+        }, 2000);
     };
 
-    function buildCityNav() {
-        const nav = document.getElementById('city-nav-bar');
-        CIUDADES_ESTRATEGICAS.forEach(city => {
-            const btn = document.createElement('div');
-            btn.className = `city-item ${city === activeCity ? 'active' : ''}`;
-            btn.id = `nav-${city}`;
-            btn.innerText = city.toUpperCase();
-            btn.onclick = () => switchCity(city);
-            nav.appendChild(btn);
+    function initCityBar() {
+        const bar = document.getElementById('city-bar');
+        CITIES.forEach(c => {
+            const chip = document.createElement('div');
+            chip.className = `city-chip ${c === activeCity ? 'active' : ''}`;
+            chip.id = `chip-${c}`;
+            chip.innerText = c.toUpperCase();
+            chip.onclick = () => setCity(c);
+            bar.appendChild(chip);
         });
     }
 
-    function detectLocation() {
-        // En un escenario real, usamos navigator.geolocation.
-        // Como estamos en Huancayo, forzamos el inicio ahí.
-        setTimeout(() => {
-            switchCity("Huancayo");
-            document.getElementById('loading-screen').style.display = 'none';
-        }, 1500);
-    }
-
-    function switchCity(city) {
+    function setCity(city) {
         activeCity = city;
-        document.getElementById('header-city').innerText = city;
-        document.getElementById('chat-city-name').innerText = city.toUpperCase();
-        document.getElementById('sell-city-label').innerText = city;
-        
-        document.querySelectorAll('.city-item').forEach(el => el.classList.remove('active'));
-        document.getElementById(`nav-${city}`).classList.add('active');
-        
-        refreshFeed();
-        refreshChat();
+        document.getElementById('active-city-display').innerText = city;
+        document.getElementById('chat-city').innerText = city.toUpperCase();
+        document.querySelectorAll('.city-chip').forEach(el => el.classList.remove('active'));
+        document.getElementById(`chip-${city}`).classList.add('active');
+        loadFeed();
+        loadChat();
     }
 
-    // --- SISTEMA DE COBRO Y CRÉDITOS ---
-    function selectPlan(creds, price, el) {
-        selectedPlanCredits = creds;
-        selectedPlanPrice = price;
-        document.querySelectorAll('.price-option').forEach(p => p.classList.remove('active'));
+    // --- LÓGICA DE NEGOCIO Y DINERO ---
+    function selPlan(c, p, el) {
+        planCreds = c; planPrice = p;
+        document.querySelectorAll('.price-card').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
     }
 
-    async function execPayment() {
-        const code = document.getElementById('pay-op-code').value;
-        if(code.length < 7) return alert("Número de operación no válido");
+    async function confirmPayment() {
+        const code = document.getElementById('pay-code').value;
+        if(code.length < 6) return alert("Código Inválido");
 
-        // Guardar registro de pago para el Admin
-        await window.api.addDoc(window.api.collection(window.db, "pagos_audit"), {
-            uid: myUid,
-            codigo: code,
-            monto: selectedPlanPrice,
-            creditos: selectedPlanCredits,
-            fecha: window.api.serverTimestamp(),
-            ciudad: activeCity
+        await window.f.addDoc(window.f.collection(window.db, "audit_yape"), {
+            uid: myUid, code: code, amount: planPrice, date: window.f.serverTimestamp()
         });
 
-        // Automatización: Se otorga el crédito (Tú lo auditas después)
-        const uRef = window.api.doc(window.db, "usuarios", myUid);
-        await window.api.updateDoc(uRef, { creditos: window.api.increment(selectedPlanCredits) });
+        const uRef = window.f.doc(window.db, "users_v2", myUid);
+        // En un sistema real, el admin aprueba, aquí automatizamos para que veas el flujo
+        await window.f.updateDoc(uRef, { credits: window.f.increment(planCreds) });
 
         confetti();
-        alert("¡Recarga Exitosa! Tus créditos están disponibles.");
-        closeModal('modal-payment');
-        window.syncUser(myUid);
+        alert("¡Créditos Activados!");
+        closeMod('modal-pay');
     }
 
-    // --- LÓGICA DE PUBLICACIÓN ---
-    async function tryPublish() {
-        const userCredits = await window.syncUser(myUid);
-        const cost = document.getElementById('is-premium').checked ? 2 : 1;
-
-        if(userCredits < cost) {
-            alert("No tienes suficientes créditos para esta publicación.");
-            openModal('modal-payment');
-            return;
-        }
+    async function pushToEmpire() {
+        const cost = document.getElementById('sell-premium').checked ? 2 : 1;
+        if(window.currentUserData.credits < cost) return openMod('modal-pay');
+        if(window.currentUserData.commissions > 15) return alert("Paga tus comisiones antes de seguir.");
 
         const title = document.getElementById('sell-title').value;
-        const price = document.getElementById('sell-price').value;
-        if(!title || !price) return alert("Completa los datos del producto.");
+        const price = parseFloat(document.getElementById('sell-price').value);
+        const phone = document.getElementById('sell-phone').value;
 
-        await window.api.addDoc(window.api.collection(window.db, "vitrina_posts"), {
-            titulo: title,
-            precio: price,
-            ciudad: activeCity,
-            uid: myUid,
-            premium: document.getElementById('is-premium').checked,
-            categoria: document.getElementById('sell-cat').value,
-            fecha: window.api.serverTimestamp()
+        if(!title || !price || !phone) return alert("Faltan datos críticos.");
+
+        await window.f.addDoc(window.f.collection(window.db, "empire_vitrina"), {
+            title, price, phone, city: activeCity, uid: myUid,
+            premium: document.getElementById('sell-premium').checked,
+            cat: document.getElementById('sell-cat').value,
+            date: window.f.serverTimestamp(),
+            status: "active"
         });
 
-        // Descontar pago
-        const uRef = window.api.doc(window.db, "usuarios", myUid);
-        await window.api.updateDoc(uRef, { creditos: window.api.increment(-cost) });
+        const uRef = window.f.doc(window.db, "users_v2", myUid);
+        await window.f.updateDoc(uRef, { credits: window.f.increment(-cost) });
 
-        alert("¡Producto Rantikuy con éxito!");
-        navigate('home', document.querySelector('.nav-link'));
-        window.syncUser(myUid);
+        alert("¡Publicación Exitosa!");
+        nav('home', document.querySelector('.dock-item'));
     }
 
-    // --- CARGA DE DATOS (FEED Y CHAT) ---
-    function refreshFeed() {
-        const q = window.api.query(
-            window.api.collection(window.db, "vitrina_posts"),
-            window.api.or(
-                window.api.where("ciudad", "==", activeCity),
-                window.api.where("premium", "==", true)
+    // --- FUNCIONES DE ACCIÓN EN POSTS ---
+    window.contactSeller = (phone, title) => {
+        const msg = `Hola, vi tu producto "${title}" en Rantiy-Rantikuy y me interesa.`;
+        window.open(`https://wa.me/51${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    };
+
+    window.markAsSold = async (postId, price, sellerUid) => {
+        if(sellerUid !== myUid) return alert("Solo el dueño puede marcar como vendido.");
+        
+        const commission = price * 0.01; // EL 1% DE COMISIÓN
+        const uRef = window.f.doc(window.db, "users_v2", myUid);
+        
+        if(confirm(`¿Confirmas la venta? Se generará una comisión de S/ ${commission.toFixed(2)}`)){
+            await window.f.updateDoc(uRef, { commissions: window.f.increment(commission) });
+            await window.f.deleteDoc(window.f.doc(window.db, "empire_vitrina", postId));
+            alert("¡Felicidades por la venta! Recuerda pagar tu comisión.");
+        }
+    };
+
+    // --- RENDERIZADO TIEMPO REAL ---
+    function loadFeed() {
+        const q = window.f.query(
+            window.f.collection(window.db, "empire_vitrina"),
+            window.f.or(
+                window.f.where("city", "==", activeCity),
+                window.f.where("premium", "==", true)
             ),
-            window.api.orderBy("fecha", "desc")
+            window.f.orderBy("date", "desc")
         );
 
-        window.api.onSnapshot(q, snap => {
-            const container = document.getElementById('main-feed');
-            container.innerHTML = "";
+        window.f.onSnapshot(q, (snap) => {
+            const cont = document.getElementById('feed-main');
+            cont.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
-                container.innerHTML += `
-                    <div class="post" style="${p.premium ? 'border: 2px solid var(--oro)' : ''}">
-                        ${p.premium ? '<div class="post-badge">💎 NACIONAL</div>' : ''}
-                        <div class="post-img">
-                            <img src="https://via.placeholder.com/400x280/f1f5f9/64748b?text=${p.titulo}">
-                            <div class="post-price">S/ ${p.precio}</div>
+                cont.innerHTML += `
+                    <div class="card" style="${p.premium ? 'border:2px solid var(--gold)' : ''}">
+                        ${p.premium ? '<div class="premium-tag">🔥 RECOMENDADO</div>' : ''}
+                        <div class="card-img">
+                            <img src="https://via.placeholder.com/500x300/f1f5f9/64748b?text=${p.title}">
+                            <div class="card-price">S/ ${p.price}</div>
                         </div>
-                        <div class="post-content">
-                            <h3 class="post-title">${p.titulo}</h3>
-                            <div class="post-location">📍 ${p.ciudad} • ${p.categoria}</div>
-                            <button class="btn-contact" onclick="openWhatsApp('${p.uid}')">HABLAR CON VENDEDOR</button>
+                        <div class="card-content">
+                            <h3 class="card-title">${p.title}</h3>
+                            <div class="card-meta"><span>📍 ${p.city}</span> <span>🏷️ ${p.cat}</span></div>
+                            <div class="btn-group">
+                                <button class="btn-action btn-wa" onclick="contactSeller('${p.phone}', '${p.title}')">
+                                    <i class="fab fa-whatsapp"></i> COMPRAR
+                                </button>
+                                ${p.uid === myUid ? `
+                                    <button class="btn-action btn-sold" onclick="markAsSold('${doc.id}', ${p.price}, '${p.uid}')">
+                                        LO VENDÍ
+                                    </button>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -462,78 +452,59 @@
         });
     }
 
-    function refreshChat() {
-        const q = window.api.query(
-            window.api.collection(window.db, "chat_regional"),
-            window.api.where("ciudad", "==", activeCity),
-            window.api.orderBy("fecha", "asc")
-        );
-        window.api.onSnapshot(q, snap => {
-            const list = document.getElementById('chat-msg-list');
+    function loadChat() {
+        const q = window.f.query(window.f.collection(window.db, "realtime_chat"), window.f.where("city", "==", activeCity), window.f.orderBy("date", "asc"));
+        window.f.onSnapshot(q, snap => {
+            const list = document.getElementById('chat-list');
             list.innerHTML = "";
-            snap.forEach(doc => {
-                const m = doc.data();
+            snap.forEach(d => {
+                const m = d.data();
                 const isMe = m.uid === myUid;
-                list.innerHTML += `
-                    <div class="msg ${isMe ? 'msg-me' : 'msg-other'}">
-                        <span class="msg-user">${isMe ? 'Tú' : m.uid.substr(0,6)}</span>
-                        ${m.texto}
-                    </div>
-                `;
+                list.innerHTML += `<div class="bubble ${isMe?'me':'other'}"><span class="msg-info">${isMe?'Tú':m.uid.substr(0,6)}</span>${m.text}</div>`;
             });
             list.scrollTop = list.scrollHeight;
         });
     }
 
-    async function sendChatMsg() {
-        const input = document.getElementById('chat-input-msg');
-        if(!input.value) return;
-        await window.api.addDoc(window.api.collection(window.db, "chat_regional"), {
-            uid: myUid,
-            texto: input.value,
-            ciudad: activeCity,
-            fecha: window.api.serverTimestamp()
+    async function sendTalk() {
+        const text = document.getElementById('chat-in').value;
+        if(!text) return;
+        await window.f.addDoc(window.f.collection(window.db, "realtime_chat"), {
+            uid: myUid, text, city: activeCity, date: window.f.serverTimestamp()
         });
-        input.value = "";
+        document.getElementById('chat-in').value = "";
     }
 
-    // --- NAVEGACIÓN Y UI ---
-    function navigate(viewId, el) {
-        document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
-        document.getElementById('view-' + viewId).style.display = 'block';
-        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+    // --- UI HELPERS ---
+    function nav(id, el) {
+        document.querySelectorAll('.page-view').forEach(v => v.style.display = 'none');
+        document.getElementById('view-' + id).style.display = 'block';
+        document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
         el.classList.add('active');
     }
 
-    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openMod(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeMod(id) { document.getElementById(id).style.display = 'none'; }
 
-    function handleAdmin() {
-        adminTapCount++;
-        if(adminTapCount >= 10) {
-            openModal('modal-admin');
-            loadAdminPanel();
-            adminTapCount = 0;
+    function adminAuth() {
+        adminTaps++;
+        if(adminTaps >= 10) {
+            openMod('modal-admin');
+            loadAdminAudit();
+            adminTaps = 0;
         }
     }
 
-    function loadAdminPanel() {
-        const q = window.api.query(window.api.collection(window.db, "pagos_audit"), window.api.orderBy("fecha", "desc"));
-        window.api.onSnapshot(q, snap => {
-            const list = document.getElementById('admin-payments-list');
-            list.innerHTML = "";
+    function loadAdminAudit() {
+        const q = window.f.query(window.f.collection(window.db, "audit_yape"), window.f.orderBy("date", "desc"));
+        window.f.onSnapshot(q, snap => {
+            const log = document.getElementById('admin-logs');
+            log.innerHTML = "=== REGISTRO DE PAGOS YAPE ===<br>";
             snap.forEach(d => {
                 const p = d.data();
-                list.innerHTML += `<div class="admin-log">
-                    💰 S/ ${p.monto} | Cod: ${p.codigo} | User: ${p.uid.substr(0,8)}<br>
-                    <button style="color:red; background:none; border:none;" onclick="alert('Funciones de borrado activas')">ELIMINAR TRANSACCIÓN</button>
-                </div>`;
+                log.innerHTML += `> USER: ${p.uid.substr(0,5)} | COD: ${p.code} | MONTO: S/ ${p.amount}<br>`;
             });
         });
-    }
-
-    function openWhatsApp(uid) {
-        alert("Iniciando chat privado con el vendedor " + uid);
     }
 </script>
 
