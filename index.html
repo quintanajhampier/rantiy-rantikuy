@@ -151,7 +151,7 @@
 </head>
 <body>
 
-    <div id="admin-trigger" onclick="window.engine.trackAdmin()"></div>
+    <div id="admin-trigger" onclick="engine.trackAdmin()"></div>
 
     <div id="layer-auth" class="system-layer">
         <div class="glass-panel">
@@ -171,11 +171,11 @@
                 <input type="number" id="auth-phone" class="rr-field" placeholder="9XXXXXXXX">
             </div>
 
-            <button class="rr-btn-primary" onclick="window.engine.executeAuth()">
+            <button class="rr-btn-primary" onclick="engine.executeAuth()">
                 AUTORIZAR ACCESO <i class="fas fa-shield-check"></i>
             </button>
             
-            <p style="font-size: 10px; color: var(--rr-text-dim); text-align: center; margin-top: 20px;" onclick="location.href='registro_entrada.html'">
+            <p style="font-size: 10px; color: var(--rr-text-dim); text-align: center; margin-top: 20px; cursor: pointer;" onclick="location.href='registro_entrada.html'">
                 ¿Problemas de acceso? Ver logs de entrada.
             </p>
         </div>
@@ -192,7 +192,7 @@
 
     <div id="app-shell">
         <header>
-            <div class="header-loc" onclick="window.engine.refreshGPS()">
+            <div class="header-loc" onclick="engine.refreshGPS()">
                 <div class="loc-circle"><i class="fas fa-map-marker-alt"></i></div>
                 <div>
                     <div id="ui-city" style="font-weight: 900; font-size: 18px;">CARGANDO...</div>
@@ -228,8 +228,8 @@
                         </button>
                     </div>
 
-                    <input type="file" id="in-cam" hidden capture="environment" accept="image/*" onchange="window.engine.processMedia(this)">
-                    <input type="file" id="in-gal" hidden accept="image/*" onchange="window.engine.processMedia(this)">
+                    <input type="file" id="in-cam" hidden capture="environment" accept="image/*" onchange="engine.processMedia(this)">
+                    <input type="file" id="in-gal" hidden accept="image/*" onchange="engine.processMedia(this)">
 
                     <div class="rr-input-group">
                         <label class="rr-label">Título del Producto</label>
@@ -243,7 +243,7 @@
 
                     <div class="rr-input-group">
                         <label class="rr-label">Categoría Estratégica</label>
-                        <select id="sell-cat" class="rr-field" onchange="window.engine.formStep(this.value)">
+                        <select id="sell-cat" class="rr-field" onchange="engine.formStep(this.value)">
                             <option value="">Seleccionar...</option>
                             <option value="tec">Tecnología / Móviles</option>
                             <option value="fashion">Moda / Calzado</option>
@@ -258,7 +258,7 @@
                         </div>
                     </div>
 
-                    <button class="rr-btn-primary" onclick="window.engine.deployProduct()">
+                    <button class="rr-btn-primary" onclick="engine.deployProduct()">
                         PUBLICAR AHORA <i class="fas fa-rocket"></i>
                     </button>
                 </div>
@@ -269,7 +269,7 @@
                     <div id="feed-global" class="message-feed"></div>
                     <div class="chat-bar">
                         <input type="text" id="msg-input" class="rr-field" style="margin: 0; padding: 12px;" placeholder="Mensaje para la ciudad...">
-                        <button class="rr-btn-primary" style="width: 60px; padding: 0;" onclick="window.engine.broadcast()">
+                        <button class="rr-btn-primary" style="width: 60px; padding: 0;" onclick="engine.broadcast()">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
@@ -279,13 +279,13 @@
         </main>
 
         <nav class="dock">
-            <button class="nav-link active" onclick="window.engine.route('home', this)">
+            <button class="nav-link active" onclick="engine.route('home', this)">
                 <i class="fas fa-store-alt"></i> VITRINA
             </button>
-            <button class="nav-link" onclick="window.engine.route('sell', this)">
+            <button class="nav-link" onclick="engine.route('sell', this)">
                 <i class="fas fa-plus-circle"></i> VENDER
             </button>
-            <button class="nav-link" onclick="window.engine.route('chat', this)">
+            <button class="nav-link" onclick="engine.route('chat', this)">
                 <i class="fas fa-comments"></i> CIUDAD
             </button>
             <button class="nav-link" onclick="location.href='chat_privado.html'">
@@ -294,47 +294,32 @@
         </nav>
     </div>
 
-    <script type="module">
-        // IMPORTACIÓN DE MÓDULOS DEL MOTOR EXTERNO
-        import { 
-            conectarChatGrupal, enviarMensajeGrupal, 
-            conectarVitrina, subirProducto 
-        } from './firebase-engine.js';
-
+    <script>
+        // Definimos el motor en el objeto global ANTES de que carguen los módulos
         window.engine = {
             profile: JSON.parse(localStorage.getItem('rr_v10_user')),
             city: "HUANCAYO",
             currentImg: "",
             adminHits: 0,
-
-            init: function() {
-                console.log("Rantiy-Rantikuy OS Initializing...");
-                
-                // Sistema de Historial para botón atrás del celular
-                window.onpopstate = (e) => {
-                    if(e.state && e.state.view) this.route(e.state.view, null, false);
-                };
-
-                if(!this.profile) {
-                    this.switchLayer('auth');
-                } else {
-                    this.syncGPS();
-                }
-            },
+            
+            // Estas se llenarán cuando el módulo cargue
+            conectarChatGrupal: null,
+            enviarMensajeGrupal: null,
+            conectarVitrina: null,
+            subirProducto: null,
 
             switchLayer: function(id) {
                 document.querySelectorAll('.system-layer').forEach(l => l.classList.remove('active-layer'));
-                document.getElementById('layer-'+id).classList.add('active-layer');
+                const target = document.getElementById('layer-'+id);
+                if(target) target.classList.add('active-layer');
             },
 
             executeAuth: function() {
                 const name = document.getElementById('auth-name').value;
                 const phone = document.getElementById('auth-phone').value;
-
                 if(name.length < 3 || phone.length < 9) {
                     return Swal.fire({ icon: 'error', title: 'Error de Validación', text: 'Datos comerciales incompletos.', background: '#0f172a', color: '#fff' });
                 }
-
                 this.profile = { uid: "RR-" + Date.now(), name, phone };
                 localStorage.setItem('rr_v10_user', JSON.stringify(this.profile));
                 location.reload();
@@ -346,7 +331,7 @@
                 let step = 0;
                 let interval = setInterval(() => {
                     step += 10;
-                    bar.style.width = step + "%";
+                    if(bar) bar.style.width = step + "%";
                     if(step >= 100) clearInterval(interval);
                 }, 100);
 
@@ -368,12 +353,18 @@
                 document.getElementById('app-shell').style.display = 'flex';
                 document.getElementById('ui-city').innerText = this.city;
                 document.getElementById('sell-city').innerText = this.city;
-                this.startStreams();
+                
+                // Solo iniciamos streams si los módulos ya cargaron
+                const checkModule = setInterval(() => {
+                    if(this.conectarVitrina) {
+                        this.startStreams();
+                        clearInterval(checkModule);
+                    }
+                }, 100);
             },
 
             startStreams: function() {
-                // STREAM 1: Vitrina Global
-                conectarVitrina(this.city, (items) => {
+                this.conectarVitrina(this.city, (items) => {
                     const render = document.getElementById('render-feed');
                     render.innerHTML = items.map(p => `
                         <div class="product-card">
@@ -388,7 +379,7 @@
                                 </div>
                                 <h3 style="font-size:22px; font-weight:800; margin-bottom:20px;">${p.title}</h3>
                                 <button class="rr-btn-primary" style="background:var(--rr-accent); color:white;" 
-                                    onclick="location.href='chat_privado.html?target=${p.uid}&item=${p.title}'">
+                                    onclick="location.href='chat_privado.html?target=${p.uid}&item=${encodeURIComponent(p.title)}'">
                                     CONTACTAR NEGOCIO <i class="fab fa-whatsapp"></i>
                                 </button>
                             </div>
@@ -396,8 +387,7 @@
                     `).join('');
                 });
 
-                // STREAM 2: Chat de la Ciudad
-                conectarChatGrupal(this.city, (msgs) => {
+                this.conectarChatGrupal(this.city, (msgs) => {
                     const feed = document.getElementById('feed-global');
                     feed.innerHTML = msgs.map(m => `
                         <div class="bubble ${m.uid === this.profile.uid ? 'b-me' : 'b-other'}">
@@ -412,17 +402,18 @@
 
             route: function(viewId, btn, push = true) {
                 document.querySelectorAll('.app-view').forEach(v => v.style.display = 'none');
-                document.getElementById('view-'+viewId).style.display = 'block';
+                const target = document.getElementById('view-'+viewId);
+                if(target) target.style.display = 'block';
                 
                 if(btn) {
                     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                     btn.classList.add('active');
                 }
-
                 if(push) history.pushState({view: viewId}, "", "#"+viewId);
             },
 
             processMedia: function(input) {
+                if(!input.files[0]) return;
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.currentImg = e.target.result;
@@ -434,23 +425,19 @@
 
             formStep: function(val) {
                 document.querySelectorAll('.cat-step').forEach(s => s.style.display = 'none');
-                if(val === 'tec') document.getElementById('step-tec').style.display = 'block';
+                const step = document.getElementById('step-'+val);
+                if(step) step.style.display = 'block';
             },
 
             deployProduct: async function() {
                 const title = document.getElementById('sell-title').value;
                 const price = document.getElementById('sell-price').value;
-
                 if(!title || !price || !this.currentImg) {
                     return Swal.fire({ icon: 'warning', title: 'Atención', text: 'La vitrina requiere imagen y datos.', background: '#0f172a', color: '#fff' });
                 }
-
                 Swal.showLoading();
-                await subirProducto(this.profile, { title, price, img: this.currentImg }, this.city);
-                
+                await this.subirProducto(this.profile, { title, price, img: this.currentImg }, this.city);
                 confetti({ particleCount: 200, spread: 70, origin: { y: 0.6 } });
-                
-                // Reset y Volver
                 document.getElementById('sell-title').value = "";
                 document.getElementById('sell-price').value = "";
                 document.getElementById('img-preview-box').style.display = 'none';
@@ -463,7 +450,7 @@
                 if(!inMsg.value.trim()) return;
                 const txt = inMsg.value;
                 inMsg.value = "";
-                await enviarMensajeGrupal(this.profile, txt, this.city);
+                await this.enviarMensajeGrupal(this.profile, txt, this.city);
             },
 
             trackAdmin: function() {
@@ -476,7 +463,31 @@
             }
         };
 
-        window.engine.init();
+        // El sistema de historial necesita estar activo desde el inicio
+        window.onpopstate = (e) => {
+            if(e.state && e.state.view) window.engine.route(e.state.view, null, false);
+        };
+    </script>
+
+    <script type="module">
+        import { 
+            conectarChatGrupal, enviarMensajeGrupal, 
+            conectarVitrina, subirProducto 
+        } from './firebase-engine.js';
+
+        // Inyectamos las funciones en nuestro motor global
+        window.engine.conectarChatGrupal = conectarChatGrupal;
+        window.engine.enviarMensajeGrupal = enviarMensajeGrupal;
+        window.engine.conectarVitrina = conectarVitrina;
+        window.engine.subirProducto = subirProducto;
+
+        // Lanzamos el inicio del sistema
+        window.engine.profile = JSON.parse(localStorage.getItem('rr_v10_user'));
+        if(!window.engine.profile) {
+            window.engine.switchLayer('auth');
+        } else {
+            window.engine.syncGPS();
+        }
     </script>
 </body>
 </html>
