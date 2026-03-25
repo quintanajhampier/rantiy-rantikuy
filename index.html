@@ -3,515 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rantiy y Rantikuy - Imperio Huanta v2.0</title>
+    <title>Rantiy y Rantikuy - Imperio Huanta v3.0</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     
     <style>
         /* =========================================
-           VARIABLES DE DISEÑO (IMPERIAL UI)
+           SISTEMA DE DISEÑO IMPERIAL (CSS)
            ========================================= */
         :root {
-            --p-verde: #22c55e;
-            --p-verde-dark: #16a34a;
-            --p-verde-glow: rgba(34, 197, 94, 0.15);
-            --p-naranja: #f97316;
-            --p-oscuro: #0f172a;
-            --p-gris-light: #f8fafc;
-            --p-gris-border: #e2e8f0;
-            --p-texto-sec: #64748b;
-            --p-glass: rgba(255, 255, 255, 0.85);
-            --shadow-premium: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 4px 12px -4px rgba(0, 0, 0, 0.05);
+            --verde: #22c55e; 
+            --verde-glow: rgba(34, 197, 94, 0.2);
+            --naranja: #f97316; 
+            --oscuro: #0f172a;
+            --glass: rgba(255, 255, 255, 0.95);
+            --huanta: #22c55e; 
+            --huamanga: #3b82f6; 
+            --vraem: #f59e0b;
+            --premium-shadow: 0 20px 40px rgba(0,0,0,0.08);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* =========================================
-           RESET Y BASE
-           ========================================= */
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0;
-            -webkit-tap-highlight-color: transparent; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-        }
-
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
+        
         body { 
-            background: var(--p-gris-light); 
-            color: var(--p-oscuro);
-            line-height: 1.6;
-            overflow-x: hidden;
-            padding-bottom: 120px; /* Espacio para la nav island */
+            background: #f1f5f9; 
+            margin: 0; 
+            padding-bottom: 120px; 
+            overflow-x: hidden; 
+            color: var(--oscuro);
+            -webkit-user-select: none;
         }
 
-        /* =========================================
-           PANTALLA DE CARGA / GPS
-           ========================================= */
-        #gps-screen {
-            position: fixed;
-            inset: 0;
-            background: white;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            transition: opacity 0.8s ease;
+        /* --- PANTALLA DE CARGA --- */
+        #gps-screen { 
+            position: fixed; 
+            inset: 0; 
+            background: white; 
+            z-index: 10000; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            padding: 30px; 
+            transition: 0.8s ease;
         }
-
-        .loader-container {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
+        .gps-loader { 
+            width: 90px; height: 90px; 
+            border: 6px solid #f3f3f3; 
+            border-top: 6px solid var(--verde); 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            box-shadow: 0 0 20px var(--verde-glow);
         }
-
-        .gps-loader {
-            width: 100%;
-            height: 100%;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--p-verde);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* =========================================
-           HEADER & LOGO
-           ========================================= */
-        .main-header {
-            position: sticky;
-            top: 0;
-            background: var(--p-glass);
-            backdrop-filter: blur(15px);
-            z-index: 900;
+        /* --- HEADER --- */
+        .header {
+            background: var(--glass); 
+            backdrop-filter: blur(20px); 
             padding: 15px 20px;
-            border-bottom: 1px solid var(--p-gris-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 900; 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .logo-rr {
+            width: 55px; height: 55px; 
+            background: linear-gradient(135deg, var(--verde), #15803d);
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 900; font-size: 20px; cursor: pointer;
+            box-shadow: 0 10px 20px var(--verde-glow);
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        /* BOTONES FLOTANTES */
+        .btn-float {
+            position: fixed; right: 20px; bottom: 110px;
+            background: white; padding: 12px 20px; border-radius: 50px;
+            box-shadow: var(--premium-shadow); display: flex; align-items: center;
+            gap: 10px; text-decoration: none; color: var(--oscuro);
+            font-weight: 800; font-size: 13px; z-index: 800;
+            border: 2px solid var(--verde); transition: var(--transition);
         }
+        .btn-float:active { transform: scale(0.9); }
+        .dot { width: 8px; height: 8px; background: var(--verde); border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        .logo-box {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, var(--p-verde), var(--p-verde-dark));
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 800;
-            font-size: 18px;
-            box-shadow: 0 8px 16px var(--p-verde-glow);
-            cursor: pointer;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-info .app-name { font-weight: 800; font-size: 16px; letter-spacing: -0.5px; }
-        .user-info .citizen-tag { font-size: 10px; font-weight: 700; color: var(--p-verde); text-transform: uppercase; }
-
-        /* =========================================
-           BUSCADOR Y FILTROS
-           ========================================= */
-        .search-area { padding: 15px 20px; }
+        /* --- FILTROS Y BÚSQUEDA --- */
+        .search-container { padding: 15px 20px; }
         .search-box {
-            position: relative;
-            display: flex;
-            align-items: center;
+            position: relative; display: flex; align-items: center;
         }
-        .search-box input {
-            width: 100%;
-            padding: 16px 20px 16px 50px;
-            border-radius: 20px;
-            border: 1px solid var(--p-gris-border);
-            background: white;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: var(--shadow-premium);
-            transition: var(--transition);
+        .search-input { 
+            width: 100%; padding: 18px 20px 18px 50px; 
+            border-radius: 20px; border: 1px solid #e2e8f0; 
+            background: white; font-weight: 700; font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
-        .search-box input:focus { border-color: var(--p-verde); box-shadow: 0 0 0 4px var(--p-verde-glow); }
-        .search-box .icon { position: absolute; left: 18px; color: var(--p-texto-sec); }
+        .search-icon { position: absolute; left: 18px; font-size: 18px; opacity: 0.4; }
 
-        .filter-scroll {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 5px 20px 20px;
-            scrollbar-width: none;
+        .filter-bar { 
+            padding: 0 20px 15px; display: flex; gap: 10px; 
+            overflow-x: auto; scrollbar-width: none; 
         }
-        .filter-scroll::-webkit-scrollbar { display: none; }
+        .filter-chip { 
+            padding: 10px 18px; background: white; border-radius: 50px; 
+            font-size: 11px; font-weight: 800; white-space: nowrap; 
+            border: 2px solid transparent; transition: 0.3s;
+        }
+        .filter-active { background: var(--oscuro); color: white; }
 
-        .chip {
-            padding: 10px 20px;
-            background: white;
-            border-radius: 50px;
-            font-size: 12px;
-            font-weight: 800;
-            white-space: nowrap;
-            cursor: pointer;
-            border: 1.5px solid var(--p-gris-border);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        /* --- CIUDADES --- */
+        .city-bar { padding: 10px 20px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
+        .city-card { 
+            background: white; min-width: 120px; padding: 15px; 
+            border-radius: 25px; display: flex; flex-direction: column; 
+            align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); 
+            opacity: 0.4; transition: var(--transition); border: 2px solid transparent;
         }
-        .chip.active {
-            background: var(--p-oscuro);
-            color: white;
-            border-color: var(--p-oscuro);
-        }
+        .active-city { opacity: 1; transform: translateY(-3px); }
+        .city-card.huanta.active-city { border-color: var(--huanta); background: #f0fdf4; }
+        .city-card.huamanga.active-city { border-color: var(--huamanga); background: #eff6ff; }
+        .city-card.vraem.active-city { border-color: var(--vraem); background: #fffbeb; }
 
-        /* =========================================
-           TARJETAS DE CIUDAD
-           ========================================= */
-        .city-selector {
-            display: flex;
-            gap: 15px;
-            padding: 0 20px 25px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .city-card {
-            min-width: 130px;
-            background: white;
-            padding: 20px 15px;
-            border-radius: 24px;
-            text-align: center;
-            border: 2px solid transparent;
-            box-shadow: var(--shadow-premium);
-            opacity: 0.5;
-            transition: var(--transition);
-        }
-        .city-card.active {
-            opacity: 1;
-            transform: translateY(-5px);
-        }
-        .city-card.huanta.active { border-color: var(--p-verde); background: #f0fdf4; }
-        .city-card.huamanga.active { border-color: #3b82f6; background: #eff6ff; }
-        .city-card.vraem.active { border-color: #f59e0b; background: #fffbeb; }
-
-        .city-card .emoji { font-size: 24px; display: block; margin-bottom: 5px; }
-        .city-card label { font-size: 10px; font-weight: 800; letter-spacing: 1px; }
-
-        /* =========================================
-           VITRINA DE PRODUCTOS (GRID)
-           ========================================= */
-        .view { display: none; padding: 0 20px; animation: fadeIn 0.4s ease-out; }
+        /* --- VISTAS --- */
+        .view { display: none; padding: 0 20px; animation: fadeIn 0.4s ease; }
         .view-active { display: block; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        #feed-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
+        /* --- VITRINA --- */
+        .post-card { 
+            background: white; border-radius: 30px; padding: 15px; 
+            box-shadow: var(--premium-shadow); margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+        .post-img { 
+            width: 100%; height: 260px; object-fit: cover; 
+            border-radius: 20px; margin: 12px 0; background: #f8fafc;
+        }
+        .post-price { color: var(--verde); font-weight: 900; font-size: 22px; }
+
+        /* --- STUDIO --- */
+        .studio-hub { 
+            background: var(--oscuro); border-radius: 40px; padding: 40px 20px; 
+            color: white; text-align: center; margin-bottom: 20px;
+        }
+        .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 25px; }
+        .cat-btn { 
+            background: rgba(255,255,255,0.08); padding: 15px 5px; 
+            border-radius: 20px; font-size: 10px; font-weight: 800; cursor: pointer;
         }
 
-        .product-card {
-            background: white;
-            border-radius: 30px;
-            overflow: hidden;
-            box-shadow: var(--shadow-premium);
-            border: 1px solid var(--p-gris-border);
-            transition: var(--transition);
+        .upload-form { 
+            background: white; border-radius: 35px; padding: 25px; 
+            display: none; box-shadow: var(--premium-shadow); 
         }
-
-        .card-header {
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .photo-slots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .slot { 
+            width: 100%; height: 130px; border: 2px dashed #cbd5e1; 
+            border-radius: 20px; display: flex; align-items: center; 
+            justify-content: center; position: relative; overflow: hidden;
+            background: #f8fafc;
         }
+        .slot img { width: 100%; height: 100%; object-fit: cover; }
+        .slot-ui { position: absolute; text-align: center; }
+        .slot-ui span { font-size: 24px; display: block; }
+        .slot-ui p { font-size: 9px; font-weight: 800; margin-top: 5px; color: #94a3b8; }
 
-        .seller-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .rr-input { 
+            width: 100%; padding: 16px; border-radius: 15px; 
+            border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 15px;
+            transition: 0.3s;
         }
+        .rr-input:focus { border-color: var(--verde); background: white; }
 
-        .seller-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            background: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 14px;
+        /* --- CHAT GRUPAL --- */
+        .chat-container { 
+            background: white; border-radius: 35px; height: 65vh; 
+            display: flex; flex-direction: column; overflow: hidden; 
+            box-shadow: var(--premium-shadow);
         }
-
-        .product-img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            background: #f1f5f9;
-        }
-
-        .card-body { padding: 20px; }
-        .card-body .title { font-size: 18px; font-weight: 800; margin-bottom: 5px; color: var(--p-oscuro); }
-        .card-body .price { font-size: 22px; font-weight: 900; color: var(--p-verde); }
+        .chat-header { background: var(--verde); color: white; padding: 15px 20px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; }
+        .chat-msgs { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f8fafc; }
         
-        .card-footer {
-            padding: 0 20px 20px;
-            display: flex;
-            gap: 10px;
+        .bubble { 
+            padding: 12px 16px; border-radius: 18px; max-width: 80%; 
+            font-size: 13px; font-weight: 600; line-height: 1.4;
         }
+        .msg-me { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-them { background: white; color: var(--oscuro); align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .msg-info { font-size: 9px; opacity: 0.7; margin-bottom: 4px; font-weight: 800; }
 
-        .btn-contact {
-            flex: 1;
-            padding: 14px;
-            border-radius: 15px;
-            border: none;
-            background: var(--p-oscuro);
-            color: white;
-            font-weight: 800;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transition);
+        .chat-input-bar { padding: 15px; display: flex; gap: 10px; background: white; border-top: 1px solid #f1f5f9; }
+
+        /* --- NAV ISLAND --- */
+        .nav-island { 
+            position: fixed; bottom: 30px; left: 5%; width: 90%; 
+            background: var(--oscuro); border-radius: 40px; 
+            display: flex; justify-content: space-around; padding: 15px; 
+            z-index: 1000; box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
-        .btn-contact:active { transform: scale(0.95); }
+        .nav-item { color: #64748b; text-align: center; font-size: 9px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--verde); transform: translateY(-3px); }
+        .nav-item span { font-size: 20px; display: block; margin-bottom: 3px; }
 
-        /* =========================================
-           ESTUDIO DE CARGA (FORMULARIO)
-           ========================================= */
-        .studio-container {
-            background: var(--p-oscuro);
-            border-radius: 40px;
-            padding: 30px 20px;
-            color: white;
-            margin-bottom: 20px;
+        /* NOTIFICACIONES TOAST */
+        #toast {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: var(--oscuro); color: white; padding: 12px 25px;
+            border-radius: 50px; font-weight: 800; font-size: 12px; z-index: 5000;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-
-        .cat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .cat-item {
-            background: rgba(255,255,255,0.1);
-            padding: 15px 5px;
-            border-radius: 20px;
-            text-align: center;
-            font-size: 10px;
-            font-weight: 800;
-            border: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer;
-        }
-
-        #upload-form {
-            background: white;
-            border-radius: 35px;
-            padding: 25px;
-            display: none;
-            box-shadow: var(--shadow-premium);
-        }
-
-        .drop-area {
-            width: 100%;
-            height: 180px;
-            border: 3px dashed var(--p-gris-border);
-            border-radius: 25px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .drop-area img { width: 100%; height: 100%; object-fit: cover; }
-
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 8px; color: var(--p-texto-sec); }
-        .rr-input {
-            width: 100%;
-            padding: 15px 20px;
-            border-radius: 15px;
-            border: 2px solid var(--p-gris-light);
-            background: var(--p-gris-light);
-            font-weight: 700;
-            transition: var(--transition);
-        }
-        .rr-input:focus { border-color: var(--p-verde); background: white; }
-
-        /* =========================================
-           CHAT GRUPAL REAL-TIME
-           ========================================= */
-        .chat-wrapper {
-            display: flex;
-            flex-direction: column;
-            height: 70vh;
-        }
-
-        #chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .msg-bubble {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            font-size: 14px;
-            position: relative;
-        }
-
-        .msg-in { 
-            background: white; 
-            align-self: flex-start; 
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .msg-out { 
-            background: var(--p-verde); 
-            color: white; 
-            align-self: flex-end; 
-            border-bottom-right-radius: 4px; 
-        }
-
-        .msg-info { font-size: 9px; font-weight: 800; margin-bottom: 4px; opacity: 0.7; }
-
-        .chat-input-bar {
-            padding: 15px 0;
-            display: flex;
-            gap: 10px;
-        }
-
-        /* =========================================
-           NAV ISLAND (FLOTANTE)
-           ========================================= */
-        .nav-island {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 400px;
-            background: var(--p-oscuro);
-            border-radius: 35px;
-            padding: 12px 10px;
-            display: flex;
-            justify-content: space-around;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            z-index: 2000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #64748b;
-            text-decoration: none;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
-        .nav-item span { font-size: 9px; font-weight: 800; text-transform: uppercase; }
-        .nav-item.active { color: var(--p-verde); }
-
-        /* UTILIDADES */
-        .hidden { display: none !important; }
-        .btn-float-chats {
-            position: fixed;
-            right: 20px;
-            bottom: 120px;
-            background: white;
-            padding: 12px 20px;
-            border-radius: 50px;
-            box-shadow: var(--shadow-premium);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 800;
-            font-size: 13px;
-            z-index: 1000;
-            border: 1.5px solid var(--p-verde);
-            text-decoration: none;
-            color: var(--p-oscuro);
-        }
-        .online-dot { width: 8px; height: 8px; background: var(--p-verde); border-radius: 50%; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.5); } 100% { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
+    <div id="toast">¡Publicación exitosa! 🚀</div>
+
     <div id="gps-screen">
-        <div class="logo-box" style="width:100px; height:100px; font-size:40px; margin-bottom:20px;">R&R</div>
-        <h2 style="font-weight:900;">Imperio Rantiy</h2>
-        <p style="color:var(--p-texto-sec); font-size:14px; margin: 10px 0 30px;">Detectando coordenadas de ciudadano...</p>
-        <div class="loader-container">
-            <div class="gps-loader"></div>
-        </div>
-        <p id="gps-status" style="font-weight:700; color:var(--p-verde);">Sincronizando satélites...</p>
+        <div class="logo-rr" style="width:90px; height:90px; font-size:35px; margin-bottom:20px;">R&R</div>
+        <h2 style="font-weight:900; margin:0;">Detectando Coordenadas</h2>
+        <p style="opacity:0.5; font-size:13px; margin: 10px 0 25px;">Sincronizando con satélites del Imperio...</p>
+        <div class="gps-loader"></div>
+        <p id="gps-status" style="margin-top:20px; font-weight:800; color:var(--verde);">Buscando Huanta, Huamanga o VRAEM...</p>
+        <button id="btn-manual" onclick="window.forceEntry()" style="margin-top:20px; background:none; border:none; color:#94a3b8; font-weight:800; text-decoration:underline; display:none;">Entrar manualmente</button>
     </div>
 
-    <a href="chat_privado.html" class="btn-float-chats">
-        <span class="online-dot"></span>
+    <a href="chat_privado.html" class="btn-float">
+        <span class="dot"></span>
         MIS MENSAJES
     </a>
 
-    <header class="main-header">
-        <div class="brand">
-            <div class="logo-box" id="logo-main">R&R</div>
-            <div class="user-info">
-                <span class="app-name">Rantiy y Rantikuy</span>
-                <span id="user-display" class="citizen-tag">Ciudadano: Cargando...</span>
+    <header class="header">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <div class="logo-rr" id="main-logo">R&R</div>
+            <div>
+                <div style="font-weight: 900; font-size: 18px; letter-spacing:-0.5px;">Imperio Rantiy</div>
+                <div id="display-user" style="font-size: 9px; color: var(--verde); font-weight: 800; text-transform:uppercase;">Ciudadano: Cargando...</div>
             </div>
         </div>
     </header>
 
-    <section class="search-area">
+    <div class="search-container">
         <div class="search-box">
-            <span class="icon">🔍</span>
-            <input type="text" id="main-search" placeholder="Buscar productos o servicios..." oninput="window.app.renderVitrina()">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" class="search-input" placeholder="¿Qué necesitas hoy?" oninput="window.app.renderFeed()">
         </div>
-    </section>
-
-    <div class="filter-scroll" id="cat-filters">
-        <div class="chip active" onclick="window.app.setFilter('Todas', this)">✨ Todas</div>
-        <div class="chip" onclick="window.app.setFilter('Comida', this)">🍲 Comida</div>
-        <div class="chip" onclick="window.app.setFilter('Venta', this)">👕 Venta</div>
-        <div class="chip" onclick="window.app.setFilter('Taxi', this)">🚗 Taxi</div>
-        <div class="chip" onclick="window.app.setFilter('Servicio', this)">⚡ Servicio</div>
     </div>
 
-    <div class="city-selector">
-        <div class="city-card huanta" id="card-huanta">
-            <span class="emoji">⛰️</span>
-            <label>HUANTA</label>
-        </div>
-        <div class="city-card huamanga" id="card-huamanga">
-            <span class="emoji">⛪</span>
-            <label>HUAMANGA</label>
-        </div>
-        <div class="city-card vraem" id="card-vraem">
-            <span class="emoji">🌿</span>
-            <label>VRAEM</label>
-        </div>
+    <div class="filter-bar">
+        <div class="filter-chip filter-active" onclick="window.app.setFilter('Todas', this)">✨ Todas</div>
+        <div class="filter-chip" onclick="window.app.setFilter('Venta', this)">🛍️ Ventas</div>
+        <div class="filter-chip" onclick="window.app.setFilter('Comida', this)">🍲 Comida</div>
+        <div class="filter-chip" onclick="window.app.setFilter('Taxi', this)">🚗 Taxi</div>
+        <div class="filter-chip" onclick="window.app.setFilter('Servicio', this)">⚡ Servicios</div>
+    </div>
+
+    <div class="city-bar">
+        <div class="city-card huanta" id="card-huanta"><span>⛰️</span><label style="font-size:9px; font-weight:900;">HUANTA</label></div>
+        <div class="city-card huamanga" id="card-huamanga"><span>⛪</span><label style="font-size:9px; font-weight:900;">HUAMANGA</label></div>
+        <div class="city-card vraem" id="card-vraem"><span>🌿</span><label style="font-size:9px; font-weight:900;">VRAEM</label></div>
     </div>
 
     <main id="view-home" class="view view-active">
@@ -520,311 +273,240 @@
     </main>
 
     <section id="view-upload" class="view">
-        <div class="studio-container" id="studio-hub">
-            <h2 style="font-weight:900;">Crea un Post en <span id="current-city-name" style="color:var(--p-verde);">...</span></h2>
-            <p style="opacity:0.7; font-size:12px;">Elige una categoría para empezar</p>
-            
+        <div class="studio-hub" id="studio-main">
+            <h2 style="font-weight:900; margin:0;">Crea un Anuncio</h2>
+            <p style="opacity:0.6; font-size:12px;">Publicarás en: <span id="pub-city" style="color:var(--verde); font-weight:900;">...</span></p>
             <div class="cat-grid">
-                <div class="cat-item" onclick="window.app.openForm('Venta', '💰')">🛍️<br>VENTA</div>
-                <div class="cat-item" onclick="window.app.openForm('Comida', '🥘')">🍲<br>COMIDA</div>
-                <div class="cat-item" onclick="window.app.openForm('Taxi', '🚕')">🚗<br>TAXI</div>
-                <div class="cat-item" onclick="window.app.openForm('Servicio', '🔧')">⚡<br>SERVICIO</div>
-                <div class="cat-item" onclick="window.app.openForm('Empleo', '💼')">💼<br>EMPLEO</div>
-                <div class="cat-item" onclick="window.app.openForm('Turismo', '📸')">📸<br>TURISMO</div>
+                <div class="cat-btn" onclick="window.app.openStudio('Venta', '💰')">🛍️<br>VENTA</div>
+                <div class="cat-btn" onclick="window.app.openStudio('Comida', '🥘')">🍲<br>COMIDA</div>
+                <div class="cat-btn" onclick="window.app.openStudio('Taxi', '🚕')">🚗<br>TAXI</div>
+                <div class="cat-btn" onclick="window.app.openStudio('Servicio', '🔧')">⚡<br>SERVICIO</div>
+                <div class="cat-btn" onclick="window.app.openStudio('Empleo', '💼')">💼<br>EMPLEO</div>
+                <div class="cat-btn" onclick="window.app.openStudio('Turismo', '📸')">📸<br>TURISMO</div>
             </div>
         </div>
 
-        <div id="upload-form">
+        <div id="form-container" class="upload-form">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 id="form-title" style="font-weight:900; color:var(--p-oscuro);">Nuevo Producto</h3>
-                <button onclick="window.app.closeForm()" style="background:none; border:none; font-size:24px;">✕</button>
+                <h3 id="studio-title" style="margin:0; font-weight:900;">Nuevo Post</h3>
+                <button onclick="window.app.closeStudio()" style="background:none; border:none; font-size:24px;">✕</button>
             </div>
 
-            <div class="drop-area" onclick="document.getElementById('file-input').click()">
-                <div id="preview-placeholder">
-                    <span style="font-size:40px;">📸</span>
-                    <p style="font-size:12px; font-weight:700; color:var(--p-texto-sec);">Toca para subir foto</p>
+            <div class="photo-slots">
+                <div class="slot" onclick="document.getElementById('file-trigger').click()">
+                    <img id="prev-0" style="display:none;">
+                    <div class="slot-ui" id="ui-0"><span>📸</span><p>SUBIR FOTO</p></div>
                 </div>
-                <input type="file" id="file-input" hidden accept="image/*" onchange="window.app.handleImage(this)">
+                <div class="slot" style="opacity:0.5;">
+                    <div class="slot-ui"><span>➕</span><p>PRÓXIMAMENTE</p></div>
+                </div>
             </div>
-
-            <div class="input-group">
-                <label>¿Qué estas ofreciendo?</label>
-                <input type="text" id="p-title" class="rr-input" placeholder="Ej: Zapatillas Jordan Nike">
-            </div>
-
-            <div class="input-group">
-                <label>Precio Sugerido (S/)</label>
-                <input type="number" id="p-price" class="rr-input" placeholder="0.00">
-            </div>
-
-            <button onclick="window.app.submitProduct()" style="width:100%; padding:20px; background:var(--p-verde); color:white; border:none; border-radius:20px; font-weight:900; font-size:16px; box-shadow: 0 10px 20px var(--p-verde-glow);">PUBLICAR EN MI CIUDAD 🚀</button>
+            
+            <input type="file" id="file-trigger" hidden accept="image/*" onchange="window.app.handleFile(this)">
+            
+            <input type="text" id="p-name" class="rr-input" placeholder="¿Qué ofreces? (Ej: Pizza Familiar)">
+            <input type="number" id="p-price" class="rr-input" placeholder="Precio en Soles (S/)">
+            
+            <button onclick="window.app.upload()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:20px; font-weight:900; font-size:15px; box-shadow: 0 10px 20px var(--verde-glow);">LANZAR PUBLICACIÓN 🚀</button>
         </div>
     </section>
 
     <section id="view-chat" class="view">
-        <div class="chat-wrapper">
-            <div style="text-align:center; padding:10px;">
-                <h3 style="font-weight:900;">SALA: <span id="chat-city-tag" style="color:var(--p-verde);">...</span></h3>
-                <p style="font-size:10px; font-weight:700; color:var(--p-texto-sec);">CHAT EN VIVO CON LA COMUNIDAD</p>
+        <div class="chat-container">
+            <div class="chat-header">
+                <span id="chat-title">SALA REGIONAL</span>
+                <span style="font-size:9px; background:rgba(0,0,0,0.2); padding:5px 10px; border-radius:10px;">VIVO 🟢</span>
             </div>
-            
-            <div id="chat-messages">
+            <div class="chat-msgs" id="chat-msgs">
                 </div>
-
             <div class="chat-input-bar">
-                <input type="text" id="chat-msg-input" class="rr-input" style="flex:1;" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') window.app.sendChatMessage()">
-                <button onclick="window.app.sendChatMessage()" style="background:var(--p-verde); color:white; border:none; border-radius:15px; width:55px; font-size:20px;">✈️</button>
+                <input type="text" id="msg-input" class="rr-input" style="margin:0; flex:1;" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') window.app.sendMsg()">
+                <button onclick="window.app.sendMsg()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:18px; font-size:20px;">✈️</button>
             </div>
         </div>
     </section>
 
     <nav class="nav-island">
-        <div class="nav-item active" onclick="window.app.navigate('home', this)">
-            <i>🏠</i>
-            <span>Vitrina</span>
+        <div class="nav-item active" onclick="window.app.nav('home', this)">
+            <span>🏠</span> VITRINA
         </div>
-        <div class="nav-item" onclick="window.app.navigate('upload', this)">
-            <i>📸</i>
-            <span>Subir</span>
+        <div class="nav-item" onclick="window.app.nav('upload', this)">
+            <span>📸</span> SUBIR
         </div>
-        <div class="nav-item" onclick="window.app.navigate('chat', this)">
-            <i>💬</i>
-            <span>Grupal</span>
+        <div class="nav-item" onclick="window.app.nav('chat', this)">
+            <span>💬</span> GRUPAL
         </div>
     </nav>
 
     <script type="module">
-        import { db, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from './firebase-engine.js';
+        // --- IMPORTACIONES ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-        const ZONAS = {
-            "Huanta": { lat: -12.94, lon: -74.24, r: 0.5 },
-            "Huamanga": { lat: -13.15, lon: -74.22, r: 0.5 },
-            "VRAEM": { lat: -12.50, lon: -73.80, r: 0.8 }
+        // --- CONFIGURACIÓN (TUS KEYS ORIGINALES) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
+            authDomain: "rantiy-y-rantikuy.firebaseapp.com",
+            projectId: "rantiy-y-rantikuy",
+            storageBucket: "rantiy-y-rantikuy.firebasestorage.app",
+            messagingSenderId: "49676513708",
+            appId: "1:49676513708:web:943ad781c98cb7bac78a09"
         };
 
+        // --- INICIALIZACIÓN ---
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- OBJETO GLOBAL APP ---
         window.app = {
-            user: localStorage.getItem('rantiy_user') || "",
-            activeLoc: "Huanta", // Default
+            user: localStorage.getItem('rantiy_user') || "Ciudadano_" + Math.floor(Math.random()*999),
+            activeLoc: "",
             activeCat: "Todas",
-            tempImg: "",
             inventory: [],
+            tempImg: "",
             taps: 0,
 
             init() {
-                if(!this.user) {
-                    window.location.href = 'registro_entrada.html';
-                    return;
-                }
-                document.getElementById('user-display').innerText = "CIUDADANO: " + this.user.toUpperCase();
+                document.getElementById('display-user').innerText = "Ciudadano: " + this.user;
+                this.setupGPS();
+                this.syncData();
+                this.setupAdmin();
                 
-                // Evento Logo Admin
-                document.getElementById('logo-main').onclick = () => {
-                    this.taps++;
-                    if(this.taps === 7) window.location.href = 'admin.html';
-                    setTimeout(() => this.taps = 0, 2000);
+                // Seguridad: si en 8 seg no detecta GPS, mostramos botón manual
+                setTimeout(() => {
+                    if(!this.activeLoc) document.getElementById('btn-manual').style.display = 'block';
+                }, 8000);
+            },
+
+            // GPS Y UBICACIÓN
+            setupGPS() {
+                const ZONAS = {
+                    "Huanta": { lat: -12.94, lon: -74.24, r: 0.1 },
+                    "Huamanga": { lat: -13.15, lon: -74.22, r: 0.1 },
+                    "VRAEM": { lat: -12.50, lon: -73.80, r: 0.2 }
                 };
 
-                this.startGPS();
-                this.listenInventory();
-            },
-
-            // GPS Y UBICACION
-            startGPS() {
                 if ("geolocation" in navigator) {
-                    navigator.geolocation.getCurrentPosition(
-                        (p) => this.processCoords(p.coords.latitude, p.coords.longitude),
-                        () => this.fallbackLocation(),
-                        { enableHighAccuracy: true }
-                    );
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        let lat = pos.coords.latitude;
+                        let lon = pos.coords.longitude;
+                        let found = false;
+
+                        for(let z in ZONAS) {
+                            let d = Math.sqrt(Math.pow(lat - ZONAS[z].lat, 2) + Math.pow(lon - ZONAS[z].lon, 2));
+                            if(d < ZONAS[z].r) {
+                                this.setCity(z);
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(!found) this.setCity("Huanta"); // Default por cortesía
+                    }, () => this.setCity("Huanta"));
                 } else {
-                    this.fallbackLocation();
+                    this.setCity("Huanta");
                 }
             },
 
-            processCoords(lat, lon) {
-                let found = false;
-                for (let z in ZONAS) {
-                    let d = Math.sqrt(Math.pow(lat - ZONAS[z].lat, 2) + Math.pow(lon - ZONAS[z].lon, 2));
-                    if (d < ZONAS[z].r) {
-                        this.setLocation(z);
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) this.fallbackLocation();
+            setCity(name) {
+                this.activeLoc = name;
+                document.getElementById('pub-city').innerText = name;
+                document.getElementById('chat-title').innerText = "SALA " + name.toUpperCase();
                 
+                // Actualizar UI
+                document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city'));
+                const card = document.getElementById('card-' + name.toLowerCase());
+                if(card) card.classList.add('active-city');
+
+                // Quitar pantalla carga
                 setTimeout(() => {
-                    document.getElementById('gps-screen').style.opacity = '0';
-                    setTimeout(() => document.getElementById('gps-screen').classList.add('hidden'), 800);
-                }, 1500);
+                    const scr = document.getElementById('gps-screen');
+                    scr.style.opacity = '0';
+                    setTimeout(() => scr.style.display = 'none', 800);
+                }, 1000);
+
+                this.renderFeed();
+                this.syncChat();
             },
 
-            fallbackLocation() {
-                this.setLocation("Huanta"); // Default si falla el GPS
-                document.getElementById('gps-status').innerText = "GPS no detectado. Modo Huanta Activo.";
-                setTimeout(() => {
-                    document.getElementById('gps-screen').style.opacity = '0';
-                    setTimeout(() => document.getElementById('gps-screen').classList.add('hidden'), 800);
-                }, 2000);
-            },
-
-            setLocation(city) {
-                this.activeLoc = city;
-                // Actualizar UI de ciudad
-                document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active'));
-                const card = document.getElementById('card-' + city.toLowerCase());
-                if(card) card.classList.add('active');
-                
-                document.getElementById('current-city-name').innerText = city;
-                document.getElementById('chat-city-tag').innerText = city;
-                this.renderVitrina();
-            },
-
-            // FIREBASE REAL-TIME
-            listenInventory() {
-                onSnapshot(collection(db, "inventory"), (snap) => {
+            // FIREBASE SYNC (INVENTARIO)
+            syncData() {
+                const q = query(collection(db, "inventory"), orderBy("timestamp", "desc"));
+                onSnapshot(q, (snap) => {
                     this.inventory = [];
                     snap.forEach(doc => this.inventory.push({id: doc.id, ...doc.data()}));
-                    this.renderVitrina();
-                });
-            },
-
-            listenChat() {
-                const q = query(
-                    collection(db, `chat_${this.activeLoc.toLowerCase()}`), 
-                    orderBy("timestamp", "asc")
-                );
-                
-                onSnapshot(q, (snap) => {
-                    const container = document.getElementById('chat-messages');
-                    container.innerHTML = "";
-                    snap.forEach(doc => {
-                        const m = doc.data();
-                        const isMe = m.user === this.user;
-                        container.innerHTML += `
-                            <div class="msg-bubble ${isMe ? 'msg-out' : 'msg-in'}">
-                                <div class="msg-info">${m.user}</div>
-                                ${m.text}
-                            </div>
-                        `;
-                    });
-                    container.scrollTop = container.scrollHeight;
+                    this.renderFeed();
                 });
             },
 
             // RENDERIZADO
-            renderVitrina() {
-                const container = document.getElementById('feed-container');
-                const search = document.getElementById('main-search').value.toLowerCase();
+            renderFeed() {
+                const cont = document.getElementById('feed-container');
+                const search = document.getElementById('search-input').value.toLowerCase();
                 
                 let filtered = this.inventory.filter(p => p.loc === this.activeLoc);
-                
+
                 if(this.activeCat !== "Todas") {
                     filtered = filtered.filter(p => p.category === this.activeCat);
                 }
-                
+
                 if(search) {
                     filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
                 }
 
                 if(filtered.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:100px 20px; opacity:0.3;">
-                        <span style="font-size:50px;">📦</span><br>Nada por aquí todavía
-                    </div>`;
+                    cont.innerHTML = `<div style="text-align:center; padding:80px 20px; opacity:0.3; font-weight:800;">📦 No hay nada por aquí...</div>`;
                     return;
                 }
 
-                container.innerHTML = filtered.sort((a,b) => b.timestamp - a.timestamp).map(p => `
-                    <div class="product-card">
-                        <div class="card-header">
-                            <div class="seller-badge">
-                                <div class="seller-avatar" style="background:${this.getRandomColor()}">${p.seller.charAt(0).toUpperCase()}</div>
-                                <div style="font-size:12px; font-weight:800;">${p.seller}</div>
+                cont.innerHTML = filtered.map(p => `
+                    <div class="post-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="width:35px; height:35px; border-radius:10px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; font-weight:900; color:var(--verde);">${p.seller ? p.seller.charAt(0).toUpperCase() : 'C'}</div>
+                                <div>
+                                    <div style="font-size:12px; font-weight:800;">${p.seller || 'Anónimo'}</div>
+                                    <div style="font-size:9px; color:#94a3b8;">${p.category || 'Venta'}</div>
+                                </div>
                             </div>
-                            <div style="font-size:10px; font-weight:700; color:var(--p-texto-sec);">${new Date(p.timestamp).toLocaleDateString()}</div>
+                            <div style="font-size:9px; font-weight:800; color:#94a3b8;">${p.timestamp ? new Date(p.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Ahora'}</div>
                         </div>
-                        ${p.img ? `<img src="${p.img}" class="product-img">` : ''}
-                        <div class="card-body">
-                            <div class="title">${p.name}</div>
-                            <div class="price">S/ ${p.price}</div>
-                        </div>
-                        <div class="card-footer">
-                            <button class="btn-contact" onclick="window.location.href='chat_privado.html?vendedor=${p.seller}&prod=${p.name}'">CONTACTAR</button>
+                        <img src="${p.img || 'https://via.placeholder.com/300'}" class="post-img">
+                        <div style="font-weight:800; font-size:16px;">${p.name}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                            <div class="post-price">S/ ${p.price}</div>
+                            <button onclick="window.location.href='chat_privado.html?vendedor=${p.seller}&prod=${p.name}'" style="background:var(--oscuro); color:white; border:none; padding:10px 18px; border-radius:15px; font-weight:800; font-size:12px;">Contactar</button>
                         </div>
                     </div>
                 `).join('');
             },
 
-            // NAVEGACION
-            navigate(view, el) {
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
-                document.getElementById('view-' + view).classList.add('view-active');
-                
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
+            // CHAT GRUPAL REAL-TIME
+            syncChat() {
+                const q = query(
+                    collection(db, `chat_${this.activeLoc.toLowerCase()}`), 
+                    orderBy("timestamp", "asc"),
+                    limit(50)
+                );
 
-                if(view === 'chat') this.listenChat();
-            },
-
-            setFilter(cat, el) {
-                this.activeCat = cat;
-                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-                el.classList.add('active');
-                this.renderVitrina();
-            },
-
-            // FORMULARIO STUDIO
-            openForm(cat, emoji) {
-                this.activeCatForm = cat;
-                document.getElementById('form-title').innerText = emoji + " Nuevo " + cat;
-                document.getElementById('studio-hub').classList.add('hidden');
-                document.getElementById('upload-form').style.display = 'block';
-            },
-
-            closeForm() {
-                document.getElementById('studio-hub').classList.remove('hidden');
-                document.getElementById('upload-form').style.display = 'none';
-                this.tempImg = "";
-                document.getElementById('preview-placeholder').innerHTML = '<span style="font-size:40px;">📸</span><p>Toca para subir foto</p>';
-            },
-
-            handleImage(input) {
-                const file = input.files[0];
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.tempImg = e.target.result;
-                    document.getElementById('preview-placeholder').innerHTML = `<img src="${e.target.result}">`;
-                };
-                reader.readAsDataURL(file);
-            },
-
-            async submitProduct() {
-                const title = document.getElementById('p-title').value.trim();
-                const price = document.getElementById('p-price').value.trim();
-
-                if(!title) return alert("¡Ponle un nombre a tu oferta!");
-
-                try {
-                    await addDoc(collection(db, "inventory"), {
-                        name: title,
-                        price: price || "0",
-                        img: this.tempImg,
-                        loc: this.activeLoc,
-                        category: this.activeCatForm,
-                        seller: this.user,
-                        timestamp: Date.now()
+                onSnapshot(q, (snap) => {
+                    const box = document.getElementById('chat-msgs');
+                    box.innerHTML = "";
+                    snap.forEach(doc => {
+                        const m = doc.data();
+                        const isMe = m.user === this.user;
+                        box.innerHTML += `
+                            <div class="bubble ${isMe ? 'msg-me' : 'msg-them'}">
+                                <div class="msg-info">${m.user}</div>
+                                ${m.text}
+                            </div>
+                        `;
                     });
-                    
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    this.closeForm();
-                    this.navigate('home', document.querySelector('.nav-item'));
-                } catch(e) { alert("Error al subir"); }
+                    box.scrollTop = box.scrollHeight;
+                });
             },
 
-            // CHAT LOGIC
-            async sendChatMessage() {
-                const input = document.getElementById('chat-msg-input');
+            async sendMsg() {
+                const input = document.getElementById('msg-input');
                 const text = input.value.trim();
                 if(!text) return;
 
@@ -838,12 +520,98 @@
                 } catch(e) { console.error(e); }
             },
 
-            getRandomColor() {
-                const colors = ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa'];
-                return colors[Math.floor(Math.random() * colors.length)];
+            // NAVEGACIÓN
+            nav(view, el) {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
+                document.getElementById('view-' + view).classList.add('view-active');
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
+            },
+
+            setFilter(cat, el) {
+                this.activeCat = cat;
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
+                el.classList.add('filter-active');
+                this.renderFeed();
+            },
+
+            // STUDIO LOGIC
+            openStudio(cat, emoji) {
+                this.activeCatForm = cat;
+                document.getElementById('studio-title').innerText = emoji + " Nuevo " + cat;
+                document.getElementById('studio-main').style.display = 'none';
+                document.getElementById('form-container').style.display = 'block';
+            },
+
+            closeStudio() {
+                document.getElementById('studio-main').style.display = 'block';
+                document.getElementById('form-container').style.display = 'none';
+                this.tempImg = "";
+                document.getElementById('prev-0').style.display = 'none';
+                document.getElementById('ui-0').style.display = 'block';
+            },
+
+            handleFile(input) {
+                const file = input.files[0];
+                if(!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.tempImg = e.target.result;
+                    const prev = document.getElementById('prev-0');
+                    prev.src = e.target.result;
+                    prev.style.display = 'block';
+                    document.getElementById('ui-0').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            },
+
+            async upload() {
+                const name = document.getElementById('p-name').value.trim();
+                const price = document.getElementById('p-price').value.trim();
+
+                if(!name || !price) return alert("Completa los datos, ciudadano.");
+
+                try {
+                    await addDoc(collection(db, "inventory"), {
+                        name: name,
+                        price: price,
+                        img: this.tempImg,
+                        category: this.activeCatForm,
+                        loc: this.activeLoc,
+                        seller: this.user,
+                        timestamp: serverTimestamp()
+                    });
+
+                    this.showToast("¡Publicado en " + this.activeLoc + "! 🚀");
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                    this.closeStudio();
+                    this.nav('home', document.querySelector('.nav-item'));
+                    
+                    // Reset campos
+                    document.getElementById('p-name').value = "";
+                    document.getElementById('p-price').value = "";
+                } catch(e) { alert("Error de conexión"); }
+            },
+
+            showToast(msg) {
+                const t = document.getElementById('toast');
+                t.innerText = msg;
+                t.style.top = '30px';
+                setTimeout(() => t.style.top = '-100px', 3000);
+            },
+
+            setupAdmin() {
+                document.getElementById('main-logo').onclick = () => {
+                    this.taps++;
+                    if(this.taps === 7) window.location.href = 'admin.html';
+                    setTimeout(() => this.taps = 0, 2000);
+                }
             }
         };
 
+        window.forceEntry = () => window.app.setCity("Huanta");
+
+        // ARRANCAR
         window.onload = () => window.app.init();
     </script>
 </body>
