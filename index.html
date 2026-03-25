@@ -34,31 +34,14 @@
             border-radius: 22px; display: flex; align-items: center; justify-content: center;
             color: white; font-weight: 900; font-size: 24px; cursor: pointer;
             box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
-            animation: rotate3d 7s infinite ease-in-out; transform-style: preserve-3d;
         }
-        @keyframes rotate3d { 0%, 100% { transform: perspective(500px) rotateY(0deg); } 50% { transform: perspective(500px) rotateY(30deg); } }
 
-        /* BOTÓN DE CHAT PRIVADO EXTERNO */
         .btn-mensajes-privados {
-            position: fixed;
-            right: 20px;
-            bottom: 120px;
-            background: white;
-            padding: 12px 20px;
-            border-radius: 30px;
-            box-shadow: var(--premium-shadow);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--oscuro);
-            font-weight: 800;
-            font-size: 14px;
-            z-index: 2500;
-            border: 2px solid var(--verde-glow);
-            transition: 0.3s;
+            position: fixed; right: 20px; bottom: 120px; background: white; padding: 12px 20px;
+            border-radius: 30px; box-shadow: var(--premium-shadow); display: flex; align-items: center;
+            gap: 10px; text-decoration: none; color: var(--oscuro); font-weight: 800; font-size: 14px;
+            z-index: 2500; border: 2px solid var(--verde-glow); transition: 0.3s;
         }
-        .btn-mensajes-privados:active { transform: scale(0.9); }
         .dot-online { width: 10px; height: 10px; background: var(--verde); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
 
@@ -72,7 +55,6 @@
         .filter-chip { padding: 10px 20px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
         .filter-active { background: var(--verde-glow); border-color: var(--verde); color: var(--verde); }
 
-        /* --- CIUDADES --- */
         .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
         .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.5; pointer-events: none; }
         .active-city { opacity: 1; pointer-events: auto; border-width: 3px; }
@@ -85,23 +67,26 @@
         .view-active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- VITRINA / CARDS --- */
-        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; }
+        /* --- VITRINA --- */
+        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.03); }
         .img-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
         .img-scroll img { width: 100%; height: 230px; object-fit: cover; border-radius: 25px; flex-shrink: 0; }
 
-        /* --- STUDIO SUBIDA --- */
+        /* --- CHAT ESTILOS --- */
+        #group-msgs { height: 60vh; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 12px 18px; border-radius: 20px; max-width: 80%; font-size: 14px; font-weight: 600; position: relative; }
+        .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+
+        /* --- STUDIO --- */
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
         .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
         .cat-btn { background: rgba(255,255,255,0.07); padding: 20px 10px; border-radius: 25px; cursor: pointer; font-size: 10px; font-weight: 800; }
-        
         #upload-studio { background: white; border-radius: 45px; padding: 35px; margin-top: 25px; display: none; box-shadow: var(--premium-shadow); }
         .drop-zone { width: 100%; height: 150px; border: 3px dashed #cbd5e1; border-radius: 25px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; background: #f8fafc; cursor: pointer; margin-bottom: 15px; }
-        .drop-zone img { width: 100%; height: 100%; object-fit: cover; }
-        
         .rr-field { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; }
 
-        /* --- NAV ISLAND --- */
+        /* --- NAV --- */
         .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
         .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
         .nav-btn.active { color: var(--verde); }
@@ -112,14 +97,12 @@
 <div id="gps-screen">
     <div class="logo-rr" style="width:100px; height:100px; font-size:40px; margin-bottom:20px;">R&R</div>
     <h1 style="font-weight:900; margin-bottom:5px;">Rantiy y Rantikuy</h1>
-    <p style="opacity:0.6; margin-bottom:30px;">Detectando tu ubicación real en el mapa...</p>
-    <div class="gps-loader" id="gps-loader"></div>
-    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--verde);">Iniciando satélites...</p>
+    <div class="gps-loader"></div>
+    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--verde);">Sincronizando con satélites...</p>
 </div>
 
 <a href="chat_privado.html" class="btn-mensajes-privados">
-    <span class="dot-online"></span>
-    💬 MIS CHATS
+    <span class="dot-online"></span>💬 MIS CHATS
 </a>
 
 <header class="header">
@@ -175,26 +158,24 @@
             <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
             <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px;">✕</button>
         </div>
-        
         <div class="drop-zone" onclick="document.getElementById('p-img-file').click()">
             <div id="p-preview-container" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                <div style="text-align:center; color:#94a3b8;">
-                    <span style="font-size:40px;">📸</span><br>
-                    <small>Toca para subir foto</small>
-                </div>
+                <div style="text-align:center; color:#94a3b8;"><span style="font-size:40px;">📸</span><br><small>Toca para subir foto</small></div>
             </div>
             <input type="file" id="p-img-file" hidden accept="image/*" onchange="window.previewProdImg(this)">
         </div>
-
         <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
-        <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
+        <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR 🚀</button>
     </div>
 </section>
 
 <section id="view-chat" class="view">
-    <div style="text-align:center; padding-top:50px;">
-        <h2>Próximamente Chat Grupal</h2>
+    <h3 style="text-align:center; font-weight:900;">SALA <span id="chat-zone-tag">...</span></h3>
+    <div id="group-msgs"></div>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <input type="text" id="chat-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe al grupo...">
+        <button onclick="window.sendGroupMsg()" style="background:var(--verde); color:white; border:none; border-radius:20px; padding:0 20px;">✈️</button>
     </div>
 </section>
 
@@ -205,9 +186,10 @@
 </nav>
 
 <script type="module">
-    import { db, collection, addDoc, onSnapshot } from './firebase-engine.js';
+    import { db, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from './firebase-engine.js';
 
-    // --- VARIABLES GLOBALES ---
+    // --- INICIALIZACIÓN CRÍTICA ---
+    window.dbLocal = { inventory: [] }; 
     window.activeLoc = ""; 
     window.activeCat = ""; 
     window.currentFilter = "Todas"; 
@@ -216,13 +198,13 @@
     let taps = 0;
 
     const ZONAS = {
-        "Huanta": { lat: -12.94, lon: -74.24, r: 0.05 },
-        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.05 },
-        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.1 }
+        "Huanta": { lat: -12.94, lon: -74.24, r: 0.5 }, // Radio aumentado para pruebas
+        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.5 },
+        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.5 }
     };
 
     // ==========================================
-    // ESCUCHAR FIREBASE EN TIEMPO REAL
+    // ESCUCHAR FIREBASE (VITRINA)
     // ==========================================
     onSnapshot(collection(db, "inventory"), (snapshot) => {
         window.dbLocal.inventory = [];
@@ -233,91 +215,43 @@
     });
 
     // ==========================================
-    // TRUCO DE LOS 7 CLICS
+    // CHAT GRUPAL ACTIVO
     // ==========================================
-    window.checkAdminAccess = function() {
-        taps++;
-        if(taps === 7) {
-            confetti({ particleCount: 100, spread: 70 });
-            alert("🔑 MODO ADMIN: Entrando al panel...");
-            taps = 0;
-            window.location.href = 'admin.html';
-        }
-        setTimeout(() => taps = 0, 2000);
-    }
+    window.loadGroupChat = function() {
+        if(!window.activeLoc) return;
+        const q = query(collection(db, "chat_" + window.activeLoc.toLowerCase()), orderBy("timestamp", "asc"));
+        
+        onSnapshot(q, (snapshot) => {
+            const container = document.getElementById('group-msgs');
+            if(!container) return;
+            container.innerHTML = "";
+            snapshot.forEach(doc => {
+                const m = doc.data();
+                const isMe = m.user === window.currentUser;
+                container.innerHTML += `
+                    <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}">
+                        <small style="display:block; font-size:9px; opacity:0.7;">${m.user}</small>
+                        ${m.text}
+                    </div>
+                `;
+            });
+            container.scrollTop = container.scrollHeight;
+        });
+    };
 
-    // ==========================================
-    // MANEJO DE FOTOS REALES
-    // ==========================================
-    window.previewProdImg = function(input) {
-        const file = input.files[0];
-        if(!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            window.tempProdImg = e.target.result;
-            document.getElementById('p-preview-container').innerHTML = `<img src="${window.tempProdImg}" style="width:100%; height:100%; object-fit:cover; border-radius:22px;">`;
-        };
-        reader.readAsDataURL(file);
-    }
-
-    // ==========================================
-    // GPS Y NAVEGACIÓN
-    // ==========================================
-    window.init = function() {
-        if(!window.currentUser) {
-            // Si no tiene nombre, lo mandamos al registro
-            window.location.href = 'registro_entrada.html';
-            return;
-        }
-        document.getElementById('user-tag').innerText = "CIUDADANO: " + window.currentUser.toUpperCase();
-
-        if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
-        }
-        // Simulador por si falla el satélite en interiores
-        window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); 
-    }
-
-    window.successGPS = function(pos) {
-        let lat = pos.coords.latitude;
-        let lon = pos.coords.longitude;
-        let found = false;
-
-        for (let zone in ZONAS) {
-            let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
-            if (d < (ZONAS[zone].r * 10)) { 
-                window.activeLoc = zone;
-                found = true;
-                break;
-            }
-        }
-
-        if (found) {
-            document.getElementById('gps-screen').style.display = 'none';
-            document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
-            let card = document.getElementById('city-' + window.activeLoc.toLowerCase());
-            if(card) card.classList.add('active-city', 'active-' + window.activeLoc.toLowerCase());
-            document.getElementById('current-zone-text').innerText = window.activeLoc;
-            window.renderFeed();
-        }
-    }
-
-    window.errorGPS = () => { console.log("GPS offline"); };
-
-    window.tab = function(t, el) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
-        document.getElementById('view-' + t).classList.add('view-active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    window.filterByCat = function(cat, el) {
-        window.currentFilter = cat;
-        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
-        el.classList.add('filter-active');
-        window.renderFeed();
-    }
+    window.sendGroupMsg = async function() {
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if(!text || !window.activeLoc) return;
+        try {
+            await addDoc(collection(db, "chat_" + window.activeLoc.toLowerCase()), {
+                user: window.currentUser,
+                text: text,
+                timestamp: serverTimestamp()
+            });
+            input.value = "";
+        } catch(e) { console.error(e); }
+    };
 
     // ==========================================
     // RENDERIZAR VITRINA
@@ -337,63 +271,120 @@
         }
 
         if(posts.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:50px; opacity:0.5;">No hay nada aún en ${window.activeLoc}</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:50px; opacity:0.5;">No hay nada en ${window.activeLoc}</div>`;
             return;
         }
 
-        container.innerHTML = posts.map(p => `
+        container.innerHTML = posts.sort((a,b) => b.timestamp - a.timestamp).map(p => `
             <div class="post-card">
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-                    <div style="width:35px; height:35px; border-radius:10px; background:var(--verde); color:white; display:flex; align-items:center; justify-content:center; font-weight:900;">${p.seller ? p.seller.charAt(0) : '?'}</div>
-                    <div style="font-size:12px; font-weight:800;">${p.seller || 'Vendedor Local'}</div>
+                    <div style="width:35px; height:35px; border-radius:10px; background:var(--verde); color:white; display:flex; align-items:center; justify-content:center; font-weight:900;">
+                        ${p.seller ? p.seller.charAt(0).toUpperCase() : 'R'}
+                    </div>
+                    <div style="font-size:12px; font-weight:800;">${p.seller || 'Vendedor'}</div>
                 </div>
                 ${p.img ? `<div class="img-scroll"><img src="${p.img}"></div>` : ''}
                 <h3 style="margin:10px 0;">${p.name}</h3>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div style="color:var(--verde); font-weight:900; font-size:20px;">S/ ${p.price}</div>
-                    <button onclick="window.location.href='chat_privado.html?vendedor=${p.seller}&producto=${p.name}'" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800;">Contactar</button>
+                    <button onclick="window.location.href='chat_privado.html?vendedor=${p.seller}&producto=${p.name}'" 
+                            style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800;">Contactar</button>
                 </div>
             </div>
         `).join('');
-    }
+    };
 
     // ==========================================
-    // STUDIO Y PUBLICACIÓN
+    // NAVEGACIÓN Y STUDIO
     // ==========================================
+    window.tab = (t, el) => {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
+        document.getElementById('view-' + t).classList.add('view-active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        if(t === 'chat') window.loadGroupChat();
+    };
+
+    window.filterByCat = (cat, el) => {
+        window.currentFilter = cat;
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
+        el.classList.add('filter-active');
+        window.renderFeed();
+    };
+
+    window.previewProdImg = (input) => {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            window.tempProdImg = e.target.result;
+            document.getElementById('p-preview-container').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:22px;">`;
+        };
+        reader.readAsDataURL(file);
+    };
+
     window.startStudio = (cat, emoji) => {
         window.activeCat = cat;
         document.getElementById('studio-tag').innerText = emoji + " " + cat;
         document.getElementById('main-hub').style.display = 'none';
         document.getElementById('upload-studio').style.display = 'block';
-    }
+    };
 
     window.exitStudio = () => {
         document.getElementById('main-hub').style.display = 'block';
         document.getElementById('upload-studio').style.display = 'none';
         window.tempProdImg = "";
-        document.getElementById('p-preview-container').innerHTML = '<div style="text-align:center; color:#94a3b8;"><span style="font-size:40px;">📸</span><br><small>Toca para subir foto</small></div>';
-    }
+        document.getElementById('p-preview-container').innerHTML = '📸<br><small>Toca para subir foto</small>';
+    };
 
     window.uploadToEmpire = async function() {
         const title = document.getElementById('in-title').value.trim();
         const price = document.getElementById('in-price').value.trim();
         if(!title) return alert("Ponle nombre");
-
         try {
             await addDoc(collection(db, "inventory"), {
-                name: title,
-                price: price || "0",
-                loc: window.activeLoc,
-                category: window.activeCat,
-                img: window.tempProdImg,
-                seller: window.currentUser,
-                timestamp: Date.now()
+                name: title, price: price || "0", loc: window.activeLoc,
+                category: window.activeCat, img: window.tempProdImg,
+                seller: window.currentUser, timestamp: Date.now()
             });
             confetti({ particleCount: 150 });
             window.exitStudio();
             window.tab('home', document.querySelector('.nav-btn'));
-        } catch (e) { alert("Error"); }
-    }
+        } catch (e) { alert("Error al subir"); }
+    };
+
+    window.checkAdminAccess = () => {
+        taps++;
+        if(taps === 7) { window.location.href = 'admin.html'; }
+        setTimeout(() => taps = 0, 2000);
+    };
+
+    window.init = function() {
+        if(!window.currentUser) { window.location.href = 'registro_entrada.html'; return; }
+        document.getElementById('user-tag').innerText = "CIUDADANO: " + window.currentUser.toUpperCase();
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition(window.successGPS, null, {enableHighAccuracy:true});
+        }
+        window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); 
+    };
+
+    window.successGPS = function(pos) {
+        let lat = pos.coords.latitude;
+        let lon = pos.coords.longitude;
+        for (let zone in ZONAS) {
+            let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
+            if (d < ZONAS[zone].r) {
+                window.activeLoc = zone;
+                document.getElementById('gps-screen').style.display = 'none';
+                document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
+                document.getElementById('city-' + zone.toLowerCase()).classList.add('active-city', 'active-' + zone.toLowerCase());
+                document.getElementById('current-zone-text').innerText = zone;
+                document.getElementById('chat-zone-tag').innerText = zone.toUpperCase();
+                window.renderFeed();
+                break;
+            }
+        }
+    };
 
     window.onload = window.init;
 </script>
