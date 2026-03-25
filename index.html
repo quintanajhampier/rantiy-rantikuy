@@ -1,282 +1,140 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rantiy y Rantikuy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --emerald-light: #2ecc71;
-            --emerald-mid: #27ae60;
-            --emerald-deep: #1b5e20;
-            --soft-sky: #e8f4f8;
-            --white: #ffffff;
-            --shadow-3d: 0 10px 30px rgba(0,0,0,0.08);
-            --gradient-main: linear-gradient(135deg, var(--emerald-light), var(--emerald-deep));
-        }
+<script type="module">
+    // 1. Importamos Firebase y las herramientas de Base de Datos (Firestore)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #f4f7f6; color: #1a2a21; height: 100vh; overflow: hidden; }
-
-        header {
-            background: var(--white); padding: 55px 20px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 4px solid var(--emerald-mid);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            position: sticky; top: 0; z-index: 1000;
-        }
-        .app-name { font-size: 26px; font-weight: 900; color: var(--emerald-deep); letter-spacing: -1px; }
-        .app-name span { color: var(--emerald-light); }
-
-        /* NUEVO ESTILO PARA EL SELECTOR DE CIUDAD */
-        .city-select {
-            font-weight: 900; background: var(--soft-sky); padding: 8px 10px; 
-            border-radius: 10px; font-size: 12px; border: 2px solid var(--emerald-mid); 
-            color: var(--emerald-deep); outline: none; max-width: 130px; cursor: pointer;
-        }
-
-        .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 180px; overflow-y: auto; }
-
-        .card-stock { background: var(--white); border-radius: 25px; margin-bottom: 20px; box-shadow: var(--shadow-3d); padding: 20px; border-top: 5px solid var(--emerald-mid); position: relative; }
-        .card-stock h3 { color: var(--emerald-deep); font-size: 22px; margin-bottom: 10px; }
-        .stock-tag { background: var(--soft-sky); color: var(--emerald-deep); padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
-        .stock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .stock-item { font-size: 14px; color: #666; }
-        .stock-item b { color: #333; display: block; font-size: 16px; }
-        .stock-note { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #ddd; font-style: italic; color: #555; font-size: 13px; }
-        .prod-img-preview { width: 100%; height: 150px; object-fit: cover; border-radius: 15px; margin-top: 10px; }
-
-        #chat-window { position: fixed; inset: 0; background: #e5ddd5; z-index: 5000; display: none; flex-direction: column; }
-        .chat-nav { padding: 45px 15px 15px; background: var(--white); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #ddd; }
-        .btn-back { font-size: 40px; color: var(--emerald-mid); background: none; border: none; font-weight: bold; }
-        
-        .messages-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 15px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .msg-bubble.me { align-self: flex-end; background: #dcf8c6; color: #000; border-top-right-radius: 2px; }
-        .msg-bubble.them { align-self: flex-start; background: var(--white); border-top-left-radius: 2px; }
-
-        .chat-input-box { padding: 10px 10px 35px; background: #f0f0f0; display: flex; align-items: center; gap: 8px; }
-        .btn-tool { background: none; border: none; font-size: 24px; color: #666; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
-        #m-input { flex: 1; border: none; background: var(--white); padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; }
-        
-        .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; margin-right: 5px; }
-        .btn-mic { background: var(--emerald-deep); }
-        .btn-mic.active { background: #ff3b30; transform: scale(1.2); }
-        .btn-send { background: #0084ff; display: none; }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 6000; display: none; align-items: flex-end; }
-        .modal-sheet { background: var(--white); width: 100%; border-radius: 30px 30px 0 0; padding: 25px; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: 800; margin-bottom: 5px; font-size: 14px; color: var(--emerald-deep); }
-        .input-p { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; background: #fafafa; outline: none; font-size: 16px; }
-        .input-p:focus { border-color: var(--emerald-mid); }
-        .btn-file-dummy { background: var(--soft-sky); color: var(--emerald-deep); padding: 15px; border-radius: 12px; text-align: center; font-weight: 800; cursor: pointer; border: 2px dashed var(--emerald-mid); }
-
-        nav { position: fixed; bottom: 0; width: 100%; height: 90px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 4000; }
-        .nav-icon { font-size: 28px; color: #ccc; transition: 0.3s; display: flex; flex-direction: column; align-items: center; font-weight: bold; }
-        .nav-icon.active { color: var(--emerald-mid); }
-        .nav-icon span { font-size: 10px; text-transform: uppercase; margin-top: 4px; }
-    </style>
-</head>
-<body>
-
-<header>
-    <div class="app-name" onclick="countAdmin()">Rantiy y <span>Rantikuy</span></div>
-    <select id="zona-select" class="city-select" onchange="cambiarZona()">
-        </select>
-</header>
-
-<div class="viewport" id="vp">
-    <div class="screen">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="font-weight:900; font-size:28px;">Mis Clientes</h2>
-            <button onclick="popContact()" style="background:var(--gradient-main); color:white; border:none; width:50px; height:50px; border-radius:18px; font-size:24px; box-shadow:0 5px 15px rgba(46,204,113,0.3);">+</button>
-        </div>
-        <div id="list-contacts"></div>
-    </div>
-
-    <div class="screen">
-        <h2 style="font-weight:900; font-size:28px; margin-bottom:15px;">Vitrina</h2>
-        
-        <div style="background: var(--soft-sky); border: 2px dashed var(--emerald-mid); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-            <p style="color: var(--emerald-deep); font-weight: 900; font-size: 16px; margin-bottom: 5px;">¿Quieres destacar en la Vitrina?</p>
-            <p style="font-size: 14px; color: #555;">Vende autos, terrenos o productos pagando una pequeña comisión.</p>
-            <p style="font-size: 16px; font-weight: 900; margin-top: 10px;">
-                Escríbeme al WhatsApp: <br>
-                <a href="https://wa.me/51957059761" style="color: var(--emerald-mid); text-decoration: none; font-size: 22px;">📱 957 059 761</a>
-            </p>
-        </div>
-
-        <button onclick="popProd()" style="background:var(--gradient-main); color:white; border:none; padding:18px; border-radius:20px; width:100%; font-weight:900; margin-bottom:25px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">+ REGISTRAR MERCADERÍA</button>
-        <div id="list-inventory"></div>
-    </div>
-</div>
-
-<div id="chat-window">
-    <div class="chat-nav">
-        <button class="btn-back" onclick="closeChat()">‹</button>
-        <div id="active-av" style="width:45px; height:45px; background:var(--gradient-main); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:900;">?</div>
-        <div><b id="active-name" style="display:block; font-size:18px;">Nombre</b><span id="active-phone" style="font-size:12px; color:var(--emerald-mid);">987654321</span></div>
-    </div>
-    <div class="messages-area" id="m-flow"></div>
-    <div class="chat-input-box">
-        <button class="btn-tool" onclick="document.getElementById('u-file').click()">📎</button>
-        <input type="file" id="u-file" hidden onchange="handleFile(this)">
-        <input type="text" id="m-input" placeholder="Escribe un mensaje..." oninput="uiInput()">
-        <button id="btn-mic" class="btn-circle btn-mic">🎤</button>
-        <button id="btn-send" onclick="sendTxt()" class="btn-circle btn-send">➤</button>
-    </div>
-</div>
-
-<nav>
-    <div class="nav-icon active" onclick="go(0, this)">💬 <span>Ventas</span></div>
-    <div class="nav-icon" onclick="go(1, this)">📦 <span>Almacén</span></div>
-</nav>
-
-<div class="modal-overlay" id="modal" onclick="this.style.display='none'">
-    <div class="modal-sheet" onclick="event.stopPropagation()" id="m-content"></div>
-</div>
-
-<script>
-    // BASE DE DATOS DE TODAS LAS PROVINCIAS
-    const zonasPeru = {
-        "Amazonas": ["Chachapoyas", "Bagua", "Bongará", "Condorcanqui", "Luya", "Rodríguez de Mendoza", "Utcubamba"],
-        "Áncash": ["Huaraz", "Aija", "Antonio Raymondi", "Asunción", "Bolognesi", "Carhuaz", "Carlos Fermín Fitzcarrald", "Casma", "Corongo", "Huari", "Huarmey", "Huaylas", "Mariscal Luzuriaga", "Ocros", "Pallasca", "Pomabamba", "Recuay", "Santa", "Sihuas", "Yungay"],
-        "Apurímac": ["Abancay", "Andahuaylas", "Antabamba", "Aymaraes", "Cotabambas", "Chincheros", "Grau"],
-        "Arequipa": ["Arequipa", "Camaná", "Caravelí", "Castilla", "Caylloma", "Condesuyos", "Islay", "La Unión"],
-        "Ayacucho": ["Huamanga", "Cangallo", "Huanca Sancos", "Huanta", "La Mar", "Lucanas", "Parinacochas", "Páucar del Sara Sara", "Sucre", "Víctor Fajardo", "Vilcas Huamán"],
-        "Cajamarca": ["Cajamarca", "Cajabamba", "Celendín", "Chota", "Contumazá", "Cutervo", "Hualgayoc", "Jaén", "San Ignacio", "San Marcos", "San Miguel", "San Pablo", "Santa Cruz"],
-        "Callao": ["Provincia Constitucional del Callao"],
-        "Cusco": ["Cusco", "Acomayo", "Anta", "Calca", "Canas", "Canchis", "Chumbivilcas", "Espinar", "La Convención", "Paruro", "Paucartambo", "Quispicanchi", "Urubamba"],
-        "Huancavelica": ["Huancavelica", "Acobamba", "Angaraes", "Castrovirreyna", "Churcampa", "Huaytará", "Tayacaja"],
-        "Huánuco": ["Huánuco", "Ambo", "Dos de Mayo", "Huacaybamba", "Huamalíes", "Leoncio Prado", "Marañón", "Pachitea", "Puerto Inca", "Lauricocha", "Yarowilca"],
-        "Ica": ["Ica", "Chincha", "Nazca", "Palpa", "Pisco"],
-        "Junín": ["Huancayo", "Concepción", "Chanchamayo", "Jauja", "Junín", "Satipo", "Tarma", "Yauli", "Chupaca"],
-        "La Libertad": ["Trujillo", "Ascope", "Bolívar", "Chepén", "Julcán", "Otuzco", "Pacasmayo", "Pataz", "Sánchez Carrión", "Santiago de Chuco", "Gran Chimú", "Virú"],
-        "Lambayeque": ["Chiclayo", "Ferreñafe", "Lambayeque"],
-        "Lima": ["Lima Metropolitana", "Barranca", "Cajatambo", "Canta", "Cañete", "Huaral", "Huarochirí", "Huaura", "Oyón", "Yauyos"],
-        "Loreto": ["Maynas", "Alto Amazonas", "Datem del Marañón", "Loreto", "Mariscal Ramón Castilla", "Putumayo", "Requena", "Ucayali"],
-        "Madre de Dios": ["Tambopata", "Manu", "Tahuamanu"],
-        "Moquegua": ["Mariscal Nieto", "General Sánchez Cerro", "Ilo"],
-        "Pasco": ["Pasco", "Daniel Alcides Carrión", "Oxapampa"],
-        "Piura": ["Piura", "Ayabaca", "Huancabamba", "Morropón", "Paita", "Sechura", "Sullana", "Talara"],
-        "Puno": ["Puno", "Azángaro", "Carabaya", "Chucuito", "El Collao", "Huancané", "Lampa", "Melgar", "Moho", "San Antonio de Putina", "San Román", "Sandia", "Yunguyo"],
-        "San Martín": ["Moyobamba", "Bellavista", "El Dorado", "Huallaga", "Lamas", "Mariscal Cáceres", "Picota", "Rioja", "San Martín", "Tocache"],
-        "Tacna": ["Tacna", "Candarave", "Jorge Basadre", "Tarata"],
-        "Tumbes": ["Tumbes", "Contralmirante Villar", "Zarumilla"],
-        "Ucayali": ["Coronel Portillo", "Atalaya", "Padre Abad", "Purús"]
+    // 2. Tu Configuración de Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
+        authDomain: "rantiy-y-rantikuy.firebaseapp.com",
+        projectId: "rantiy-y-rantikuy",
+        storageBucket: "rantiy-y-rantikuy.firebasestorage.app",
+        messagingSenderId: "49676513708",
+        appId: "1:49676513708:web:943ad781c98cb7bac78a09"
     };
 
-    function cargarZonas() {
-        const select = document.getElementById('zona-select');
-        for (const [region, provincias] of Object.entries(zonasPeru)) {
-            let optGroup = document.createElement('optgroup');
-            optGroup.label = region;
-            provincias.forEach(prov => {
-                let option = document.createElement('option');
-                option.value = prov;
-                option.textContent = prov;
-                // Como estás en Huancayo, lo seleccionamos por defecto
-                if (prov === "Huancayo") {
-                    option.selected = true;
-                }
-                optGroup.appendChild(option);
-            });
-            select.appendChild(optGroup);
-        }
+    // 3. Inicializamos la App y la Base de Datos
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Variables locales para la interfaz
+    window.dbLocal = { contacts: [], inventory: [] };
+    window.currentID = null;
+    window.tempProdImg = "";
+    let rec; let chunks = []; let taps = 0;
+
+    // ==========================================
+    // CONEXIÓN EN TIEMPO REAL CON FIREBASE
+    // ==========================================
+
+    // Escuchar la Vitrina (Almacén) en tiempo real
+    onSnapshot(collection(db, "inventory"), (snapshot) => {
+        window.dbLocal.inventory = [];
+        snapshot.forEach((doc) => {
+            window.dbLocal.inventory.push({ id: doc.id, ...doc.data() });
+        });
+        window.render();
+    });
+
+    // Escuchar Contactos y Chats en tiempo real
+    onSnapshot(collection(db, "contacts"), (snapshot) => {
+        window.dbLocal.contacts = [];
+        snapshot.forEach((doc) => {
+            window.dbLocal.contacts.push({ id: doc.id, ...doc.data() });
+        });
+        window.render();
+        if(window.currentID) window.renderMsgs(); // Actualiza el chat si está abierto
+    });
+
+
+    // ==========================================
+    // FUNCIONES GUARDANDO EN FIREBASE (NUBE)
+    // ==========================================
+
+    window.addP = async function() {
+        const n = document.getElementById('p-n').value; 
+        if(!n) return;
+        
+        // Guardamos en Firebase en lugar de localStorage
+        await addDoc(collection(db, "inventory"), {
+            name: n, 
+            price: document.getElementById('p-p').value, 
+            unit: document.getElementById('p-u').value,
+            qty: document.getElementById('p-q').value, 
+            loc: document.getElementById('p-l').value, 
+            note: document.getElementById('p-o').value,
+            img: window.tempProdImg || 'https://via.placeholder.com/150',
+            timestamp: Date.now()
+        });
+        
+        document.getElementById('modal').style.display = 'none';
+    };
+
+    window.addC = async function() { 
+        const n = document.getElementById('c-n').value; 
+        if(!n) return; 
+        
+        await addDoc(collection(db, "contacts"), {
+            name: n, 
+            phone: document.getElementById('c-p').value, 
+            msgs: [],
+            timestamp: Date.now()
+        });
+        
+        document.getElementById('modal').style.display = 'none'; 
+    };
+
+    window.sendTxt = async function() {
+        const i = document.getElementById('m-input'); 
+        if(!i.value.trim() || !window.currentID) return;
+        
+        const nuevoMensaje = { s:'me', t:'txt', v: i.value, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
+        
+        // Actualizamos el documento específico del contacto en Firebase
+        const contactRef = doc(db, "contacts", window.currentID);
+        await updateDoc(contactRef, {
+            msgs: arrayUnion(nuevoMensaje)
+        });
+
+        i.value = ''; 
+        window.uiInput(); 
+    };
+
+    window.sendMedia = async function(t, v, n="") {
+        if(!window.currentID) return;
+        const nuevoMensaje = { s:'me', t, v, n, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
+        
+        const contactRef = doc(db, "contacts", window.currentID);
+        await updateDoc(contactRef, {
+            msgs: arrayUnion(nuevoMensaje)
+        });
     }
 
-    function cambiarZona() {
-        const zonaActual = document.getElementById('zona-select').value;
-        console.log("El usuario cambió a la zona: " + zonaActual);
-        // Aquí en el futuro puedes filtrar los chats según la zona elegida
-    }
+    // ==========================================
+    // FUNCIONES DE INTERFAZ (UI)
+    // ==========================================
 
-
-    // TU CÓDIGO ORIGINAL INTACTO DESDE AQUÍ
-    let db = JSON.parse(localStorage.getItem('RR_ULTIMATE_2026')) || { contacts: [], inventory: [] };
-    let currentID = null; let rec; let chunks = []; let taps = 0; let tempProdImg = "";
-
-    function save() { localStorage.setItem('RR_ULTIMATE_2026', JSON.stringify(db)); render(); }
-    function go(s, el) { document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`; document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active')); el.classList.add('active'); }
-    function countAdmin() { taps++; if(taps===7) { alert("PANEL ADMIN: Huanta v3.0"); taps=0; } setTimeout(()=> taps=0, 2000); }
-
-    function uiInput() {
+    window.go = function(s, el) { document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`; document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active')); el.classList.add('active'); }
+    window.countAdmin = function() { taps++; if(taps===7) { alert("PANEL ADMIN: Huanta v3.0"); taps=0; } setTimeout(()=> taps=0, 2000); }
+    
+    window.uiInput = function() {
         const hasTxt = document.getElementById('m-input').value.trim().length > 0;
         document.getElementById('btn-send').style.display = hasTxt ? 'flex' : 'none';
         document.getElementById('btn-mic').style.display = hasTxt ? 'none' : 'flex';
     }
 
-    const mic = document.getElementById('btn-mic');
-    mic.onpointerdown = async (e) => {
-        e.preventDefault();
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            rec = new MediaRecorder(stream); chunks = [];
-            rec.ondataavailable = e => chunks.push(e.data);
-            rec.onstop = () => {
-                const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
-                const reader = new FileReader();
-                reader.onload = () => sendMedia('audio', reader.result);
-                reader.readAsDataURL(blob);
-            };
-            rec.start(); mic.classList.add('active');
-        } catch(err) { alert("Activa el micrófono"); }
-    };
-    mic.onpointerup = () => { if(rec && rec.state !== 'inactive') { rec.stop(); mic.classList.remove('active'); } };
-
-    function handleFile(input) {
-        const file = input.files[0]; if(!file) return;
-        const reader = new FileReader();
-        reader.onload = () => { sendMedia(file.type.includes('image') ? 'img' : 'doc', reader.result, file.name); input.value = ''; };
-        reader.readAsDataURL(file);
-    }
-
-    function sendMedia(t, v, n="") {
-        const c = db.contacts.find(x => x.id === currentID);
-        c.msgs.push({ s:'me', t, v, n, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-        save(); renderMsgs();
-    }
-
-    function sendTxt() {
-        const i = document.getElementById('m-input'); if(!i.value.trim()) return;
-        const c = db.contacts.find(x => x.id === currentID);
-        c.msgs.push({ s:'me', t:'txt', v: i.value, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-        i.value = ''; uiInput(); save(); renderMsgs();
-    }
-
-    function renderMsgs() {
-        const c = db.contacts.find(x => x.id === currentID);
-        document.getElementById('m-flow').innerHTML = c.msgs.map(m => {
-            let html = m.v;
-            if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
-            if(m.t === 'audio') html = `<audio controls src="${m.v}" style="width:210px;"></audio>`;
-            if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="display:block; padding:10px; background:#f9f9f9; border-radius:8px; color:black;">📄 ${m.n}</a>`;
-            return `<div class="msg-bubble ${m.s}">${html}<div style="font-size:10px; opacity:0.6; text-align:right;">${m.time}</div></div>`;
-        }).join('');
-        const f = document.getElementById('m-flow'); f.scrollTop = f.scrollHeight;
-    }
-
-    function openChat(id) { currentID = id; const c = db.contacts.find(x => x.id === id); document.getElementById('active-name').innerText = c.name; document.getElementById('active-phone').innerText = c.phone || "Sin número"; document.getElementById('active-av').innerText = c.name[0]; document.getElementById('chat-window').style.display = 'flex'; renderMsgs(); }
-    function closeChat() { document.getElementById('chat-window').style.display = 'none'; }
-
-    function popContact() {
+    window.popContact = function() {
         document.getElementById('m-content').innerHTML = `
             <h2 style="margin-bottom:20px; font-weight:900;">Registrar Cliente</h2>
             <div class="form-group"><label>Nombre del Comerciante</label><input id="c-n" class="input-p"></div>
             <div class="form-group"><label>Número de WhatsApp</label><input id="c-p" class="input-p" type="tel"></div>
-            <button onclick="addC()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">INICIAR CHAT</button>
+            <button onclick="window.addC()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">INICIAR CHAT</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
-    function addC() { const n = document.getElementById('c-n').value; if(!n) return; db.contacts.push({ id:Date.now(), name:n, phone:document.getElementById('c-p').value, msgs:[] }); save(); document.getElementById('modal').style.display = 'none'; }
 
-    function popProd() {
-        tempProdImg = "";
+    window.popProd = function() {
+        window.tempProdImg = "";
         document.getElementById('m-content').innerHTML = `
             <h2 style="margin-bottom:20px; font-weight:900;">Detalles del Producto</h2>
             <div class="form-group"><label>Nombre del Producto</label><input id="p-n" class="input-p"></div>
@@ -289,45 +147,63 @@
             <div class="form-group">
                 <label>Imagen del Producto</label>
                 <div class="btn-file-dummy" onclick="document.getElementById('p-img-file').click()">📸 SELECCIONAR DE GALERÍA</div>
-                <input type="file" id="p-img-file" hidden accept="image/*" onchange="previewProdImg(this)">
+                <input type="file" id="p-img-file" hidden accept="image/*" onchange="window.previewProdImg(this)">
                 <div id="p-preview-container"></div>
             </div>
             <div class="form-group"><label>Nota Detallada</label><textarea id="p-o" class="input-p" style="height:80px;"></textarea></div>
-            <button onclick="addP()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">GUARDAR EN ALMACÉN</button>
+            <button onclick="window.addP()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">GUARDAR EN ALMACÉN</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
 
-    function previewProdImg(input) {
+    window.previewProdImg = function(input) {
         const file = input.files[0]; if(!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
-            tempProdImg = e.target.result;
-            document.getElementById('p-preview-container').innerHTML = `<img src="${tempProdImg}" class="prod-img-preview">`;
+            window.tempProdImg = e.target.result;
+            document.getElementById('p-preview-container').innerHTML = `<img src="${window.tempProdImg}" class="prod-img-preview">`;
         };
         reader.readAsDataURL(file);
     }
 
-    function addP() {
-        const n = document.getElementById('p-n').value; if(!n) return;
-        db.inventory.push({ 
-            id:Date.now(), name:n, price: document.getElementById('p-p').value, unit: document.getElementById('p-u').value,
-            qty: document.getElementById('p-q').value, loc: document.getElementById('p-l').value, note: document.getElementById('p-o').value,
-            img: tempProdImg || 'https://via.placeholder.com/150'
-        });
-        save(); document.getElementById('modal').style.display = 'none';
+    window.openChat = function(id) { 
+        window.currentID = id; 
+        const c = window.dbLocal.contacts.find(x => x.id === id); 
+        if(!c) return;
+        document.getElementById('active-name').innerText = c.name; 
+        document.getElementById('active-phone').innerText = c.phone || "Sin número"; 
+        document.getElementById('active-av').innerText = c.name[0]; 
+        document.getElementById('chat-window').style.display = 'flex'; 
+        window.renderMsgs(); 
+    }
+    
+    window.closeChat = function() { document.getElementById('chat-window').style.display = 'none'; window.currentID = null; }
+
+    window.renderMsgs = function() {
+        if(!window.currentID) return;
+        const c = window.dbLocal.contacts.find(x => x.id === window.currentID);
+        if(!c || !c.msgs) return;
+
+        document.getElementById('m-flow').innerHTML = c.msgs.map(m => {
+            let html = m.v;
+            if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
+            if(m.t === 'audio') html = `<audio controls src="${m.v}" style="width:210px;"></audio>`;
+            if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="display:block; padding:10px; background:#f9f9f9; border-radius:8px; color:black;">📄 ${m.n}</a>`;
+            return `<div class="msg-bubble ${m.s}">${html}<div style="font-size:10px; opacity:0.6; text-align:right;">${m.time}</div></div>`;
+        }).join('');
+        const f = document.getElementById('m-flow'); f.scrollTop = f.scrollHeight;
     }
 
-    function render() {
-        document.getElementById('list-contacts').innerHTML = db.contacts.map(c => `
-            <div class="card-stock" onclick="openChat(${c.id})" style="border-top:none; border-left:5px solid var(--emerald-mid); display:flex; align-items:center; gap:15px; padding:15px;">
+    window.render = function() {
+        document.getElementById('list-contacts').innerHTML = window.dbLocal.contacts.map(c => `
+            <div class="card-stock" onclick="window.openChat('${c.id}')" style="border-top:none; border-left:5px solid var(--emerald-mid); display:flex; align-items:center; gap:15px; padding:15px; cursor:pointer;">
                 <div style="width:50px; height:50px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900;">${c.name[0]}</div>
                 <div style="flex:1"><b>${c.name}</b><small style="display:block; color:gray;">${c.phone || ''}</small></div>
                 <span>›</span>
             </div>
         `).join('');
 
-        document.getElementById('list-inventory').innerHTML = db.inventory.map(p => `
+        document.getElementById('list-inventory').innerHTML = window.dbLocal.inventory.map(p => `
             <div class="card-stock">
                 <img src="${p.img}" class="prod-img-preview" style="margin-top:0; margin-bottom:15px; height:180px;">
                 <span class="stock-tag">${p.unit}</span>
@@ -341,12 +217,33 @@
             </div>
         `).join('');
     }
-    
-    // Al cargar la página, primero cargamos las zonas y luego renderizamos
-    window.onload = function() {
-        cargarZonas();
-        render();
+
+    // Inicializar micrófono y manejo de archivos
+    const mic = document.getElementById('btn-mic');
+    mic.onpointerdown = async (e) => {
+        e.preventDefault();
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            rec = new MediaRecorder(stream); chunks = [];
+            rec.ondataavailable = e => chunks.push(e.data);
+            rec.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+                const reader = new FileReader();
+                reader.onload = () => window.sendMedia('audio', reader.result);
+                reader.readAsDataURL(blob);
+            };
+            rec.start(); mic.classList.add('active');
+        } catch(err) { alert("Activa el micrófono"); }
     };
+    mic.onpointerup = () => { if(rec && rec.state !== 'inactive') { rec.stop(); mic.classList.remove('active'); } };
+
+    window.handleFile = function(input) {
+        const file = input.files[0]; if(!file) return;
+        const reader = new FileReader();
+        reader.onload = () => { window.sendMedia(file.type.includes('image') ? 'img' : 'doc', reader.result, file.name); input.value = ''; };
+        reader.readAsDataURL(file);
+    }
+
+    // Iniciar funciones de carga de zonas (asegúrate de que cargarZonas exista en tu código arriba de este script)
+    cargarZonas();
 </script>
-</body>
-</html>
