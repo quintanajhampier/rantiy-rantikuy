@@ -1,9 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rantiy y Rantikuy - Imperio Huanta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --verde: #22c55e; --verde-glow: #dcfce7;
+            --naranja: #f97316; --oscuro: #1e293b;
+            --glass: rgba(255, 255, 255, 0.96);
+            --huanta: #22c55e; --huamanga: #3b82f6; --vraem: #f59e0b;
+            --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
+        body { background: #f8fafc; margin: 0; padding-bottom: 140px; overflow-x: hidden; color: var(--oscuro); }
+
+        /* --- BLOQUEO GPS INICIAL --- */
+        #gps-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+        .gps-loader { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--verde); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- HEADER --- */
+        .header {
+            background: var(--glass); backdrop-filter: blur(25px); padding: 18px 25px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .logo-rr {
+            width: 62px; height: 62px; background: linear-gradient(135deg, var(--verde), #15803d);
+            border-radius: 22px; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 900; font-size: 24px; cursor: pointer;
+            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
+            animation: rotate3d 7s infinite ease-in-out; transform-style: preserve-3d;
+        }
+        @keyframes rotate3d { 0%, 100% { transform: perspective(500px) rotateY(0deg); } 50% { transform: perspective(500px) rotateY(30deg); } }
+
+        /* BOTÓN DE CHAT PRIVADO EXTERNO */
+        .btn-mensajes-privados {
+            position: fixed;
+            right: 20px;
+            bottom: 120px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            box-shadow: var(--premium-shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--oscuro);
+            font-weight: 800;
+            font-size: 14px;
+            z-index: 2500;
+            border: 2px solid var(--verde-glow);
+            transition: 0.3s;
+        }
+        .btn-mensajes-privados:active { transform: scale(0.9); }
+        .dot-online { width: 10px; height: 10px; background: var(--verde); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* --- BÚSQUEDA Y FILTROS --- */
+        .search-container { padding: 0 20px; margin-top: 15px; }
+        .search-wrapper { position: relative; display: flex; align-items: center; }
+        .search-input { width: 100%; padding: 18px 25px 18px 55px; border-radius: 25px; border: none; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.03); font-weight: 700; }
+        .search-icon { position: absolute; left: 20px; font-size: 20px; }
+
+        .filter-bar { padding: 15px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+        .filter-chip { padding: 10px 20px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
+        .filter-active { background: var(--verde-glow); border-color: var(--verde); color: var(--verde); }
+
+        /* --- CIUDADES --- */
+        .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
+        .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.5; pointer-events: none; }
+        .active-city { opacity: 1; pointer-events: auto; border-width: 3px; }
+        .active-huanta { border-color: var(--huanta); background: #f0fdf4; }
+        .active-huamanga { border-color: var(--huamanga); background: #eff6ff; }
+        .active-vraem { border-color: var(--vraem); background: #fffbeb; }
+
+        /* --- VISTAS --- */
+        .view { display: none; padding: 0 20px; animation: slideUp 0.5s ease; }
+        .view-active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- VITRINA / CARDS --- */
+        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; }
+        .img-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
+        .img-scroll img { width: 100%; height: 230px; object-fit: cover; border-radius: 25px; flex-shrink: 0; }
+
+        /* --- STUDIO SUBIDA --- */
+        .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
+        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
+        .cat-btn { background: rgba(255,255,255,0.07); padding: 20px 10px; border-radius: 25px; cursor: pointer; font-size: 10px; font-weight: 800; }
+        
+        #upload-studio { background: white; border-radius: 45px; padding: 35px; margin-top: 25px; display: none; box-shadow: var(--premium-shadow); }
+        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .drop-zone { width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 25px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; background: #f8fafc; }
+        .drop-zone img { width: 100%; height: 100%; object-fit: cover; }
+        .source-chooser { position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
+        .drop-zone:hover .source-chooser { opacity: 1; }
+        .rr-field { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; }
+
+        /* --- SISTEMA DE CHATS --- */
+        .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; }
+        .msg-area { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
+        .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .bubble img { width: 100%; border-radius: 15px; margin-top: 5px; cursor: pointer; }
+        .sticker { font-size: 50px; display: block; }
+
+        #private-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; }
+
+        /* --- NAV ISLAND --- */
+        .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
+        .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
+        .nav-btn.active { color: var(--verde); }
+        
+        .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 12px; border-radius: 15px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 10px; }
+        .emoji-panel { display: flex; gap: 10px; padding: 10px; overflow-x: auto; background: #f1f5f9; }
+        .emoji-btn { font-size: 20px; cursor: pointer; border: none; background: none; }
+
+        /* --- HERRAMIENTAS CHAT --- */
+        .chat-tools { display: flex; gap: 10px; padding: 10px 20px; background: white; border-top: 1px solid #eee; }
+        .tool-btn { background: #f1f5f9; border: none; padding: 12px; border-radius: 18px; font-size: 18px; cursor: pointer; flex: 1; transition: 0.2s; }
+        .tool-btn:active { background: var(--verde-glow); }
+        .file-bubble { display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; }
+        .file-link { color: var(--verde); font-weight: 800; text-decoration: none; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div id="gps-screen">
+    <div class="logo-rr" style="width:100px; height:100px; font-size:40px; margin-bottom:20px;">R&R</div>
+    <h1 style="font-weight:900; margin-bottom:5px;">Rantiy y Rantikuy</h1>
+    <p style="opacity:0.6; margin-bottom:30px;">Detectando tu ubicación real en el mapa...</p>
+    <div class="gps-loader" id="gps-loader"></div>
+    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--verde);">Iniciando satélites...</p>
+</div>
+
+<a href="chat_privado.html" class="btn-mensajes-privados">
+    <span class="dot-online"></span>
+    💬 MIS CHATS
+</a>
+
+<header class="header">
+    <div style="display:flex; align-items:center; gap:18px;">
+        <div class="logo-rr" onclick="checkAdminAccess()">R&R</div>
+        <div>
+            <div style="font-weight: 900; font-size: 20px;">Rantiy y Rantikuy</div>
+            <div id="user-tag" style="font-size: 10px; color: var(--verde); font-weight: 800;">CIUDADANO: CARGANDO...</div>
+        </div>
+    </div>
+</header>
+
+<div class="search-container">
+    <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas en tu zona?" oninput="window.renderFeed()">
+    </div>
+</div>
+
+<div class="filter-bar">
+    <div class="filter-chip filter-active" onclick="window.filterByCat('Todas', this)">✨ Todas</div>
+    <div class="filter-chip" onclick="window.filterByCat('Comida', this)">🍲 Comida</div>
+    <div class="filter-chip" onclick="window.filterByCat('Venta', this)">👕 Venta</div>
+    <div class="filter-chip" onclick="window.filterByCat('Taxi', this)">🚗 Taxi</div>
+    <div class="filter-chip" onclick="window.filterByCat('Servicio', this)">⚡ Servicio</div>
+</div>
+
+<div class="city-bar">
+    <div class="city-card" id="city-huanta"><span>⛰️</span><label>HUANTA</label></div>
+    <div class="city-card" id="city-huamanga"><span>⛪</span><label>HUAMANGA</label></div>
+    <div class="city-card" id="city-vraem"><span>🌿</span><label>VRAEM</label></div>
+</div>
+
+<main id="view-home" class="view view-active">
+    <div id="feed-container"></div>
+</main>
+
+<section id="view-camera" class="view">
+    <div class="camera-hub" id="main-hub">
+        <h2 style="font-weight:900;">Publicar en <span id="current-zone-text">...</span></h2>
+        <div class="category-grid">
+            <div class="cat-btn" onclick="window.startStudio('Venta', '🛍️')">💰<br>VENTA</div>
+            <div class="cat-btn" onclick="window.startStudio('Comida', '🍲')">🥘<br>COMIDA</div>
+            <div class="cat-btn" onclick="window.startStudio('Taxi', '🚗')">🚕<br>TAXI</div>
+            <div class="cat-btn" onclick="window.startStudio('Empleo', '💼')">💼<br>EMPLEO</div>
+            <div class="cat-btn" onclick="window.startStudio('Servicio', '⚡')">🔧<br>SERVICIO</div>
+            <div class="cat-btn" onclick="window.startStudio('Turismo', '📸')">📸<br>TURISMO</div>
+        </div>
+    </div>
+
+    <div id="upload-studio">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
+            <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px;">✕</button>
+        </div>
+        <div class="photo-grid">
+            <div class="drop-zone"><div id="info-0">1</div><img id="img-0" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
+            <div class="drop-zone"><div id="info-1">2</div><img id="img-1" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
+            <div class="drop-zone"><div id="info-2">3</div><img id="img-2" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
+            <div class="drop-zone"><div id="info-3">4</div><img id="img-3" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
+        </div>
+        <div id="q-box" style="margin-top:20px;"></div>
+        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
+        <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
+        <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
+    </div>
+</section>
+
+<section id="view-chat" class="view">
+    <div class="chat-box-ui">
+        <div id="group-title" style="padding:20px; background:var(--verde); color:white; font-weight:900; display:flex; justify-content:space-between;">
+            <span id="zone-chat-label">SALA REGIONAL</span>
+            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">AUTO-LIMPIEZA 30H</span>
+        </div>
+        <div class="msg-area" id="group-msgs"></div>
+        <div style="padding:15px; display:flex; gap:10px;">
+            <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe al grupo...">
+            <button style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
+        </div>
+    </div>
+</section>
+
+<nav class="nav-island">
+    <div class="nav-btn active" onclick="window.tab('home', this)">🏠<br>VITRINA</div>
+    <div class="nav-btn" onclick="window.tab('camera', this)">📸<br>SUBIR</div>
+    <div class="nav-btn" onclick="window.tab('chat', this)">💬<br>GRUPAL</div>
+</nav>
+
 <script type="module">
-    // 1. Importamos Firebase y las herramientas de Base de Datos (Firestore) - ¡VERSIÓN CORREGIDA!
+    // --- VARIABLES GLOBALES DEL DISEÑO ---
+    window.activeLoc = ""; 
+    window.activeCat = ""; 
+    window.currentFilter = "Todas"; 
+    window.capturedFiles = [null,null,null,null]; 
+    window.currentUser = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
+    window.adminClicks = 0;
+
+    const ZONAS = {
+        "Huanta": { lat: -12.94, lon: -74.24, r: 0.05 },
+        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.05 },
+        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.1 }
+    };
+
+    // --- 1. IMPORTACIONES DE FIREBASE (VERSIÓN 10.14.1) ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    // 2. Tu Configuración de Firebase
+    // --- 2. CONFIGURACIÓN DE FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
         authDomain: "rantiy-y-rantikuy.firebaseapp.com",
@@ -13,259 +261,215 @@
         appId: "1:49676513708:web:943ad781c98cb7bac78a09"
     };
 
-    // 3. Inicializamos la App y la Base de Datos
+    // --- 3. INICIALIZACIÓN ---
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Variables locales para la interfaz
+    // Variables locales para la UI
     window.dbLocal = { contacts: [], inventory: [] };
     window.currentID = null;
     window.tempProdImg = "";
-    let rec; let chunks = []; let taps = 0;
 
     // ==========================================
     // CONEXIÓN EN TIEMPO REAL CON FIREBASE
     // ==========================================
 
-    // Escuchar la Vitrina (Almacén) en tiempo real
     onSnapshot(collection(db, "inventory"), (snapshot) => {
         window.dbLocal.inventory = [];
         snapshot.forEach((doc) => {
             window.dbLocal.inventory.push({ id: doc.id, ...doc.data() });
         });
-        if(typeof window.render === "function") window.render();
+        if(typeof window.renderFeed === "function") window.renderFeed();
     });
 
-    // Escuchar Contactos y Chats en tiempo real
     onSnapshot(collection(db, "contacts"), (snapshot) => {
         window.dbLocal.contacts = [];
         snapshot.forEach((doc) => {
             window.dbLocal.contacts.push({ id: doc.id, ...doc.data() });
         });
-        if(typeof window.render === "function") window.render();
-        if(window.currentID && typeof window.renderMsgs === "function") window.renderMsgs(); 
     });
 
-
     // ==========================================
-    // FUNCIONES GUARDANDO EN FIREBASE (NUBE)
+    // FUNCIONES DEL GPS Y NAVEGACIÓN
     // ==========================================
-
-    window.addP = async function() {
-        const n = document.getElementById('p-n').value; 
-        if(!n) return;
-        
-        await addDoc(collection(db, "inventory"), {
-            name: n, 
-            price: document.getElementById('p-p').value, 
-            unit: document.getElementById('p-u').value,
-            qty: document.getElementById('p-q').value, 
-            loc: document.getElementById('p-l').value, 
-            note: document.getElementById('p-o').value,
-            img: window.tempProdImg || 'https://via.placeholder.com/150',
-            timestamp: Date.now()
-        });
-        
-        document.getElementById('modal').style.display = 'none';
-    };
-
-    window.addC = async function() { 
-        const n = document.getElementById('c-n').value; 
-        if(!n) return; 
-        
-        await addDoc(collection(db, "contacts"), {
-            name: n, 
-            phone: document.getElementById('c-p').value, 
-            msgs: [],
-            timestamp: Date.now()
-        });
-        
-        document.getElementById('modal').style.display = 'none'; 
-    };
-
-    window.sendTxt = async function() {
-        const i = document.getElementById('m-input'); 
-        if(!i.value.trim() || !window.currentID) return;
-        
-        const nuevoMensaje = { s:'me', t:'txt', v: i.value, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
-        
-        const contactRef = doc(db, "contacts", window.currentID);
-        await updateDoc(contactRef, {
-            msgs: arrayUnion(nuevoMensaje)
-        });
-
-        i.value = ''; 
-        window.uiInput(); 
-    };
-
-    window.sendMedia = async function(t, v, n="") {
-        if(!window.currentID) return;
-        const nuevoMensaje = { s:'me', t, v, n, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
-        
-        const contactRef = doc(db, "contacts", window.currentID);
-        await updateDoc(contactRef, {
-            msgs: arrayUnion(nuevoMensaje)
-        });
-    }
-
-    // ==========================================
-    // FUNCIONES DE INTERFAZ (UI)
-    // ==========================================
-
-    window.go = function(s, el) { 
-        const vp = document.getElementById('vp');
-        if(vp) vp.style.transform = `translateX(-${s * 50}%)`; 
-        document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active')); 
-        if(el) el.classList.add('active'); 
-    }
-    window.countAdmin = function() { taps++; if(taps===7) { alert("PANEL ADMIN: Huanta v3.0"); taps=0; } setTimeout(()=> taps=0, 2000); }
     
-    window.uiInput = function() {
-        const i = document.getElementById('m-input');
-        if(!i) return;
-        const hasTxt = i.value.trim().length > 0;
-        const btnSend = document.getElementById('btn-send');
-        const btnMic = document.getElementById('btn-mic');
-        if(btnSend) btnSend.style.display = hasTxt ? 'flex' : 'none';
-        if(btnMic) btnMic.style.display = hasTxt ? 'none' : 'flex';
+    window.init = function() {
+        if(!window.currentUser) { window.currentUser = "Usuario de Prueba"; }
+        const userTag = document.getElementById('user-tag');
+        if(userTag) userTag.innerText = "CIUDADANO: " + window.currentUser.toUpperCase();
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
+        } else {
+            alert("Tu celular no soporta GPS.");
+        }
+        
+        // --- SIMULADOR DE GPS ---
+        // Esto permite que tu app funcione inmediatamente para que hagas pruebas sin esperar al satélite.
+        window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); 
     }
 
-    window.popContact = function() {
-        document.getElementById('m-content').innerHTML = `
-            <h2 style="margin-bottom:20px; font-weight:900;">Registrar Cliente</h2>
-            <div class="form-group"><label>Nombre del Comerciante</label><input id="c-n" class="input-p"></div>
-            <div class="form-group"><label>Número de WhatsApp</label><input id="c-p" class="input-p" type="tel"></div>
-            <button onclick="window.addC()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">INICIAR CHAT</button>
-        `;
-        document.getElementById('modal').style.display = 'flex';
-    }
+    window.successGPS = function(pos) {
+        let lat = pos.coords.latitude;
+        let lon = pos.coords.longitude;
+        let found = false;
 
-    window.popProd = function() {
-        window.tempProdImg = "";
-        document.getElementById('m-content').innerHTML = `
-            <h2 style="margin-bottom:20px; font-weight:900;">Detalles del Producto</h2>
-            <div class="form-group"><label>Nombre del Producto</label><input id="p-n" class="input-p"></div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <div class="form-group"><label>Precio Venta</label><input id="p-p" class="input-p"></div>
-                <div class="form-group"><label>Medida</label><select id="p-u" class="input-p"><option>Unidades</option><option>Docenas</option><option>Cajas</option></select></div>
-            </div>
-            <div class="form-group"><label>Stock</label><input id="p-q" class="input-p" type="number"></div>
-            <div class="form-group"><label>Ubicación</label><input id="p-l" class="input-p"></div>
-            <div class="form-group">
-                <label>Imagen del Producto</label>
-                <div class="btn-file-dummy" onclick="document.getElementById('p-img-file').click()">📸 SELECCIONAR DE GALERÍA</div>
-                <input type="file" id="p-img-file" hidden accept="image/*" onchange="window.previewProdImg(this)">
-                <div id="p-preview-container"></div>
-            </div>
-            <div class="form-group"><label>Nota Detallada</label><textarea id="p-o" class="input-p" style="height:80px;"></textarea></div>
-            <button onclick="window.addP()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">GUARDAR EN ALMACÉN</button>
-        `;
-        document.getElementById('modal').style.display = 'flex';
-    }
-
-    window.previewProdImg = function(input) {
-        const file = input.files[0]; if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            window.tempProdImg = e.target.result;
-            document.getElementById('p-preview-container').innerHTML = `<img src="${window.tempProdImg}" class="prod-img-preview">`;
-        };
-        reader.readAsDataURL(file);
-    }
-
-    window.openChat = function(id) { 
-        window.currentID = id; 
-        const c = window.dbLocal.contacts.find(x => x.id === id); 
-        if(!c) return;
-        document.getElementById('active-name').innerText = c.name; 
-        document.getElementById('active-phone').innerText = c.phone || "Sin número"; 
-        document.getElementById('active-av').innerText = c.name[0]; 
-        document.getElementById('chat-window').style.display = 'flex'; 
-        window.renderMsgs(); 
-    }
-    
-    window.closeChat = function() { document.getElementById('chat-window').style.display = 'none'; window.currentID = null; }
-
-    window.renderMsgs = function() {
-        if(!window.currentID) return;
-        const c = window.dbLocal.contacts.find(x => x.id === window.currentID);
-        if(!c || !c.msgs) return;
-
-        const flow = document.getElementById('m-flow');
-        if(!flow) return;
-
-        flow.innerHTML = c.msgs.map(m => {
-            let html = m.v;
-            if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
-            if(m.t === 'audio') html = `<audio controls src="${m.v}" style="width:210px;"></audio>`;
-            if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="display:block; padding:10px; background:#f9f9f9; border-radius:8px; color:black;">📄 ${m.n}</a>`;
-            return `<div class="msg-bubble ${m.s}">${html}<div style="font-size:10px; opacity:0.6; text-align:right;">${m.time}</div></div>`;
-        }).join('');
-        flow.scrollTop = flow.scrollHeight;
-    }
-
-    window.render = function() {
-        const listC = document.getElementById('list-contacts');
-        if(listC) {
-            listC.innerHTML = window.dbLocal.contacts.map(c => `
-                <div class="card-stock" onclick="window.openChat('${c.id}')" style="border-top:none; border-left:5px solid var(--emerald-mid); display:flex; align-items:center; gap:15px; padding:15px; cursor:pointer;">
-                    <div style="width:50px; height:50px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900;">${c.name[0]}</div>
-                    <div style="flex:1"><b>${c.name}</b><small style="display:block; color:gray;">${c.phone || ''}</small></div>
-                    <span>›</span>
-                </div>
-            `).join('');
+        for (let zone in ZONAS) {
+            let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
+            if (d < (ZONAS[zone].r * 10)) {  // Radio ampliado para no tener bloqueos
+                window.activeLoc = zone;
+                found = true;
+                break;
+            }
         }
 
-        const listI = document.getElementById('list-inventory');
-        if(listI) {
-            listI.innerHTML = window.dbLocal.inventory.map(p => `
-                <div class="card-stock">
-                    <img src="${p.img}" class="prod-img-preview" style="margin-top:0; margin-bottom:15px; height:180px;">
-                    <span class="stock-tag">${p.unit}</span>
-                    <h3 style="margin-top:10px;">${p.name}</h3>
-                    <div class="stock-grid">
-                        <div class="stock-item">Precio:<b>S/ ${p.price}</b></div>
-                        <div class="stock-item">Stock:<b>${p.qty}</b></div>
-                        <div class="stock-item">Ubicación:<b>${p.loc}</b></div>
+        if (found) {
+            document.getElementById('gps-screen').style.display = 'none';
+            document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
+            let card = document.getElementById('city-' + window.activeLoc.toLowerCase());
+            if(card) card.classList.add('active-city', 'active-' + window.activeLoc.toLowerCase());
+            
+            const currentZoneText = document.getElementById('current-zone-text');
+            if(currentZoneText) currentZoneText.innerText = window.activeLoc;
+            
+            const zoneChatLabel = document.getElementById('zone-chat-label');
+            if(zoneChatLabel) zoneChatLabel.innerText = "SALA " + window.activeLoc.toUpperCase();
+            
+            window.renderFeed();
+        } else {
+            const gpsLoader = document.getElementById('gps-loader');
+            if(gpsLoader) gpsLoader.style.display = 'none';
+            const gpsMsg = document.getElementById('gps-msg');
+            if(gpsMsg){
+                gpsMsg.innerText = "FUERA DE COBERTURA: Debes estar en Huanta, Huamanga o VRAEM.";
+                gpsMsg.style.color = "red";
+            }
+        }
+    }
+
+    window.errorGPS = function() {
+        const gpsLoader = document.getElementById('gps-loader');
+        if(gpsLoader) gpsLoader.style.display = 'none';
+        const gpsMsg = document.getElementById('gps-msg');
+        if(gpsMsg){
+            gpsMsg.innerText = "ERROR: Activa el GPS para usar Rantiy y Rantikuy.";
+            gpsMsg.style.color = "red";
+        }
+    }
+
+    window.tab = function(t, el) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
+        document.getElementById('view-' + t).classList.add('view-active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        if(t === 'home') window.renderFeed();
+    }
+
+    // ==========================================
+    // RENDERIZADO DEL FEED DESDE FIREBASE
+    // ==========================================
+    
+    window.filterByCat = function(cat, el) {
+        window.currentFilter = cat;
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
+        el.classList.add('filter-active');
+        window.renderFeed();
+    }
+
+    window.renderFeed = function() {
+        if(!window.activeLoc) return;
+        const container = document.getElementById('feed-container');
+        if(!container) return;
+
+        const search = document.getElementById('main-search') ? document.getElementById('main-search').value.toLowerCase() : "";
+
+        let posts = window.dbLocal.inventory.filter(p => p.loc === window.activeLoc);
+
+        if(window.currentFilter !== 'Todas') {
+            posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
+        }
+        if(search) {
+            posts = posts.filter(p => p.name.toLowerCase().includes(search));
+        }
+
+        if(posts.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:50px 20px; color:#94a3b8;"><b>No hay publicaciones en ${window.activeLoc} todavía.</b><br><br>¡Sé el primero en publicar algo!</div>`;
+            return;
+        }
+
+        container.innerHTML = posts.map(p => `
+            <div class="post-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="width:40px; height:40px; border-radius:15px; background:var(--verde); color:white; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px;">
+                            ${p.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <div style="font-weight:800; font-size:14px;">Vendedor Local</div>
+                            <div style="font-size:10px; color:#64748b;">${new Date(p.timestamp || Date.now()).toLocaleDateString()}</div>
+                        </div>
                     </div>
-                    ${p.note ? `<div class="stock-note"><b>Nota:</b> ${p.note}</div>` : ''}
                 </div>
-            `).join('');
+                ${p.img && p.img !== 'https://via.placeholder.com/150' ? `<div class="img-scroll"><img src="${p.img}"></div>` : ''}
+                <h3 style="margin:10px 0 5px 0;">${p.name}</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                    <div style="color:var(--verde); font-weight:900; font-size:20px;">S/ ${p.price}</div>
+                    <button onclick="window.location.href='chat_privado.html'" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800;">Contactar</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ==========================================
+    // SUBIDA AL ESTUDIO (GUARDANDO EN FIREBASE)
+    // ==========================================
+
+    window.startStudio = function(cat, emoji) {
+        window.activeCat = cat;
+        document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + cat;
+        document.getElementById('main-hub').style.display = 'none';
+        document.getElementById('upload-studio').style.display = 'block';
+    }
+
+    window.exitStudio = function() {
+        document.getElementById('main-hub').style.display = 'block';
+        document.getElementById('upload-studio').style.display = 'none';
+        document.getElementById('in-title').value = '';
+        document.getElementById('in-price').value = '';
+    }
+
+    window.uploadToEmpire = async function() {
+        const title = document.getElementById('in-title').value.trim();
+        const price = document.getElementById('in-price').value.trim();
+
+        if(!title) { alert("Ponle un título a tu publicación"); return; }
+        
+        try {
+            await addDoc(collection(db, "inventory"), {
+                name: title, 
+                price: price || "0", 
+                unit: "Unidad",
+                qty: "1", 
+                loc: window.activeLoc, 
+                note: `[CAT:${window.activeCat}] Publicación desde la app`,
+                img: window.tempProdImg || 'https://via.placeholder.com/150',
+                timestamp: Date.now()
+            });
+            
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#22c55e', '#f97316', '#3b82f6'] });
+            window.exitStudio();
+            window.tab('home', document.querySelector('.nav-btn')); 
+            
+        } catch (e) {
+            console.error("Error al publicar: ", e);
+            alert("Hubo un error al publicar. Revisa tu conexión.");
         }
     }
 
-    // Inicializar micrófono y manejo de archivos
-    const mic = document.getElementById('btn-mic');
-    if(mic) {
-        mic.onpointerdown = async (e) => {
-            e.preventDefault();
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                rec = new MediaRecorder(stream); chunks = [];
-                rec.ondataavailable = e => chunks.push(e.data);
-                rec.onstop = () => {
-                    const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
-                    const reader = new FileReader();
-                    reader.onload = () => window.sendMedia('audio', reader.result);
-                    reader.readAsDataURL(blob);
-                };
-                rec.start(); mic.classList.add('active');
-            } catch(err) { alert("Activa el micrófono"); }
-        };
-        mic.onpointerup = () => { if(rec && rec.state !== 'inactive') { rec.stop(); mic.classList.remove('active'); } };
-    }
-
-    window.handleFile = function(input) {
-        const file = input.files[0]; if(!file) return;
-        const reader = new FileReader();
-        reader.onload = () => { window.sendMedia(file.type.includes('image') ? 'img' : 'doc', reader.result, file.name); input.value = ''; };
-        reader.readAsDataURL(file);
-    }
-
-    // Seguro para cargarZonas
-    if (typeof cargarZonas === "function") {
-        cargarZonas();
-    } else {
-        console.warn("La función cargarZonas no está definida, pero la página seguirá funcionando.");
-    }
+    // Inicializamos al cargar
+    window.onload = function() {
+        window.init();
+    };
 </script>
+</body>
+</html>
