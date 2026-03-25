@@ -2,617 +2,474 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rantiy y Rantikuy - Imperio Huanta v3.0</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rantiy y Rantikuy - Imperio Huanta</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    
     <style>
-        /* =========================================
-           SISTEMA DE DISEÑO IMPERIAL (CSS)
-           ========================================= */
         :root {
-            --verde: #22c55e; 
-            --verde-glow: rgba(34, 197, 94, 0.2);
-            --naranja: #f97316; 
-            --oscuro: #0f172a;
-            --glass: rgba(255, 255, 255, 0.95);
-            --huanta: #22c55e; 
-            --huamanga: #3b82f6; 
-            --vraem: #f59e0b;
-            --premium-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --verde: #22c55e; --verde-glow: #dcfce7;
+            --naranja: #f97316; --oscuro: #1e293b;
+            --glass: rgba(255, 255, 255, 0.96);
+            --huanta: #22c55e; --huamanga: #3b82f6; --vraem: #f59e0b;
+            --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
-        
-        body { 
-            background: #f1f5f9; 
-            margin: 0; 
-            padding-bottom: 120px; 
-            overflow-x: hidden; 
-            color: var(--oscuro);
-            -webkit-user-select: none;
-        }
+        body { background: #f8fafc; margin: 0; padding-bottom: 140px; overflow-x: hidden; color: var(--oscuro); }
 
-        /* --- PANTALLA DE CARGA --- */
-        #gps-screen { 
-            position: fixed; 
-            inset: 0; 
-            background: white; 
-            z-index: 10000; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            text-align: center; 
-            padding: 30px; 
-            transition: 0.8s ease;
-        }
-        .gps-loader { 
-            width: 90px; height: 90px; 
-            border: 6px solid #f3f3f3; 
-            border-top: 6px solid var(--verde); 
-            border-radius: 50%; 
-            animation: spin 1s linear infinite; 
-            box-shadow: 0 0 20px var(--verde-glow);
-        }
+        /* --- BLOQUEO GPS INICIAL --- */
+        #gps-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+        .gps-loader { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--verde); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- HEADER --- */
         .header {
-            background: var(--glass); 
-            backdrop-filter: blur(20px); 
-            padding: 15px 20px;
+            background: var(--glass); backdrop-filter: blur(25px); padding: 18px 25px;
             display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 900; 
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .logo-rr {
-            width: 55px; height: 55px; 
-            background: linear-gradient(135deg, var(--verde), #15803d);
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 900; font-size: 20px; cursor: pointer;
-            box-shadow: 0 10px 20px var(--verde-glow);
+            width: 62px; height: 62px; background: linear-gradient(135deg, var(--verde), #15803d);
+            border-radius: 22px; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 900; font-size: 24px; cursor: pointer;
+            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
+            animation: rotate3d 7s infinite ease-in-out; transform-style: preserve-3d;
         }
+        @keyframes rotate3d { 0%, 100% { transform: perspective(500px) rotateY(0deg); } 50% { transform: perspective(500px) rotateY(30deg); } }
 
-        /* BOTONES FLOTANTES */
-        .btn-float {
-            position: fixed; right: 20px; bottom: 110px;
-            background: white; padding: 12px 20px; border-radius: 50px;
-            box-shadow: var(--premium-shadow); display: flex; align-items: center;
-            gap: 10px; text-decoration: none; color: var(--oscuro);
-            font-weight: 800; font-size: 13px; z-index: 800;
-            border: 2px solid var(--verde); transition: var(--transition);
-        }
-        .btn-float:active { transform: scale(0.9); }
-        .dot { width: 8px; height: 8px; background: var(--verde); border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-
-        /* --- FILTROS Y BÚSQUEDA --- */
-        .search-container { padding: 15px 20px; }
-        .search-box {
-            position: relative; display: flex; align-items: center;
-        }
-        .search-input { 
-            width: 100%; padding: 18px 20px 18px 50px; 
-            border-radius: 20px; border: 1px solid #e2e8f0; 
-            background: white; font-weight: 700; font-size: 14px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-        }
-        .search-icon { position: absolute; left: 18px; font-size: 18px; opacity: 0.4; }
-
-        .filter-bar { 
-            padding: 0 20px 15px; display: flex; gap: 10px; 
-            overflow-x: auto; scrollbar-width: none; 
-        }
-        .filter-chip { 
-            padding: 10px 18px; background: white; border-radius: 50px; 
-            font-size: 11px; font-weight: 800; white-space: nowrap; 
-            border: 2px solid transparent; transition: 0.3s;
-        }
-        .filter-active { background: var(--oscuro); color: white; }
-
-        /* --- CIUDADES --- */
-        .city-bar { padding: 10px 20px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
-        .city-card { 
-            background: white; min-width: 120px; padding: 15px; 
-            border-radius: 25px; display: flex; flex-direction: column; 
-            align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.03); 
-            opacity: 0.4; transition: var(--transition); border: 2px solid transparent;
-        }
-        .active-city { opacity: 1; transform: translateY(-3px); }
-        .city-card.huanta.active-city { border-color: var(--huanta); background: #f0fdf4; }
-        .city-card.huamanga.active-city { border-color: var(--huamanga); background: #eff6ff; }
-        .city-card.vraem.active-city { border-color: var(--vraem); background: #fffbeb; }
-
-        /* --- VISTAS --- */
-        .view { display: none; padding: 0 20px; animation: fadeIn 0.4s ease; }
-        .view-active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- VITRINA --- */
-        .post-card { 
-            background: white; border-radius: 30px; padding: 15px; 
-            box-shadow: var(--premium-shadow); margin-bottom: 20px;
-            border: 1px solid #f1f5f9;
-        }
-        .post-img { 
-            width: 100%; height: 260px; object-fit: cover; 
-            border-radius: 20px; margin: 12px 0; background: #f8fafc;
-        }
-        .post-price { color: var(--verde); font-weight: 900; font-size: 22px; }
-
-        /* --- STUDIO --- */
-        .studio-hub { 
-            background: var(--oscuro); border-radius: 40px; padding: 40px 20px; 
-            color: white; text-align: center; margin-bottom: 20px;
-        }
-        .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 25px; }
-        .cat-btn { 
-            background: rgba(255,255,255,0.08); padding: 15px 5px; 
-            border-radius: 20px; font-size: 10px; font-weight: 800; cursor: pointer;
-        }
-
-        .upload-form { 
-            background: white; border-radius: 35px; padding: 25px; 
-            display: none; box-shadow: var(--premium-shadow); 
-        }
-        .photo-slots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        .slot { 
-            width: 100%; height: 130px; border: 2px dashed #cbd5e1; 
-            border-radius: 20px; display: flex; align-items: center; 
-            justify-content: center; position: relative; overflow: hidden;
-            background: #f8fafc;
-        }
-        .slot img { width: 100%; height: 100%; object-fit: cover; }
-        .slot-ui { position: absolute; text-align: center; }
-        .slot-ui span { font-size: 24px; display: block; }
-        .slot-ui p { font-size: 9px; font-weight: 800; margin-top: 5px; color: #94a3b8; }
-
-        .rr-input { 
-            width: 100%; padding: 16px; border-radius: 15px; 
-            border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 15px;
+        /* BOTÓN DE CHAT PRIVADO EXTERNO */
+        .btn-mensajes-privados {
+            position: fixed;
+            right: 20px;
+            bottom: 120px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            box-shadow: var(--premium-shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--oscuro);
+            font-weight: 800;
+            font-size: 14px;
+            z-index: 2500;
+            border: 2px solid var(--verde-glow);
             transition: 0.3s;
         }
-        .rr-input:focus { border-color: var(--verde); background: white; }
+        .btn-mensajes-privados:active { transform: scale(0.9); }
+        .dot-online { width: 10px; height: 10px; background: var(--verde); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* --- CHAT GRUPAL --- */
-        .chat-container { 
-            background: white; border-radius: 35px; height: 65vh; 
-            display: flex; flex-direction: column; overflow: hidden; 
-            box-shadow: var(--premium-shadow);
-        }
-        .chat-header { background: var(--verde); color: white; padding: 15px 20px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; }
-        .chat-msgs { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f8fafc; }
+        /* --- BÚSQUEDA Y FILTROS --- */
+        .search-container { padding: 0 20px; margin-top: 15px; }
+        .search-wrapper { position: relative; display: flex; align-items: center; }
+        .search-input { width: 100%; padding: 18px 25px 18px 55px; border-radius: 25px; border: none; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.03); font-weight: 700; }
+        .search-icon { position: absolute; left: 20px; font-size: 20px; }
+
+        .filter-bar { padding: 15px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+        .filter-chip { padding: 10px 20px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
+        .filter-active { background: var(--verde-glow); border-color: var(--verde); color: var(--verde); }
+
+        /* --- CIUDADES --- */
+        .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
+        .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.5; pointer-events: none; }
+        .active-city { opacity: 1; pointer-events: auto; border-width: 3px; }
+        .active-huanta { border-color: var(--huanta); background: #f0fdf4; }
+        .active-huamanga { border-color: var(--huamanga); background: #eff6ff; }
+        .active-vraem { border-color: var(--vraem); background: #fffbeb; }
+
+        /* --- VISTAS --- */
+        .view { display: none; padding: 0 20px; animation: slideUp 0.5s ease; }
+        .view-active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- VITRINA / CARDS --- */
+        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; }
+        .img-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
+        .img-scroll img { width: 100%; height: 230px; object-fit: cover; border-radius: 25px; flex-shrink: 0; }
+
+        /* --- STUDIO SUBIDA --- */
+        .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
+        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
+        .cat-btn { background: rgba(255,255,255,0.07); padding: 20px 10px; border-radius: 25px; cursor: pointer; font-size: 10px; font-weight: 800; }
         
-        .bubble { 
-            padding: 12px 16px; border-radius: 18px; max-width: 80%; 
-            font-size: 13px; font-weight: 600; line-height: 1.4;
-        }
-        .msg-me { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .msg-them { background: white; color: var(--oscuro); align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .msg-info { font-size: 9px; opacity: 0.7; margin-bottom: 4px; font-weight: 800; }
+        #upload-studio { background: white; border-radius: 45px; padding: 35px; margin-top: 25px; display: none; box-shadow: var(--premium-shadow); }
+        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .drop-zone { width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 25px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; background: #f8fafc; }
+        .drop-zone img { width: 100%; height: 100%; object-fit: cover; }
+        .source-chooser { position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
+        .drop-zone:hover .source-chooser { opacity: 1; }
+        .rr-field { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; }
 
-        .chat-input-bar { padding: 15px; display: flex; gap: 10px; background: white; border-top: 1px solid #f1f5f9; }
+        /* --- SISTEMA DE CHATS --- */
+        .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; }
+        .msg-area { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
+        .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .bubble img { width: 100%; border-radius: 15px; margin-top: 5px; cursor: pointer; }
+        .sticker { font-size: 50px; display: block; }
+
+        #private-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; }
 
         /* --- NAV ISLAND --- */
-        .nav-island { 
-            position: fixed; bottom: 30px; left: 5%; width: 90%; 
-            background: var(--oscuro); border-radius: 40px; 
-            display: flex; justify-content: space-around; padding: 15px; 
-            z-index: 1000; box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-        }
-        .nav-item { color: #64748b; text-align: center; font-size: 9px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { color: var(--verde); transform: translateY(-3px); }
-        .nav-item span { font-size: 20px; display: block; margin-bottom: 3px; }
+        .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
+        .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
+        .nav-btn.active { color: var(--verde); }
+        
+        .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 12px; border-radius: 15px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 10px; }
+        .emoji-panel { display: flex; gap: 10px; padding: 10px; overflow-x: auto; background: #f1f5f9; }
+        .emoji-btn { font-size: 20px; cursor: pointer; border: none; background: none; }
 
-        /* NOTIFICACIONES TOAST */
-        #toast {
-            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-            background: var(--oscuro); color: white; padding: 12px 25px;
-            border-radius: 50px; font-weight: 800; font-size: 12px; z-index: 5000;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
+        /* --- HERRAMIENTAS CHAT --- */
+        .chat-tools { display: flex; gap: 10px; padding: 10px 20px; background: white; border-top: 1px solid #eee; }
+        .tool-btn { background: #f1f5f9; border: none; padding: 12px; border-radius: 18px; font-size: 18px; cursor: pointer; flex: 1; transition: 0.2s; }
+        .tool-btn:active { background: var(--verde-glow); }
+        .file-bubble { display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; }
+        .file-link { color: var(--verde); font-weight: 800; text-decoration: none; font-size: 12px; }
     </style>
 </head>
 <body>
 
-    <div id="toast">¡Publicación exitosa! 🚀</div>
+<div id="gps-screen">
+    <div class="logo-rr" style="width:100px; height:100px; font-size:40px; margin-bottom:20px;">R&R</div>
+    <h1 style="font-weight:900; margin-bottom:5px;">Rantiy y Rantikuy</h1>
+    <p style="opacity:0.6; margin-bottom:30px;">Detectando tu ubicación real en el mapa...</p>
+    <div class="gps-loader" id="gps-loader"></div>
+    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--verde);">Iniciando satélites...</p>
+</div>
 
-    <div id="gps-screen">
-        <div class="logo-rr" style="width:90px; height:90px; font-size:35px; margin-bottom:20px;">R&R</div>
-        <h2 style="font-weight:900; margin:0;">Detectando Coordenadas</h2>
-        <p style="opacity:0.5; font-size:13px; margin: 10px 0 25px;">Sincronizando con satélites del Imperio...</p>
-        <div class="gps-loader"></div>
-        <p id="gps-status" style="margin-top:20px; font-weight:800; color:var(--verde);">Buscando Huanta, Huamanga o VRAEM...</p>
-        <button id="btn-manual" onclick="window.forceEntry()" style="margin-top:20px; background:none; border:none; color:#94a3b8; font-weight:800; text-decoration:underline; display:none;">Entrar manualmente</button>
-    </div>
+<a href="chat_privado.html" class="btn-mensajes-privados">
+    <span class="dot-online"></span>
+    💬 MIS CHATS
+</a>
 
-    <a href="chat_privado.html" class="btn-float">
-        <span class="dot"></span>
-        MIS MENSAJES
-    </a>
-
-    <header class="header">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <div class="logo-rr" id="main-logo">R&R</div>
-            <div>
-                <div style="font-weight: 900; font-size: 18px; letter-spacing:-0.5px;">Imperio Rantiy</div>
-                <div id="display-user" style="font-size: 9px; color: var(--verde); font-weight: 800; text-transform:uppercase;">Ciudadano: Cargando...</div>
-            </div>
-        </div>
-    </header>
-
-    <div class="search-container">
-        <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="search-input" class="search-input" placeholder="¿Qué necesitas hoy?" oninput="window.app.renderFeed()">
+<header class="header">
+    <div style="display:flex; align-items:center; gap:18px;">
+        <div class="logo-rr" onclick="checkAdminAccess()">R&R</div>
+        <div>
+            <div style="font-weight: 900; font-size: 20px;">Rantiy y Rantikuy</div>
+            <div id="user-tag" style="font-size: 10px; color: var(--verde); font-weight: 800;">CIUDADANO: CARGANDO...</div>
         </div>
     </div>
+</header>
 
-    <div class="filter-bar">
-        <div class="filter-chip filter-active" onclick="window.app.setFilter('Todas', this)">✨ Todas</div>
-        <div class="filter-chip" onclick="window.app.setFilter('Venta', this)">🛍️ Ventas</div>
-        <div class="filter-chip" onclick="window.app.setFilter('Comida', this)">🍲 Comida</div>
-        <div class="filter-chip" onclick="window.app.setFilter('Taxi', this)">🚗 Taxi</div>
-        <div class="filter-chip" onclick="window.app.setFilter('Servicio', this)">⚡ Servicios</div>
+<div class="search-container">
+    <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas en tu zona?" oninput="window.renderFeed()">
     </div>
+</div>
 
-    <div class="city-bar">
-        <div class="city-card huanta" id="card-huanta"><span>⛰️</span><label style="font-size:9px; font-weight:900;">HUANTA</label></div>
-        <div class="city-card huamanga" id="card-huamanga"><span>⛪</span><label style="font-size:9px; font-weight:900;">HUAMANGA</label></div>
-        <div class="city-card vraem" id="card-vraem"><span>🌿</span><label style="font-size:9px; font-weight:900;">VRAEM</label></div>
-    </div>
+<div class="filter-bar">
+    <div class="filter-chip filter-active" onclick="window.filterByCat('Todas', this)">✨ Todas</div>
+    <div class="filter-chip" onclick="window.filterByCat('Comida', this)">🍲 Comida</div>
+    <div class="filter-chip" onclick="window.filterByCat('Venta', this)">👕 Venta</div>
+    <div class="filter-chip" onclick="window.filterByCat('Taxi', this)">🚗 Taxi</div>
+    <div class="filter-chip" onclick="window.filterByCat('Servicio', this)">⚡ Servicio</div>
+</div>
 
-    <main id="view-home" class="view view-active">
-        <div id="feed-container">
-            </div>
-    </main>
+<div class="city-bar">
+    <div class="city-card" id="city-huanta"><span>⛰️</span><label>HUANTA</label></div>
+    <div class="city-card" id="city-huamanga"><span>⛪</span><label>HUAMANGA</label></div>
+    <div class="city-card" id="city-vraem"><span>🌿</span><label>VRAEM</label></div>
+</div>
 
-    <section id="view-upload" class="view">
-        <div class="studio-hub" id="studio-main">
-            <h2 style="font-weight:900; margin:0;">Crea un Anuncio</h2>
-            <p style="opacity:0.6; font-size:12px;">Publicarás en: <span id="pub-city" style="color:var(--verde); font-weight:900;">...</span></p>
-            <div class="cat-grid">
-                <div class="cat-btn" onclick="window.app.openStudio('Venta', '💰')">🛍️<br>VENTA</div>
-                <div class="cat-btn" onclick="window.app.openStudio('Comida', '🥘')">🍲<br>COMIDA</div>
-                <div class="cat-btn" onclick="window.app.openStudio('Taxi', '🚕')">🚗<br>TAXI</div>
-                <div class="cat-btn" onclick="window.app.openStudio('Servicio', '🔧')">⚡<br>SERVICIO</div>
-                <div class="cat-btn" onclick="window.app.openStudio('Empleo', '💼')">💼<br>EMPLEO</div>
-                <div class="cat-btn" onclick="window.app.openStudio('Turismo', '📸')">📸<br>TURISMO</div>
-            </div>
+<main id="view-home" class="view view-active">
+    <div id="feed-container"></div>
+</main>
+
+<section id="view-camera" class="view">
+    <div class="camera-hub" id="main-hub">
+        <h2 style="font-weight:900;">Publicar en <span id="current-zone-text">...</span></h2>
+        <div class="category-grid">
+            <div class="cat-btn" onclick="window.startStudio('Venta', '🛍️')">💰<br>VENTA</div>
+            <div class="cat-btn" onclick="window.startStudio('Comida', '🍲')">🥘<br>COMIDA</div>
+            <div class="cat-btn" onclick="window.startStudio('Taxi', '🚗')">🚕<br>TAXI</div>
+            <div class="cat-btn" onclick="window.startStudio('Empleo', '💼')">💼<br>EMPLEO</div>
+            <div class="cat-btn" onclick="window.startStudio('Servicio', '⚡')">🔧<br>SERVICIO</div>
+            <div class="cat-btn" onclick="window.startStudio('Turismo', '📸')">📸<br>TURISMO</div>
         </div>
+    </div>
 
-        <div id="form-container" class="upload-form">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 id="studio-title" style="margin:0; font-weight:900;">Nuevo Post</h3>
-                <button onclick="window.app.closeStudio()" style="background:none; border:none; font-size:24px;">✕</button>
-            </div>
+    <div id="upload-studio">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
+            <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px;">✕</button>
+        </div>
+        <div class="photo-grid">
+            <div class="drop-zone"><div id="info-0">1</div><img id="img-0" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
+            <div class="drop-zone"><div id="info-1">2</div><img id="img-1" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
+            <div class="drop-zone"><div id="info-2">3</div><img id="img-2" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
+            <div class="drop-zone"><div id="info-3">4</div><img id="img-3" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
+        </div>
+        <div id="q-box" style="margin-top:20px;"></div>
+        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
+        <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
+        <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
+    </div>
+</section>
 
-            <div class="photo-slots">
-                <div class="slot" onclick="document.getElementById('file-trigger').click()">
-                    <img id="prev-0" style="display:none;">
-                    <div class="slot-ui" id="ui-0"><span>📸</span><p>SUBIR FOTO</p></div>
-                </div>
-                <div class="slot" style="opacity:0.5;">
-                    <div class="slot-ui"><span>➕</span><p>PRÓXIMAMENTE</p></div>
-                </div>
-            </div>
+<section id="view-chat" class="view">
+    <div class="chat-box-ui">
+        <div id="group-title" style="padding:20px; background:var(--verde); color:white; font-weight:900; display:flex; justify-content:space-between;">
+            <span id="zone-chat-label">SALA REGIONAL</span>
+            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">AUTO-LIMPIEZA 30H</span>
+        </div>
+        <div class="msg-area" id="group-msgs"></div>
+        <div style="padding:15px; display:flex; gap:10px;">
+            <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe al grupo...">
+            <button style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
+        </div>
+    </div>
+</section>
+
+<nav class="nav-island">
+    <div class="nav-btn active" onclick="window.tab('home', this)">🏠<br>VITRINA</div>
+    <div class="nav-btn" onclick="window.tab('camera', this)">📸<br>SUBIR</div>
+    <div class="nav-btn" onclick="window.tab('chat', this)">💬<br>GRUPAL</div>
+</nav>
+
+<script type="module">
+    // --- VARIABLES GLOBALES DEL DISEÑO ---
+    window.activeLoc = ""; 
+    window.activeCat = ""; 
+    window.currentFilter = "Todas"; 
+    window.capturedFiles = [null,null,null,null]; 
+    window.currentUser = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
+    window.adminClicks = 0;
+
+    const ZONAS = {
+        "Huanta": { lat: -12.94, lon: -74.24, r: 0.05 },
+        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.05 },
+        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.1 }
+    };
+
+    // --- 1. IMPORTACIONES DE FIREBASE (VERSIÓN 10.14.1) ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    // --- 2. CONFIGURACIÓN DE FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
+        authDomain: "rantiy-y-rantikuy.firebaseapp.com",
+        projectId: "rantiy-y-rantikuy",
+        storageBucket: "rantiy-y-rantikuy.firebasestorage.app",
+        messagingSenderId: "49676513708",
+        appId: "1:49676513708:web:943ad781c98cb7bac78a09"
+    };
+
+    // --- 3. INICIALIZACIÓN ---
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Variables locales para la UI
+    window.dbLocal = { contacts: [], inventory: [] };
+    window.currentID = null;
+    window.tempProdImg = "";
+
+    // ==========================================
+    // CONEXIÓN EN TIEMPO REAL CON FIREBASE
+    // ==========================================
+
+    onSnapshot(collection(db, "inventory"), (snapshot) => {
+        window.dbLocal.inventory = [];
+        snapshot.forEach((doc) => {
+            window.dbLocal.inventory.push({ id: doc.id, ...doc.data() });
+        });
+        if(typeof window.renderFeed === "function") window.renderFeed();
+    });
+
+    onSnapshot(collection(db, "contacts"), (snapshot) => {
+        window.dbLocal.contacts = [];
+        snapshot.forEach((doc) => {
+            window.dbLocal.contacts.push({ id: doc.id, ...doc.data() });
+        });
+    });
+
+    // ==========================================
+    // FUNCIONES DEL GPS Y NAVEGACIÓN
+    // ==========================================
+    
+    window.init = function() {
+        if(!window.currentUser) { window.currentUser = "Usuario de Prueba"; }
+        const userTag = document.getElementById('user-tag');
+        if(userTag) userTag.innerText = "CIUDADANO: " + window.currentUser.toUpperCase();
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
+        } else {
+            alert("Tu celular no soporta GPS.");
+        }
+        
+        // --- SIMULADOR DE GPS ---
+        // Esto permite que tu app funcione inmediatamente para que hagas pruebas sin esperar al satélite.
+        window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); 
+    }
+
+    window.successGPS = function(pos) {
+        let lat = pos.coords.latitude;
+        let lon = pos.coords.longitude;
+        let found = false;
+
+        for (let zone in ZONAS) {
+            let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
+            if (d < (ZONAS[zone].r * 10)) {  // Radio ampliado para no tener bloqueos
+                window.activeLoc = zone;
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            document.getElementById('gps-screen').style.display = 'none';
+            document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
+            let card = document.getElementById('city-' + window.activeLoc.toLowerCase());
+            if(card) card.classList.add('active-city', 'active-' + window.activeLoc.toLowerCase());
             
-            <input type="file" id="file-trigger" hidden accept="image/*" onchange="window.app.handleFile(this)">
+            const currentZoneText = document.getElementById('current-zone-text');
+            if(currentZoneText) currentZoneText.innerText = window.activeLoc;
             
-            <input type="text" id="p-name" class="rr-input" placeholder="¿Qué ofreces? (Ej: Pizza Familiar)">
-            <input type="number" id="p-price" class="rr-input" placeholder="Precio en Soles (S/)">
+            const zoneChatLabel = document.getElementById('zone-chat-label');
+            if(zoneChatLabel) zoneChatLabel.innerText = "SALA " + window.activeLoc.toUpperCase();
             
-            <button onclick="window.app.upload()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:20px; font-weight:900; font-size:15px; box-shadow: 0 10px 20px var(--verde-glow);">LANZAR PUBLICACIÓN 🚀</button>
-        </div>
-    </section>
+            window.renderFeed();
+        } else {
+            const gpsLoader = document.getElementById('gps-loader');
+            if(gpsLoader) gpsLoader.style.display = 'none';
+            const gpsMsg = document.getElementById('gps-msg');
+            if(gpsMsg){
+                gpsMsg.innerText = "FUERA DE COBERTURA: Debes estar en Huanta, Huamanga o VRAEM.";
+                gpsMsg.style.color = "red";
+            }
+        }
+    }
 
-    <section id="view-chat" class="view">
-        <div class="chat-container">
-            <div class="chat-header">
-                <span id="chat-title">SALA REGIONAL</span>
-                <span style="font-size:9px; background:rgba(0,0,0,0.2); padding:5px 10px; border-radius:10px;">VIVO 🟢</span>
-            </div>
-            <div class="chat-msgs" id="chat-msgs">
-                </div>
-            <div class="chat-input-bar">
-                <input type="text" id="msg-input" class="rr-input" style="margin:0; flex:1;" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') window.app.sendMsg()">
-                <button onclick="window.app.sendMsg()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:18px; font-size:20px;">✈️</button>
-            </div>
-        </div>
-    </section>
+    window.errorGPS = function() {
+        const gpsLoader = document.getElementById('gps-loader');
+        if(gpsLoader) gpsLoader.style.display = 'none';
+        const gpsMsg = document.getElementById('gps-msg');
+        if(gpsMsg){
+            gpsMsg.innerText = "ERROR: Activa el GPS para usar Rantiy y Rantikuy.";
+            gpsMsg.style.color = "red";
+        }
+    }
 
-    <nav class="nav-island">
-        <div class="nav-item active" onclick="window.app.nav('home', this)">
-            <span>🏠</span> VITRINA
-        </div>
-        <div class="nav-item" onclick="window.app.nav('upload', this)">
-            <span>📸</span> SUBIR
-        </div>
-        <div class="nav-item" onclick="window.app.nav('chat', this)">
-            <span>💬</span> GRUPAL
-        </div>
-    </nav>
+    window.tab = function(t, el) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
+        document.getElementById('view-' + t).classList.add('view-active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        if(t === 'home') window.renderFeed();
+    }
 
-    <script type="module">
-        // --- IMPORTACIONES ---
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, limit } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    // ==========================================
+    // RENDERIZADO DEL FEED DESDE FIREBASE
+    // ==========================================
+    
+    window.filterByCat = function(cat, el) {
+        window.currentFilter = cat;
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
+        el.classList.add('filter-active');
+        window.renderFeed();
+    }
 
-        // --- CONFIGURACIÓN (TUS KEYS ORIGINALES) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
-            authDomain: "rantiy-y-rantikuy.firebaseapp.com",
-            projectId: "rantiy-y-rantikuy",
-            storageBucket: "rantiy-y-rantikuy.firebasestorage.app",
-            messagingSenderId: "49676513708",
-            appId: "1:49676513708:web:943ad781c98cb7bac78a09"
-        };
+    window.renderFeed = function() {
+        if(!window.activeLoc) return;
+        const container = document.getElementById('feed-container');
+        if(!container) return;
 
-        // --- INICIALIZACIÓN ---
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const search = document.getElementById('main-search') ? document.getElementById('main-search').value.toLowerCase() : "";
 
-        // --- OBJETO GLOBAL APP ---
-        window.app = {
-            user: localStorage.getItem('rantiy_user') || "Ciudadano_" + Math.floor(Math.random()*999),
-            activeLoc: "",
-            activeCat: "Todas",
-            inventory: [],
-            tempImg: "",
-            taps: 0,
+        let posts = window.dbLocal.inventory.filter(p => p.loc === window.activeLoc);
 
-            init() {
-                document.getElementById('display-user').innerText = "Ciudadano: " + this.user;
-                this.setupGPS();
-                this.syncData();
-                this.setupAdmin();
-                
-                // Seguridad: si en 8 seg no detecta GPS, mostramos botón manual
-                setTimeout(() => {
-                    if(!this.activeLoc) document.getElementById('btn-manual').style.display = 'block';
-                }, 8000);
-            },
+        if(window.currentFilter !== 'Todas') {
+            posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
+        }
+        if(search) {
+            posts = posts.filter(p => p.name.toLowerCase().includes(search));
+        }
 
-            // GPS Y UBICACIÓN
-            setupGPS() {
-                const ZONAS = {
-                    "Huanta": { lat: -12.94, lon: -74.24, r: 0.1 },
-                    "Huamanga": { lat: -13.15, lon: -74.22, r: 0.1 },
-                    "VRAEM": { lat: -12.50, lon: -73.80, r: 0.2 }
-                };
+        if(posts.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:50px 20px; color:#94a3b8;"><b>No hay publicaciones en ${window.activeLoc} todavía.</b><br><br>¡Sé el primero en publicar algo!</div>`;
+            return;
+        }
 
-                if ("geolocation" in navigator) {
-                    navigator.geolocation.getCurrentPosition((pos) => {
-                        let lat = pos.coords.latitude;
-                        let lon = pos.coords.longitude;
-                        let found = false;
-
-                        for(let z in ZONAS) {
-                            let d = Math.sqrt(Math.pow(lat - ZONAS[z].lat, 2) + Math.pow(lon - ZONAS[z].lon, 2));
-                            if(d < ZONAS[z].r) {
-                                this.setCity(z);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if(!found) this.setCity("Huanta"); // Default por cortesía
-                    }, () => this.setCity("Huanta"));
-                } else {
-                    this.setCity("Huanta");
-                }
-            },
-
-            setCity(name) {
-                this.activeLoc = name;
-                document.getElementById('pub-city').innerText = name;
-                document.getElementById('chat-title').innerText = "SALA " + name.toUpperCase();
-                
-                // Actualizar UI
-                document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city'));
-                const card = document.getElementById('card-' + name.toLowerCase());
-                if(card) card.classList.add('active-city');
-
-                // Quitar pantalla carga
-                setTimeout(() => {
-                    const scr = document.getElementById('gps-screen');
-                    scr.style.opacity = '0';
-                    setTimeout(() => scr.style.display = 'none', 800);
-                }, 1000);
-
-                this.renderFeed();
-                this.syncChat();
-            },
-
-            // FIREBASE SYNC (INVENTARIO)
-            syncData() {
-                const q = query(collection(db, "inventory"), orderBy("timestamp", "desc"));
-                onSnapshot(q, (snap) => {
-                    this.inventory = [];
-                    snap.forEach(doc => this.inventory.push({id: doc.id, ...doc.data()}));
-                    this.renderFeed();
-                });
-            },
-
-            // RENDERIZADO
-            renderFeed() {
-                const cont = document.getElementById('feed-container');
-                const search = document.getElementById('search-input').value.toLowerCase();
-                
-                let filtered = this.inventory.filter(p => p.loc === this.activeLoc);
-
-                if(this.activeCat !== "Todas") {
-                    filtered = filtered.filter(p => p.category === this.activeCat);
-                }
-
-                if(search) {
-                    filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
-                }
-
-                if(filtered.length === 0) {
-                    cont.innerHTML = `<div style="text-align:center; padding:80px 20px; opacity:0.3; font-weight:800;">📦 No hay nada por aquí...</div>`;
-                    return;
-                }
-
-                cont.innerHTML = filtered.map(p => `
-                    <div class="post-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <div style="width:35px; height:35px; border-radius:10px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; font-weight:900; color:var(--verde);">${p.seller ? p.seller.charAt(0).toUpperCase() : 'C'}</div>
-                                <div>
-                                    <div style="font-size:12px; font-weight:800;">${p.seller || 'Anónimo'}</div>
-                                    <div style="font-size:9px; color:#94a3b8;">${p.category || 'Venta'}</div>
-                                </div>
-                            </div>
-                            <div style="font-size:9px; font-weight:800; color:#94a3b8;">${p.timestamp ? new Date(p.timestamp.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Ahora'}</div>
+        container.innerHTML = posts.map(p => `
+            <div class="post-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="width:40px; height:40px; border-radius:15px; background:var(--verde); color:white; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px;">
+                            ${p.name.charAt(0).toUpperCase()}
                         </div>
-                        <img src="${p.img || 'https://via.placeholder.com/300'}" class="post-img">
-                        <div style="font-weight:800; font-size:16px;">${p.name}</div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                            <div class="post-price">S/ ${p.price}</div>
-                            <button onclick="window.location.href='chat_privado.html?vendedor=${p.seller}&prod=${p.name}'" style="background:var(--oscuro); color:white; border:none; padding:10px 18px; border-radius:15px; font-weight:800; font-size:12px;">Contactar</button>
+                        <div>
+                            <div style="font-weight:800; font-size:14px;">Vendedor Local</div>
+                            <div style="font-size:10px; color:#64748b;">${new Date(p.timestamp || Date.now()).toLocaleDateString()}</div>
                         </div>
                     </div>
-                `).join('');
-            },
+                </div>
+                ${p.img && p.img !== 'https://via.placeholder.com/150' ? `<div class="img-scroll"><img src="${p.img}"></div>` : ''}
+                <h3 style="margin:10px 0 5px 0;">${p.name}</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                    <div style="color:var(--verde); font-weight:900; font-size:20px;">S/ ${p.price}</div>
+                    <button onclick="window.location.href='chat_privado.html'" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800;">Contactar</button>
+                </div>
+            </div>
+        `).join('');
+    }
 
-            // CHAT GRUPAL REAL-TIME
-            syncChat() {
-                const q = query(
-                    collection(db, `chat_${this.activeLoc.toLowerCase()}`), 
-                    orderBy("timestamp", "asc"),
-                    limit(50)
-                );
+    // ==========================================
+    // SUBIDA AL ESTUDIO (GUARDANDO EN FIREBASE)
+    // ==========================================
 
-                onSnapshot(q, (snap) => {
-                    const box = document.getElementById('chat-msgs');
-                    box.innerHTML = "";
-                    snap.forEach(doc => {
-                        const m = doc.data();
-                        const isMe = m.user === this.user;
-                        box.innerHTML += `
-                            <div class="bubble ${isMe ? 'msg-me' : 'msg-them'}">
-                                <div class="msg-info">${m.user}</div>
-                                ${m.text}
-                            </div>
-                        `;
-                    });
-                    box.scrollTop = box.scrollHeight;
-                });
-            },
+    window.startStudio = function(cat, emoji) {
+        window.activeCat = cat;
+        document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + cat;
+        document.getElementById('main-hub').style.display = 'none';
+        document.getElementById('upload-studio').style.display = 'block';
+    }
 
-            async sendMsg() {
-                const input = document.getElementById('msg-input');
-                const text = input.value.trim();
-                if(!text) return;
+    window.exitStudio = function() {
+        document.getElementById('main-hub').style.display = 'block';
+        document.getElementById('upload-studio').style.display = 'none';
+        document.getElementById('in-title').value = '';
+        document.getElementById('in-price').value = '';
+    }
 
-                try {
-                    await addDoc(collection(db, `chat_${this.activeLoc.toLowerCase()}`), {
-                        user: this.user,
-                        text: text,
-                        timestamp: serverTimestamp()
-                    });
-                    input.value = "";
-                } catch(e) { console.error(e); }
-            },
+    window.uploadToEmpire = async function() {
+        const title = document.getElementById('in-title').value.trim();
+        const price = document.getElementById('in-price').value.trim();
 
-            // NAVEGACIÓN
-            nav(view, el) {
-                document.querySelectorAll('.view').forEach(v => v.classList.remove('view-active'));
-                document.getElementById('view-' + view).classList.add('view-active');
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                el.classList.add('active');
-            },
+        if(!title) { alert("Ponle un título a tu publicación"); return; }
+        
+        try {
+            await addDoc(collection(db, "inventory"), {
+                name: title, 
+                price: price || "0", 
+                unit: "Unidad",
+                qty: "1", 
+                loc: window.activeLoc, 
+                note: `[CAT:${window.activeCat}] Publicación desde la app`,
+                img: window.tempProdImg || 'https://via.placeholder.com/150',
+                timestamp: Date.now()
+            });
+            
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#22c55e', '#f97316', '#3b82f6'] });
+            window.exitStudio();
+            window.tab('home', document.querySelector('.nav-btn')); 
+            
+        } catch (e) {
+            console.error("Error al publicar: ", e);
+            alert("Hubo un error al publicar. Revisa tu conexión.");
+        }
+    }
 
-            setFilter(cat, el) {
-                this.activeCat = cat;
-                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
-                el.classList.add('filter-active');
-                this.renderFeed();
-            },
-
-            // STUDIO LOGIC
-            openStudio(cat, emoji) {
-                this.activeCatForm = cat;
-                document.getElementById('studio-title').innerText = emoji + " Nuevo " + cat;
-                document.getElementById('studio-main').style.display = 'none';
-                document.getElementById('form-container').style.display = 'block';
-            },
-
-            closeStudio() {
-                document.getElementById('studio-main').style.display = 'block';
-                document.getElementById('form-container').style.display = 'none';
-                this.tempImg = "";
-                document.getElementById('prev-0').style.display = 'none';
-                document.getElementById('ui-0').style.display = 'block';
-            },
-
-            handleFile(input) {
-                const file = input.files[0];
-                if(!file) return;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.tempImg = e.target.result;
-                    const prev = document.getElementById('prev-0');
-                    prev.src = e.target.result;
-                    prev.style.display = 'block';
-                    document.getElementById('ui-0').style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-            },
-
-            async upload() {
-                const name = document.getElementById('p-name').value.trim();
-                const price = document.getElementById('p-price').value.trim();
-
-                if(!name || !price) return alert("Completa los datos, ciudadano.");
-
-                try {
-                    await addDoc(collection(db, "inventory"), {
-                        name: name,
-                        price: price,
-                        img: this.tempImg,
-                        category: this.activeCatForm,
-                        loc: this.activeLoc,
-                        seller: this.user,
-                        timestamp: serverTimestamp()
-                    });
-
-                    this.showToast("¡Publicado en " + this.activeLoc + "! 🚀");
-                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                    this.closeStudio();
-                    this.nav('home', document.querySelector('.nav-item'));
-                    
-                    // Reset campos
-                    document.getElementById('p-name').value = "";
-                    document.getElementById('p-price').value = "";
-                } catch(e) { alert("Error de conexión"); }
-            },
-
-            showToast(msg) {
-                const t = document.getElementById('toast');
-                t.innerText = msg;
-                t.style.top = '30px';
-                setTimeout(() => t.style.top = '-100px', 3000);
-            },
-
-            setupAdmin() {
-                document.getElementById('main-logo').onclick = () => {
-                    this.taps++;
-                    if(this.taps === 7) window.location.href = 'admin.html';
-                    setTimeout(() => this.taps = 0, 2000);
-                }
-            }
-        };
-
-        window.forceEntry = () => window.app.setCity("Huanta");
-
-        // ARRANCAR
-        window.onload = () => window.app.init();
-    </script>
+    // Inicializamos al cargar
+    window.onload = function() {
+        window.init();
+    };
+</script>
 </body>
 </html>
