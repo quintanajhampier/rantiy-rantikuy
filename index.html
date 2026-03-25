@@ -1,7 +1,7 @@
 <script type="module">
-    // 1. Importamos Firebase y las herramientas de Base de Datos (Firestore)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+    // 1. Importamos Firebase y las herramientas de Base de Datos (Firestore) - ¡VERSIÓN CORREGIDA!
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     // 2. Tu Configuración de Firebase
     const firebaseConfig = {
@@ -33,7 +33,7 @@
         snapshot.forEach((doc) => {
             window.dbLocal.inventory.push({ id: doc.id, ...doc.data() });
         });
-        window.render();
+        if(typeof window.render === "function") window.render();
     });
 
     // Escuchar Contactos y Chats en tiempo real
@@ -42,8 +42,8 @@
         snapshot.forEach((doc) => {
             window.dbLocal.contacts.push({ id: doc.id, ...doc.data() });
         });
-        window.render();
-        if(window.currentID) window.renderMsgs(); // Actualiza el chat si está abierto
+        if(typeof window.render === "function") window.render();
+        if(window.currentID && typeof window.renderMsgs === "function") window.renderMsgs(); 
     });
 
 
@@ -55,7 +55,6 @@
         const n = document.getElementById('p-n').value; 
         if(!n) return;
         
-        // Guardamos en Firebase en lugar de localStorage
         await addDoc(collection(db, "inventory"), {
             name: n, 
             price: document.getElementById('p-p').value, 
@@ -90,7 +89,6 @@
         
         const nuevoMensaje = { s:'me', t:'txt', v: i.value, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
         
-        // Actualizamos el documento específico del contacto en Firebase
         const contactRef = doc(db, "contacts", window.currentID);
         await updateDoc(contactRef, {
             msgs: arrayUnion(nuevoMensaje)
@@ -114,13 +112,22 @@
     // FUNCIONES DE INTERFAZ (UI)
     // ==========================================
 
-    window.go = function(s, el) { document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`; document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active')); el.classList.add('active'); }
+    window.go = function(s, el) { 
+        const vp = document.getElementById('vp');
+        if(vp) vp.style.transform = `translateX(-${s * 50}%)`; 
+        document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active')); 
+        if(el) el.classList.add('active'); 
+    }
     window.countAdmin = function() { taps++; if(taps===7) { alert("PANEL ADMIN: Huanta v3.0"); taps=0; } setTimeout(()=> taps=0, 2000); }
     
     window.uiInput = function() {
-        const hasTxt = document.getElementById('m-input').value.trim().length > 0;
-        document.getElementById('btn-send').style.display = hasTxt ? 'flex' : 'none';
-        document.getElementById('btn-mic').style.display = hasTxt ? 'none' : 'flex';
+        const i = document.getElementById('m-input');
+        if(!i) return;
+        const hasTxt = i.value.trim().length > 0;
+        const btnSend = document.getElementById('btn-send');
+        const btnMic = document.getElementById('btn-mic');
+        if(btnSend) btnSend.style.display = hasTxt ? 'flex' : 'none';
+        if(btnMic) btnMic.style.display = hasTxt ? 'none' : 'flex';
     }
 
     window.popContact = function() {
@@ -184,58 +191,69 @@
         const c = window.dbLocal.contacts.find(x => x.id === window.currentID);
         if(!c || !c.msgs) return;
 
-        document.getElementById('m-flow').innerHTML = c.msgs.map(m => {
+        const flow = document.getElementById('m-flow');
+        if(!flow) return;
+
+        flow.innerHTML = c.msgs.map(m => {
             let html = m.v;
             if(m.t === 'img') html = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
             if(m.t === 'audio') html = `<audio controls src="${m.v}" style="width:210px;"></audio>`;
             if(m.t === 'doc') html = `<a href="${m.v}" download="${m.n}" style="display:block; padding:10px; background:#f9f9f9; border-radius:8px; color:black;">📄 ${m.n}</a>`;
             return `<div class="msg-bubble ${m.s}">${html}<div style="font-size:10px; opacity:0.6; text-align:right;">${m.time}</div></div>`;
         }).join('');
-        const f = document.getElementById('m-flow'); f.scrollTop = f.scrollHeight;
+        flow.scrollTop = flow.scrollHeight;
     }
 
     window.render = function() {
-        document.getElementById('list-contacts').innerHTML = window.dbLocal.contacts.map(c => `
-            <div class="card-stock" onclick="window.openChat('${c.id}')" style="border-top:none; border-left:5px solid var(--emerald-mid); display:flex; align-items:center; gap:15px; padding:15px; cursor:pointer;">
-                <div style="width:50px; height:50px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900;">${c.name[0]}</div>
-                <div style="flex:1"><b>${c.name}</b><small style="display:block; color:gray;">${c.phone || ''}</small></div>
-                <span>›</span>
-            </div>
-        `).join('');
-
-        document.getElementById('list-inventory').innerHTML = window.dbLocal.inventory.map(p => `
-            <div class="card-stock">
-                <img src="${p.img}" class="prod-img-preview" style="margin-top:0; margin-bottom:15px; height:180px;">
-                <span class="stock-tag">${p.unit}</span>
-                <h3 style="margin-top:10px;">${p.name}</h3>
-                <div class="stock-grid">
-                    <div class="stock-item">Precio:<b>S/ ${p.price}</b></div>
-                    <div class="stock-item">Stock:<b>${p.qty}</b></div>
-                    <div class="stock-item">Ubicación:<b>${p.loc}</b></div>
+        const listC = document.getElementById('list-contacts');
+        if(listC) {
+            listC.innerHTML = window.dbLocal.contacts.map(c => `
+                <div class="card-stock" onclick="window.openChat('${c.id}')" style="border-top:none; border-left:5px solid var(--emerald-mid); display:flex; align-items:center; gap:15px; padding:15px; cursor:pointer;">
+                    <div style="width:50px; height:50px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900;">${c.name[0]}</div>
+                    <div style="flex:1"><b>${c.name}</b><small style="display:block; color:gray;">${c.phone || ''}</small></div>
+                    <span>›</span>
                 </div>
-                ${p.note ? `<div class="stock-note"><b>Nota:</b> ${p.note}</div>` : ''}
-            </div>
-        `).join('');
+            `).join('');
+        }
+
+        const listI = document.getElementById('list-inventory');
+        if(listI) {
+            listI.innerHTML = window.dbLocal.inventory.map(p => `
+                <div class="card-stock">
+                    <img src="${p.img}" class="prod-img-preview" style="margin-top:0; margin-bottom:15px; height:180px;">
+                    <span class="stock-tag">${p.unit}</span>
+                    <h3 style="margin-top:10px;">${p.name}</h3>
+                    <div class="stock-grid">
+                        <div class="stock-item">Precio:<b>S/ ${p.price}</b></div>
+                        <div class="stock-item">Stock:<b>${p.qty}</b></div>
+                        <div class="stock-item">Ubicación:<b>${p.loc}</b></div>
+                    </div>
+                    ${p.note ? `<div class="stock-note"><b>Nota:</b> ${p.note}</div>` : ''}
+                </div>
+            `).join('');
+        }
     }
 
     // Inicializar micrófono y manejo de archivos
     const mic = document.getElementById('btn-mic');
-    mic.onpointerdown = async (e) => {
-        e.preventDefault();
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            rec = new MediaRecorder(stream); chunks = [];
-            rec.ondataavailable = e => chunks.push(e.data);
-            rec.onstop = () => {
-                const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
-                const reader = new FileReader();
-                reader.onload = () => window.sendMedia('audio', reader.result);
-                reader.readAsDataURL(blob);
-            };
-            rec.start(); mic.classList.add('active');
-        } catch(err) { alert("Activa el micrófono"); }
-    };
-    mic.onpointerup = () => { if(rec && rec.state !== 'inactive') { rec.stop(); mic.classList.remove('active'); } };
+    if(mic) {
+        mic.onpointerdown = async (e) => {
+            e.preventDefault();
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                rec = new MediaRecorder(stream); chunks = [];
+                rec.ondataavailable = e => chunks.push(e.data);
+                rec.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+                    const reader = new FileReader();
+                    reader.onload = () => window.sendMedia('audio', reader.result);
+                    reader.readAsDataURL(blob);
+                };
+                rec.start(); mic.classList.add('active');
+            } catch(err) { alert("Activa el micrófono"); }
+        };
+        mic.onpointerup = () => { if(rec && rec.state !== 'inactive') { rec.stop(); mic.classList.remove('active'); } };
+    }
 
     window.handleFile = function(input) {
         const file = input.files[0]; if(!file) return;
@@ -244,6 +262,10 @@
         reader.readAsDataURL(file);
     }
 
-    // Iniciar funciones de carga de zonas (asegúrate de que cargarZonas exista en tu código arriba de este script)
-    cargarZonas();
+    // Seguro para cargarZonas
+    if (typeof cargarZonas === "function") {
+        cargarZonas();
+    } else {
+        console.warn("La función cargarZonas no está definida, pero la página seguirá funcionando.");
+    }
 </script>
