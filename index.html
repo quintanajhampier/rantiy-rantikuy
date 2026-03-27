@@ -40,23 +40,10 @@
 
         /* BOTÓN DE CHAT PRIVADO EXTERNO */
         .btn-mensajes-privados {
-            position: fixed;
-            right: 20px;
-            bottom: 120px;
-            background: white;
-            padding: 12px 20px;
-            border-radius: 30px;
-            box-shadow: var(--premium-shadow);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--oscuro);
-            font-weight: 800;
-            font-size: 14px;
-            z-index: 2500;
-            border: 2px solid var(--verde-glow);
-            transition: 0.3s;
+            position: fixed; right: 20px; bottom: 120px; background: white; padding: 12px 20px;
+            border-radius: 30px; box-shadow: var(--premium-shadow); display: flex; align-items: center; gap: 10px;
+            text-decoration: none; color: var(--oscuro); font-weight: 800; font-size: 14px; z-index: 2500;
+            border: 2px solid var(--verde-glow); transition: 0.3s;
         }
         .btn-mensajes-privados:active { transform: scale(0.9); }
         .dot-online { width: 10px; height: 10px; background: var(--verde); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
@@ -75,10 +62,7 @@
         /* --- CIUDADES --- */
         .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
         .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.5; pointer-events: none; }
-        .active-city { opacity: 1; pointer-events: auto; border-width: 3px; }
-        .active-huanta { border-color: var(--huanta); background: #f0fdf4; }
-        .active-huamanga { border-color: var(--huamanga); background: #eff6ff; }
-        .active-vraem { border-color: var(--vraem); background: #fffbeb; }
+        .active-city { opacity: 1; pointer-events: auto; border-width: 3px; border-color: var(--verde); }
 
         /* --- VISTAS --- */
         .view { display: none; padding: 0 20px; animation: slideUp 0.5s ease; }
@@ -99,8 +83,6 @@
         .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .drop-zone { width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 25px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; background: #f8fafc; }
         .drop-zone img { width: 100%; height: 100%; object-fit: cover; }
-        .source-chooser { position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
-        .drop-zone:hover .source-chooser { opacity: 1; }
         .rr-field { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; }
 
         /* --- SISTEMA DE CHATS --- */
@@ -109,26 +91,11 @@
         .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
         .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .bubble img { width: 100%; border-radius: 15px; margin-top: 5px; cursor: pointer; }
-        .sticker { font-size: 50px; display: block; }
-
-        #private-modal { position: fixed; inset: 0; background: white; z-index: 5000; display: none; flex-direction: column; }
 
         /* --- NAV ISLAND --- */
         .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
         .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
         .nav-btn.active { color: var(--verde); }
-        
-        .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 12px; border-radius: 15px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 10px; }
-        .emoji-panel { display: flex; gap: 10px; padding: 10px; overflow-x: auto; background: #f1f5f9; }
-        .emoji-btn { font-size: 20px; cursor: pointer; border: none; background: none; }
-
-        /* --- HERRAMIENTAS CHAT --- */
-        .chat-tools { display: flex; gap: 10px; padding: 10px 20px; background: white; border-top: 1px solid #eee; }
-        .tool-btn { background: #f1f5f9; border: none; padding: 12px; border-radius: 18px; font-size: 18px; cursor: pointer; flex: 1; transition: 0.2s; }
-        .tool-btn:active { background: var(--verde-glow); }
-        .file-bubble { display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.05); padding: 12px; border-radius: 15px; }
-        .file-link { color: var(--verde); font-weight: 800; text-decoration: none; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -148,7 +115,7 @@
 
 <header class="header">
     <div style="display:flex; align-items:center; gap:18px;">
-        <div class="logo-rr" onclick="checkAdminAccess()">R&R</div>
+        <div class="logo-rr" onclick="window.checkAdminAccess()">R&R</div>
         <div>
             <div style="font-weight: 900; font-size: 20px;">Rantiy y Rantikuy</div>
             <div id="user-tag" style="font-size: 10px; color: var(--verde); font-weight: 800;">CIUDADANO: CARGANDO...</div>
@@ -171,10 +138,8 @@
     <div class="filter-chip" onclick="window.filterByCat('Servicio', this)">⚡ Servicio</div>
 </div>
 
-<div class="city-bar">
-    <div class="city-card" id="city-huanta"><span>⛰️</span><label>HUANTA</label></div>
-    <div class="city-card" id="city-huamanga"><span>⛪</span><label>HUAMANGA</label></div>
-    <div class="city-card" id="city-vraem"><span>🌿</span><label>VRAEM</label></div>
+<div class="city-bar" id="city-bar-container">
+    <div class="city-card active-city" id="city-local"><span>📍</span><label id="label-city-local">Buscando...</label></div>
 </div>
 
 <main id="view-home" class="view view-active">
@@ -199,13 +164,6 @@
             <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
             <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px;">✕</button>
         </div>
-        <div class="photo-grid">
-            <div class="drop-zone"><div id="info-0">1</div><img id="img-0" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
-            <div class="drop-zone"><div id="info-1">2</div><img id="img-1" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
-            <div class="drop-zone"><div id="info-2">3</div><img id="img-2" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
-            <div class="drop-zone"><div id="info-3">4</div><img id="img-3" style="display:none;"><div class="source-chooser"><button>📷</button><button>🖼️</button></div></div>
-        </div>
-        <div id="q-box" style="margin-top:20px;"></div>
         <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
         <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
@@ -216,12 +174,12 @@
     <div class="chat-box-ui">
         <div id="group-title" style="padding:20px; background:var(--verde); color:white; font-weight:900; display:flex; justify-content:space-between;">
             <span id="zone-chat-label">SALA REGIONAL</span>
-            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">AUTO-LIMPIEZA 30H</span>
+            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">AUTO-LIMPIEZA 24H</span>
         </div>
         <div class="msg-area" id="group-msgs"></div>
         <div style="padding:15px; display:flex; gap:10px;">
             <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe al grupo...">
-            <button style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px;">✈️</button>
+            <button onclick="window.sendGroupMsg()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px; cursor:pointer;">✈️</button>
         </div>
     </div>
 </section>
@@ -233,25 +191,37 @@
 </nav>
 
 <script type="module">
-    // --- VARIABLES GLOBALES DEL DISEÑO ---
+    // --- VARIABLES GLOBALES ---
     window.activeLoc = ""; 
     window.activeCat = ""; 
     window.currentFilter = "Todas"; 
-    window.capturedFiles = [null,null,null,null]; 
-    window.currentUser = localStorage.getItem('rantiy_user') || localStorage.getItem('admin_session');
     window.adminClicks = 0;
+    
+    // --- REVISIÓN DE SESIÓN (EL GUARDIÁN) ---
+    window.currentUser = localStorage.getItem('rantiy_user');
+    window.currentPhone = localStorage.getItem('rantiy_phone') || "000000000";
+    window.isAdmin = localStorage.getItem('admin_session') === "ADMIN_SUPREMO";
 
+    // Si no está registrado y no es admin, lo pateamos a registro.html
+    if (!window.currentUser && !window.isAdmin) {
+        window.location.href = 'registro.html'; 
+    }
+
+    // --- MAPA AMPLIO DEL PERÚ ---
     const ZONAS = {
-        "Huanta": { lat: -12.94, lon: -74.24, r: 0.05 },
-        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.05 },
-        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.1 }
+        "Huanta": { lat: -12.94, lon: -74.24, r: 0.1 },
+        "Huamanga": { lat: -13.15, lon: -74.22, r: 0.1 },
+        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.15 },
+        "Lima": { lat: -12.04, lon: -77.03, r: 0.3 },
+        "Cusco": { lat: -13.53, lon: -71.96, r: 0.2 },
+        "Arequipa": { lat: -16.40, lon: -71.53, r: 0.2 },
+        "Huancayo": { lat: -12.06, lon: -75.20, r: 0.2 }
     };
 
-    // --- 1. IMPORTACIONES DE FIREBASE (VERSIÓN 10.14.1) ---
+    // --- IMPORTACIONES DE FIREBASE ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-    // --- 2. CONFIGURACIÓN DE FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
         authDomain: "rantiy-y-rantikuy.firebaseapp.com",
@@ -261,62 +231,72 @@
         appId: "1:49676513708:web:943ad781c98cb7bac78a09"
     };
 
-    // --- 3. INICIALIZACIÓN ---
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Variables locales para la UI
     window.dbLocal = { contacts: [], inventory: [] };
-    window.currentID = null;
     window.tempProdImg = "";
 
     // ==========================================
-    // CONEXIÓN EN TIEMPO REAL CON FIREBASE
+    // 1. PANEL DE ADMIN (5 TOQUES AL LOGO)
     // ==========================================
+    window.checkAdminAccess = function() {
+        window.adminClicks++;
+        if(window.adminClicks >= 5) {
+            window.adminClicks = 0;
+            let pass = prompt("MODO DIOS: Ingresa la clave de fundador:");
+            if(pass === "RR2026") { 
+                localStorage.setItem("admin_session", "ADMIN_SUPREMO");
+                alert("Bienvenido, Creador.");
+                window.location.reload(); // Recargar para aplicar permisos
+            } else {
+                alert("Clave incorrecta.");
+            }
+        }
+    }
 
+    // ==========================================
+    // 2. CONEXIÓN VITRINA Y GPS REAL
+    // ==========================================
     onSnapshot(collection(db, "inventory"), (snapshot) => {
         window.dbLocal.inventory = [];
-        snapshot.forEach((doc) => {
-            window.dbLocal.inventory.push({ id: doc.id, ...doc.data() });
-        });
-        if(typeof window.renderFeed === "function") window.renderFeed();
+        snapshot.forEach((doc) => { window.dbLocal.inventory.push({ id: doc.id, ...doc.data() }); });
+        if(window.activeLoc) window.renderFeed();
     });
 
-    onSnapshot(collection(db, "contacts"), (snapshot) => {
-        window.dbLocal.contacts = [];
-        snapshot.forEach((doc) => {
-            window.dbLocal.contacts.push({ id: doc.id, ...doc.data() });
-        });
-    });
-
-    // ==========================================
-    // FUNCIONES DEL GPS Y NAVEGACIÓN
-    // ==========================================
-    
     window.init = function() {
-        if(!window.currentUser) { window.currentUser = "Usuario de Prueba"; }
         const userTag = document.getElementById('user-tag');
-        if(userTag) userTag.innerText = "CIUDADANO: " + window.currentUser.toUpperCase();
+        if(userTag) userTag.innerText = window.isAdmin ? "👑 FUNDADOR SUPREMO" : "CIUDADANO: " + (window.currentUser ? window.currentUser.toUpperCase() : "");
 
         if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
+            navigator.geolocation.getCurrentPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
+            // SIMULADOR: Si estás en PC probando y el satélite falla, puedes descomentar la siguiente línea:
+            // window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); 
         } else {
             alert("Tu celular no soporta GPS.");
         }
-        
-        // --- SIMULADOR DE GPS ---
-        // Esto permite que tu app funcione inmediatamente para que hagas pruebas sin esperar al satélite.
-        window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); 
     }
 
     window.successGPS = function(pos) {
+        // SI ES ADMIN: Modo Global sin límites
+        if(window.isAdmin) {
+            document.getElementById('gps-screen').style.display = 'none';
+            window.activeLoc = "GLOBAL_ADMIN";
+            document.getElementById('label-city-local').innerText = "TODO EL PERÚ (ADMIN)";
+            document.getElementById('current-zone-text').innerText = "Todo el Perú";
+            document.getElementById('zone-chat-label').innerText = "SALA GLOBAL VIP";
+            window.renderFeed();
+            return;
+        }
+
+        // SI ES USUARIO: GPS Estricto
         let lat = pos.coords.latitude;
         let lon = pos.coords.longitude;
         let found = false;
 
         for (let zone in ZONAS) {
             let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
-            if (d < (ZONAS[zone].r * 10)) {  // Radio ampliado para no tener bloqueos
+            if (d < ZONAS[zone].r) { 
                 window.activeLoc = zone;
                 found = true;
                 break;
@@ -325,36 +305,22 @@
 
         if (found) {
             document.getElementById('gps-screen').style.display = 'none';
-            document.querySelectorAll('.city-card').forEach(c => c.classList.remove('active-city', 'active-huanta', 'active-huamanga', 'active-vraem'));
-            let card = document.getElementById('city-' + window.activeLoc.toLowerCase());
-            if(card) card.classList.add('active-city', 'active-' + window.activeLoc.toLowerCase());
-            
-            const currentZoneText = document.getElementById('current-zone-text');
-            if(currentZoneText) currentZoneText.innerText = window.activeLoc;
-            
-            const zoneChatLabel = document.getElementById('zone-chat-label');
-            if(zoneChatLabel) zoneChatLabel.innerText = "SALA " + window.activeLoc.toUpperCase();
-            
+            document.getElementById('label-city-local').innerText = window.activeLoc.toUpperCase();
+            document.getElementById('current-zone-text').innerText = window.activeLoc;
+            document.getElementById('zone-chat-label').innerText = "SALA " + window.activeLoc.toUpperCase();
             window.renderFeed();
         } else {
-            const gpsLoader = document.getElementById('gps-loader');
-            if(gpsLoader) gpsLoader.style.display = 'none';
+            document.getElementById('gps-loader').style.display = 'none';
             const gpsMsg = document.getElementById('gps-msg');
-            if(gpsMsg){
-                gpsMsg.innerText = "FUERA DE COBERTURA: Debes estar en Huanta, Huamanga o VRAEM.";
-                gpsMsg.style.color = "red";
-            }
+            gpsMsg.innerText = "ESTÁS FUERA DE COBERTURA: Rantiy llegará pronto a tu ciudad.";
+            gpsMsg.style.color = "red";
         }
     }
 
     window.errorGPS = function() {
-        const gpsLoader = document.getElementById('gps-loader');
-        if(gpsLoader) gpsLoader.style.display = 'none';
-        const gpsMsg = document.getElementById('gps-msg');
-        if(gpsMsg){
-            gpsMsg.innerText = "ERROR: Activa el GPS para usar Rantiy y Rantikuy.";
-            gpsMsg.style.color = "red";
-        }
+        document.getElementById('gps-loader').style.display = 'none';
+        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS para usar Rantiy y Rantikuy.";
+        document.getElementById('gps-msg').style.color = "red";
     }
 
     window.tab = function(t, el) {
@@ -366,9 +332,13 @@
     }
 
     // ==========================================
-    // RENDERIZADO DEL FEED DESDE FIREBASE
+    // 3. FUNCIONES PARA IR AL CHAT PRIVADO
     // ==========================================
-    
+    window.irAChatPrivado = function(nombre, telefono) {
+        if(nombre === window.currentUser || nombre === "ADMINISTRADOR") return; // No chatear contigo mismo
+        window.location.href = `chat_privado.html?name=${encodeURIComponent(nombre)}&phone=${telefono}`;
+    }
+
     window.filterByCat = function(cat, el) {
         window.currentFilter = cat;
         document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
@@ -383,30 +353,27 @@
 
         const search = document.getElementById('main-search') ? document.getElementById('main-search').value.toLowerCase() : "";
 
-        let posts = window.dbLocal.inventory.filter(p => p.loc === window.activeLoc);
+        // Si es Admin ve todo, si es usuario ve solo su zona
+        let posts = window.isAdmin ? window.dbLocal.inventory : window.dbLocal.inventory.filter(p => p.loc === window.activeLoc);
 
-        if(window.currentFilter !== 'Todas') {
-            posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
-        }
-        if(search) {
-            posts = posts.filter(p => p.name.toLowerCase().includes(search));
-        }
+        if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
+        if(search) posts = posts.filter(p => p.name.toLowerCase().includes(search));
 
         if(posts.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:50px 20px; color:#94a3b8;"><b>No hay publicaciones en ${window.activeLoc} todavía.</b><br><br>¡Sé el primero en publicar algo!</div>`;
+            container.innerHTML = `<div style="text-align:center; padding:50px 20px; color:#94a3b8;"><b>No hay publicaciones aún.</b><br><br>¡Sé el primero!</div>`;
             return;
         }
 
         container.innerHTML = posts.map(p => `
             <div class="post-card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')">
                         <div style="width:40px; height:40px; border-radius:15px; background:var(--verde); color:white; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px;">
-                            ${p.name.charAt(0).toUpperCase()}
+                            ${(p.sellerName || p.name).charAt(0).toUpperCase()}
                         </div>
                         <div>
-                            <div style="font-weight:800; font-size:14px;">Vendedor Local</div>
-                            <div style="font-size:10px; color:#64748b;">${new Date(p.timestamp || Date.now()).toLocaleDateString()}</div>
+                            <div style="font-weight:800; font-size:14px;">${p.sellerName || 'Vendedor Local'}</div>
+                            <div style="font-size:10px; color:#64748b;">📍 ${p.loc}</div>
                         </div>
                     </div>
                 </div>
@@ -414,16 +381,75 @@
                 <h3 style="margin:10px 0 5px 0;">${p.name}</h3>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
                     <div style="color:var(--verde); font-weight:900; font-size:20px;">S/ ${p.price}</div>
-                    <button onclick="window.location.href='chat_privado.html'" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800;">Contactar</button>
+                    <button onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800;">Contactar</button>
                 </div>
             </div>
         `).join('');
     }
 
     // ==========================================
-    // SUBIDA AL ESTUDIO (GUARDANDO EN FIREBASE)
+    // 4. CHAT GRUPAL REAL-TIME + AUTO BORRADO 24H
     // ==========================================
+    const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"));
+    
+    onSnapshot(qChat, (snapshot) => {
+        const box = document.getElementById('group-msgs');
+        if(!box || !window.activeLoc) return;
 
+        let msgsHTML = "";
+        const ahora = Date.now();
+        const unDia = 24 * 60 * 60 * 1000;
+
+        snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            
+            // AUTO-LIMPIEZA: Si tiene más de 24 horas, lo elimina de Firebase para no sobrecargar
+            if (ahora - data.timestamp > unDia) {
+                deleteDoc(doc(db, "chats_zonas", docSnap.id)).catch(e => console.log(e));
+                return;
+            }
+
+            // Filtra por zona o muestra todo si es Admin
+            if(data.zone === window.activeLoc || window.isAdmin) {
+                const isMe = data.sender === window.currentUser;
+                msgsHTML += `
+                    <div style="display:flex; flex-direction:column; align-items: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 5px;">
+                        <span onclick="window.irAChatPrivado('${data.sender}', '${data.phone}')" style="font-size:10px; color:#94a3b8; margin-bottom:2px; padding:0 5px; cursor:pointer; font-weight:bold;">
+                            ${isMe ? 'Tú' : '👤 ' + data.sender + (window.isAdmin ? ' ('+data.zone+')' : '')}
+                        </span>
+                        <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}">
+                            ${data.text}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        
+        box.innerHTML = msgsHTML;
+        box.scrollTop = box.scrollHeight; // Auto-scroll abajo
+    });
+
+    window.sendGroupMsg = async function() {
+        const input = document.getElementById('group-input');
+        const text = input.value.trim();
+        if(!text || !window.activeLoc) return;
+
+        input.value = ""; input.focus();
+
+        try {
+            await addDoc(collection(db, "chats_zonas"), {
+                zone: window.isAdmin ? "GLOBAL" : window.activeLoc,
+                sender: window.isAdmin ? "ADMINISTRADOR" : window.currentUser,
+                phone: window.currentPhone,
+                text: text,
+                timestamp: Date.now()
+            });
+        } catch(e) { alert("Error al enviar el mensaje."); }
+    }
+
+    // ==========================================
+    // 5. SUBIDA AL ESTUDIO
+    // ==========================================
     window.startStudio = function(cat, emoji) {
         window.activeCat = cat;
         document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + cat;
@@ -450,8 +476,10 @@
                 price: price || "0", 
                 unit: "Unidad",
                 qty: "1", 
-                loc: window.activeLoc, 
+                loc: window.isAdmin ? "GLOBAL" : window.activeLoc, 
                 note: `[CAT:${window.activeCat}] Publicación desde la app`,
+                sellerName: window.isAdmin ? "ADMINISTRADOR" : window.currentUser,
+                sellerPhone: window.currentPhone,
                 img: window.tempProdImg || 'https://via.placeholder.com/150',
                 timestamp: Date.now()
             });
@@ -466,7 +494,16 @@
         }
     }
 
-    // Inicializamos al cargar
+    // Atajo para enviar mensaje con Enter
+    document.addEventListener("DOMContentLoaded", () => {
+        const inputField = document.getElementById('group-input');
+        if (inputField) {
+            inputField.addEventListener('keypress', e => { 
+                if (e.key === 'Enter') window.sendGroupMsg(); 
+            });
+        }
+    });
+
     window.onload = function() {
         window.init();
     };
