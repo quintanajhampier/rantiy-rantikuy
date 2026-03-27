@@ -216,11 +216,11 @@
     window.adminClicks = 0;
     
     // --- CONEXIÓN REAL-TIME CON EL PERFIL DE REGISTRO ---
-    window.currentUser = localStorage.getItem('rantiy_userName'); 
-    window.currentPhone = localStorage.getItem('rantiy_userPhone');
+    window.currentUser = localStorage.getItem('rantiy_userName'); // Usamos los nombres del registro
+    window.currentPhone = localStorage.getItem('rantiy_userPhone') || "000000000";
 
-    // Bloqueo de seguridad estricto si no hay perfil ni teléfono
-    if (!window.currentUser || !window.currentPhone) {
+    // Bloqueo de seguridad si no hay perfil
+    if (!window.currentUser) {
          window.location.href = 'registro_entrada.html'; 
     }
 
