@@ -191,7 +191,6 @@
 </nav>
 
 <script type="module">
-    // --- VARIABLES GLOBALES ---
     window.activeLoc = ""; 
     window.activeCat = ""; 
     window.currentFilter = "Todas"; 
@@ -202,12 +201,14 @@
     window.currentPhone = localStorage.getItem('rantiy_phone') || "000000000";
     window.isAdmin = localStorage.getItem('admin_session') === "ADMIN_SUPREMO";
 
-    // Si no está registrado y no es admin, lo pateamos a registro.html
+    // 🔴 AQUÍ ESTABA EL CULPABLE DEL ERROR 404
+    // He comentado (desactivado) la línea que te mandaba a 'registro.html' 
+    // y en su lugar te estoy dando un "Usuario de Prueba" para que no te dé error.
     if (!window.currentUser && !window.isAdmin) {
-        window.location.href = 'registro.html'; 
+        // window.location.href = 'registro.html';  <--- ESTA LÍNEA DABA EL ERROR 404
+        window.currentUser = "Usuario de Prueba";   // <--- SOLUCIÓN TEMPORAL
     }
 
-    // --- MAPA AMPLIO DEL PERÚ ---
     const ZONAS = {
         "Huanta": { lat: -12.94, lon: -74.24, r: 0.1 },
         "Huamanga": { lat: -13.15, lon: -74.22, r: 0.1 },
@@ -218,7 +219,6 @@
         "Huancayo": { lat: -12.06, lon: -75.20, r: 0.2 }
     };
 
-    // --- IMPORTACIONES DE FIREBASE ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
@@ -237,9 +237,6 @@
     window.dbLocal = { contacts: [], inventory: [] };
     window.tempProdImg = "";
 
-    // ==========================================
-    // 1. PANEL DE ADMIN (5 TOQUES AL LOGO)
-    // ==========================================
     window.checkAdminAccess = function() {
         window.adminClicks++;
         if(window.adminClicks >= 5) {
@@ -248,16 +245,13 @@
             if(pass === "RR2026") { 
                 localStorage.setItem("admin_session", "ADMIN_SUPREMO");
                 alert("Bienvenido, Creador.");
-                window.location.reload(); // Recargar para aplicar permisos
+                window.location.reload(); 
             } else {
                 alert("Clave incorrecta.");
             }
         }
     }
 
-    // ==========================================
-    // 2. CONEXIÓN VITRINA Y GPS REAL
-    // ==========================================
     onSnapshot(collection(db, "inventory"), (snapshot) => {
         window.dbLocal.inventory = [];
         snapshot.forEach((doc) => { window.dbLocal.inventory.push({ id: doc.id, ...doc.data() }); });
@@ -270,15 +264,13 @@
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
-            // SIMULADOR: Si estás en PC probando y el satélite falla, puedes descomentar la siguiente línea:
-            // window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); 
+            // window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); // Simulador GPS
         } else {
             alert("Tu celular no soporta GPS.");
         }
     }
 
     window.successGPS = function(pos) {
-        // SI ES ADMIN: Modo Global sin límites
         if(window.isAdmin) {
             document.getElementById('gps-screen').style.display = 'none';
             window.activeLoc = "GLOBAL_ADMIN";
@@ -289,7 +281,6 @@
             return;
         }
 
-        // SI ES USUARIO: GPS Estricto
         let lat = pos.coords.latitude;
         let lon = pos.coords.longitude;
         let found = false;
@@ -331,11 +322,9 @@
         if(t === 'home') window.renderFeed();
     }
 
-    // ==========================================
-    // 3. FUNCIONES PARA IR AL CHAT PRIVADO
-    // ==========================================
+    // AVISO: Esto también te dará error 404 si le das a contactar, hasta que creemos el chat privado.
     window.irAChatPrivado = function(nombre, telefono) {
-        if(nombre === window.currentUser || nombre === "ADMINISTRADOR") return; // No chatear contigo mismo
+        if(nombre === window.currentUser || nombre === "ADMINISTRADOR") return; 
         window.location.href = `chat_privado.html?name=${encodeURIComponent(nombre)}&phone=${telefono}`;
     }
 
@@ -352,8 +341,6 @@
         if(!container) return;
 
         const search = document.getElementById('main-search') ? document.getElementById('main-search').value.toLowerCase() : "";
-
-        // Si es Admin ve todo, si es usuario ve solo su zona
         let posts = window.isAdmin ? window.dbLocal.inventory : window.dbLocal.inventory.filter(p => p.loc === window.activeLoc);
 
         if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
@@ -387,9 +374,6 @@
         `).join('');
     }
 
-    // ==========================================
-    // 4. CHAT GRUPAL REAL-TIME + AUTO BORRADO 24H
-    // ==========================================
     const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"));
     
     onSnapshot(qChat, (snapshot) => {
@@ -403,13 +387,11 @@
         snapshot.forEach((docSnap) => {
             const data = docSnap.data();
             
-            // AUTO-LIMPIEZA: Si tiene más de 24 horas, lo elimina de Firebase para no sobrecargar
             if (ahora - data.timestamp > unDia) {
                 deleteDoc(doc(db, "chats_zonas", docSnap.id)).catch(e => console.log(e));
                 return;
             }
 
-            // Filtra por zona o muestra todo si es Admin
             if(data.zone === window.activeLoc || window.isAdmin) {
                 const isMe = data.sender === window.currentUser;
                 msgsHTML += `
@@ -426,7 +408,7 @@
         });
         
         box.innerHTML = msgsHTML;
-        box.scrollTop = box.scrollHeight; // Auto-scroll abajo
+        box.scrollTop = box.scrollHeight; 
     });
 
     window.sendGroupMsg = async function() {
@@ -447,9 +429,6 @@
         } catch(e) { alert("Error al enviar el mensaje."); }
     }
 
-    // ==========================================
-    // 5. SUBIDA AL ESTUDIO
-    // ==========================================
     window.startStudio = function(cat, emoji) {
         window.activeCat = cat;
         document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + cat;
@@ -494,7 +473,6 @@
         }
     }
 
-    // Atajo para enviar mensaje con Enter
     document.addEventListener("DOMContentLoaded", () => {
         const inputField = document.getElementById('group-input');
         if (inputField) {
