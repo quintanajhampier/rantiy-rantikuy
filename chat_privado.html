@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rantiy y Rantikuy - Huanta 2026</title>
+    <title>Rantiy y Rantikuy - Mis Chats</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -70,26 +70,26 @@
         .input-p { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; background: #fafafa; outline: none; font-size: 16px; }
 
         nav { position: fixed; bottom: 0; width: 100%; height: 90px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 4000; }
-        .nav-icon { font-size: 28px; color: #ccc; transition: 0.3s; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .nav-icon { font-size: 28px; color: #ccc; transition: 0.3s; display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; }
         .nav-icon.active { color: var(--emerald-mid); }
-        .nav-icon span { font-size: 10px; text-transform: uppercase; margin-top: 4px; }
+        .nav-icon span { font-size: 10px; text-transform: uppercase; margin-top: 4px; color: #666; font-weight: bold;}
     </style>
 </head>
 <body>
 
 <header>
     <div class="app-name">Rantiy y <span>Rantikuy</span></div>
-    <div style="font-weight:900; background:var(--soft-sky); padding:5px 10px; border-radius:10px; font-size:12px;">HUANTA 2026</div>
+    <div style="font-weight:900; background:var(--soft-sky); padding:5px 10px; border-radius:10px; font-size:12px;" onclick="window.location.href='index.html'">Volver a Vitrina</div>
 </header>
 
 <div class="viewport" id="vp">
     <div class="screen">
-        <h2 style="font-weight:900; font-size:28px; margin-bottom:20px;">Chats Activos</h2>
+        <h2 style="font-weight:900; font-size:28px; margin-bottom:20px;">Mis Chats Activos</h2>
         <div id="list-contacts"></div>
     </div>
 
     <div class="screen">
-        <h2 style="font-weight:900; font-size:28px; margin-bottom:20px;">Almacén</h2>
+        <h2 style="font-weight:900; font-size:28px; margin-bottom:20px;">Mi Almacén</h2>
         <button onclick="popProd()" style="background:var(--gradient-main); color:white; border:none; padding:18px; border-radius:20px; width:100%; font-weight:900; margin-bottom:25px;">+ REGISTRAR MERCADERÍA</button>
         <div id="list-inventory"></div>
     </div>
@@ -98,7 +98,7 @@
 <div id="chat-window">
     <div class="chat-nav">
         <button class="btn-back" onclick="closeChat()">‹</button>
-        <div id="active-av" style="width:45px; height:45px; background:var(--gradient-main); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:900;">?</div>
+        <div id="active-av" style="width:45px; height:45px; background:var(--gradient-main); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:20px;">?</div>
         <div><b id="active-name" style="display:block; font-size:18px;">Nombre</b><span id="active-phone" style="font-size:12px; color:var(--emerald-mid);">Cargando...</span></div>
     </div>
     <div class="messages-area" id="m-flow"></div>
@@ -112,7 +112,8 @@
 </div>
 
 <nav>
-    <div class="nav-icon active" onclick="go(0, this)">💬 <span>Ventas</span></div>
+    <a href="index.html" class="nav-icon" style="text-decoration: none;">🏠 <span>Vitrina</span></a>
+    <div class="nav-icon active" onclick="go(0, this)">💬 <span>Chats</span></div>
     <div class="nav-icon" onclick="go(1, this)">📦 <span>Almacén</span></div>
 </nav>
 
@@ -123,13 +124,19 @@
 <script type="module">
     import { db, collection, addDoc, onSnapshot, query, where, orderBy } from './firebase-engine.js';
 
-    let localDB = JSON.parse(localStorage.getItem('RR_2026_STORE')) || { contacts: [], inventory: [] };
+    // 1. OBTENEMOS LA IDENTIDAD REAL DEL USUARIO DESDE EL REGISTRO
+    const MI_NOMBRE = localStorage.getItem('rantiy_userName');
+    const MI_TELEFONO = localStorage.getItem('rantiy_userPhone');
+
+    // Si por algún motivo entra aquí sin registrarse, lo mandamos al registro
+    if (!MI_NOMBRE || !MI_TELEFONO) {
+        window.location.href = 'registro_entrada.html';
+    }
+
+    let localDB = JSON.parse(localStorage.getItem('RR_2026_STORE')) || { inventory: [] };
     let currentContact = null;
     let unsubscribeChat = null;
     let rec; let chunks = [];
-    
-    // Identidad del usuario actual (Simulado como Williams por tu captura)
-    const MI_ID = "WILLIAMS_HUANTA"; 
 
     window.go = function(s, el) { 
         document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`;
@@ -137,16 +144,56 @@
         el.classList.add('active');
     }
 
+    // --- GUARDAR Y MOSTRAR CONTACTOS LOCALES ---
+    function saveContactLocally(phone, name) {
+        let contacts = JSON.parse(localStorage.getItem('rantiy_contacts')) || [];
+        if (!contacts.find(c => c.phone === phone)) {
+            contacts.push({ phone, name });
+            localStorage.setItem('rantiy_contacts', JSON.stringify(contacts));
+            window.renderContacts(); // Actualizar la lista en pantalla
+        }
+    }
+
+    window.renderContacts = function() {
+        let contacts = JSON.parse(localStorage.getItem('rantiy_contacts')) || [];
+        const list = document.getElementById('list-contacts');
+        
+        if (contacts.length === 0) {
+            list.innerHTML = `<div style="text-align:center; color:#888; margin-top:40px;">No tienes chats activos aún. Ve a la vitrina para contactar vendedores.</div>`;
+        } else {
+            list.innerHTML = contacts.map(c => `
+                <div class="card-stock" onclick="openChat('${c.phone}', '${c.name}')" style="cursor:pointer; display:flex; align-items:center; gap:15px; padding:15px;">
+                    <div style="width:50px; height:50px; background:var(--gradient-main); border-radius:50%; color:white; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:bold;">
+                        ${c.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <h3 style="margin:0; font-size:18px;">${c.name}</h3>
+                        <div style="color:#666; font-size:14px; margin-top:3px;">📱 ${c.phone}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+
     // --- LOGICA DE CHAT EN TIEMPO REAL ---
     window.openChat = function(phone, name) {
+        if(phone === MI_TELEFONO) {
+            alert("No puedes chatear contigo mismo.");
+            return;
+        }
+
+        saveContactLocally(phone, name);
         currentContact = { phone, name };
+        
         document.getElementById('active-name').innerText = name;
         document.getElementById('active-phone').innerText = phone;
-        document.getElementById('active-av').innerText = name[0];
+        document.getElementById('active-av').innerText = name.charAt(0).toUpperCase();
         document.getElementById('chat-window').style.display = 'flex';
         
-        // Crear Sala Única (ID ordenado para que ambos vean lo mismo)
-        const salaId = [MI_ID, phone].sort().join("___");
+        // Crear Sala Única: Unimos mi teléfono y el suyo, y los ordenamos. 
+        // Así, ambos dispositivos generan exactamente el mismo ID de sala.
+        const salaId = [MI_TELEFONO, phone].sort().join("___");
 
         if(unsubscribeChat) unsubscribeChat();
         
@@ -156,12 +203,15 @@
             let html = "";
             snapshot.forEach((doc) => {
                 const m = doc.data();
-                const isMe = m.sender === MI_ID;
+                const isMe = m.senderPhone === MI_TELEFONO;
                 let content = m.v;
                 if(m.t === 'img') content = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
-                if(m.t === 'audio') content = `<audio controls src="${m.v}" style="width:200px;"></audio>`;
+                if(m.t === 'audio') content = `<audio controls src="${m.v}" style="width:200px; height: 40px;"></audio>`;
                 
-                html += `<div class="msg-bubble ${isMe?'me':'them'}">${content}<div style="font-size:10px; opacity:0.5; text-align:right;">${m.time}</div></div>`;
+                html += `<div class="msg-bubble ${isMe?'me':'them'}">
+                            ${content}
+                            <div style="font-size:10px; opacity:0.5; text-align:right; margin-top:4px;">${m.time}</div>
+                         </div>`;
             });
             const flow = document.getElementById('m-flow');
             flow.innerHTML = html;
@@ -172,6 +222,7 @@
     window.closeChat = () => {
         document.getElementById('chat-window').style.display = 'none';
         if(unsubscribeChat) unsubscribeChat();
+        currentContact = null;
     };
 
     window.sendTxt = async () => {
@@ -179,12 +230,16 @@
         const txt = input.value.trim();
         if(!txt || !currentContact) return;
         
-        const salaId = [MI_ID, currentContact.phone].sort().join("___");
+        const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
         input.value = ""; window.uiInput();
 
         await addDoc(collection(db, "mensajes_privados"), {
-            sala: salaId, sender: MI_ID, receiver: currentContact.phone,
-            t: 'txt', v: txt, timestamp: Date.now(),
+            sala: salaId, 
+            senderName: MI_NOMBRE, 
+            senderPhone: MI_TELEFONO, 
+            t: 'txt', 
+            v: txt, 
+            timestamp: Date.now(),
             time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
         });
     };
@@ -200,10 +255,10 @@
         const file = el.files[0]; if(!file) return;
         const reader = new FileReader();
         reader.onload = async () => {
-            const salaId = [MI_ID, currentContact.phone].sort().join("___");
+            const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
             await addDoc(collection(db, "mensajes_privados"), {
-                sala: salaId, sender: MI_ID, t: 'img', v: reader.result,
-                timestamp: Date.now(), time: 'Ahora'
+                sala: salaId, senderName: MI_NOMBRE, senderPhone: MI_TELEFONO, t: 'img', v: reader.result,
+                timestamp: Date.now(), time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
             });
         };
         reader.readAsDataURL(file);
@@ -212,24 +267,29 @@
     const micBtn = document.getElementById('btn-mic');
     micBtn.onpointerdown = async (e) => {
         e.preventDefault();
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        rec = new MediaRecorder(stream); chunks = [];
-        rec.ondataavailable = e => chunks.push(e.data);
-        rec.onstop = async () => {
-            const blob = new Blob(chunks, { type: 'audio/ogg' });
-            const reader = new FileReader();
-            reader.onload = async () => {
-                const salaId = [MI_ID, currentContact.phone].sort().join("___");
-                await addDoc(collection(db, "mensajes_privados"), {
-                    sala: salaId, sender: MI_ID, t: 'audio', v: reader.result,
-                    timestamp: Date.now(), time: 'Audio'
-                });
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            rec = new MediaRecorder(stream); chunks = [];
+            rec.ondataavailable = e => chunks.push(e.data);
+            rec.onstop = async () => {
+                const blob = new Blob(chunks, { type: 'audio/ogg' });
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
+                    await addDoc(collection(db, "mensajes_privados"), {
+                        sala: salaId, senderName: MI_NOMBRE, senderPhone: MI_TELEFONO, t: 'audio', v: reader.result,
+                        timestamp: Date.now(), time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+                    });
+                };
+                reader.readAsDataURL(blob);
             };
-            reader.readAsDataURL(blob);
-        };
-        rec.start(); micBtn.classList.add('active');
+            rec.start(); micBtn.classList.add('active');
+        } catch(err) {
+            alert("Necesitas dar permisos de micrófono para enviar audios.");
+        }
     };
     micBtn.onpointerup = () => { if(rec) { rec.stop(); micBtn.classList.remove('active'); } };
+    micBtn.onpointerleave = () => { if(rec && rec.state === "recording") { rec.stop(); micBtn.classList.remove('active'); } };
 
     // --- GESTIÓN DE ALMACÉN ---
     window.popProd = () => {
@@ -237,9 +297,9 @@
             <h2 style="margin-bottom:15px;">Nuevo Producto</h2>
             <div class="form-group"><label>Nombre</label><input id="p-n" class="input-p"></div>
             <div class="form-group"><label>Precio S/</label><input id="p-p" class="input-p" type="number"></div>
-            <div class="form-group"><label>Teléfono del Vendedor</label><input id="p-tel" class="input-p" type="tel" placeholder="Ej: 987654321"></div>
-            <div class="form-group"><label>Foto URL (o base64)</label><input id="p-img" class="input-p"></div>
-            <button onclick="addP()" style="width:100%; padding:15px; background:var(--gradient-main); color:white; border:none; border-radius:12px; font-weight:bold;">GUARDAR</button>
+            <div class="form-group"><label>Teléfono del Vendedor</label><input id="p-tel" class="input-p" type="tel" value="${MI_TELEFONO}" readonly style="opacity:0.7"></div>
+            <div class="form-group"><label>Foto URL (o base64)</label><input id="p-img" class="input-p" placeholder="Opcional"></div>
+            <button onclick="addP()" style="width:100%; padding:15px; background:var(--gradient-main); color:white; border:none; border-radius:12px; font-weight:bold;">GUARDAR EN ALMACÉN</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     };
@@ -249,7 +309,7 @@
             id: Date.now(),
             name: document.getElementById('p-n').value,
             price: document.getElementById('p-p').value,
-            sellerPhone: document.getElementById('p-tel').value,
+            sellerPhone: MI_TELEFONO, // Usamos el teléfono del dueño
             img: document.getElementById('p-img').value || 'https://via.placeholder.com/150'
         };
         localDB.inventory.push(prod);
@@ -260,17 +320,42 @@
 
     window.render = () => {
         const inv = document.getElementById('list-inventory');
+        if(localDB.inventory.length === 0) {
+            inv.innerHTML = `<p style="text-align:center; color:#888;">Tu almacén está vacío.</p>`;
+            return;
+        }
         inv.innerHTML = localDB.inventory.map(p => `
             <div class="card-stock">
                 <img src="${p.img}" class="prod-img-preview">
                 <h3 style="margin-top:10px;">${p.name}</h3>
                 <div class="stock-item">Precio: <b>S/ ${p.price}</b></div>
-                <button class="btn-contactar" onclick="openChat('${p.sellerPhone}', 'Vendedor ${p.name}')">CONTACTAR VENDEDOR</button>
             </div>
         `).join('');
     };
 
-    window.onload = window.render;
+    // --- ARRANQUE DE LA APP ---
+    window.onload = () => {
+        // 1. Renderizar listas
+        window.render(); // Almacén
+        window.renderContacts(); // Chats activos
+
+        // 2. Revisar si venimos de index.html con un chat solicitado en la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlName = urlParams.get('name');
+        const urlPhone = urlParams.get('phone');
+
+        // Si existen los parámetros, abrimos el chat automáticamente
+        if (urlName && urlPhone) {
+            openChat(urlPhone, urlName);
+            // Limpiamos la URL para que si recarga no se vuelva a abrir solo
+            window.history.replaceState({}, document.title, "chat_privado.html");
+        }
+        
+        // Habilitar enviar con Enter
+        document.getElementById('m-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') window.sendTxt();
+        });
+    };
 </script>
 </body>
 </html>
