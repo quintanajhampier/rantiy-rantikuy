@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rantiy y Rantikuy</title>
+    <title>Rantiy y Rantikuy - Huanta 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -26,11 +26,11 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             position: sticky; top: 0; z-index: 1000;
         }
-        .app-name { font-size: 26px; font-weight: 900; color: var(--emerald-deep); letter-spacing: -1px; cursor: pointer; }
+        .app-name { font-size: 26px; font-weight: 900; color: var(--emerald-deep); letter-spacing: -1px; }
         .app-name span { color: var(--emerald-light); }
 
         .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 180px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .screen { width: 50%; height: 100%; padding: 20px; padding-bottom: 180px; overflow-y: auto; }
 
         .card-stock { background: var(--white); border-radius: 25px; margin-bottom: 20px; box-shadow: var(--shadow-3d); padding: 20px; border-top: 5px solid var(--emerald-mid); position: relative; }
         .card-stock h3 { color: var(--emerald-deep); font-size: 22px; margin-bottom: 10px; }
@@ -41,23 +41,24 @@
         .stock-note { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #ddd; font-style: italic; color: #555; font-size: 13px; }
         .prod-img-preview { width: 100%; height: 180px; object-fit: cover; border-radius: 15px; margin-top: 10px; background: #eee; }
 
+        .btn-contactar { width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 12px; background: #1a2a21; color: white; font-weight: 900; cursor: pointer; }
+
         #chat-window { position: fixed; inset: 0; background: #e5ddd5; z-index: 5000; display: none; flex-direction: column; }
         .chat-nav { padding: 45px 15px 15px; background: var(--white); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #ddd; }
-        .btn-back { font-size: 40px; color: var(--emerald-mid); background: none; border: none; font-weight: bold; cursor: pointer; padding: 0 10px; }
+        .btn-back { font-size: 40px; color: var(--emerald-mid); background: none; border: none; font-weight: bold; cursor: pointer; }
         
-        .messages-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }
-        .msg-bubble { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 15px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
-        .msg-bubble.me { align-self: flex-end; background: #dcf8c6; color: #000; border-top-right-radius: 2px; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 15px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .msg-bubble.me { align-self: flex-end; background: #dcf8c6; border-top-right-radius: 2px; }
         .msg-bubble.them { align-self: flex-start; background: var(--white); border-top-left-radius: 2px; }
 
         .chat-input-box { padding: 10px 10px 35px; background: #f0f0f0; display: flex; align-items: center; gap: 8px; }
-        .btn-tool { background: none; border: none; font-size: 24px; color: #666; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         #m-input { flex: 1; border: none; background: var(--white); padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; }
         
-        .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; cursor: pointer; transition: transform 0.1s; }
+        .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
         .btn-mic { background: var(--emerald-deep); }
-        .btn-mic.active { background: #ff3b30; transform: scale(1.1); animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        .btn-mic.active { background: #ff3b30; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
         .btn-send { background: #0084ff; display: none; }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 6000; display: none; align-items: flex-end; }
@@ -67,11 +68,9 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-weight: 800; margin-bottom: 5px; font-size: 14px; color: var(--emerald-deep); }
         .input-p { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #eee; background: #fafafa; outline: none; font-size: 16px; }
-        .input-p:focus { border-color: var(--emerald-mid); }
-        .btn-file-dummy { background: var(--soft-sky); color: var(--emerald-deep); padding: 15px; border-radius: 12px; text-align: center; font-weight: 800; cursor: pointer; border: 2px dashed var(--emerald-mid); }
 
         nav { position: fixed; bottom: 0; width: 100%; height: 90px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 4000; }
-        .nav-icon { font-size: 28px; color: #ccc; transition: 0.3s; display: flex; flex-direction: column; align-items: center; font-weight: bold; cursor: pointer; }
+        .nav-icon { font-size: 28px; color: #ccc; transition: 0.3s; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
         .nav-icon.active { color: var(--emerald-mid); }
         .nav-icon span { font-size: 10px; text-transform: uppercase; margin-top: 4px; }
     </style>
@@ -79,22 +78,19 @@
 <body>
 
 <header>
-    <div class="app-name" onclick="countAdmin()">Rantiy y <span>Rantikuy</span></div>
+    <div class="app-name">Rantiy y <span>Rantikuy</span></div>
     <div style="font-weight:900; background:var(--soft-sky); padding:5px 10px; border-radius:10px; font-size:12px;">HUANTA 2026</div>
 </header>
 
 <div class="viewport" id="vp">
     <div class="screen">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="font-weight:900; font-size:28px;">Mis Clientes</h2>
-            <button onclick="popContact()" style="background:var(--gradient-main); color:white; border:none; width:50px; height:50px; border-radius:18px; font-size:24px; box-shadow:0 5px 15px rgba(46,204,113,0.3);">+</button>
-        </div>
+        <h2 style="font-weight:900; font-size:28px; margin-bottom:20px;">Chats Activos</h2>
         <div id="list-contacts"></div>
     </div>
 
     <div class="screen">
         <h2 style="font-weight:900; font-size:28px; margin-bottom:20px;">Almacén</h2>
-        <button onclick="popProd()" style="background:var(--gradient-main); color:white; border:none; padding:18px; border-radius:20px; width:100%; font-weight:900; margin-bottom:25px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">+ REGISTRAR MERCADERÍA</button>
+        <button onclick="popProd()" style="background:var(--gradient-main); color:white; border:none; padding:18px; border-radius:20px; width:100%; font-weight:900; margin-bottom:25px;">+ REGISTRAR MERCADERÍA</button>
         <div id="list-inventory"></div>
     </div>
 </div>
@@ -103,11 +99,11 @@
     <div class="chat-nav">
         <button class="btn-back" onclick="closeChat()">‹</button>
         <div id="active-av" style="width:45px; height:45px; background:var(--gradient-main); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:900;">?</div>
-        <div><b id="active-name" style="display:block; font-size:18px;">Nombre</b><span id="active-phone" style="font-size:12px; color:var(--emerald-mid);">987654321</span></div>
+        <div><b id="active-name" style="display:block; font-size:18px;">Nombre</b><span id="active-phone" style="font-size:12px; color:var(--emerald-mid);">Cargando...</span></div>
     </div>
     <div class="messages-area" id="m-flow"></div>
     <div class="chat-input-box">
-        <button class="btn-tool" onclick="document.getElementById('u-file').click()">📎</button>
+        <button class="btn-circle" style="background:none; color:#666;" onclick="document.getElementById('u-file').click()">📎</button>
         <input type="file" id="u-file" hidden onchange="handleFile(this)">
         <input type="text" id="m-input" placeholder="Escribe un mensaje..." oninput="uiInput()">
         <button id="btn-mic" class="btn-circle btn-mic">🎤</button>
@@ -127,41 +123,30 @@
 <script type="module">
     import { db, collection, addDoc, onSnapshot, query, where, orderBy } from './firebase-engine.js';
 
-    let localDB = JSON.parse(localStorage.getItem('RR_ULTIMATE_2026')) || { contacts: [], inventory: [] };
-    let currentContact = null; 
-    let rec; let chunks = []; let taps = 0; let tempProdImg = "";
-    
-    const MI_NUMERO = "MI_APP_LOCAL"; 
+    let localDB = JSON.parse(localStorage.getItem('RR_2026_STORE')) || { contacts: [], inventory: [] };
+    let currentContact = null;
     let unsubscribeChat = null;
-
-    window.saveLocal = function() { localStorage.setItem('RR_ULTIMATE_2026', JSON.stringify(localDB)); window.render(); }
+    let rec; let chunks = [];
     
+    // Identidad del usuario actual (Simulado como Williams por tu captura)
+    const MI_ID = "WILLIAMS_HUANTA"; 
+
     window.go = function(s, el) { 
-        document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`; 
-        document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active')); 
-        el.classList.add('active'); 
+        document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`;
+        document.querySelectorAll('.nav-icon').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
     }
 
-    window.countAdmin = function() { taps++; if(taps===7) { alert("PANEL ADMIN: Huanta v3.0"); taps=0; } setTimeout(()=> taps=0, 2000); }
-
-    window.uiInput = function() {
-        const val = document.getElementById('m-input').value.trim();
-        document.getElementById('btn-send').style.display = val.length > 0 ? 'flex' : 'none';
-        document.getElementById('btn-mic').style.display = val.length > 0 ? 'none' : 'flex';
-    }
-
-    // --- CHAT EN TIEMPO REAL ---
-    window.openChat = function(id) { 
-        currentContact = localDB.contacts.find(x => x.id === id); 
-        if(!currentContact) return;
-
-        document.getElementById('active-name').innerText = currentContact.name; 
-        document.getElementById('active-phone').innerText = currentContact.phone; 
-        document.getElementById('active-av').innerText = currentContact.name[0]; 
-        document.getElementById('m-flow').innerHTML = ""; // Limpiar antes de cargar
-        document.getElementById('chat-window').style.display = 'flex'; 
-
-        const salaId = [MI_NUMERO, currentContact.phone].sort().join("_");
+    // --- LOGICA DE CHAT EN TIEMPO REAL ---
+    window.openChat = function(phone, name) {
+        currentContact = { phone, name };
+        document.getElementById('active-name').innerText = name;
+        document.getElementById('active-phone').innerText = phone;
+        document.getElementById('active-av').innerText = name[0];
+        document.getElementById('chat-window').style.display = 'flex';
+        
+        // Crear Sala Única (ID ordenado para que ambos vean lo mismo)
+        const salaId = [MI_ID, phone].sort().join("___");
 
         if(unsubscribeChat) unsubscribeChat();
         
@@ -171,178 +156,119 @@
             let html = "";
             snapshot.forEach((doc) => {
                 const m = doc.data();
-                const isMe = m.sender === MI_NUMERO;
+                const isMe = m.sender === MI_ID;
                 let content = m.v;
-                if(m.t === 'img') content = `<img src="${m.v}" style="width:100%; border-radius:10px; margin-top:5px;" loading="lazy">`;
-                if(m.t === 'audio') content = `<audio controls src="${m.v}" style="width:100%; max-width:220px;"></audio>`;
-                if(m.t === 'doc') content = `<a href="${m.v}" download="${m.n}" style="display:block; padding:10px; background:rgba(0,0,0,0.05); border-radius:8px; color:black; text-decoration:none;">📄 ${m.n}</a>`;
+                if(m.t === 'img') content = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
+                if(m.t === 'audio') content = `<audio controls src="${m.v}" style="width:200px;"></audio>`;
                 
-                html += `<div class="msg-bubble ${isMe?'me':'them'}">${content}<div style="font-size:10px; opacity:0.5; text-align:right; margin-top:4px;">${m.time}</div></div>`;
+                html += `<div class="msg-bubble ${isMe?'me':'them'}">${content}<div style="font-size:10px; opacity:0.5; text-align:right;">${m.time}</div></div>`;
             });
-            const f = document.getElementById('m-flow'); 
-            f.innerHTML = html;
-            f.scrollTop = f.scrollHeight;
+            const flow = document.getElementById('m-flow');
+            flow.innerHTML = html;
+            flow.scrollTop = flow.scrollHeight;
         });
-    }
+    };
 
-    window.closeChat = function() { 
-        document.getElementById('chat-window').style.display = 'none'; 
+    window.closeChat = () => {
+        document.getElementById('chat-window').style.display = 'none';
         if(unsubscribeChat) unsubscribeChat();
-    }
+    };
 
-    window.sendTxt = async function() {
+    window.sendTxt = async () => {
         const input = document.getElementById('m-input');
-        const text = input.value.trim();
-        if(!text || !currentContact) return;
+        const txt = input.value.trim();
+        if(!txt || !currentContact) return;
         
-        const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        input.value = ''; window.uiInput();
+        const salaId = [MI_ID, currentContact.phone].sort().join("___");
+        input.value = ""; window.uiInput();
 
-        const salaId = [MI_NUMERO, currentContact.phone].sort().join("_");
         await addDoc(collection(db, "mensajes_privados"), {
-            sala: salaId, sender: MI_NUMERO, receiver: currentContact.phone,
-            t: 'txt', v: text, time: now, timestamp: Date.now()
+            sala: salaId, sender: MI_ID, receiver: currentContact.phone,
+            t: 'txt', v: txt, timestamp: Date.now(),
+            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
         });
-    }
+    };
 
-    window.handleFile = function(input) {
-        const file = input.files[0]; if(!file) return;
+    window.uiInput = () => {
+        const hasT = document.getElementById('m-input').value.length > 0;
+        document.getElementById('btn-send').style.display = hasT ? 'flex' : 'none';
+        document.getElementById('btn-mic').style.display = hasT ? 'none' : 'flex';
+    };
+
+    // --- MANEJO DE ARCHIVOS Y AUDIO ---
+    window.handleFile = (el) => {
+        const file = el.files[0]; if(!file) return;
         const reader = new FileReader();
-        reader.onload = () => {
-            const type = file.type.includes('image') ? 'img' : 'doc';
-            window.sendMedia(type, reader.result, file.name);
-            input.value = '';
+        reader.onload = async () => {
+            const salaId = [MI_ID, currentContact.phone].sort().join("___");
+            await addDoc(collection(db, "mensajes_privados"), {
+                sala: salaId, sender: MI_ID, t: 'img', v: reader.result,
+                timestamp: Date.now(), time: 'Ahora'
+            });
         };
         reader.readAsDataURL(file);
-    }
+    };
 
-    window.sendMedia = async function(t, v, n="") {
-        if(!currentContact) return;
-        const salaId = [MI_NUMERO, currentContact.phone].sort().join("_");
-        await addDoc(collection(db, "mensajes_privados"), {
-            sala: salaId, sender: MI_NUMERO, receiver: currentContact.phone,
-            t, v, n, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-            timestamp: Date.now()
-        });
-    }
-
-    // --- MICRÓFONO OPTIMIZADO (Sin retrasos) ---
-    const btnMic = document.getElementById('btn-mic');
-    let streamActive = null;
-
-    btnMic.onpointerdown = async (e) => {
+    const micBtn = document.getElementById('btn-mic');
+    micBtn.onpointerdown = async (e) => {
         e.preventDefault();
-        try {
-            if(!streamActive) streamActive = await navigator.mediaDevices.getUserMedia({ audio: true });
-            rec = new MediaRecorder(streamActive);
-            chunks = [];
-            rec.ondataavailable = e => chunks.push(e.data);
-            rec.onstop = () => {
-                const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
-                const reader = new FileReader();
-                reader.onload = () => window.sendMedia('audio', reader.result);
-                reader.readAsDataURL(blob);
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        rec = new MediaRecorder(stream); chunks = [];
+        rec.ondataavailable = e => chunks.push(e.data);
+        rec.onstop = async () => {
+            const blob = new Blob(chunks, { type: 'audio/ogg' });
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const salaId = [MI_ID, currentContact.phone].sort().join("___");
+                await addDoc(collection(db, "mensajes_privados"), {
+                    sala: salaId, sender: MI_ID, t: 'audio', v: reader.result,
+                    timestamp: Date.now(), time: 'Audio'
+                });
             };
-            rec.start();
-            btnMic.classList.add('active');
-        } catch(err) { alert("Permite el acceso al micrófono"); }
-    };
-
-    btnMic.onpointerup = btnMic.onpointerleave = () => {
-        if(rec && rec.state !== 'inactive') {
-            rec.stop();
-            btnMic.classList.remove('active');
-        }
-    };
-
-    // --- CONTACTOS E INVENTARIO ---
-    window.popContact = function() {
-        document.getElementById('m-content').innerHTML = `
-            <h2 style="margin-bottom:20px; font-weight:900;">Nuevo Cliente</h2>
-            <div class="form-group"><label>Nombre</label><input id="c-n" class="input-p" placeholder="Ej. Juan Pérez"></div>
-            <div class="form-group"><label>WhatsApp</label><input id="c-p" class="input-p" type="tel" placeholder="999888777"></div>
-            <button onclick="addC()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">GUARDAR Y ABRIR CHAT</button>
-        `;
-        document.getElementById('modal').style.display = 'flex';
-    }
-
-    window.addC = function() {
-        const n = document.getElementById('c-n').value; 
-        const p = document.getElementById('c-p').value;
-        if(!n || !p) return;
-        const newId = Date.now();
-        localDB.contacts.push({ id: newId, name: n, phone: p }); 
-        window.saveLocal(); 
-        document.getElementById('modal').style.display = 'none';
-        window.openChat(newId);
-    }
-
-    window.popProd = function() {
-        tempProdImg = "";
-        document.getElementById('m-content').innerHTML = `
-            <h2 style="margin-bottom:20px; font-weight:900;">Registrar Producto</h2>
-            <div class="form-group"><label>Nombre</label><input id="p-n" class="input-p"></div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <div class="form-group"><label>Precio S/</label><input id="p-p" class="input-p" type="number"></div>
-                <div class="form-group"><label>Medida</label><select id="p-u" class="input-p"><option>Unidades</option><option>Docenas</option><option>Cajas</option></select></div>
-            </div>
-            <div class="form-group"><label>Stock Disponible</label><input id="p-q" class="input-p" type="number"></div>
-            <div class="form-group"><label>Ubicación</label><input id="p-l" class="input-p" placeholder="Ej. Pasillo 3"></div>
-            <div class="form-group">
-                <label>Foto del Producto</label>
-                <div class="btn-file-dummy" onclick="document.getElementById('p-img-file').click()">📸 ABRIR GALERÍA</div>
-                <input type="file" id="p-img-file" hidden accept="image/*" onchange="previewProdImg(this)">
-                <div id="p-preview-container"></div>
-            </div>
-            <div class="form-group"><label>Notas</label><textarea id="p-o" class="input-p" style="height:70px;"></textarea></div>
-            <button onclick="addP()" style="width:100%; padding:18px; background:var(--gradient-main); color:white; border:none; border-radius:15px; font-weight:900;">GUARDAR EN ALMACÉN</button>
-        `;
-        document.getElementById('modal').style.display = 'flex';
-    }
-
-    window.previewProdImg = function(input) {
-        const file = input.files[0]; if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            tempProdImg = e.target.result;
-            document.getElementById('p-preview-container').innerHTML = `<img src="${tempProdImg}" class="prod-img-preview">`;
+            reader.readAsDataURL(blob);
         };
-        reader.readAsDataURL(file);
-    }
+        rec.start(); micBtn.classList.add('active');
+    };
+    micBtn.onpointerup = () => { if(rec) { rec.stop(); micBtn.classList.remove('active'); } };
 
-    window.addP = function() {
-        const n = document.getElementById('p-n').value; if(!n) return;
-        localDB.inventory.push({ 
-            id:Date.now(), name:n, price: document.getElementById('p-p').value, unit: document.getElementById('p-u').value,
-            qty: document.getElementById('p-q').value, loc: document.getElementById('p-l').value, note: document.getElementById('p-o').value,
-            img: tempProdImg || 'https://via.placeholder.com/150'
-        });
-        window.saveLocal(); document.getElementById('modal').style.display = 'none';
-    }
+    // --- GESTIÓN DE ALMACÉN ---
+    window.popProd = () => {
+        document.getElementById('m-content').innerHTML = `
+            <h2 style="margin-bottom:15px;">Nuevo Producto</h2>
+            <div class="form-group"><label>Nombre</label><input id="p-n" class="input-p"></div>
+            <div class="form-group"><label>Precio S/</label><input id="p-p" class="input-p" type="number"></div>
+            <div class="form-group"><label>Teléfono del Vendedor</label><input id="p-tel" class="input-p" type="tel" placeholder="Ej: 987654321"></div>
+            <div class="form-group"><label>Foto URL (o base64)</label><input id="p-img" class="input-p"></div>
+            <button onclick="addP()" style="width:100%; padding:15px; background:var(--gradient-main); color:white; border:none; border-radius:12px; font-weight:bold;">GUARDAR</button>
+        `;
+        document.getElementById('modal').style.display = 'flex';
+    };
 
-    window.render = function() {
-        document.getElementById('list-contacts').innerHTML = localDB.contacts.map(c => `
-            <div class="card-stock" onclick="window.openChat(${c.id})" style="border-top:none; border-left:5px solid var(--emerald-mid); display:flex; align-items:center; gap:15px; padding:15px; cursor:pointer;">
-                <div style="width:50px; height:50px; background:var(--soft-sky); color:var(--emerald-mid); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900;">${c.name[0]}</div>
-                <div style="flex:1"><b>${c.name}</b><small style="display:block; color:gray;">${c.phone}</small></div>
-                <span style="color:var(--emerald-mid); font-weight:bold;">›</span>
-            </div>
-        `).reverse().join('');
+    window.addP = () => {
+        const prod = {
+            id: Date.now(),
+            name: document.getElementById('p-n').value,
+            price: document.getElementById('p-p').value,
+            sellerPhone: document.getElementById('p-tel').value,
+            img: document.getElementById('p-img').value || 'https://via.placeholder.com/150'
+        };
+        localDB.inventory.push(prod);
+        localStorage.setItem('RR_2026_STORE', JSON.stringify(localDB));
+        document.getElementById('modal').style.display = 'none';
+        window.render();
+    };
 
-        document.getElementById('list-inventory').innerHTML = localDB.inventory.map(p => `
+    window.render = () => {
+        const inv = document.getElementById('list-inventory');
+        inv.innerHTML = localDB.inventory.map(p => `
             <div class="card-stock">
-                <img src="${p.img}" class="prod-img-preview" style="margin-top:0; margin-bottom:15px;" loading="lazy">
-                <span class="stock-tag">${p.unit}</span>
+                <img src="${p.img}" class="prod-img-preview">
                 <h3 style="margin-top:10px;">${p.name}</h3>
-                <div class="stock-grid">
-                    <div class="stock-item">Precio:<b>S/ ${p.price}</b></div>
-                    <div class="stock-item">Stock:<b>${p.qty}</b></div>
-                    <div class="stock-item">Ubicación:<b>${p.loc}</b></div>
-                </div>
-                ${p.note ? `<div class="stock-note"><b>Nota:</b> ${p.note}</div>` : ''}
+                <div class="stock-item">Precio: <b>S/ ${p.price}</b></div>
+                <button class="btn-contactar" onclick="openChat('${p.sellerPhone}', 'Vendedor ${p.name}')">CONTACTAR VENDEDOR</button>
             </div>
-        `).reverse().join('');
-    }
+        `).join('');
+    };
 
     window.onload = window.render;
 </script>
