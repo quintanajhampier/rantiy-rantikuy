@@ -124,11 +124,10 @@
 <script type="module">
     import { db, collection, addDoc, onSnapshot, query, where } from './firebase-engine.js';
 
-    // 1. OBTENEMOS LA IDENTIDAD REAL DEL USUARIO DESDE EL REGISTRO
+    // 1. OBTENEMOS LA IDENTIDAD REAL DEL USUARIO
     const MI_NOMBRE = localStorage.getItem('rantiy_userName');
     const MI_TELEFONO = localStorage.getItem('rantiy_userPhone');
 
-    // Si por algún motivo entra aquí sin registrarse, lo mandamos al registro
     if (!MI_NOMBRE || !MI_TELEFONO) {
         window.location.href = 'registro_entrada.html';
     }
@@ -144,13 +143,12 @@
         el.classList.add('active');
     }
 
-    // --- GUARDAR Y MOSTRAR CONTACTOS LOCALES ---
     function saveContactLocally(phone, name) {
         let contacts = JSON.parse(localStorage.getItem('rantiy_contacts')) || [];
         if (!contacts.find(c => c.phone === phone)) {
             contacts.push({ phone, name });
             localStorage.setItem('rantiy_contacts', JSON.stringify(contacts));
-            window.renderContacts(); // Actualizar la lista en pantalla
+            window.renderContacts(); 
         }
     }
 
@@ -175,8 +173,6 @@
         }
     }
 
-
-    // --- LOGICA DE CHAT EN TIEMPO REAL ---
     window.openChat = function(phone, name) {
         if(phone === MI_TELEFONO) {
             alert("No puedes chatear contigo mismo.");
@@ -191,12 +187,10 @@
         document.getElementById('active-av').innerText = name.charAt(0).toUpperCase();
         document.getElementById('chat-window').style.display = 'flex';
         
-        // Crear Sala Única
         const salaId = [MI_TELEFONO, phone].sort().join("___");
 
         if(unsubscribeChat) unsubscribeChat();
         
-        // CORRECCIÓN AQUÍ: Quitamos el orderBy para evitar el error de índices compuestos de Firebase
         const q = query(collection(db, "mensajes_privados"), where("sala", "==", salaId));
         
         unsubscribeChat = onSnapshot(q, (snapshot) => {
@@ -206,7 +200,6 @@
                 mensajesArr.push(doc.data());
             });
 
-            // CORRECCIÓN AQUÍ: Ordenamos con JavaScript para evitar problemas
             mensajesArr.sort((a, b) => a.timestamp - b.timestamp);
 
             let html = "";
@@ -223,7 +216,7 @@
             });
             const flow = document.getElementById('m-flow');
             flow.innerHTML = html;
-            flow.scrollTop = flow.scrollHeight; // Auto-scroll hacia abajo
+            flow.scrollTop = flow.scrollHeight; 
         }, (error) => {
             console.error("Error al escuchar los mensajes:", error);
         });
@@ -242,7 +235,6 @@
         
         const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
         
-        // CORRECCIÓN AQUÍ: Guardamos el valor antes de limpiar el input
         const textoEnviado = txt;
         input.value = ""; window.uiInput();
 
@@ -258,7 +250,7 @@
             });
         } catch (error) {
             console.error("Error al enviar el mensaje:", error);
-            input.value = textoEnviado; // Devolvemos el texto si falla
+            input.value = textoEnviado; 
             window.uiInput();
             alert("Hubo un error al enviar. Revisa tu conexión a Firebase.");
         }
@@ -270,16 +262,63 @@
         document.getElementById('btn-mic').style.display = hasT ? 'none' : 'flex';
     };
 
-    // --- MANEJO DE ARCHIVOS Y AUDIO ---
+    // --- MANEJO DE ARCHIVOS Y COMPRESIÓN DE IMÁGENES ---
     window.handleFile = (el) => {
-        const file = el.files[0]; if(!file) return;
+        const file = el.files[0]; 
+        if(!file) return;
+
+        // Validar que sea una imagen
+        if(!file.type.startsWith('image/')) {
+            alert('Por favor, selecciona solo imágenes.');
+            return;
+        }
+
         const reader = new FileReader();
-        reader.onload = async () => {
-            const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
-            await addDoc(collection(db, "mensajes_privados"), {
-                sala: salaId, senderName: MI_NOMBRE, senderPhone: MI_TELEFONO, t: 'img', v: reader.result,
-                timestamp: Date.now(), time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
-            });
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = async () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                const MAX_SIZE = 800;
+                if (width > height) {
+                    if (width > MAX_SIZE) {
+                        height *= MAX_SIZE / width;
+                        width = MAX_SIZE;
+                    }
+                } else {
+                    if (height > MAX_SIZE) {
+                        width *= MAX_SIZE / height;
+                        height = MAX_SIZE;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                
+                const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
+                
+                try {
+                    await addDoc(collection(db, "mensajes_privados"), {
+                        sala: salaId, 
+                        senderName: MI_NOMBRE, 
+                        senderPhone: MI_TELEFONO, 
+                        t: 'img', 
+                        v: compressedBase64,
+                        timestamp: Date.now(), 
+                        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+                    });
+                } catch(error) {
+                    console.error("Error al enviar la foto:", error);
+                    alert("No se pudo enviar la foto. Intenta con una imagen más pequeña.");
+                }
+            };
+            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     };
@@ -329,7 +368,7 @@
             id: Date.now(),
             name: document.getElementById('p-n').value,
             price: document.getElementById('p-p').value,
-            sellerPhone: MI_TELEFONO, // Usamos el teléfono del dueño
+            sellerPhone: MI_TELEFONO,
             img: document.getElementById('p-img').value || 'https://via.placeholder.com/150'
         };
         localDB.inventory.push(prod);
@@ -355,23 +394,18 @@
 
     // --- ARRANQUE DE LA APP ---
     window.onload = () => {
-        // 1. Renderizar listas
-        window.render(); // Almacén
-        window.renderContacts(); // Chats activos
+        window.render(); 
+        window.renderContacts(); 
 
-        // 2. Revisar si venimos de index.html con un chat solicitado en la URL
         const urlParams = new URLSearchParams(window.location.search);
         const urlName = urlParams.get('name');
         const urlPhone = urlParams.get('phone');
 
-        // Si existen los parámetros, abrimos el chat automáticamente
         if (urlName && urlPhone) {
             openChat(urlPhone, urlName);
-            // Limpiamos la URL para que si recarga no se vuelva a abrir solo
             window.history.replaceState({}, document.title, "chat_privado.html");
         }
         
-        // Habilitar enviar con Enter
         document.getElementById('m-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') window.sendTxt();
         });
