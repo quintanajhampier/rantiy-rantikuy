@@ -38,7 +38,7 @@
     <div class="eslogan">Mercado Serio - Cero Estafas</div>
 
     <div class="alerta-gps">
-        📍 <b>Seguridad del Imperio:</b> Si el GPS no carga, toca el <b>candado</b> 🔒 arriba en la dirección y activa "Ubicación".
+        📍 <b>Seguridad del Imperio:</b> Si el GPS no carga, toca el <b>candado</b> 🔒 arriba y activa "Ubicación".
     </div>
 
     <input type="text" id="nombre" placeholder="Nombre y Apellido Completo" autocomplete="off">
@@ -54,77 +54,100 @@
 
     <label class="check-group">
         <input type="checkbox" id="acepto">
-        <span>Soy de la zona y acepto los términos de seguridad y comisiones del mercado.</span>
+        <span>Soy de la zona y acepto los términos de seguridad del mercado.</span>
     </label>
 
-    <button id="btnEntrar" onclick="validarYEntrar()" class="btn-ingresar">VERIFICAR E INGRESAR</button>
+    <button id="btnEntrar" class="btn-ingresar">VERIFICAR E INGRESAR</button>
     <div id="status"></div>
 </div>
 
-<script>
-async function validarYEntrar() {
-    const nombre = document.getElementById('nombre').value.trim();
-    const telefono = document.getElementById('telefono').value.trim();
-    const acepto = document.getElementById('acepto').checked;
-    const btn = document.getElementById('btnEntrar');
-    const status = document.getElementById('status');
+<script type="module">
+    // Importamos las herramientas de tu motor de Firebase
+    import { db, collection, addDoc } from "./firebase-engine.js";
 
-    if (!nombre || !telefono || !acepto) {
-        alert("Completa tus datos y acepta las reglas para proteger el mercado.");
-        return;
-    }
-
-    btn.disabled = true;
-    status.style.color = "#2d6a4f";
-    status.innerHTML = 'Buscando satélite seguro<span class="loading-dot">.</span><span class="loading-dot" style="animation-delay: 0.2s">.</span><span class="loading-dot" style="animation-delay: 0.4s">.</span>';
-
-    // CONFIGURACIÓN DE ALTA SENSIBILIDAD
-    const opcionesGPS = {
-        enableHighAccuracy: true, 
-        timeout: 15000,           // Espera 15 segundos antes de dar error
-        maximumAge: 0             // No acepta ubicaciones viejas (fuerza lectura real)
+    // Verificamos si ya tiene perfil para no pedirlo de nuevo
+    window.onload = () => {
+        if (localStorage.getItem('rantiy_userId')) {
+            window.location.href = "index.html";
+        }
     };
 
-    navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-            status.innerText = "¡Ubicación Verificada! Sincronizando...";
+    const btn = document.getElementById('btnEntrar');
+    btn.addEventListener('click', validarYEntrar);
 
-            const scriptURL = "https://script.google.com/macros/s/AKfycbwsQyjUIFJkUgKpYBQVM-sUccSRMBO1wZlr9m2cofzzFVsO_dpqVyjQzufMRmtNWVI7/exec";
+    async function validarYEntrar() {
+        const nombre = document.getElementById('nombre').value.trim();
+        const telefono = document.getElementById('telefono').value.trim();
+        const acepto = document.getElementById('acepto').checked;
+        const status = document.getElementById('status');
 
-            localStorage.setItem('rantiy_user', nombre);
+        if (!nombre || !telefono || !acepto) {
+            alert("Completa tus datos y acepta las reglas para proteger el mercado.");
+            return;
+        }
 
-            const datos = new FormData();
-            datos.append('nombre', nombre);
-            datos.append('telefono', telefono);
-            datos.append('firma', "GPS Verificado ✅");
-            datos.append('dispositivo', `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`);
+        btn.disabled = true;
+        status.style.color = "#2d6a4f";
+        status.innerHTML = 'Conectando con el satélite seguro<span class="loading-dot">.</span><span class="loading-dot" style="animation-delay: 0.2s">.</span><span class="loading-dot" style="animation-delay: 0.4s">.</span>';
 
-            try {
-                fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: datos });
-                
-                setTimeout(() => {
-                    status.innerText = "Acceso Concedido. ¡Bienvenido!";
-                    window.location.href = "index.html"; 
-                }, 1500);
-            } catch (error) {
-                window.location.href = "index.html";
-            }
-        },
-        (err) => {
-            btn.disabled = false;
-            status.style.color = "#dc2626";
-            
-            if (err.code === 1) {
-                status.innerText = "ERROR: Permiso denegado. Activa el GPS en el candado 🔒 arriba.";
-            } else if (err.code === 3) {
-                status.innerText = "ERROR: Tiempo agotado. Reintenta en un lugar abierto.";
-            } else {
-                status.innerText = "ERROR: No se pudo verificar tu ubicación.";
-            }
-        },
-        opcionesGPS
-    );
-}
+        const opcionesGPS = {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        };
+
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                status.innerText = "¡Ubicación Verificada! Creando tu perfil real...";
+
+                try {
+                    // 1. GUARDAMOS EN FIREBASE (Tiempo Real)
+                    const docRef = await addDoc(collection(db, "Usuarios"), {
+                        nombre: nombre,
+                        telefono: telefono,
+                        coordenadas: {
+                            lat: pos.coords.latitude,
+                            lon: pos.coords.longitude
+                        },
+                        fechaRegistro: new Date().toLocaleString(),
+                        estado: "activo"
+                    });
+
+                    // 2. CREAMOS EL PERFIL PERMANENTE EN EL CELULAR
+                    localStorage.setItem('rantiy_userId', docRef.id);
+                    localStorage.setItem('rantiy_userName', nombre);
+                    localStorage.setItem('rantiy_userPhone', telefono);
+
+                    // 3. RESPALDO EN TU GOOGLE SHEETS (Opcional)
+                    const scriptURL = "https://script.google.com/macros/s/AKfycbwsQyjUIFJkUgKpYBQVM-sUccSRMBO1wZlr9m2cofzzFVsO_dpqVyjQzufMRmtNWVI7/exec";
+                    const datos = new FormData();
+                    datos.append('nombre', nombre);
+                    datos.append('telefono', telefono);
+                    datos.append('dispositivo', `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`);
+                    
+                    fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: datos });
+
+                    status.innerText = "¡Acceso Concedido! Entrando...";
+                    
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 1500);
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    status.style.color = "#dc2626";
+                    status.innerText = "Error de red. Intenta de nuevo.";
+                    btn.disabled = false;
+                }
+            },
+            (err) => {
+                btn.disabled = false;
+                status.style.color = "#dc2626";
+                status.innerText = "GPS obligatorio para evitar estafas. Actívalo.";
+            },
+            opcionesGPS
+        );
+    }
 </script>
 </body>
 </html>
