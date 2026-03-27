@@ -215,16 +215,15 @@
     window.currentFilter = "Todas"; 
     window.adminClicks = 0;
     
-    // --- REVISIÓN DE SESIÓN Y REDIRECCIÓN AL REGISTRO ---
-    window.currentUser = localStorage.getItem('rantiy_user');
-    window.currentPhone = localStorage.getItem('rantiy_phone') || "000000000";
+    // --- CONEXIÓN REAL-TIME CON EL PERFIL DE REGISTRO ---
+    window.currentUser = localStorage.getItem('rantiy_userName'); // Usamos los nombres del registro
+    window.currentPhone = localStorage.getItem('rantiy_userPhone') || "000000000";
 
-    // REDIRECCIÓN ACTIVADA
+    // Bloqueo de seguridad si no hay perfil
     if (!window.currentUser) {
          window.location.href = 'registro_entrada.html'; 
     }
 
-    // --- PROVINCIAS AMPLIADAS ---
     const ZONAS = {
         "Huanta": { lat: -12.94, lon: -74.24, r: 0.1 },
         "Huamanga": { lat: -13.15, lon: -74.22, r: 0.1 },
@@ -257,17 +256,17 @@
     window.dbLocal = { contacts: [], inventory: [] };
     window.tempProdImg = "";
 
-    // --- ACCESO A MODO DIOS (REDIRECCIÓN A ADMIN.HTML) ---
+    // --- MODO DIOS ---
     window.checkAdminAccess = function() {
         window.adminClicks++;
         if(window.adminClicks >= 5) {
             window.adminClicks = 0;
-            let pass = prompt("MODO DIOS: Ingresa la clave de fundador para acceder al Panel:");
+            let pass = prompt("MODO DIOS: Ingresa la clave de fundador:");
             if(pass === "RR2026") { 
                 localStorage.setItem("admin_session", "ADMIN_SUPREMO");
-                window.location.href = "admin.html"; // Redirige al archivo separado
+                window.location.href = "admin.html";
             } else {
-                alert("Clave incorrecta. Intento bloqueado.");
+                alert("Clave incorrecta.");
             }
         }
     }
@@ -280,12 +279,10 @@
 
     window.init = function() {
         const userTag = document.getElementById('user-tag');
-        if(userTag) userTag.innerText = "CIUDADANO: " + (window.currentUser ? window.currentUser.toUpperCase() : "");
+        if(userTag) userTag.innerText = "CIUDADANO: " + window.currentUser.toUpperCase();
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
-            // DESCOMENTAR PARA PROBAR EN PC (SIMULADOR DE UBICACIÓN HUANTA)
-            // window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); 
         } else {
             alert("Tu celular no soporta GPS.");
         }
@@ -314,14 +311,14 @@
         } else {
             document.getElementById('gps-loader').style.display = 'none';
             const gpsMsg = document.getElementById('gps-msg');
-            gpsMsg.innerText = "ESTÁS FUERA DE COBERTURA: Rantiy llegará pronto a tu ciudad.";
+            gpsMsg.innerText = "FUERA DE COBERTURA. Rantiy llegará pronto aquí.";
             gpsMsg.style.color = "red";
         }
     }
 
     window.errorGPS = function() {
         document.getElementById('gps-loader').style.display = 'none';
-        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS para usar Rantiy y Rantikuy.";
+        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS para usar Rantiy.";
         document.getElementById('gps-msg').style.color = "red";
     }
 
@@ -334,7 +331,10 @@
     }
 
     window.irAChatPrivado = function(nombre, telefono) {
-        if(nombre === window.currentUser || nombre === "ADMINISTRADOR") return; 
+        if(nombre === window.currentUser) {
+            alert("No puedes chatear contigo mismo.");
+            return;
+        }
         window.location.href = `chat_privado.html?name=${encodeURIComponent(nombre)}&phone=${telefono}`;
     }
 
@@ -356,13 +356,7 @@
         if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
         if(search) posts = posts.filter(p => p.name.toLowerCase().includes(search));
 
-        if(posts.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:50px 20px; color:#94a3b8;"><b>No hay publicaciones en esta zona.</b><br><br>¡Sé el primero en vender algo!</div>`;
-            return;
-        }
-
         container.innerHTML = posts.map(p => {
-            // Extraer detalles dinámicos si existen (guardados en formData)
             let extraDetails = "";
             if(p.formDetails) {
                 let detailsArr = p.formDetails.split(" | ");
@@ -374,7 +368,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')">
                         <div style="width:40px; height:40px; border-radius:15px; background:var(--verde); color:white; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px;">
-                            ${(p.sellerName || p.name).charAt(0).toUpperCase()}
+                            ${(p.sellerName || 'V').charAt(0).toUpperCase()}
                         </div>
                         <div>
                             <div style="font-weight:800; font-size:14px;">${p.sellerName || 'Vendedor Local'}</div>
@@ -387,15 +381,14 @@
                 ${extraDetails}
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
                     <div style="color:var(--verde); font-weight:900; font-size:20px;">S/ ${p.price}</div>
-                    <button onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800;">Contactar</button>
+                    <button onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800; cursor:pointer;">Contactar</button>
                 </div>
-            </div>
-            `;
+            </div>`;
         }).join('');
     }
 
+    // --- CHAT GRUPAL REAL-TIME ---
     const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"));
-    
     onSnapshot(qChat, (snapshot) => {
         const box = document.getElementById('group-msgs');
         if(!box || !window.activeLoc) return;
@@ -406,27 +399,23 @@
 
         snapshot.forEach((docSnap) => {
             const data = docSnap.data();
-            
             if (ahora - data.timestamp > unDia) {
-                deleteDoc(doc(db, "chats_zonas", docSnap.id)).catch(e => console.log(e));
-                return;
+                deleteDoc(doc(db, "chats_zonas", docSnap.id)).catch(e => {}); return;
             }
 
             if(data.zone === window.activeLoc || data.zone === "GLOBAL") {
                 const isMe = data.sender === window.currentUser;
                 msgsHTML += `
-                    <div style="display:flex; flex-direction:column; align-items: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 5px;">
+                    <div style="display:flex; flex-direction:column; align-items: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 8px;">
                         <span onclick="window.irAChatPrivado('${data.sender}', '${data.phone}')" style="font-size:10px; color:#94a3b8; margin-bottom:2px; padding:0 5px; cursor:pointer; font-weight:bold;">
-                            ${isMe ? 'Tú' : (data.sender === "ADMINISTRADOR" ? '👑 ADMIN' : '👤 ' + data.sender)}
+                            ${isMe ? 'Tú' : (data.sender === "ADMINISTRADOR" ? '👑 ADMIN' : '👤 ' + data.sender)} (Chat 💬)
                         </span>
                         <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}" style="${data.sender === 'ADMINISTRADOR' ? 'background: #f59e0b; color: white;' : ''}">
                             ${data.text}
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }
         });
-        
         box.innerHTML = msgsHTML;
         box.scrollTop = box.scrollHeight; 
     });
@@ -434,10 +423,8 @@
     window.sendGroupMsg = async function() {
         const input = document.getElementById('group-input');
         const text = input.value.trim();
-        if(!text || !window.activeLoc) return;
-
+        if(!text) return;
         input.value = ""; input.focus();
-
         try {
             await addDoc(collection(db, "chats_zonas"), {
                 zone: window.activeLoc,
@@ -446,38 +433,17 @@
                 text: text,
                 timestamp: Date.now()
             });
-        } catch(e) { alert("Error al enviar el mensaje."); }
+        } catch(e) { alert("Error al enviar."); }
     }
 
-    // --- FORMULARIO DINÁMICO ---
+    // --- SUBIDA DE POSTS ---
     window.startStudio = function(cat, emoji) {
         window.activeCat = cat;
         document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + cat;
-        
         const dynamicContainer = document.getElementById('dynamic-fields-container');
-        let formHTML = '';
-
-        if(cat === 'Comida') {
-            formHTML = `<input type="text" id="dyn-1" class="rr-field" placeholder="¿Hace delivery? (Sí/No, Costo)">
-                        <input type="text" id="dyn-2" class="rr-field" placeholder="¿Para cuántas personas o porción?">`;
-        } else if(cat === 'Venta') {
-            formHTML = `<input type="text" id="dyn-1" class="rr-field" placeholder="Estado (Nuevo / Usado / Seminuevo)">
-                        <input type="text" id="dyn-2" class="rr-field" placeholder="Detalles (Talla, Marca, Color, etc.)">`;
-        } else if(cat === 'Taxi') {
-            formHTML = `<input type="text" id="dyn-1" class="rr-field" placeholder="Zonas de ruta (Ej: Huanta a Ayacucho)">
-                        <input type="text" id="dyn-2" class="rr-field" placeholder="Tipo de auto (Auto, Minivan, Moto)">`;
-        } else if(cat === 'Empleo') {
-            formHTML = `<input type="text" id="dyn-1" class="rr-field" placeholder="Requisitos principales">
-                        <input type="text" id="dyn-2" class="rr-field" placeholder="Horario de trabajo">`;
-        } else if(cat === 'Servicio') {
-            formHTML = `<input type="text" id="dyn-1" class="rr-field" placeholder="¿Atención a domicilio?">
-                        <input type="text" id="dyn-2" class="rr-field" placeholder="Experiencia o Especialidad">`;
-        } else {
-            formHTML = `<input type="text" id="dyn-1" class="rr-field" placeholder="Describe más detalles aquí...">`;
-        }
-
+        let formHTML = `<input type="text" id="dyn-1" class="rr-field" placeholder="Detalle 1 (Ej: Marca o Talla)">
+                        <input type="text" id="dyn-2" class="rr-field" placeholder="Detalle 2 (Ej: Estado)">`;
         dynamicContainer.innerHTML = formHTML;
-
         document.getElementById('main-hub').style.display = 'none';
         document.getElementById('upload-studio').style.display = 'block';
     }
@@ -485,24 +451,14 @@
     window.exitStudio = function() {
         document.getElementById('main-hub').style.display = 'block';
         document.getElementById('upload-studio').style.display = 'none';
-        document.getElementById('in-title').value = '';
-        document.getElementById('in-price').value = '';
-        document.getElementById('dynamic-fields-container').innerHTML = '';
-        
-        window.tempProdImg = '';
-        document.getElementById('in-photo').value = '';
-        const preview = document.getElementById('img-preview');
-        preview.style.display = 'none';
-        preview.style.backgroundImage = '';
     }
 
     window.previewImage = function(event) {
         const file = event.target.files[0];
         if(!file) return;
-        
         const reader = new FileReader();
-        reader.onload = function(e) {
-            window.tempProdImg = e.target.result; 
+        reader.onload = (e) => {
+            window.tempProdImg = e.target.result;
             const preview = document.getElementById('img-preview');
             preview.style.display = 'block';
             preview.style.backgroundImage = `url(${e.target.result})`;
@@ -513,55 +469,33 @@
     window.uploadToEmpire = async function() {
         const title = document.getElementById('in-title').value.trim();
         const price = document.getElementById('in-price').value.trim();
-        
-        // Recopilar respuestas dinámicas
-        const dyn1 = document.getElementById('dyn-1') ? document.getElementById('dyn-1').value.trim() : '';
-        const dyn2 = document.getElementById('dyn-2') ? document.getElementById('dyn-2').value.trim() : '';
-        
-        let extraDetails = [];
-        if(dyn1) extraDetails.push(dyn1);
-        if(dyn2) extraDetails.push(dyn2);
-        const compiledDetails = extraDetails.join(" | ");
+        const d1 = document.getElementById('dyn-1')?.value || "";
+        const d2 = document.getElementById('dyn-2')?.value || "";
 
-        if(!title) { alert("Ponle un título a tu publicación"); return; }
+        if(!title) return alert("Título obligatorio.");
         
         try {
             await addDoc(collection(db, "inventory"), {
-                name: title, 
-                price: price || "0", 
-                unit: "Unidad",
-                qty: "1", 
-                loc: window.activeLoc, 
-                note: `[CAT:${window.activeCat}] Publicación desde la app`,
-                formDetails: compiledDetails, // Aquí guardamos las preguntas dinámicas
+                name: title, price: price || "0", loc: window.activeLoc,
+                note: `[CAT:${window.activeCat}]`,
+                formDetails: `${d1} | ${d2}`,
                 sellerName: window.currentUser,
                 sellerPhone: window.currentPhone,
-                img: window.tempProdImg || 'https://via.placeholder.com/150', 
+                img: window.tempProdImg || 'https://via.placeholder.com/150',
                 timestamp: Date.now()
             });
-            
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#22c55e', '#f97316', '#3b82f6'] });
+            confetti({ particleCount: 150 });
             window.exitStudio();
-            window.tab('home', document.querySelector('.nav-btn')); 
-            
-        } catch (e) {
-            console.error("Error al publicar: ", e);
-            alert("Hubo un error al publicar. Revisa tu conexión.");
-        }
+            window.tab('home', document.querySelector('.nav-btn'));
+        } catch (e) { alert("Error al subir."); }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        const inputField = document.getElementById('group-input');
-        if (inputField) {
-            inputField.addEventListener('keypress', e => { 
-                if (e.key === 'Enter') window.sendGroupMsg(); 
-            });
-        }
-    });
-
-    window.onload = function() {
+        document.getElementById('group-input').addEventListener('keypress', e => { 
+            if (e.key === 'Enter') window.sendGroupMsg(); 
+        });
         window.init();
-    };
+    });
 </script>
 </body>
 </html>
