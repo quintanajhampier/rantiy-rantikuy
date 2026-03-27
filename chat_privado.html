@@ -47,15 +47,16 @@
         .chat-nav { padding: 45px 15px 15px; background: var(--white); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #ddd; }
         .btn-back { font-size: 40px; color: var(--emerald-mid); background: none; border: none; font-weight: bold; cursor: pointer; }
         
-        .messages-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 15px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* Ajuste para forzar el renderizado de los mensajes (evita el doble toque) */
+        .messages-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; transform: translateZ(0); }
+        .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 15px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); word-wrap: break-word; }
         .msg-bubble.me { align-self: flex-end; background: #dcf8c6; border-top-right-radius: 2px; }
         .msg-bubble.them { align-self: flex-start; background: var(--white); border-top-left-radius: 2px; }
 
         .chat-input-box { padding: 10px 10px 35px; background: #f0f0f0; display: flex; align-items: center; gap: 8px; }
         #m-input { flex: 1; border: none; background: var(--white); padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; }
         
-        .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
+        .btn-circle { width: 45px; height: 45px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; flex-shrink: 0; }
         .btn-mic { background: var(--emerald-deep); }
         .btn-mic.active { background: #ff3b30; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
@@ -99,13 +100,16 @@
     <div class="chat-nav">
         <button class="btn-back" onclick="closeChat()">‹</button>
         <div id="active-av" style="width:45px; height:45px; background:var(--gradient-main); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:20px;">?</div>
-        <div><b id="active-name" style="display:block; font-size:18px;">Nombre</b><span id="active-phone" style="font-size:12px; color:var(--emerald-mid);">Cargando...</span></div>
+        <div style="flex:1;"><b id="active-name" style="display:block; font-size:18px;">Nombre</b><span id="active-phone" style="font-size:12px; color:var(--emerald-mid);">Cargando...</span></div>
     </div>
     <div class="messages-area" id="m-flow"></div>
     <div class="chat-input-box">
-        <button class="btn-circle" style="background:none; color:#666;" onclick="document.getElementById('u-file').click()">📎</button>
+        <button class="btn-circle" style="background:none; color:#666; font-size:24px;" onclick="document.getElementById('u-file').click()">📎</button>
         <input type="file" id="u-file" hidden onchange="handleFile(this)">
-        <input type="text" id="m-input" placeholder="Escribe un mensaje..." oninput="uiInput()">
+        
+        <button class="btn-circle" style="background:none; color:#e74c3c; font-size:24px;" onclick="sendLocation()">📍</button>
+        
+        <input type="text" id="m-input" placeholder="Mensaje..." oninput="uiInput()">
         <button id="btn-mic" class="btn-circle btn-mic">🎤</button>
         <button id="btn-send" onclick="sendTxt()" class="btn-circle btn-send">➤</button>
     </div>
@@ -135,6 +139,7 @@
     let localDB = JSON.parse(localStorage.getItem('RR_2026_STORE')) || { inventory: [] };
     let currentContact = null;
     let unsubscribeChat = null;
+    let contactListeners = [];
     let rec; let chunks = [];
 
     window.go = function(s, el) { 
@@ -152,32 +157,75 @@
         }
     }
 
+    // --- ELIMINAR CHAT DE LA LISTA ---
+    window.deleteChat = function(event, phone) {
+        event.stopPropagation();
+        if(confirm("¿Seguro que deseas ocultar este chat de tu lista?")) {
+            let contacts = JSON.parse(localStorage.getItem('rantiy_contacts')) || [];
+            contacts = contacts.filter(c => c.phone !== phone);
+            localStorage.setItem('rantiy_contacts', JSON.stringify(contacts));
+            window.renderContacts(); 
+        }
+    }
+
+    // --- LISTA DE CONTACTOS Y PUNTITO ROJO (NOTIFICACIONES) ---
     window.renderContacts = function() {
+        contactListeners.forEach(unsub => unsub());
+        contactListeners = [];
+
         let contacts = JSON.parse(localStorage.getItem('rantiy_contacts')) || [];
         const list = document.getElementById('list-contacts');
         
         if (contacts.length === 0) {
-            list.innerHTML = `<div style="text-align:center; color:#888; margin-top:40px;">No tienes chats activos aún. Ve a la vitrina para contactar vendedores.</div>`;
-        } else {
-            list.innerHTML = contacts.map(c => `
-                <div class="card-stock" onclick="openChat('${c.phone}', '${c.name}')" style="cursor:pointer; display:flex; align-items:center; gap:15px; padding:15px;">
-                    <div style="width:50px; height:50px; background:var(--gradient-main); border-radius:50%; color:white; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:bold;">
+            list.innerHTML = `<div style="text-align:center; color:#888; margin-top:40px;">No tienes chats activos aún.</div>`;
+            return;
+        } 
+        
+        let html = "";
+        contacts.forEach(c => {
+            html += `
+                <div class="card-stock" onclick="openChat('${c.phone}', '${c.name}')" style="cursor:pointer; display:flex; align-items:center; gap:15px; padding:15px; position:relative;">
+                    <div style="width:50px; height:50px; background:var(--gradient-main); border-radius:50%; color:white; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:bold; position:relative;">
                         ${c.name.charAt(0).toUpperCase()}
+                        <div id="badge-${c.phone}" style="display:none; position:absolute; top:-2px; right:-2px; width:16px; height:16px; background:#ff3b30; border-radius:50%; border:2px solid var(--white); box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
                     </div>
-                    <div>
+                    <div style="flex:1;">
                         <h3 style="margin:0; font-size:18px;">${c.name}</h3>
                         <div style="color:#666; font-size:14px; margin-top:3px;">📱 ${c.phone}</div>
                     </div>
+                    <button onclick="deleteChat(event, '${c.phone}')" style="background:var(--soft-sky); border:none; width:45px; height:45px; border-radius:50%; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer;">🗑️</button>
                 </div>
-            `).join('');
-        }
+            `;
+        });
+        list.innerHTML = html;
+
+        let lastRead = JSON.parse(localStorage.getItem('rantiy_lastRead')) || {};
+        
+        contacts.forEach(c => {
+            const salaId = [MI_TELEFONO, c.phone].sort().join("___");
+            const q = query(collection(db, "mensajes_privados"), where("sala", "==", salaId));
+            
+            const unsub = onSnapshot(q, (snapshot) => {
+                let hasUnread = false;
+                const miUltimaLectura = lastRead[c.phone] || 0; 
+                
+                snapshot.forEach((doc) => {
+                    const msg = doc.data();
+                    if (msg.senderPhone !== MI_TELEFONO && msg.timestamp > miUltimaLectura) {
+                        hasUnread = true;
+                    }
+                });
+
+                const badge = document.getElementById(`badge-${c.phone}`);
+                if (badge) badge.style.display = hasUnread ? 'block' : 'none';
+            });
+            contactListeners.push(unsub);
+        });
     }
 
+    // --- ABRIR CHAT (CON CORRECCIÓN DEL DOBLE TOQUE) ---
     window.openChat = function(phone, name) {
-        if(phone === MI_TELEFONO) {
-            alert("No puedes chatear contigo mismo.");
-            return;
-        }
+        if(phone === MI_TELEFONO) { alert("No puedes chatear contigo mismo."); return; }
 
         saveContactLocally(phone, name);
         currentContact = { phone, name };
@@ -185,38 +233,59 @@
         document.getElementById('active-name').innerText = name;
         document.getElementById('active-phone').innerText = phone;
         document.getElementById('active-av').innerText = name.charAt(0).toUpperCase();
+        
+        // Corrección del error visual: ponemos un mensaje de carga temporal
+        const flow = document.getElementById('m-flow');
+        flow.innerHTML = '<div style="text-align:center; margin-top:20px; color:#888;">Cargando mensajes...</div>';
         document.getElementById('chat-window').style.display = 'flex';
         
         const salaId = [MI_TELEFONO, phone].sort().join("___");
-
         if(unsubscribeChat) unsubscribeChat();
         
         const q = query(collection(db, "mensajes_privados"), where("sala", "==", salaId));
         
         unsubscribeChat = onSnapshot(q, (snapshot) => {
             let mensajesArr = [];
-            
-            snapshot.forEach((doc) => {
-                mensajesArr.push(doc.data());
-            });
-
+            snapshot.forEach((doc) => mensajesArr.push(doc.data()));
             mensajesArr.sort((a, b) => a.timestamp - b.timestamp);
 
             let html = "";
             mensajesArr.forEach((m) => {
                 const isMe = m.senderPhone === MI_TELEFONO;
                 let content = m.v;
+                
                 if(m.t === 'img') content = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
                 if(m.t === 'audio') content = `<audio controls src="${m.v}" style="width:200px; height: 40px;"></audio>`;
+                
+                // Formato para la ubicación
+                if(m.t === 'loc') content = `
+                    <div style="text-align:center; padding:5px;">
+                        <span style="font-size:30px;">📍</span><br>
+                        <a href="${m.v}" target="_blank" style="color:${isMe?'#0056b3':'#0084ff'}; font-weight:bold; text-decoration:none; display:inline-block; margin-top:5px;">Ver Ubicación en Mapa</a>
+                    </div>`;
                 
                 html += `<div class="msg-bubble ${isMe?'me':'them'}">
                             ${content}
                             <div style="font-size:10px; opacity:0.5; text-align:right; margin-top:4px;">${m.time}</div>
                          </div>`;
             });
-            const flow = document.getElementById('m-flow');
+            
             flow.innerHTML = html;
-            flow.scrollTop = flow.scrollHeight; 
+            
+            // Forzamos al teléfono a hacer scroll al fondo con un leve retraso, esto evita el bug del doble toque
+            setTimeout(() => {
+                flow.style.display = 'none';
+                flow.style.display = 'flex';
+                flow.scrollTop = flow.scrollHeight;
+            }, 50);
+
+            // Actualizar última lectura
+            let lastRead = JSON.parse(localStorage.getItem('rantiy_lastRead')) || {};
+            lastRead[phone] = Date.now();
+            localStorage.setItem('rantiy_lastRead', JSON.stringify(lastRead));
+            
+            const badge = document.getElementById(`badge-${phone}`);
+            if(badge) badge.style.display = 'none';
         }, (error) => {
             console.error("Error al escuchar los mensajes:", error);
         });
@@ -226,6 +295,7 @@
         document.getElementById('chat-window').style.display = 'none';
         if(unsubscribeChat) unsubscribeChat();
         currentContact = null;
+        window.renderContacts(); 
     };
 
     window.sendTxt = async () => {
@@ -234,25 +304,17 @@
         if(!txt || !currentContact) return;
         
         const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
-        
         const textoEnviado = txt;
         input.value = ""; window.uiInput();
 
         try {
             await addDoc(collection(db, "mensajes_privados"), {
-                sala: salaId, 
-                senderName: MI_NOMBRE, 
-                senderPhone: MI_TELEFONO, 
-                t: 'txt', 
-                v: textoEnviado, 
-                timestamp: Date.now(),
-                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+                sala: salaId, senderName: MI_NOMBRE, senderPhone: MI_TELEFONO, t: 'txt', v: textoEnviado, 
+                timestamp: Date.now(), time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
             });
         } catch (error) {
-            console.error("Error al enviar el mensaje:", error);
-            input.value = textoEnviado; 
-            window.uiInput();
-            alert("Hubo un error al enviar. Revisa tu conexión a Firebase.");
+            input.value = textoEnviado; window.uiInput();
+            alert("Hubo un error al enviar. Revisa tu conexión.");
         }
     };
 
@@ -262,12 +324,43 @@
         document.getElementById('btn-mic').style.display = hasT ? 'none' : 'flex';
     };
 
+    // --- ENVIAR UBICACIÓN ---
+    window.sendLocation = () => {
+        if (!currentContact) return;
+        if (!navigator.geolocation) {
+            alert("Tu navegador o teléfono no soporta enviar ubicación.");
+            return;
+        }
+
+        // Mostramos una alerta para que el usuario sepa que está cargando
+        alert("Obteniendo tu ubicación... por favor espera un momento.");
+
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            // Creamos un link directo a Google Maps
+            const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
+            
+            const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
+
+            try {
+                await addDoc(collection(db, "mensajes_privados"), {
+                    sala: salaId, senderName: MI_NOMBRE, senderPhone: MI_TELEFONO, t: 'loc', v: mapLink,
+                    timestamp: Date.now(), time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+                });
+            } catch(error) {
+                alert("Hubo un error al enviar tu ubicación.");
+            }
+        }, (err) => {
+            alert("No pudimos acceder a tu ubicación. Asegúrate de tener el GPS activado y darle permisos al navegador.");
+        }, { enableHighAccuracy: true });
+    };
+
     // --- MANEJO DE ARCHIVOS Y COMPRESIÓN DE IMÁGENES ---
     window.handleFile = (el) => {
         const file = el.files[0]; 
         if(!file) return;
 
-        // Validar que sea una imagen
         if(!file.type.startsWith('image/')) {
             alert('Por favor, selecciona solo imágenes.');
             return;
@@ -278,43 +371,26 @@
             const img = new Image();
             img.onload = async () => {
                 const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-                
+                let width = img.width; let height = img.height;
                 const MAX_SIZE = 800;
                 if (width > height) {
-                    if (width > MAX_SIZE) {
-                        height *= MAX_SIZE / width;
-                        width = MAX_SIZE;
-                    }
+                    if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
                 } else {
-                    if (height > MAX_SIZE) {
-                        width *= MAX_SIZE / height;
-                        height = MAX_SIZE;
-                    }
+                    if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
                 }
-                
-                canvas.width = width;
-                canvas.height = height;
+                canvas.width = width; canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
                 
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
-                
                 const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
                 
                 try {
                     await addDoc(collection(db, "mensajes_privados"), {
-                        sala: salaId, 
-                        senderName: MI_NOMBRE, 
-                        senderPhone: MI_TELEFONO, 
-                        t: 'img', 
-                        v: compressedBase64,
-                        timestamp: Date.now(), 
-                        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+                        sala: salaId, senderName: MI_NOMBRE, senderPhone: MI_TELEFONO, t: 'img', v: compressedBase64,
+                        timestamp: Date.now(), time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
                     });
                 } catch(error) {
-                    console.error("Error al enviar la foto:", error);
                     alert("No se pudo enviar la foto. Intenta con una imagen más pequeña.");
                 }
             };
@@ -323,6 +399,7 @@
         reader.readAsDataURL(file);
     };
 
+    // --- MICRÓFONO ---
     const micBtn = document.getElementById('btn-mic');
     micBtn.onpointerdown = async (e) => {
         e.preventDefault();
