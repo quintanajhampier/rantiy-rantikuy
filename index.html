@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rantiy y Rantikuy - Imperio Huanta</title>
+    <title>Rantiy y Rantikuy - Imperio</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
@@ -11,7 +11,6 @@
             --verde: #22c55e; --verde-glow: #dcfce7;
             --naranja: #f97316; --oscuro: #1e293b;
             --glass: rgba(255, 255, 255, 0.96);
-            --huanta: #22c55e; --huamanga: #3b82f6; --vraem: #f59e0b;
             --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
@@ -70,9 +69,15 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- VITRINA / CARDS --- */
-        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; }
+        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; position: relative; }
         .img-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
         .img-scroll img { width: 100%; height: 230px; object-fit: cover; border-radius: 25px; flex-shrink: 0; }
+
+        /* --- CONTROLES ADMIN EN TARJETA --- */
+        .admin-controls { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1; }
+        .btn-admin { padding: 8px 15px; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; font-size: 12px; }
+        .btn-delete { background: #fee2e2; color: #ef4444; }
+        .btn-ban { background: #fef3c7; color: #d97706; }
 
         /* --- STUDIO SUBIDA --- */
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
@@ -80,10 +85,13 @@
         .cat-btn { background: rgba(255,255,255,0.07); padding: 20px 10px; border-radius: 25px; cursor: pointer; font-size: 10px; font-weight: 800; }
         
         #upload-studio { background: white; border-radius: 45px; padding: 35px; margin-top: 25px; display: none; box-shadow: var(--premium-shadow); }
-        .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .drop-zone { width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 25px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; background: #f8fafc; }
-        .drop-zone img { width: 100%; height: 100%; object-fit: cover; }
         .rr-field { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; }
+        
+        /* Input de archivo personalizado */
+        .file-upload-wrapper { position: relative; width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 25px; display: flex; align-items: center; justify-content: center; background: #f8fafc; margin-bottom: 15px; cursor: pointer; overflow: hidden; }
+        .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .file-upload-text { color: #64748b; font-weight: 800; font-size: 14px; pointer-events: none; z-index: 1; }
+        #img-preview { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-size: cover; background-position: center; display: none; z-index: 2; }
 
         /* --- SISTEMA DE CHATS --- */
         .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; }
@@ -164,7 +172,14 @@
             <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
             <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px;">✕</button>
         </div>
-        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces?">
+        
+        <div class="file-upload-wrapper">
+            <span class="file-upload-text">📸 Toca para subir foto</span>
+            <input type="file" id="in-photo" accept="image/*" onchange="window.previewImage(event)">
+            <div id="img-preview"></div>
+        </div>
+
+        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces? (Ej: Zapatillas Nike)">
         <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
         <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900;">PUBLICAR EN RANTIKUY 🚀</button>
     </div>
@@ -196,22 +211,24 @@
     window.currentFilter = "Todas"; 
     window.adminClicks = 0;
     
-    // --- REVISIÓN DE SESIÓN (EL GUARDIÁN) ---
+    // --- REVISIÓN DE SESIÓN Y REDIRECCIÓN AL REGISTRO ---
     window.currentUser = localStorage.getItem('rantiy_user');
     window.currentPhone = localStorage.getItem('rantiy_phone') || "000000000";
     window.isAdmin = localStorage.getItem('admin_session') === "ADMIN_SUPREMO";
 
-    // 🔴 AQUÍ ESTABA EL CULPABLE DEL ERROR 404
-    // He comentado (desactivado) la línea que te mandaba a 'registro.html' 
-    // y en su lugar te estoy dando un "Usuario de Prueba" para que no te dé error.
+    // ✅ REDIRECCIÓN ACTIVADA: Si no hay usuario y no es admin, lo manda a registrarse.
     if (!window.currentUser && !window.isAdmin) {
-        // window.location.href = 'registro.html';  <--- ESTA LÍNEA DABA EL ERROR 404
-        window.currentUser = "Usuario de Prueba";   // <--- SOLUCIÓN TEMPORAL
+         window.location.href = 'registro_entrada.html'; 
     }
 
+    // --- PROVINCIAS AMPLIADAS ---
     const ZONAS = {
         "Huanta": { lat: -12.94, lon: -74.24, r: 0.1 },
         "Huamanga": { lat: -13.15, lon: -74.22, r: 0.1 },
+        "La Mar": { lat: -13.01, lon: -73.98, r: 0.15 },
+        "Cangallo": { lat: -13.62, lon: -74.13, r: 0.15 },
+        "Vilcas Huamán": { lat: -13.65, lon: -73.95, r: 0.15 },
+        "Víctor Fajardo": { lat: -13.68, lon: -74.06, r: 0.2 },
         "VRAEM": { lat: -12.50, lon: -73.80, r: 0.15 },
         "Lima": { lat: -12.04, lon: -77.03, r: 0.3 },
         "Cusco": { lat: -13.53, lon: -71.96, r: 0.2 },
@@ -220,7 +237,7 @@
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, arrayUnion, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
@@ -237,6 +254,7 @@
     window.dbLocal = { contacts: [], inventory: [] };
     window.tempProdImg = "";
 
+    // --- ACCESO A MODO DIOS ---
     window.checkAdminAccess = function() {
         window.adminClicks++;
         if(window.adminClicks >= 5) {
@@ -244,7 +262,7 @@
             let pass = prompt("MODO DIOS: Ingresa la clave de fundador:");
             if(pass === "RR2026") { 
                 localStorage.setItem("admin_session", "ADMIN_SUPREMO");
-                alert("Bienvenido, Creador.");
+                alert("Bienvenido, Creador. Tienes control total.");
                 window.location.reload(); 
             } else {
                 alert("Clave incorrecta.");
@@ -264,7 +282,8 @@
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
-            // window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); // Simulador GPS
+            // DESCOMENTAR LA SIGUIENTE LÍNEA PARA PROBAR EN PC (SIMULADOR DE UBICACIÓN)
+            // window.successGPS({coords: {latitude: -12.94, longitude: -74.24}}); 
         } else {
             alert("Tu celular no soporta GPS.");
         }
@@ -322,7 +341,6 @@
         if(t === 'home') window.renderFeed();
     }
 
-    // AVISO: Esto también te dará error 404 si le das a contactar, hasta que creemos el chat privado.
     window.irAChatPrivado = function(nombre, telefono) {
         if(nombre === window.currentUser || nombre === "ADMINISTRADOR") return; 
         window.location.href = `chat_privado.html?name=${encodeURIComponent(nombre)}&phone=${telefono}`;
@@ -333,6 +351,20 @@
         document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('filter-active'));
         el.classList.add('filter-active');
         window.renderFeed();
+    }
+
+    // --- ACCIONES DE ADMINISTRADOR ---
+    window.borrarPostAdmin = async function(id) {
+        if(confirm("MODO DIOS: ¿Seguro que quieres eliminar esta publicación del sistema?")) {
+            try {
+                await deleteDoc(doc(db, "inventory", id));
+                alert("Publicación eliminada.");
+            } catch(e) { alert("Error al eliminar."); }
+        }
+    }
+
+    window.banearUsuarioAdmin = function(vendedor) {
+        alert("MODO DIOS: La función de bloqueo total de usuario (Banear) se maneja desde el Panel de Control en admin.html para mayor seguridad. Te prepararé ese archivo a continuación.");
     }
 
     window.renderFeed = function() {
@@ -370,6 +402,13 @@
                     <div style="color:var(--verde); font-weight:900; font-size:20px;">S/ ${p.price}</div>
                     <button onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800;">Contactar</button>
                 </div>
+                
+                ${window.isAdmin ? `
+                <div class="admin-controls">
+                    <button class="btn-admin btn-delete" onclick="window.borrarPostAdmin('${p.id}')">🗑️ Eliminar Post</button>
+                    <button class="btn-admin btn-ban" onclick="window.banearUsuarioAdmin('${p.sellerName}')">🚫 Banear Vendedor</button>
+                </div>
+                ` : ''}
             </div>
         `).join('');
     }
@@ -441,6 +480,28 @@
         document.getElementById('upload-studio').style.display = 'none';
         document.getElementById('in-title').value = '';
         document.getElementById('in-price').value = '';
+        
+        // Limpiar la imagen temporal
+        window.tempProdImg = '';
+        document.getElementById('in-photo').value = '';
+        const preview = document.getElementById('img-preview');
+        preview.style.display = 'none';
+        preview.style.backgroundImage = '';
+    }
+
+    // --- FUNCIÓN PARA LEER LA FOTO Y CONVERTIRLA ---
+    window.previewImage = function(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            window.tempProdImg = e.target.result; // Guarda en Base64
+            const preview = document.getElementById('img-preview');
+            preview.style.display = 'block';
+            preview.style.backgroundImage = `url(${e.target.result})`;
+        };
+        reader.readAsDataURL(file);
     }
 
     window.uploadToEmpire = async function() {
@@ -459,7 +520,7 @@
                 note: `[CAT:${window.activeCat}] Publicación desde la app`,
                 sellerName: window.isAdmin ? "ADMINISTRADOR" : window.currentUser,
                 sellerPhone: window.currentPhone,
-                img: window.tempProdImg || 'https://via.placeholder.com/150',
+                img: window.tempProdImg || 'https://via.placeholder.com/150', // Sube la foto base64
                 timestamp: Date.now()
             });
             
