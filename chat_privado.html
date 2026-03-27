@@ -79,7 +79,7 @@
 
 <header>
     <div class="app-name">Rantiy y <span>Rantikuy</span></div>
-    <div style="font-weight:900; background:var(--soft-sky); padding:5px 10px; border-radius:10px; font-size:12px;" onclick="window.location.href='index.html'">Volver a Vitrina</div>
+    <div style="font-weight:900; background:var(--soft-sky); padding:5px 10px; border-radius:10px; font-size:12px; cursor:pointer;" onclick="window.location.href='index.html'">Volver a Vitrina</div>
 </header>
 
 <div class="viewport" id="vp">
@@ -90,7 +90,7 @@
 
     <div class="screen">
         <h2 style="font-weight:900; font-size:28px; margin-bottom:20px;">Mi Almacén</h2>
-        <button onclick="popProd()" style="background:var(--gradient-main); color:white; border:none; padding:18px; border-radius:20px; width:100%; font-weight:900; margin-bottom:25px;">+ REGISTRAR MERCADERÍA</button>
+        <button onclick="popProd()" style="background:var(--gradient-main); color:white; border:none; padding:18px; border-radius:20px; width:100%; font-weight:900; margin-bottom:25px; cursor:pointer;">+ REGISTRAR MERCADERÍA</button>
         <div id="list-inventory"></div>
     </div>
 </div>
@@ -122,7 +122,7 @@
 </div>
 
 <script type="module">
-    import { db, collection, addDoc, onSnapshot, query, where, orderBy } from './firebase-engine.js';
+    import { db, collection, addDoc, onSnapshot, query, where } from './firebase-engine.js';
 
     // 1. OBTENEMOS LA IDENTIDAD REAL DEL USUARIO DESDE EL REGISTRO
     const MI_NOMBRE = localStorage.getItem('rantiy_userName');
@@ -191,18 +191,26 @@
         document.getElementById('active-av').innerText = name.charAt(0).toUpperCase();
         document.getElementById('chat-window').style.display = 'flex';
         
-        // Crear Sala Única: Unimos mi teléfono y el suyo, y los ordenamos. 
-        // Así, ambos dispositivos generan exactamente el mismo ID de sala.
+        // Crear Sala Única
         const salaId = [MI_TELEFONO, phone].sort().join("___");
 
         if(unsubscribeChat) unsubscribeChat();
         
-        const q = query(collection(db, "mensajes_privados"), where("sala", "==", salaId), orderBy("timestamp", "asc"));
+        // CORRECCIÓN AQUÍ: Quitamos el orderBy para evitar el error de índices compuestos de Firebase
+        const q = query(collection(db, "mensajes_privados"), where("sala", "==", salaId));
         
         unsubscribeChat = onSnapshot(q, (snapshot) => {
-            let html = "";
+            let mensajesArr = [];
+            
             snapshot.forEach((doc) => {
-                const m = doc.data();
+                mensajesArr.push(doc.data());
+            });
+
+            // CORRECCIÓN AQUÍ: Ordenamos con JavaScript para evitar problemas
+            mensajesArr.sort((a, b) => a.timestamp - b.timestamp);
+
+            let html = "";
+            mensajesArr.forEach((m) => {
                 const isMe = m.senderPhone === MI_TELEFONO;
                 let content = m.v;
                 if(m.t === 'img') content = `<img src="${m.v}" style="width:100%; border-radius:10px;">`;
@@ -215,7 +223,9 @@
             });
             const flow = document.getElementById('m-flow');
             flow.innerHTML = html;
-            flow.scrollTop = flow.scrollHeight;
+            flow.scrollTop = flow.scrollHeight; // Auto-scroll hacia abajo
+        }, (error) => {
+            console.error("Error al escuchar los mensajes:", error);
         });
     };
 
@@ -231,17 +241,27 @@
         if(!txt || !currentContact) return;
         
         const salaId = [MI_TELEFONO, currentContact.phone].sort().join("___");
+        
+        // CORRECCIÓN AQUÍ: Guardamos el valor antes de limpiar el input
+        const textoEnviado = txt;
         input.value = ""; window.uiInput();
 
-        await addDoc(collection(db, "mensajes_privados"), {
-            sala: salaId, 
-            senderName: MI_NOMBRE, 
-            senderPhone: MI_TELEFONO, 
-            t: 'txt', 
-            v: txt, 
-            timestamp: Date.now(),
-            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
-        });
+        try {
+            await addDoc(collection(db, "mensajes_privados"), {
+                sala: salaId, 
+                senderName: MI_NOMBRE, 
+                senderPhone: MI_TELEFONO, 
+                t: 'txt', 
+                v: textoEnviado, 
+                timestamp: Date.now(),
+                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+            });
+        } catch (error) {
+            console.error("Error al enviar el mensaje:", error);
+            input.value = textoEnviado; // Devolvemos el texto si falla
+            window.uiInput();
+            alert("Hubo un error al enviar. Revisa tu conexión a Firebase.");
+        }
     };
 
     window.uiInput = () => {
