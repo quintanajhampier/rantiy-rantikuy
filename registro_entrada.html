@@ -5,20 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rantiy y Rantikuy - Ingreso Seguro</title>
     <style>
-        /* Tus mismos estilos intactos */
+        /* Colores vibrantes de Huanta: Verde Mercado y Naranja Energía */
         body { background-color: #f0fff4; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .contenedor { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(45, 106, 79, 0.1); width: 90%; max-width: 400px; text-align: center; border: 2px solid #4ade80; }
+        
         h1 { color: #2d6a4f; margin-bottom: 5px; font-size: 24px; }
         .eslogan { color: #ff8c00; font-weight: bold; font-size: 14px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        
         .alerta-gps { background: #fffbeb; border-left: 5px solid #ff8c00; padding: 12px; margin-bottom: 20px; font-size: 12px; color: #92400e; text-align: left; border-radius: 8px; }
+        
         input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; box-sizing: border-box; transition: 0.3s; font-size: 16px; }
         input:focus { border-color: #4ade80; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2); }
+        
         .terminos-box { background: #f8fafc; padding: 15px; border-radius: 12px; height: 110px; overflow-y: scroll; font-size: 11px; color: #475569; text-align: left; margin: 15px 0; border: 1px solid #e2e8f0; line-height: 1.4; }
+        
         .check-group { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #1e293b; text-align: left; cursor: pointer; margin-bottom: 15px; }
         .check-group input { width: auto; margin-top: 3px; }
+        
         .btn-ingresar { background: linear-gradient(135deg, #4ade80, #2d6a4f); color: white; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(45, 106, 79, 0.2); }
         .btn-ingresar:active { transform: scale(0.98); }
         .btn-ingresar:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+        
         #status { font-size: 13px; font-weight: 600; margin-top: 15px; min-height: 20px; }
         .loading-dot { animation: blink 1.4s infinite both; }
         @keyframes blink { 0% { opacity: .2; } 20% { opacity: 1; } 100% { opacity: .2; } }
@@ -29,17 +36,20 @@
 <div class="contenedor">
     <h1>Rantiy y Rantikuy</h1>
     <div class="eslogan">Mercado Serio - Cero Estafas</div>
-    <div class="alerta-gps">📍 <b>Seguridad del Imperio:</b> Si el GPS no carga, toca el <b>candado</b> 🔒 arriba y activa "Ubicación".</div>
-    
+
+    <div class="alerta-gps">
+        📍 <b>Seguridad del Imperio:</b> Si el GPS no carga, toca el <b>candado</b> 🔒 arriba y activa "Ubicación".
+    </div>
+
     <input type="text" id="nombre" placeholder="Nombre y Apellido Completo" autocomplete="off">
     <input type="tel" id="telefono" placeholder="Número de Celéfono (9xx...)" autocomplete="off">
 
     <div class="terminos-box">
         <b>REGLAS DEL IMPERIO:</b><br>
-        1. <b>Cero Estafas:</b> Identidad verificada.<br>
-        2. <b>Supervisión:</b> Auditoría de reportes.<br>
-        3. <b>Comisiones:</b> Mantenimiento por ventas.<br>
-        4. <b>Respeto:</b> Comportamiento profesional.
+        1. <b>Cero Estafas:</b> Identidad verificada por satélite obligatoria.<br>
+        2. <b>Supervisión:</b> El administrador audita reportes de mal comportamiento.<br>
+        3. <b>Comisiones:</b> Se acepta el pago de mantenimiento por ventas.<br>
+        4. <b>Respeto:</b> Comportamiento profesional en todo momento.
     </div>
 
     <label class="check-group">
@@ -52,18 +62,20 @@
 </div>
 
 <script type="module">
+    // Importamos las herramientas de tu motor de Firebase
     import { db, collection, addDoc } from "./firebase-engine.js";
 
+    // Verificamos si ya tiene perfil para no pedirlo de nuevo
     window.onload = () => {
-        // Si ya hay un teléfono registrado, lo mandamos a la tienda
-        if (localStorage.getItem('rantiy_userPhone')) {
+        if (localStorage.getItem('rantiy_userId')) {
             window.location.href = "index.html";
         }
     };
 
     const btn = document.getElementById('btnEntrar');
-    
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', validarYEntrar);
+
+    async function validarYEntrar() {
         const nombre = document.getElementById('nombre').value.trim();
         const telefono = document.getElementById('telefono').value.trim();
         const acepto = document.getElementById('acepto').checked;
@@ -76,30 +88,53 @@
 
         btn.disabled = true;
         status.style.color = "#2d6a4f";
-        status.innerHTML = 'Conectando con el satélite seguro...';
+        status.innerHTML = 'Conectando con el satélite seguro<span class="loading-dot">.</span><span class="loading-dot" style="animation-delay: 0.2s">.</span><span class="loading-dot" style="animation-delay: 0.4s">.</span>';
+
+        const opcionesGPS = {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        };
 
         navigator.geolocation.getCurrentPosition(
             async (pos) => {
-                status.innerText = "¡Ubicación Verificada! Creando tu perfil...";
+                status.innerText = "¡Ubicación Verificada! Creando tu perfil real...";
+
                 try {
-                    // Guardamos en Firebase
+                    // 1. GUARDAMOS EN FIREBASE (Tiempo Real)
                     const docRef = await addDoc(collection(db, "Usuarios"), {
                         nombre: nombre,
                         telefono: telefono,
-                        lat: pos.coords.latitude,
-                        lon: pos.coords.longitude,
-                        fechaRegistro: new Date().toISOString()
+                        coordenadas: {
+                            lat: pos.coords.latitude,
+                            lon: pos.coords.longitude
+                        },
+                        fechaRegistro: new Date().toLocaleString(),
+                        estado: "activo"
                     });
 
-                    // LA CLAVE: Guardamos en memoria local para que el chat sepa quién eres
+                    // 2. CREAMOS EL PERFIL PERMANENTE EN EL CELULAR
                     localStorage.setItem('rantiy_userId', docRef.id);
                     localStorage.setItem('rantiy_userName', nombre);
                     localStorage.setItem('rantiy_userPhone', telefono);
 
+                    // 3. RESPALDO EN TU GOOGLE SHEETS (Opcional)
+                    const scriptURL = "https://script.google.com/macros/s/AKfycbwsQyjUIFJkUgKpYBQVM-sUccSRMBO1wZlr9m2cofzzFVsO_dpqVyjQzufMRmtNWVI7/exec";
+                    const datos = new FormData();
+                    datos.append('nombre', nombre);
+                    datos.append('telefono', telefono);
+                    datos.append('dispositivo', `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`);
+                    
+                    fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: datos });
+
                     status.innerText = "¡Acceso Concedido! Entrando...";
-                    setTimeout(() => { window.location.href = "index.html"; }, 1000);
+                    
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 1500);
 
                 } catch (error) {
+                    console.error("Error:", error);
                     status.style.color = "#dc2626";
                     status.innerText = "Error de red. Intenta de nuevo.";
                     btn.disabled = false;
@@ -110,9 +145,9 @@
                 status.style.color = "#dc2626";
                 status.innerText = "GPS obligatorio para evitar estafas. Actívalo.";
             },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            opcionesGPS
         );
-    });
+    }
 </script>
 </body>
 </html>
