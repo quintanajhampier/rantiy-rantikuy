@@ -1,48 +1,61 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rantiy y Rantikuy - Mis Chats Pro</title>
+    <title>Rantiy Pro - Mis Chats (Dark Mode)</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Paleta Business Premium */
-            --primary-dark: #0f172a;       /* Slate 900 - Textos oscuros */
-            --accent-teal: #0d9488;        /* Teal 600 - Color principal de marca */
-            --accent-glow: #14b8a6;        /* Teal 500 - Brillos y hovers */
-            --bg-app: #f4f7f9;             /* Fondo general súper limpio */
-            --bg-chat: #ebf0f4;            /* Fondo del chat sutilmente más oscuro */
-            --white: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
+            /* Paleta Business DARK Premium (estilo WhatsApp Dark Mode) */
+            --primary-bg: #0f172a;         /* Slate 900 - Fondo general */
+            --secondary-bg: #1e293b;       /* Slate 800 - Fondos de tarjetas y modales */
+            --primary-dark: #f1f5f9;       /* Slate 100 - Texto principal claro */
+            
+            --header-bg: rgba(15, 23, 42, 0.9);
+            
+            --accent-teal: #14b8a6;        /* Teal 500 - Color principal de marca */
+            --accent-glow: #2dd4bf;        /* Teal 400 - Brillos */
+            
+            /* Colores de Chat Dark Blindados */
+            --chat-bg: #0d0d0d;            /* Negro puro para fondo con asset central */
+            --bubble-me: #0d9488;          /* Teal 600 - Bubbles oscuras de remitente */
+            --bubble-them: #262626;        /* Gris oscuro - Bubbles oscuras de destinatario */
+            
+            --text-main: #e2e8f0;          /* Slate 200 */
+            --text-muted: #94a3b8;         /* Slate 400 */
             --danger: #ef4444;
             
-            /* Sombras Pro */
-            --shadow-soft: 0 8px 30px rgba(15, 23, 42, 0.06);
-            --shadow-float: 0 20px 40px rgba(13, 148, 136, 0.15);
-            --shadow-nav: 0 -10px 40px rgba(0,0,0,0.04);
+            --input-bg: #111827;           /* Slate 950 - Fondo de inputs muy oscuro */
+            --border-color: rgba(148, 163, 1 slate, 0.1); /* Bordes sutiles */
             
-            /* Gradientes */
+            /* Sombras Pro para Modo Oscuro */
+            --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.2);
+            --shadow-float: 0 8px 30px rgba(13, 148, 136, 0.15);
+            --shadow-nav: 0 -4px 15px rgba(0, 0, 0, 0.2);
+            
             --gradient-main: linear-gradient(135deg, var(--accent-glow), var(--accent-teal));
             --gradient-dark: linear-gradient(135deg, #1e293b, #0f172a);
+            --glass-blur: blur(12px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* Ocultar barra de scroll para un look de app nativa */
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        /* Barra de scroll oculta para look de app nativa */
+        ::-webkit-scrollbar { width: 4px; height: 4px; background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
 
-        body { background: var(--bg-app); color: var(--text-main); height: 100vh; overflow: hidden; }
+        body { background: var(--primary-bg); color: var(--text-main); height: 100vh; overflow: hidden; }
 
-        /* Header tipo Glassmorphism */
+        /* Header Modo Oscuro Premium */
         header {
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            background: var(--header-bg); 
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             padding: 50px 20px 20px;
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
             position: sticky; top: 0; z-index: 1000;
         }
         
@@ -50,23 +63,23 @@
         .app-name span { color: var(--accent-teal); }
         
         .btn-header {
-            font-weight: 800; background: var(--bg-chat); color: var(--text-muted); 
+            font-weight: 800; background: var(--input-bg); color: var(--text-muted); 
             padding: 8px 16px; border-radius: 20px; font-size: 13px; 
-            cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05);
+            cursor: pointer; transition: 0.3s; border: 1px solid var(--border-color);
         }
-        .btn-header:hover { background: var(--white); color: var(--primary-dark); box-shadow: var(--shadow-soft); }
+        .btn-header:hover { background: var(--secondary-bg); color: var(--primary-dark); }
 
         .viewport { display: flex; width: 200%; height: 100vh; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .screen { width: 50%; height: 100%; padding: 25px 20px; padding-bottom: 120px; overflow-y: auto; }
 
         .section-title { font-weight: 900; font-size: 28px; margin-bottom: 25px; color: var(--primary-dark); letter-spacing: -0.5px; }
 
-        /* Tarjetas estilo UI Moderno */
+        /* Tarjetas Modo Oscuro */
         .card-stock { 
-            background: var(--white); border-radius: 20px; margin-bottom: 15px; 
+            background: var(--secondary-bg); border-radius: 20px; margin-bottom: 15px; 
             box-shadow: var(--shadow-soft); padding: 18px; 
-            border: 1px solid rgba(0,0,0,0.02); position: relative;
-            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--border-color); position: relative;
+            transition: transform 0.2s;
         }
         .card-stock:active { transform: scale(0.98); }
         
@@ -79,93 +92,97 @@
 
         .badge-notification {
             position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; 
-            background: var(--danger); border-radius: 50%; border: 3px solid var(--white); 
+            background: var(--danger); border-radius: 50%; border: 3px solid var(--secondary-bg); 
             box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4); display: none;
         }
 
         .prod-img-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 14px; margin-top: 5px; background: #eee; }
 
-        /* --- VENTANA DE CHAT --- */
-        #chat-window { position: fixed; inset: 0; background: var(--bg-chat); z-index: 5000; display: none; flex-direction: column; }
+        /* --- VENTANA DE CHAT MODO OSCURO --- */
+        #chat-window { position: fixed; inset: 0; z-index: 5000; display: none; flex-direction: column; }
         
+        /* Cabecera de chat oscurecida */
         .chat-nav { 
-            padding: 50px 20px 15px; background: rgba(255,255,255,0.9); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            padding: 50px 20px 15px; background: var(--header-bg); 
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
             display: flex; align-items: center; gap: 15px; 
-            border-bottom: 1px solid rgba(0,0,0,0.05); box-shadow: var(--shadow-soft);
+            border-bottom: 1px solid var(--border-color); box-shadow: var(--shadow-soft);
             z-index: 10;
         }
         
         .btn-back { 
-            font-size: 32px; color: var(--text-muted); background: var(--bg-app); 
+            font-size: 32px; color: var(--text-muted); background: var(--input-bg); 
             width: 45px; height: 45px; border-radius: 15px; display: flex;
             align-items: center; justify-content: center; border: none; cursor: pointer;
-            transition: 0.3s; line-height: 0; padding-bottom: 4px;
+            line-height: 0; padding-bottom: 4px;
         }
-        .btn-back:active { background: #e2e8f0; }
+        .btn-back:active { background: #e2e8f0; color: #1e293b; }
 
+        /* Área de mensajes blindada con el asset de fondo central */
         .messages-area { 
             flex: 1; overflow-y: auto; padding: 20px 15px; display: flex; 
             flex-direction: column; gap: 10px; transform: translateZ(0); 
-            background-image: radial-gradient(rgba(13, 148, 136, 0.05) 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-color: var(--chat-bg); 
+            background-image: url('image_10.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain; /* Contain suele quedar mejor para assets centrales */
         }
 
-        /* Burbujas de Chat Premium */
+        /* Burbujas de Chat Premium Dark */
         .msg-bubble { 
             max-width: 82%; padding: 12px 16px; font-size: 15px; 
             position: relative; word-wrap: break-word; line-height: 1.4;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
         .msg-bubble.me { 
-            align-self: flex-end; background: var(--gradient-main); color: var(--white); 
+            align-self: flex-end; background: var(--bubble-me); color: white; 
             border-radius: 20px 20px 4px 20px; 
-            box-shadow: 0 5px 15px rgba(13, 148, 136, 0.2);
         }
         .msg-bubble.them { 
-            align-self: flex-start; background: var(--white); color: var(--text-main); 
-            border-radius: 20px 20px 20px 4px; border: 1px solid rgba(0,0,0,0.03);
+            align-self: flex-start; background: var(--bubble-them); color: var(--text-main); 
+            border-radius: 20px 20px 20px 4px; border: 1px solid var(--border-color);
         }
 
-        /* Barra de Input Estilo Isla Flotante */
+        /* Barra de Input Oscurecida */
         .chat-input-wrapper {
             background: transparent; padding: 10px 15px 30px;
             position: relative; z-index: 10;
         }
         .chat-input-box { 
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
+            background: var(--header-bg); backdrop-filter: blur(10px);
             display: flex; align-items: center; gap: 8px; 
             padding: 8px; border-radius: 30px; box-shadow: var(--shadow-soft);
-            border: 1px solid rgba(255,255,255,1);
+            border: 1px solid var(--border-color);
         }
         
         #m-input { 
             flex: 1; border: none; background: transparent; padding: 10px 12px; 
             border-radius: 20px; outline: none; font-size: 16px; color: var(--text-main);
         }
-        #m-input::placeholder { color: #94a3b8; }
+        #m-input::placeholder { color: var(--text-muted); }
         
         .action-btn { 
             width: 40px; height: 40px; border-radius: 50%; border: none; 
-            background: var(--bg-app); color: var(--text-muted); display: flex; 
+            background: var(--input-bg); color: var(--text-muted); display: flex; 
             align-items: center; justify-content: center; font-size: 18px; 
             cursor: pointer; flex-shrink: 0; transition: 0.2s;
         }
         .action-btn:active { transform: scale(0.9); }
 
-        .btn-mic { background: var(--primary-dark); color: white; box-shadow: 0 4px 10px rgba(15,23,42,0.3); }
+        .btn-mic { background: var(--primary-bg); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .btn-mic.active { background: var(--danger); animation: pulseRecord 1.5s infinite; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
         @keyframes pulseRecord { 0% { transform: scale(0.95); } 50% { transform: scale(1.05); } 100% { transform: scale(0.95); } }
         
         .btn-send { background: var(--accent-teal); color: white; display: none; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3); }
 
-        /* Navegación Inferior Flotante */
+        /* Navegación Inferior Flotante Dark */
         nav { 
             position: fixed; bottom: 20px; left: 5%; width: 90%; height: 70px; 
-            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: var(--header-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             display: flex; justify-content: space-around; align-items: center; 
             border-radius: 35px; box-shadow: var(--shadow-nav); z-index: 4000;
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid var(--border-color);
         }
         .nav-icon { 
             font-size: 24px; color: var(--text-muted); transition: 0.3s; 
@@ -179,20 +196,20 @@
             background: var(--accent-teal); border-radius: 50%;
         }
 
-        /* Modal UI */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px); z-index: 6000; display: none; align-items: flex-end; }
-        .modal-sheet { background: var(--white); width: 100%; border-radius: 35px 35px 0 0; padding: 35px 25px; max-height: 85vh; overflow-y: auto; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 -20px 40px rgba(0,0,0,0.1); }
+        /* Modal UI Dark */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 6000; display: none; align-items: flex-end; }
+        .modal-sheet { background: var(--secondary-bg); width: 100%; border-radius: 35px 35px 0 0; padding: 35px 25px; max-height: 85vh; overflow-y: auto; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 -20px 40px rgba(0,0,0,0.2); }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-weight: 800; margin-bottom: 8px; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-p { width: 100%; padding: 16px; border-radius: 16px; border: 2px solid transparent; background: var(--bg-app); outline: none; font-size: 16px; transition: 0.3s; font-weight: 600; color: var(--text-main); }
-        .input-p:focus { border-color: var(--accent-teal); background: var(--white); box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+        .input-p { width: 100%; padding: 16px; border-radius: 16px; border: 2px solid transparent; background: var(--input-bg); outline: none; font-size: 16px; transition: 0.3s; font-weight: 600; color: var(--text-main); }
+        .input-p:focus { border-color: var(--accent-teal); background: var(--chat-bg); box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
 
         .btn-primary {
-            background: var(--gradient-dark); color: white; border: none; 
+            background: var(--gradient-main); color: white; border: none; 
             padding: 18px; border-radius: 18px; width: 100%; font-weight: 900; 
-            font-size: 16px; margin-bottom: 25px; cursor: pointer; box-shadow: var(--shadow-soft);
+            font-size: 16px; margin-bottom: 25px; cursor: pointer; box-shadow: var(--shadow-float);
             transition: 0.2s;
         }
         .btn-primary:active { transform: scale(0.98); }
@@ -201,7 +218,7 @@
 <body>
 
 <header>
-    <div class="app-name">Rantiy <span>Pro</span></div>
+    <div class="app-name">Rantiy Pro<span> Dark</span></div>
     <div class="btn-header" onclick="window.location.href='index.html'">Atrás</div>
 </header>
 
@@ -212,8 +229,8 @@
     </div>
 
     <div class="screen">
-        <h2 class="section-title">Mi Inventario</h2>
-        <button class="btn-primary" onclick="popProd()">+ AÑADIR PRODUCTO</button>
+        <h2 class="section-title">Mi Inventario Pro</h2>
+        <button class="btn-primary" onclick="popProd()">+ REGISTRAR PRODUCTO</button>
         <div id="list-inventory"></div>
     </div>
 </div>
@@ -224,7 +241,7 @@
         <div id="active-av" class="contact-avatar" style="width:45px; height:45px; border-radius:14px; font-size:20px;">?</div>
         <div style="flex:1; line-height: 1.2;">
             <b id="active-name" style="display:block; font-size:18px; color:var(--primary-dark); font-weight: 800;">Nombre</b>
-            <span id="active-phone" style="font-size:13px; color:var(--accent-teal); font-weight: 600;">Conectando...</span>
+            <span id="active-phone" style="font-size:13px; color:var(--accent-teal); font-weight: 600;">Sincronizando...</span>
         </div>
     </div>
     
@@ -233,7 +250,7 @@
     <div class="chat-input-wrapper">
         <div class="chat-input-box">
             <button class="action-btn" onclick="document.getElementById('u-file').click()">📎</button>
-            <input type="file" id="u-file" hidden onchange="handleFile(this)">
+            <input type="file" id="u-file" accept="image/*" hidden onchange="handleChatFile(this)">
             
             <button class="action-btn" onclick="sendLocation()">📍</button>
             
@@ -248,7 +265,7 @@
 <nav>
     <a href="index.html" class="nav-icon">🏠 <span>INICIO</span></a>
     <div class="nav-icon active" onclick="go(0, this)">💬 <span>CHATS</span></div>
-    <div class="nav-icon" onclick="go(1, this)">📦 <span>STOCK</span></div>
+    <div class="nav-icon" onclick="go(1, this)">📦 <span>STOCK PRO</span></div>
 </nav>
 
 <div class="modal-overlay" id="modal" onclick="this.style.display='none'">
@@ -270,6 +287,9 @@
     let unsubscribeChat = null;
     let contactListeners = [];
     let rec; let chunks = [];
+    
+    // Estado local para la foto del producto
+    let tempProdPhotoB64 = "";
 
     window.go = function(s, el) { 
         document.getElementById('vp').style.transform = `translateX(-${s * 50}%)`;
@@ -311,7 +331,7 @@
         let html = "";
         contacts.forEach(c => {
             html += `
-                <div class="card-stock" onclick="openChat('${c.phone}', '${c.name}')" style="cursor:pointer; display:flex; align-items:center; gap:18px;">
+                <div class="card-stock" onclick="openChat('${c.phone}', '${c.name}')" style="cursor:pointer; display:flex; align-items:center; gap:18px; padding:15px;">
                     <div class="contact-avatar">
                         ${c.name.charAt(0).toUpperCase()}
                         <div id="badge-${c.phone}" class="badge-notification"></div>
@@ -320,7 +340,7 @@
                         <h3 style="margin:0; font-size:18px; color:var(--primary-dark); font-weight:800;">${c.name}</h3>
                         <div style="color:var(--text-muted); font-size:14px; font-weight:600; margin-top:2px;">+${c.phone}</div>
                     </div>
-                    <button onclick="deleteChat(event, '${c.phone}')" style="background:var(--bg-app); border:none; width:40px; height:40px; border-radius:12px; font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-muted); transition:0.2s;">🗑️</button>
+                    <button onclick="deleteChat(event, '${c.phone}')" style="background:var(--input-bg); border:none; width:40px; height:40px; border-radius:12px; font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-muted); transition:0.2s;">🗑️</button>
                 </div>
             `;
         });
@@ -380,12 +400,12 @@
                 let content = m.v;
                 
                 if(m.t === 'img') content = `<img src="${m.v}" style="width:100%; border-radius:12px; margin-bottom:5px;">`;
-                if(m.t === 'audio') content = `<audio controls src="${m.v}" style="width:220px; height: 35px; outline:none;"></audio>`;
+                if(m.t === 'audio') content = `<audio controls src="${m.v}" style="width:200px; height: 35px; outline:none; border-radius:12px; filter: invert(1);"></audio>`;
                 
                 if(m.t === 'loc') content = `
-                    <div style="text-align:center; padding:10px; background:rgba(0,0,0,0.05); border-radius:12px;">
+                    <div style="text-align:center; padding:10px; background:rgba(0,0,0,0.1); border-radius:12px;">
                         <span style="font-size:30px; display:block; margin-bottom:5px;">📍</span>
-                        <a href="${m.v}" target="_blank" style="color:${isMe?'#ffffff':'var(--accent-teal)'}; font-weight:800; text-decoration:underline; display:inline-block; font-size:14px;">Abrir en Maps</a>
+                        <a href="${m.v}" target="_blank" style="color:var(--white); font-weight:800; text-decoration:underline; display:inline-block; font-size:14px;">Abrir en Maps</a>
                     </div>`;
                 
                 html += `<div class="msg-bubble ${isMe?'me':'them'}">
@@ -472,7 +492,8 @@
         }, { enableHighAccuracy: true });
     };
 
-    window.handleFile = (el) => {
+    // Subida real de archivos comprimidos
+    window.handleChatFile = (el) => {
         const file = el.files[0]; 
         if(!file) return;
 
@@ -540,50 +561,109 @@
     micBtn.onpointerup = () => { if(rec) { rec.stop(); micBtn.classList.remove('active'); } };
     micBtn.onpointerleave = () => { if(rec && rec.state === "recording") { rec.stop(); micBtn.classList.remove('active'); } };
 
+    // --- MANEJO DE ALMACÉN PRO ---
     window.popProd = () => {
         document.getElementById('m-content').innerHTML = `
             <div style="width: 50px; height: 5px; background: #e2e8f0; border-radius: 10px; margin: 0 auto 20px;"></div>
-            <h2 style="margin-bottom:20px; color:var(--primary-dark); font-weight:900;">Nuevo Producto</h2>
-            <div class="form-group"><label>Nombre del artículo</label><input id="p-n" class="input-p" placeholder="Ej. Zapatillas Nike"></div>
-            <div class="form-group"><label>Precio S/</label><input id="p-p" class="input-p" type="number" placeholder="0.00"></div>
+            <h2 style="margin-bottom:20px; color:var(--primary-dark); font-weight:900;">Nuevo Registro Pro</h2>
+            <div class="form-group"><label>Nombre del artículo</label><input id="p-n" class="input-p" placeholder="Ej. Zapatillas Adidas"></div>
+            <div class="form-group"><label>Precio Venta S/</label><input id="p-p" class="input-p" type="number" placeholder="0.00"></div>
+            
+            <div class="form-group">
+                <label>Foto Real (Toca para subir)</label>
+                <div class="file-upload-wrapper" onclick="document.getElementById('p-file').click()" style="width: 100%; height:120px; border:2px dashed var(--border-color); border-radius:16px; background:var(--input-bg); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden;">
+                    <span id="p-file-text" style="color:var(--text-muted); font-size:14px; font-weight:600;">📸 Toca</span>
+                    <img id="p-preview" style="display:none; position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:14px;">
+                    <input type="file" id="p-file" accept="image/*" hidden onchange="handleProdPhoto(this)">
+                </div>
+            </div>
+
+            <div class="form-group"><label>Marca o Modelo (Detail 1)</label><input id="p-mark" class="input-p" placeholder="Marca, Modelo, Color"></div>
+            <div class="form-group"><label>Talla o Estado (Detail 2)</label><input id="p-size" class="input-p" placeholder="Talla, Estado, Detalles"></div>
+            
             <div class="form-group"><label>Teléfono (Automático)</label><input id="p-tel" class="input-p" type="tel" value="${MI_TELEFONO}" readonly style="opacity:0.6"></div>
-            <div class="form-group"><label>URL de Foto</label><input id="p-img" class="input-p" placeholder="Pega el enlace opcional"></div>
-            <button onclick="addP()" class="btn-primary">GUARDAR EN STOCK</button>
+            <button onclick="addP()" class="btn-primary">GUARDAR EN ALMACÉN PRO</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     };
 
+    // Manejo de foto del producto
+    window.handleProdPhoto = (el) => {
+        const file = el.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = async () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width; let height = img.height;
+                const MAX_SIZE = 600; // Comprimir más para almacén
+                if (width > height) {
+                    if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                } else {
+                    if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                tempProdPhotoB64 = canvas.toDataURL('image/jpeg', 0.5); // Guardamos base64 comprimido
+                
+                // Actualizar previsualización en el modal
+                document.getElementById('p-file-text').style.display = 'none';
+                const preview = document.getElementById('p-preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+
     window.addP = () => {
+        const prodName = document.getElementById('p-n').value;
+        const prodPrice = document.getElementById('p-p').value;
+        
+        if(!prodName) { alert("El nombre es obligatorio."); return; }
+        if(!prodPrice) { alert("El precio es obligatorio."); return; }
+
         const prod = {
             id: Date.now(),
-            name: document.getElementById('p-n').value,
-            price: document.getElementById('p-p').value,
+            name: prodName,
+            price: prodPrice,
+            mark: document.getElementById('p-mark').value, // Detail 1
+            size: document.getElementById('p-size').value, // Detail 2
             sellerPhone: MI_TELEFONO,
-            img: document.getElementById('p-img').value || 'https://via.placeholder.com/150'
+            img: tempProdPhotoB64 || 'https://via.placeholder.com/150' // Imagen real comprimida
         };
         localDB.inventory.push(prod);
         localStorage.setItem('RR_2026_STORE', JSON.stringify(localDB));
         document.getElementById('modal').style.display = 'none';
+        tempProdPhotoB64 = ""; // Reiniciamos estado temp
         window.render();
     };
 
     window.render = () => {
         const inv = document.getElementById('list-inventory');
         if(localDB.inventory.length === 0) {
-            inv.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px; font-weight:600;">Aún no tienes productos en tu almacén.</div>`;
+            inv.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px; font-weight:600;">Aún no tienes productos en tu almacén Pro.</div>`;
             return;
         }
+        // Vista de tarjeta modo oscuro con todos los detalles restaurados
         inv.innerHTML = localDB.inventory.map(p => `
-            <div class="card-stock" style="display:flex; gap:15px; align-items:center;">
-                <img src="${p.img}" style="width:80px; height:80px; border-radius:15px; object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+            <div class="card-stock" style="display:flex; gap:18px; align-items:center; padding:15px;">
+                <img src="${p.img}" style="width:80px; height:80px; border-radius:15px; object-fit:cover; box-shadow:0 2px 5px rgba(0,0,0,0.3);">
                 <div style="flex:1;">
-                    <h3 style="margin:0; font-size:16px; font-weight:800; color:var(--primary-dark);">${p.name}</h3>
-                    <div style="color:var(--accent-teal); font-weight:900; font-size:18px; margin-top:5px;">S/ ${p.price}</div>
+                    <h3 style="margin:0; font-size:18px; font-weight:800; color:var(--text-main);">${p.name}</h3>
+                    <div style="color:var(--accent-teal); font-weight:900; font-size:20px; margin-top:3px;">S/ ${p.price}</div>
+                    
+                    <div style="font-size:12px; color:var(--text-muted); font-weight:600; margin-top:3px;">${window.escapeHTML(p.mark || 'Modelo/Marca N/A')} - ${window.escapeHTML(p.size || 'Talla/Estado N/A')}</div>
                 </div>
             </div>
         `).join('');
     };
 
+    // --- ARRANQUE DE LA APP ---
     window.onload = () => {
         window.render(); 
         window.renderContacts(); 
