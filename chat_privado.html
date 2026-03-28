@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -123,10 +122,11 @@
             flex: 1; overflow-y: auto; padding: 20px 15px; display: flex; 
             flex-direction: column; gap: 10px; transform: translateZ(0); 
             background-color: var(--chat-bg); 
-            background-image: url('image_10.png');
+            /* Se actualizó la imagen de fondo y se ajustó para cubrir la pantalla */
+            background-image: url('image_b59901.jpg');
             background-repeat: no-repeat;
             background-position: center;
-            background-size: contain; /* Contain suele quedar mejor para assets centrales */
+            background-size: cover; /* Cover llena todo el fondo perfectamente */
         }
 
         /* Burbujas de Chat Premium Dark */
@@ -638,49 +638,40 @@
         };
         localDB.inventory.push(prod);
         localStorage.setItem('RR_2026_STORE', JSON.stringify(localDB));
+        
         document.getElementById('modal').style.display = 'none';
-        tempProdPhotoB64 = ""; // Reiniciamos estado temp
-        window.render();
+        window.renderInventory();
     };
 
-    window.render = () => {
-        const inv = document.getElementById('list-inventory');
+    window.renderInventory = () => {
+        const list = document.getElementById('list-inventory');
         if(localDB.inventory.length === 0) {
-            inv.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px; font-weight:600;">Aún no tienes productos en tu almacén Pro.</div>`;
+            list.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:40px; font-weight:600;">Tu almacén está vacío.</div>`;
             return;
         }
-        // Vista de tarjeta modo oscuro con todos los detalles restaurados
-        inv.innerHTML = localDB.inventory.map(p => `
-            <div class="card-stock" style="display:flex; gap:18px; align-items:center; padding:15px;">
-                <img src="${p.img}" style="width:80px; height:80px; border-radius:15px; object-fit:cover; box-shadow:0 2px 5px rgba(0,0,0,0.3);">
-                <div style="flex:1;">
-                    <h3 style="margin:0; font-size:18px; font-weight:800; color:var(--text-main);">${p.name}</h3>
-                    <div style="color:var(--accent-teal); font-weight:900; font-size:20px; margin-top:3px;">S/ ${p.price}</div>
-                    
-                    <div style="font-size:12px; color:var(--text-muted); font-weight:600; margin-top:3px;">${window.escapeHTML(p.mark || 'Modelo/Marca N/A')} - ${window.escapeHTML(p.size || 'Talla/Estado N/A')}</div>
-                </div>
-            </div>
-        `).join('');
-    };
-
-    // --- ARRANQUE DE LA APP ---
-    window.onload = () => {
-        window.render(); 
-        window.renderContacts(); 
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlName = urlParams.get('name');
-        const urlPhone = urlParams.get('phone');
-
-        if (urlName && urlPhone) {
-            openChat(urlPhone, urlName);
-            window.history.replaceState({}, document.title, "chat_privado.html");
-        }
         
-        document.getElementById('m-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') window.sendTxt();
+        let html = "";
+        localDB.inventory.forEach(p => {
+            html += `
+                <div class="card-stock" style="display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <h3 style="margin:0; font-size:18px; color:var(--primary-dark); font-weight:800;">${p.name}</h3>
+                            <div style="color:var(--text-muted); font-size:13px; font-weight:600; margin-top:4px;">${p.mark} | ${p.size}</div>
+                        </div>
+                        <div style="font-weight:900; color:var(--accent-teal); font-size:20px;">S/${p.price}</div>
+                    </div>
+                    ${p.img !== 'https://via.placeholder.com/150' ? `<img src="${p.img}" class="prod-img-preview">` : ''}
+                </div>
+            `;
         });
+        list.innerHTML = html;
     };
+
+    // Inicializar vistas
+    window.renderContacts();
+    window.renderInventory();
+
 </script>
 </body>
 </html>
