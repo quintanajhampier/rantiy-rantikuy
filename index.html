@@ -75,7 +75,7 @@
         .active-city { opacity: 1; border-color: var(--azul); }
 
         /* --- VISTAS --- */
-        .view { display: none; padding: 0 20px; animation: slideUp 0.5s ease; }
+        .view { display: none; padding: 0; animation: slideUp 0.5s ease; } /* padding ajustado para limpieza */
         .view-active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -84,7 +84,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            padding-bottom: 20px;
+            padding: 0 20px 20px 20px;
         }
         
         .post-card { 
@@ -139,6 +139,7 @@
         .btn-contact-mini:active { transform: scale(0.95); }
 
         /* --- STUDIO SUBIDA --- */
+        .view-padding-inner { padding: 0 20px; } /* Clase auxiliar para mantener padding en vistas */
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
         .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
         .cat-btn { background: rgba(255,255,255,0.07); padding: 20px 10px; border-radius: 25px; cursor: pointer; font-size: 10px; font-weight: 800; transition: 0.2s;}
@@ -158,17 +159,18 @@
         .chat-box-ui { 
             background: #e8f0fe; 
             border-radius: 35px; 
-            height: 550px; 
+            height: calc(100vh - 210px); /* Optimizado para verse como WhatsApp ocupando el espacio libre */
             display: flex; 
             flex-direction: column; 
             box-shadow: var(--premium-shadow); 
             overflow: hidden; 
             border: 4px solid white;
+            margin: 10px 20px 0 20px;
         }
         
         .chat-header-pro {
             background: linear-gradient(135deg, var(--azul), #1e40af);
-            padding: 25px 20px;
+            padding: 20px;
             color: white;
             text-align: center;
             box-shadow: 0 4px 15px rgba(37,99,235,0.2);
@@ -227,61 +229,63 @@
     </div>
 </header>
 
-<div class="search-container">
-    <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas?" oninput="window.renderFeed()">
-    </div>
-</div>
-
-<div class="filter-bar">
-    <div class="filter-chip filter-active" onclick="window.filterByCat('Todas', this)">✨ Todas</div>
-    <div class="filter-chip" onclick="window.filterByCat('Comida', this)">🍲 Comida</div>
-    <div class="filter-chip" onclick="window.filterByCat('Venta', this)">👕 Venta</div>
-    <div class="filter-chip" onclick="window.filterByCat('Taxi', this)">🚗 Taxi</div>
-    <div class="filter-chip" onclick="window.filterByCat('Servicio', this)">⚡ Servicio</div>
-</div>
-
-<div class="city-bar" id="city-bar-container"></div>
-
 <main id="view-home" class="view view-active">
+    <div class="search-container">
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas?" oninput="window.renderFeed()">
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <div class="filter-chip filter-active" onclick="window.filterByCat('Todas', this)">✨ Todas</div>
+        <div class="filter-chip" onclick="window.filterByCat('Comida', this)">🍲 Comida</div>
+        <div class="filter-chip" onclick="window.filterByCat('Venta', this)">👕 Venta</div>
+        <div class="filter-chip" onclick="window.filterByCat('Taxi', this)">🚗 Taxi</div>
+        <div class="filter-chip" onclick="window.filterByCat('Servicio', this)">⚡ Servicio</div>
+    </div>
+
+    <div class="city-bar" id="city-bar-container"></div>
+
     <div id="feed-container"></div>
 </main>
 
 <section id="view-camera" class="view">
-    <div class="camera-hub" id="main-hub">
-        <h2 style="font-weight:900;">Publicar en <span id="current-zone-text">...</span></h2>
-        <div class="category-grid">
-            <div class="cat-btn" onclick="window.startStudio('Venta', '🛍️')">💰<br>VENTA</div>
-            <div class="cat-btn" onclick="window.startStudio('Comida', '🍲')">🥘<br>COMIDA</div>
-            <div class="cat-btn" onclick="window.startStudio('Taxi', '🚗')">🚕<br>TAXI</div>
-            <div class="cat-btn" onclick="window.startStudio('Empleo', '💼')">💼<br>EMPLEO</div>
-            <div class="cat-btn" onclick="window.startStudio('Servicio', '⚡')">🔧<br>SERVICIO</div>
-            <div class="cat-btn" onclick="window.startStudio('Otros', '✨')">✨<br>OTROS</div>
-        </div>
-    </div>
-
-    <div id="upload-studio">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
-            <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px;">✕</button>
-        </div>
-        
-        <div class="form-section-title">1. Sube una imagen</div>
-        <div class="file-upload-wrapper">
-            <span class="file-upload-text">📸 Toca para subir foto</span>
-            <input type="file" id="in-photo" accept="image/*" onchange="window.previewImage(event)">
-            <div id="img-preview"></div>
+    <div class="view-padding-inner">
+        <div class="camera-hub" id="main-hub">
+            <h2 style="font-weight:900;">Publicar en <span id="current-zone-text">...</span></h2>
+            <div class="category-grid">
+                <div class="cat-btn" onclick="window.startStudio('Venta', '🛍️')">💰<br>VENTA</div>
+                <div class="cat-btn" onclick="window.startStudio('Comida', '🍲')">🥘<br>COMIDA</div>
+                <div class="cat-btn" onclick="window.startStudio('Taxi', '🚗')">🚕<br>TAXI</div>
+                <div class="cat-btn" onclick="window.startStudio('Empleo', '💼')">💼<br>EMPLEO</div>
+                <div class="cat-btn" onclick="window.startStudio('Servicio', '⚡')">🔧<br>SERVICIO</div>
+                <div class="cat-btn" onclick="window.startStudio('Otros', '✨')">✨<br>OTROS</div>
+            </div>
         </div>
 
-        <div class="form-section-title">2. Información Básica</div>
-        <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces? (Ej: Zapatillas Nike)">
-        <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
+        <div id="upload-studio">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
+                <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px;">✕</button>
+            </div>
+            
+            <div class="form-section-title">1. Sube una imagen</div>
+            <div class="file-upload-wrapper">
+                <span class="file-upload-text">📸 Toca para subir foto</span>
+                <input type="file" id="in-photo" accept="image/*" onchange="window.previewImage(event)">
+                <div id="img-preview"></div>
+            </div>
 
-        <div class="form-section-title">3. Detalles Específicos</div>
-        <div id="dynamic-fields-container"></div>
+            <div class="form-section-title">2. Información Básica</div>
+            <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces? (Ej: Zapatillas Nike)">
+            <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
 
-        <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--azul); color:white; border:none; border-radius:25px; font-weight:900; margin-top:10px;">PUBLICAR EN RANTIKUY 🚀</button>
+            <div class="form-section-title">3. Detalles Específicos</div>
+            <div id="dynamic-fields-container"></div>
+
+            <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--azul); color:white; border:none; border-radius:25px; font-weight:900; margin-top:10px;">PUBLICAR EN RANTIKUY 🚀</button>
+        </div>
     </div>
 </section>
 
@@ -451,6 +455,13 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
         if(t === 'home') window.renderFeed();
+        // Optimización visual extra: Scrollear hacia abajo si entra al chat
+        if(t === 'chat') {
+            setTimeout(() => {
+                const box = document.getElementById('group-msgs');
+                if(box) box.scrollTop = box.scrollHeight;
+            }, 100);
+        }
     }
 
     window.irAChatPrivado = function(nombre, telefono) {
@@ -517,7 +528,7 @@
                 ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.9); border:none; border-radius:50%; width:22px; height:22px; font-size:10px; cursor:pointer; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">🗑️</button>` : ''}
                 
                 <div class="post-card-img-wrapper" onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')">
-                    ${imgSrc ? `<img src="${imgSrc}">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
+                    ${imgSrc ? `<img src="${imgSrc}" loading="lazy">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
                 </div>
                 
                 <h3 class="post-card-title">${safeName}</h3>
