@@ -60,17 +60,17 @@
         .filter-chip { padding: 10px 20px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
         .filter-active { background: var(--azul-glow); border-color: var(--azul); color: var(--azul); }
 
-        /* --- CIUDADES --- */
-        .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
-        .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.5; pointer-events: none; }
-        .active-city { opacity: 1; pointer-events: auto; border-width: 3px; border-color: var(--azul); }
+        /* --- CIUDADES (MODIFICADO PARA SELECCIÓN GLOBAL) --- */
+        .city-bar { padding: 10px 20px 20px 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
+        .city-card { background: white; min-width: max-content; padding: 10px 20px; border-radius: 20px; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.7; pointer-events: auto; transition: 0.3s; }
+        .active-city { opacity: 1; border-color: var(--azul); }
 
         /* --- VISTAS --- */
         .view { display: none; padding: 0 20px; animation: slideUp 0.5s ease; }
         .view-active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- VITRINA / CARDS (NUEVA GRILLA DE 3 COLUMNAS) --- */
+        /* --- VITRINA / CARDS --- */
         #feed-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -104,7 +104,7 @@
         .post-card-title {
             font-size: 11px;
             font-weight: 800;
-            margin: 0 0 4px 0;
+            margin: 0 0 2px 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -172,16 +172,19 @@
 
         .msg-area { flex: 1; padding: 20px 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         
-        /* Burbujas tipo WhatsApp / Imagen */
+        /* Burbujas tipo WhatsApp / Imagen (CORREGIDO DISTORSIÓN) */
         .bubble { 
             padding: 10px 16px; 
             border-radius: 18px; 
             max-width: 80%; 
+            width: fit-content; /* CORRECCIÓN: Evita que las letras cortas se apilen verticalmente */
             font-size: 14.5px; 
             font-weight: 500; 
-            overflow-wrap: break-word;
+            word-wrap: break-word; /* CORRECCIÓN: Mantiene palabras juntas si es posible */
+            word-break: normal;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             line-height: 1.4;
+            display: inline-block;
         }
         /* Burbuja de los demás (Blanca) */
         .bubble-in { background: white; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; }
@@ -222,7 +225,7 @@
 <div class="search-container">
     <div class="search-wrapper">
         <span class="search-icon">🔍</span>
-        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas en tu zona?" oninput="window.renderFeed()">
+        <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas?" oninput="window.renderFeed()">
     </div>
 </div>
 
@@ -234,9 +237,7 @@
     <div class="filter-chip" onclick="window.filterByCat('Servicio', this)">⚡ Servicio</div>
 </div>
 
-<div class="city-bar" id="city-bar-container">
-    <div class="city-card active-city" id="city-local"><span>📍</span><label id="label-city-local">Buscando...</label></div>
-</div>
+<div class="city-bar" id="city-bar-container"></div>
 
 <main id="view-home" class="view view-active">
     <div id="feed-container"></div>
@@ -305,6 +306,7 @@
     window.activeLoc = ""; 
     window.activeCat = ""; 
     window.currentFilter = "Todas"; 
+    window.selectedCityFilter = "Todas"; // Nuevo filtro global de ciudad
     window.adminClicks = 0;
     
     // --- CONEXIÓN REAL-TIME CON EL PERFIL DE REGISTRO ---
@@ -366,7 +368,7 @@
     onSnapshot(collection(db, "inventory"), (snapshot) => {
         window.dbLocal.inventory = [];
         snapshot.forEach((doc) => { window.dbLocal.inventory.push({ id: doc.id, ...doc.data() }); });
-        if(window.activeLoc) window.renderFeed();
+        window.renderFeed(); // Renderiza sin importar GPS inicial
     });
 
     window.init = function() {
@@ -378,6 +380,24 @@
         } else {
             alert("Tu celular no soporta GPS.");
         }
+    }
+
+    // --- RENDERIZAR CIUDADES PARA EL FILTRO ---
+    window.renderCityFilters = function() {
+        const container = document.getElementById('city-bar-container');
+        if(!container) return;
+        let html = `<div class="city-card active-city" onclick="window.filterByCity('Todas', this)"><span>🌎</span><label style="cursor:pointer; font-weight:800; font-size:12px;">Todas</label></div>`;
+        for (let z in ZONAS) {
+            html += `<div class="city-card" onclick="window.filterByCity('${z}', this)"><span>📍</span><label style="cursor:pointer; font-weight:800; font-size:12px;">${z}</label></div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    window.filterByCity = function(city, el) {
+        window.selectedCityFilter = city;
+        document.querySelectorAll('#city-bar-container .city-card').forEach(c => c.classList.remove('active-city'));
+        el.classList.add('active-city');
+        window.renderFeed();
     }
 
     window.successGPS = function(pos) {
@@ -396,7 +416,6 @@
 
         if (found) {
             document.getElementById('gps-screen').style.display = 'none';
-            document.getElementById('label-city-local').innerText = window.activeLoc.toUpperCase();
             document.getElementById('current-zone-text').innerText = window.activeLoc;
             document.getElementById('zone-chat-label').innerText = "SALA " + window.activeLoc.toUpperCase();
             window.renderFeed();
@@ -457,15 +476,20 @@
         }
     }
 
-    // --- NUEVO RENDERIZADO COMPACTO PARA 3 COLUMNAS ---
+    // --- RENDERIZADO VITRINA (AHORA MUESTRA TODO Y FILTRA) ---
     window.renderFeed = function() {
-        if(!window.activeLoc) return;
         const container = document.getElementById('feed-container');
         if(!container) return;
 
         const search = document.getElementById('main-search') ? document.getElementById('main-search').value.toLowerCase() : "";
-        let posts = window.dbLocal.inventory.filter(p => p.loc === window.activeLoc);
+        let posts = window.dbLocal.inventory; // Trae TODOS los posts
 
+        // Filtro por Ciudad
+        if(window.selectedCityFilter !== 'Todas') {
+            posts = posts.filter(p => p.loc === window.selectedCityFilter);
+        }
+
+        // Filtro por Categoría y Búsqueda
         if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
         if(search) posts = posts.filter(p => p.name.toLowerCase().includes(search));
 
@@ -482,6 +506,7 @@
                 </div>
                 
                 <h3 class="post-card-title">${p.name}</h3>
+                <div style="font-size: 10px; color: #64748b; margin-bottom: 2px; font-weight: 700;">📍 ${p.loc || 'Global'}</div>
                 <div class="post-card-price">S/ ${p.price}</div>
                 
                 <button onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')" class="btn-contact-mini">
@@ -600,6 +625,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        window.renderCityFilters();
         document.getElementById('group-input').addEventListener('keypress', e => { 
             if (e.key === 'Enter') window.sendGroupMsg(); 
         });
