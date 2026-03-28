@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rantiy y Rantikuy - Vitrina</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            /* Nuevos colores: Azul, Blanco y Oscuro (Negro suave) */
+            /* Colores Base */
             --azul: #2563eb; --azul-glow: #dbeafe;
             --naranja: #f97316; --oscuro: #1e293b;
+            --chat-green: #dcf8c6; /* Verde tipo la imagen que enviaste */
             --glass: rgba(255, 255, 255, 0.96);
             --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
@@ -69,11 +70,64 @@
         .view-active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- VITRINA / CARDS --- */
-        .post-card { background: white; border-radius: 40px; padding: 15px; box-shadow: var(--premium-shadow); margin-bottom: 20px; position: relative; }
-        .img-scroll { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; scrollbar-width: none; }
-        .img-scroll img { width: 100%; height: 230px; object-fit: cover; border-radius: 25px; flex-shrink: 0; }
-        .post-details { background: #f8fafc; padding: 12px; border-radius: 15px; margin-top: 10px; font-size: 12px; color: #475569; }
+        /* --- VITRINA / CARDS (NUEVA GRILLA DE 3 COLUMNAS) --- */
+        #feed-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding-bottom: 20px;
+        }
+        
+        .post-card { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 10px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06); 
+            position: relative; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .post-card-img-wrapper {
+            width: 100%;
+            height: 100px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            background: #f1f5f9;
+        }
+        .post-card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .post-card-title {
+            font-size: 11px;
+            font-weight: 800;
+            margin: 0 0 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .post-card-price {
+            color: var(--azul);
+            font-weight: 900;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .btn-contact-mini {
+            background: var(--oscuro);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 10px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-contact-mini:active { transform: scale(0.95); }
 
         /* --- STUDIO SUBIDA --- */
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
@@ -86,18 +140,53 @@
         .rr-field:focus { border-color: var(--azul); }
         .form-section-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
         
-        /* Input de archivo personalizado */
         .file-upload-wrapper { position: relative; width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 25px; display: flex; align-items: center; justify-content: center; background: #f8fafc; margin-bottom: 15px; cursor: pointer; overflow: hidden; }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         .file-upload-text { color: #64748b; font-weight: 800; font-size: 14px; pointer-events: none; z-index: 1; }
         #img-preview { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-size: cover; background-position: center; display: none; z-index: 2; }
 
-        /* --- SISTEMA DE CHATS --- */
-        .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; }
-        .msg-area { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
-        .bubble-out { background: var(--azul); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        /* --- SISTEMA DE CHATS ACTUALIZADO --- */
+        .chat-box-ui { 
+            background: #e8f0fe; /* Fondo suave y moderno */
+            border-radius: 35px; 
+            height: 550px; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: var(--premium-shadow); 
+            overflow: hidden; 
+            border: 4px solid white;
+        }
+        
+        /* Cabecera Pro y Elegante */
+        .chat-header-pro {
+            background: linear-gradient(135deg, var(--azul), #1e40af);
+            padding: 25px 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(37,99,235,0.2);
+            position: relative;
+            z-index: 10;
+        }
+        .chat-header-pro h2 { margin: 0; font-weight: 900; font-size: 20px; letter-spacing: 0.5px; }
+        .chat-subtitle { display: block; font-size: 11px; opacity: 0.8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
+
+        .msg-area { flex: 1; padding: 20px 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        
+        /* Burbujas tipo WhatsApp / Imagen */
+        .bubble { 
+            padding: 10px 16px; 
+            border-radius: 18px; 
+            max-width: 80%; 
+            font-size: 14.5px; 
+            font-weight: 500; 
+            overflow-wrap: break-word;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            line-height: 1.4;
+        }
+        /* Burbuja de los demás (Blanca) */
+        .bubble-in { background: white; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; }
+        /* Burbuja Tuya (Verde Claro) */
+        .bubble-out { background: var(--chat-green); color: #1e293b; align-self: flex-end; border-bottom-right-radius: 4px; }
 
         /* --- NAV ISLAND --- */
         .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
@@ -192,14 +281,16 @@
 
 <section id="view-chat" class="view">
     <div class="chat-box-ui">
-        <div id="group-title" style="padding:20px; background:var(--azul); color:white; font-weight:900; display:flex; justify-content:space-between;">
-            <span id="zone-chat-label">SALA REGIONAL</span>
-            <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">AUTO-LIMPIEZA 24H</span>
+        <div class="chat-header-pro">
+            <h2 id="zone-chat-label">SALA REGIONAL</h2>
+            <span class="chat-subtitle">📍 Comunidad Activa • Auto-Limpieza 24H</span>
         </div>
+        
         <div class="msg-area" id="group-msgs"></div>
-        <div style="padding:15px; display:flex; gap:10px;">
-            <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe al grupo...">
-            <button onclick="window.sendGroupMsg()" style="background:var(--azul); color:white; border:none; width:55px; border-radius:20px; cursor:pointer;">✈️</button>
+        
+        <div style="padding:15px; background:white; display:flex; gap:10px; border-top: 1px solid #f1f5f9;">
+            <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1; border-radius:25px; padding:15px 20px;" placeholder="Escribe un mensaje...">
+            <button onclick="window.sendGroupMsg()" style="background:var(--azul); color:white; border:none; width:55px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">✈️</button>
         </div>
     </div>
 </section>
@@ -217,7 +308,7 @@
     window.adminClicks = 0;
     
     // --- CONEXIÓN REAL-TIME CON EL PERFIL DE REGISTRO ---
-    window.currentUser = localStorage.getItem('rantiy_userName'); // Usamos los nombres del registro
+    window.currentUser = localStorage.getItem('rantiy_userName'); 
     window.currentPhone = localStorage.getItem('rantiy_userPhone') || "000000000";
 
     // Bloqueo de seguridad si no hay perfil
@@ -346,9 +437,8 @@
         window.renderFeed();
     }
 
-    // --- FUNCIÓN PARA BORRAR POST DE LA VITRINA ---
     window.deletePost = async function(id) {
-        if(confirm('¿Estás seguro de que quieres borrar esta publicación? Esta acción no se puede deshacer.')) {
+        if(confirm('¿Estás seguro de que quieres borrar esta publicación?')) {
             try {
                 await deleteDoc(doc(db, "inventory", id));
             } catch(error) {
@@ -357,7 +447,6 @@
         }
     }
 
-    // --- FUNCIÓN PARA BORRAR MENSAJE DEL GRUPO ---
     window.deleteGroupMsg = async function(id) {
         if(confirm('¿Deseas eliminar este mensaje para todos?')) {
             try {
@@ -368,6 +457,7 @@
         }
     }
 
+    // --- NUEVO RENDERIZADO COMPACTO PARA 3 COLUMNAS ---
     window.renderFeed = function() {
         if(!window.activeLoc) return;
         const container = document.getElementById('feed-container');
@@ -380,41 +470,28 @@
         if(search) posts = posts.filter(p => p.name.toLowerCase().includes(search));
 
         container.innerHTML = posts.map(p => {
-            let extraDetails = "";
-            if(p.formDetails) {
-                let detailsArr = p.formDetails.split(" | ");
-                extraDetails = `<div class="post-details">` + detailsArr.map(d => `<div>• ${d}</div>`).join('') + `</div>`;
-            }
-            
-            // Verificamos si el post es del usuario actual para mostrar el botón de borrar
             const isMyPost = p.sellerName === window.currentUser;
+            const imgSrc = (p.img && p.img !== 'https://via.placeholder.com/150') ? p.img : '';
 
             return `
             <div class="post-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')">
-                        <div style="width:40px; height:40px; border-radius:15px; background:var(--azul); color:white; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px;">
-                            ${(p.sellerName || 'V').charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                            <div style="font-weight:800; font-size:14px;">${p.sellerName || 'Vendedor Local'}</div>
-                            <div style="font-size:10px; color:#64748b;">📍 ${p.loc}</div>
-                        </div>
-                    </div>
-                    ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="background:#fee2e2; color:#dc2626; border:none; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:bold; cursor:pointer;">🗑️ Borrar</button>` : ''}
+                ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.9); border:none; border-radius:50%; width:22px; height:22px; font-size:10px; cursor:pointer; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">🗑️</button>` : ''}
+                
+                <div class="post-card-img-wrapper" onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')">
+                    ${imgSrc ? `<img src="${imgSrc}">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
                 </div>
-                ${p.img && p.img !== 'https://via.placeholder.com/150' ? `<div class="img-scroll"><img src="${p.img}"></div>` : ''}
-                <h3 style="margin:10px 0 5px 0;">${p.name}</h3>
-                ${extraDetails}
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                    <div style="color:var(--azul); font-weight:900; font-size:20px;">S/ ${p.price}</div>
-                    <button onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800; cursor:pointer;">Contactar</button>
-                </div>
+                
+                <h3 class="post-card-title">${p.name}</h3>
+                <div class="post-card-price">S/ ${p.price}</div>
+                
+                <button onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')" class="btn-contact-mini">
+                    Contactar
+                </button>
             </div>`;
         }).join('');
     }
 
-    // --- CHAT GRUPAL REAL-TIME ---
+    // --- RENDERIZADO CHAT GRUPAL ESTILO WHATSAPP/IMAGEN ---
     const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"));
     onSnapshot(qChat, (snapshot) => {
         const box = document.getElementById('group-msgs');
@@ -432,16 +509,18 @@
 
             if(data.zone === window.activeLoc || data.zone === "GLOBAL") {
                 const isMe = data.sender === window.currentUser;
+                const isAdmin = data.sender === "ADMINISTRADOR";
+                const senderName = isAdmin ? '👑 ADMIN' : data.sender;
+                
                 msgsHTML += `
-                    <div style="display:flex; flex-direction:column; align-items: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 8px;">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            ${isMe ? `<span onclick="window.deleteGroupMsg('${docSnap.id}')" style="cursor:pointer; font-size:12px; color:#dc2626; margin-bottom:2px;" title="Borrar mensaje">🗑️</span>` : ''}
-                            <span onclick="window.irAChatPrivado('${data.sender}', '${data.phone}')" style="font-size:10px; color:#94a3b8; margin-bottom:2px; padding:0 5px; cursor:pointer; font-weight:bold;">
-                                ${isMe ? 'Tú' : (data.sender === "ADMINISTRADOR" ? '👑 ADMIN' : '👤 ' + data.sender)} (Chat 💬)
-                            </span>
-                        </div>
-                        <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}" style="${data.sender === 'ADMINISTRADOR' ? 'background: #f59e0b; color: white;' : ''}">
-                            ${data.text}
+                    <div style="display:flex; flex-direction:column; align-items: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 2px;">
+                        ${!isMe ? `<span style="font-size:11px; color:#64748b; margin-bottom:4px; margin-left:12px; font-weight:700;">${senderName}</span>` : ''}
+                        
+                        <div style="display:flex; align-items:center; gap:8px; flex-direction: ${isMe ? 'row-reverse' : 'row'};">
+                            <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}" style="${isAdmin ? 'background: #f59e0b; color: white;' : ''}">
+                                ${data.text}
+                            </div>
+                            ${isMe ? `<span onclick="window.deleteGroupMsg('${docSnap.id}')" style="cursor:pointer; font-size:14px; opacity:0.6;" title="Borrar mensaje">🗑️</span>` : ''}
                         </div>
                     </div>`;
             }
