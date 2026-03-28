@@ -8,7 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --verde: #22c55e; --verde-glow: #dcfce7;
+            /* Nuevos colores: Azul, Blanco y Oscuro (Negro suave) */
+            --azul: #2563eb; --azul-glow: #dbeafe;
             --naranja: #f97316; --oscuro: #1e293b;
             --glass: rgba(255, 255, 255, 0.96);
             --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
@@ -19,7 +20,7 @@
 
         /* --- BLOQUEO GPS INICIAL --- */
         #gps-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-        .gps-loader { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--verde); border-radius: 50%; animation: spin 1s linear infinite; }
+        .gps-loader { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--azul); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- HEADER --- */
@@ -29,10 +30,10 @@
             position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .logo-rr {
-            width: 62px; height: 62px; background: linear-gradient(135deg, var(--verde), #15803d);
+            width: 62px; height: 62px; background: linear-gradient(135deg, var(--azul), #1e40af);
             border-radius: 22px; display: flex; align-items: center; justify-content: center;
             color: white; font-weight: 900; font-size: 24px; cursor: pointer;
-            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.4);
+            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
             animation: rotate3d 7s infinite ease-in-out; transform-style: preserve-3d;
         }
         @keyframes rotate3d { 0%, 100% { transform: perspective(500px) rotateY(0deg); } 50% { transform: perspective(500px) rotateY(30deg); } }
@@ -42,10 +43,10 @@
             position: fixed; right: 20px; bottom: 120px; background: white; padding: 12px 20px;
             border-radius: 30px; box-shadow: var(--premium-shadow); display: flex; align-items: center; gap: 10px;
             text-decoration: none; color: var(--oscuro); font-weight: 800; font-size: 14px; z-index: 2500;
-            border: 2px solid var(--verde-glow); transition: 0.3s;
+            border: 2px solid var(--azul-glow); transition: 0.3s;
         }
         .btn-mensajes-privados:active { transform: scale(0.9); }
-        .dot-online { width: 10px; height: 10px; background: var(--verde); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        .dot-online { width: 10px; height: 10px; background: var(--azul); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
 
         /* --- BÚSQUEDA Y FILTROS --- */
@@ -56,12 +57,12 @@
 
         .filter-bar { padding: 15px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
         .filter-chip { padding: 10px 20px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
-        .filter-active { background: var(--verde-glow); border-color: var(--verde); color: var(--verde); }
+        .filter-active { background: var(--azul-glow); border-color: var(--azul); color: var(--azul); }
 
         /* --- CIUDADES --- */
         .city-bar { padding: 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
         .city-card { background: white; min-width: 140px; padding: 22px; border-radius: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.5; pointer-events: none; }
-        .active-city { opacity: 1; pointer-events: auto; border-width: 3px; border-color: var(--verde); }
+        .active-city { opacity: 1; pointer-events: auto; border-width: 3px; border-color: var(--azul); }
 
         /* --- VISTAS --- */
         .view { display: none; padding: 0 20px; animation: slideUp 0.5s ease; }
@@ -78,11 +79,11 @@
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
         .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
         .cat-btn { background: rgba(255,255,255,0.07); padding: 20px 10px; border-radius: 25px; cursor: pointer; font-size: 10px; font-weight: 800; transition: 0.2s;}
-        .cat-btn:active { background: var(--verde); }
+        .cat-btn:active { background: var(--azul); }
         
         #upload-studio { background: white; border-radius: 45px; padding: 35px; margin-top: 25px; display: none; box-shadow: var(--premium-shadow); }
         .rr-field { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; transition: border-color 0.3s; }
-        .rr-field:focus { border-color: var(--verde); }
+        .rr-field:focus { border-color: var(--azul); }
         .form-section-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
         
         /* Input de archivo personalizado */
@@ -95,13 +96,13 @@
         .chat-box-ui { background: white; border-radius: 40px; height: 500px; display: flex; flex-direction: column; box-shadow: var(--premium-shadow); overflow: hidden; }
         .msg-area { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
         .bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 14px; font-weight: 600; overflow-wrap: break-word; }
-        .bubble-out { background: var(--verde); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bubble-out { background: var(--azul); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
         .bubble-in { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
 
         /* --- NAV ISLAND --- */
         .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
         .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
-        .nav-btn.active { color: var(--verde); }
+        .nav-btn.active { color: var(--azul); }
     </style>
 </head>
 <body>
@@ -111,7 +112,7 @@
     <h1 style="font-weight:900; margin-bottom:5px;">Rantiy y Rantikuy</h1>
     <p style="opacity:0.6; margin-bottom:30px;">Detectando tu ubicación real en el mapa...</p>
     <div class="gps-loader" id="gps-loader"></div>
-    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--verde);">Iniciando satélites...</p>
+    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--azul);">Iniciando satélites...</p>
 </div>
 
 <a href="chat_privado.html" class="btn-mensajes-privados">
@@ -124,7 +125,7 @@
         <div class="logo-rr" onclick="window.checkAdminAccess()">R&R</div>
         <div>
             <div style="font-weight: 900; font-size: 20px;">Rantiy y Rantikuy</div>
-            <div id="user-tag" style="font-size: 10px; color: var(--verde); font-weight: 800;">CIUDADANO: CARGANDO...</div>
+            <div id="user-tag" style="font-size: 10px; color: var(--azul); font-weight: 800;">CIUDADANO: CARGANDO...</div>
         </div>
     </div>
 </header>
@@ -185,20 +186,20 @@
         <div class="form-section-title">3. Detalles Específicos</div>
         <div id="dynamic-fields-container"></div>
 
-        <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--verde); color:white; border:none; border-radius:25px; font-weight:900; margin-top:10px;">PUBLICAR EN RANTIKUY 🚀</button>
+        <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--azul); color:white; border:none; border-radius:25px; font-weight:900; margin-top:10px;">PUBLICAR EN RANTIKUY 🚀</button>
     </div>
 </section>
 
 <section id="view-chat" class="view">
     <div class="chat-box-ui">
-        <div id="group-title" style="padding:20px; background:var(--verde); color:white; font-weight:900; display:flex; justify-content:space-between;">
+        <div id="group-title" style="padding:20px; background:var(--azul); color:white; font-weight:900; display:flex; justify-content:space-between;">
             <span id="zone-chat-label">SALA REGIONAL</span>
             <span style="font-size:10px; background:rgba(0,0,0,0.1); padding:4px 8px; border-radius:10px;">AUTO-LIMPIEZA 24H</span>
         </div>
         <div class="msg-area" id="group-msgs"></div>
         <div style="padding:15px; display:flex; gap:10px;">
             <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1;" placeholder="Escribe al grupo...">
-            <button onclick="window.sendGroupMsg()" style="background:var(--verde); color:white; border:none; width:55px; border-radius:20px; cursor:pointer;">✈️</button>
+            <button onclick="window.sendGroupMsg()" style="background:var(--azul); color:white; border:none; width:55px; border-radius:20px; cursor:pointer;">✈️</button>
         </div>
     </div>
 </section>
@@ -345,6 +346,28 @@
         window.renderFeed();
     }
 
+    // --- FUNCIÓN PARA BORRAR POST DE LA VITRINA ---
+    window.deletePost = async function(id) {
+        if(confirm('¿Estás seguro de que quieres borrar esta publicación? Esta acción no se puede deshacer.')) {
+            try {
+                await deleteDoc(doc(db, "inventory", id));
+            } catch(error) {
+                alert("Hubo un error al intentar borrar tu publicación.");
+            }
+        }
+    }
+
+    // --- FUNCIÓN PARA BORRAR MENSAJE DEL GRUPO ---
+    window.deleteGroupMsg = async function(id) {
+        if(confirm('¿Deseas eliminar este mensaje para todos?')) {
+            try {
+                await deleteDoc(doc(db, "chats_zonas", id));
+            } catch(error) {
+                alert("Hubo un error al intentar borrar el mensaje.");
+            }
+        }
+    }
+
     window.renderFeed = function() {
         if(!window.activeLoc) return;
         const container = document.getElementById('feed-container');
@@ -362,12 +385,15 @@
                 let detailsArr = p.formDetails.split(" | ");
                 extraDetails = `<div class="post-details">` + detailsArr.map(d => `<div>• ${d}</div>`).join('') + `</div>`;
             }
+            
+            // Verificamos si el post es del usuario actual para mostrar el botón de borrar
+            const isMyPost = p.sellerName === window.currentUser;
 
             return `
             <div class="post-card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')">
-                        <div style="width:40px; height:40px; border-radius:15px; background:var(--verde); color:white; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px;">
+                        <div style="width:40px; height:40px; border-radius:15px; background:var(--azul); color:white; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:18px;">
                             ${(p.sellerName || 'V').charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -375,12 +401,13 @@
                             <div style="font-size:10px; color:#64748b;">📍 ${p.loc}</div>
                         </div>
                     </div>
+                    ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="background:#fee2e2; color:#dc2626; border:none; padding:6px 12px; border-radius:12px; font-size:12px; font-weight:bold; cursor:pointer;">🗑️ Borrar</button>` : ''}
                 </div>
                 ${p.img && p.img !== 'https://via.placeholder.com/150' ? `<div class="img-scroll"><img src="${p.img}"></div>` : ''}
                 <h3 style="margin:10px 0 5px 0;">${p.name}</h3>
                 ${extraDetails}
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                    <div style="color:var(--verde); font-weight:900; font-size:20px;">S/ ${p.price}</div>
+                    <div style="color:var(--azul); font-weight:900; font-size:20px;">S/ ${p.price}</div>
                     <button onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')" style="background:var(--oscuro); color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:800; cursor:pointer;">Contactar</button>
                 </div>
             </div>`;
@@ -407,9 +434,12 @@
                 const isMe = data.sender === window.currentUser;
                 msgsHTML += `
                     <div style="display:flex; flex-direction:column; align-items: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 8px;">
-                        <span onclick="window.irAChatPrivado('${data.sender}', '${data.phone}')" style="font-size:10px; color:#94a3b8; margin-bottom:2px; padding:0 5px; cursor:pointer; font-weight:bold;">
-                            ${isMe ? 'Tú' : (data.sender === "ADMINISTRADOR" ? '👑 ADMIN' : '👤 ' + data.sender)} (Chat 💬)
-                        </span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            ${isMe ? `<span onclick="window.deleteGroupMsg('${docSnap.id}')" style="cursor:pointer; font-size:12px; color:#dc2626; margin-bottom:2px;" title="Borrar mensaje">🗑️</span>` : ''}
+                            <span onclick="window.irAChatPrivado('${data.sender}', '${data.phone}')" style="font-size:10px; color:#94a3b8; margin-bottom:2px; padding:0 5px; cursor:pointer; font-weight:bold;">
+                                ${isMe ? 'Tú' : (data.sender === "ADMINISTRADOR" ? '👑 ADMIN' : '👤 ' + data.sender)} (Chat 💬)
+                            </span>
+                        </div>
                         <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}" style="${data.sender === 'ADMINISTRADOR' ? 'background: #f59e0b; color: white;' : ''}">
                             ${data.text}
                         </div>
