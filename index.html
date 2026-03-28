@@ -4,14 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rantiy y Rantikuy - Vitrina</title>
+    
+    <meta property="og:title" content="Rantiy y Rantikuy">
+    <meta property="og:description" content="Tu mercado y comunidad local. Compra, vende y chatea.">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js" defer></script>
+    
     <style>
         :root {
             /* Colores Base */
             --azul: #2563eb; --azul-glow: #dbeafe;
             --naranja: #f97316; --oscuro: #1e293b;
-            --chat-green: #dcf8c6; /* Verde tipo la imagen que enviaste */
+            --chat-green: #dcf8c6;
             --glass: rgba(255, 255, 255, 0.96);
             --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
@@ -60,7 +69,7 @@
         .filter-chip { padding: 10px 20px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
         .filter-active { background: var(--azul-glow); border-color: var(--azul); color: var(--azul); }
 
-        /* --- CIUDADES (MODIFICADO PARA SELECCIÓN GLOBAL) --- */
+        /* --- CIUDADES --- */
         .city-bar { padding: 10px 20px 20px 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
         .city-card { background: white; min-width: max-content; padding: 10px 20px; border-radius: 20px; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.7; pointer-events: auto; transition: 0.3s; }
         .active-city { opacity: 1; border-color: var(--azul); }
@@ -145,9 +154,9 @@
         .file-upload-text { color: #64748b; font-weight: 800; font-size: 14px; pointer-events: none; z-index: 1; }
         #img-preview { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-size: cover; background-position: center; display: none; z-index: 2; }
 
-        /* --- SISTEMA DE CHATS ACTUALIZADO --- */
+        /* --- SISTEMA DE CHATS --- */
         .chat-box-ui { 
-            background: #e8f0fe; /* Fondo suave y moderno */
+            background: #e8f0fe; 
             border-radius: 35px; 
             height: 550px; 
             display: flex; 
@@ -157,7 +166,6 @@
             border: 4px solid white;
         }
         
-        /* Cabecera Pro y Elegante */
         .chat-header-pro {
             background: linear-gradient(135deg, var(--azul), #1e40af);
             padding: 25px 20px;
@@ -172,23 +180,20 @@
 
         .msg-area { flex: 1; padding: 20px 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         
-        /* Burbujas tipo WhatsApp / Imagen (CORREGIDO DISTORSIÓN) */
         .bubble { 
             padding: 10px 16px; 
             border-radius: 18px; 
             max-width: 80%; 
-            width: fit-content; /* CORRECCIÓN: Evita que las letras cortas se apilen verticalmente */
+            width: fit-content; 
             font-size: 14.5px; 
             font-weight: 500; 
-            word-wrap: break-word; /* CORRECCIÓN: Mantiene palabras juntas si es posible */
+            word-wrap: break-word; 
             word-break: normal;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             line-height: 1.4;
             display: inline-block;
         }
-        /* Burbuja de los demás (Blanca) */
         .bubble-in { background: white; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; }
-        /* Burbuja Tuya (Verde Claro) */
         .bubble-out { background: var(--chat-green); color: #1e293b; align-self: flex-end; border-bottom-right-radius: 4px; }
 
         /* --- NAV ISLAND --- */
@@ -303,10 +308,18 @@
 </nav>
 
 <script type="module">
+    // MEJORA: Función para limpiar texto y evitar Hackeos por Inyección HTML (XSS)
+    window.escapeHTML = function(str) {
+        if (typeof str !== 'string') return '';
+        return str.replace(/[&<>'"]/g, tag => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        }[tag] || tag));
+    };
+
     window.activeLoc = ""; 
     window.activeCat = ""; 
     window.currentFilter = "Todas"; 
-    window.selectedCityFilter = "Todas"; // Nuevo filtro global de ciudad
+    window.selectedCityFilter = "Todas";
     window.adminClicks = 0;
     
     // --- CONEXIÓN REAL-TIME CON EL PERFIL DE REGISTRO ---
@@ -368,12 +381,12 @@
     onSnapshot(collection(db, "inventory"), (snapshot) => {
         window.dbLocal.inventory = [];
         snapshot.forEach((doc) => { window.dbLocal.inventory.push({ id: doc.id, ...doc.data() }); });
-        window.renderFeed(); // Renderiza sin importar GPS inicial
+        window.renderFeed();
     });
 
     window.init = function() {
         const userTag = document.getElementById('user-tag');
-        if(userTag) userTag.innerText = "CIUDADANO: " + window.currentUser.toUpperCase();
+        if(userTag) userTag.innerText = "CIUDADANO: " + window.escapeHTML(window.currentUser).toUpperCase();
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
@@ -382,7 +395,6 @@
         }
     }
 
-    // --- RENDERIZAR CIUDADES PARA EL FILTRO ---
     window.renderCityFilters = function() {
         const container = document.getElementById('city-bar-container');
         if(!container) return;
@@ -446,7 +458,7 @@
             alert("No puedes chatear contigo mismo.");
             return;
         }
-        window.location.href = `chat_privado.html?name=${encodeURIComponent(nombre)}&phone=${telefono}`;
+        window.location.href = `chat_privado.html?name=${encodeURIComponent(nombre)}&phone=${encodeURIComponent(telefono)}`;
     }
 
     window.filterByCat = function(cat, el) {
@@ -476,47 +488,50 @@
         }
     }
 
-    // --- RENDERIZADO VITRINA (AHORA MUESTRA TODO Y FILTRA) ---
+    // --- RENDERIZADO VITRINA ---
     window.renderFeed = function() {
         const container = document.getElementById('feed-container');
         if(!container) return;
 
         const search = document.getElementById('main-search') ? document.getElementById('main-search').value.toLowerCase() : "";
-        let posts = window.dbLocal.inventory; // Trae TODOS los posts
+        let posts = window.dbLocal.inventory;
 
-        // Filtro por Ciudad
         if(window.selectedCityFilter !== 'Todas') {
             posts = posts.filter(p => p.loc === window.selectedCityFilter);
         }
 
-        // Filtro por Categoría y Búsqueda
         if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
-        if(search) posts = posts.filter(p => p.name.toLowerCase().includes(search));
+        if(search) posts = posts.filter(p => p.name && p.name.toLowerCase().includes(search));
 
         container.innerHTML = posts.map(p => {
             const isMyPost = p.sellerName === window.currentUser;
-            const imgSrc = (p.img && p.img !== 'https://via.placeholder.com/150') ? p.img : '';
+            const imgSrc = (p.img && p.img !== 'https://via.placeholder.com/150') ? window.escapeHTML(p.img) : '';
+            const safeName = window.escapeHTML(p.name);
+            const safeLoc = window.escapeHTML(p.loc || 'Global');
+            const safePrice = window.escapeHTML(String(p.price));
+            const safeSeller = window.escapeHTML(p.sellerName || 'Vendedor');
+            const safePhone = window.escapeHTML(p.sellerPhone || '000000000');
 
             return `
             <div class="post-card">
                 ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.9); border:none; border-radius:50%; width:22px; height:22px; font-size:10px; cursor:pointer; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">🗑️</button>` : ''}
                 
-                <div class="post-card-img-wrapper" onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')">
+                <div class="post-card-img-wrapper" onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')">
                     ${imgSrc ? `<img src="${imgSrc}">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
                 </div>
                 
-                <h3 class="post-card-title">${p.name}</h3>
-                <div style="font-size: 10px; color: #64748b; margin-bottom: 2px; font-weight: 700;">📍 ${p.loc || 'Global'}</div>
-                <div class="post-card-price">S/ ${p.price}</div>
+                <h3 class="post-card-title">${safeName}</h3>
+                <div style="font-size: 10px; color: #64748b; margin-bottom: 2px; font-weight: 700;">📍 ${safeLoc}</div>
+                <div class="post-card-price">S/ ${safePrice}</div>
                 
-                <button onclick="window.irAChatPrivado('${p.sellerName || 'Vendedor'}', '${p.sellerPhone || '000000000'}')" class="btn-contact-mini">
+                <button onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')" class="btn-contact-mini">
                     Contactar
                 </button>
             </div>`;
         }).join('');
     }
 
-    // --- RENDERIZADO CHAT GRUPAL ESTILO WHATSAPP/IMAGEN ---
+    // --- RENDERIZADO CHAT GRUPAL ---
     const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"));
     onSnapshot(qChat, (snapshot) => {
         const box = document.getElementById('group-msgs');
@@ -535,7 +550,8 @@
             if(data.zone === window.activeLoc || data.zone === "GLOBAL") {
                 const isMe = data.sender === window.currentUser;
                 const isAdmin = data.sender === "ADMINISTRADOR";
-                const senderName = isAdmin ? '👑 ADMIN' : data.sender;
+                const senderName = window.escapeHTML(isAdmin ? '👑 ADMIN' : data.sender);
+                const safeText = window.escapeHTML(data.text);
                 
                 msgsHTML += `
                     <div style="display:flex; flex-direction:column; align-items: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 2px;">
@@ -543,7 +559,7 @@
                         
                         <div style="display:flex; align-items:center; gap:8px; flex-direction: ${isMe ? 'row-reverse' : 'row'};">
                             <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}" style="${isAdmin ? 'background: #f59e0b; color: white;' : ''}">
-                                ${data.text}
+                                ${safeText}
                             </div>
                             ${isMe ? `<span onclick="window.deleteGroupMsg('${docSnap.id}')" style="cursor:pointer; font-size:14px; opacity:0.6;" title="Borrar mensaje">🗑️</span>` : ''}
                         </div>
@@ -573,7 +589,7 @@
     // --- SUBIDA DE POSTS ---
     window.startStudio = function(cat, emoji) {
         window.activeCat = cat;
-        document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + cat;
+        document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + window.escapeHTML(cat);
         const dynamicContainer = document.getElementById('dynamic-fields-container');
         let formHTML = `<input type="text" id="dyn-1" class="rr-field" placeholder="Detalle 1 (Ej: Marca o Talla)">
                         <input type="text" id="dyn-2" class="rr-field" placeholder="Detalle 2 (Ej: Estado)">`;
