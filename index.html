@@ -335,44 +335,18 @@
          window.location.href = 'registro_entrada.html'; 
     }
 
-    
-     const ZONAS = {
-        // --- Tus zonas locales específicas ---
+    const ZONAS = {
         "Huanta": { lat: -12.94, lon: -74.24, r: 0.1 },
         "Huamanga": { lat: -13.15, lon: -74.22, r: 0.1 },
         "La Mar": { lat: -13.01, lon: -73.98, r: 0.15 },
         "Cangallo": { lat: -13.62, lon: -74.13, r: 0.15 },
         "Vilcas Huamán": { lat: -13.65, lon: -73.95, r: 0.15 },
         "Víctor Fajardo": { lat: -13.68, lon: -74.06, r: 0.2 },
-        "VRAEM": { lat: -12.50, lon: -73.80, r: 1.5 },
-        "Huancayo": { lat: -12.06, lon: -75.20, r: 0.2 },
-
-        // --- Regiones de todo el Perú ---
-        "Amazonas": { lat: -6.23, lon: -77.87, r: 1.0 },
-        "Áncash": { lat: -9.53, lon: -77.53, r: 1.0 },
-        "Apurímac": { lat: -13.64, lon: -72.88, r: 0.8 },
-        "Arequipa": { lat: -16.40, lon: -71.53, r: 1.0 },
-        "Ayacucho (Región)": { lat: -14.16, lon: -73.80, r: 1.0 },
-        "Cajamarca": { lat: -7.16, lon: -78.51, r: 1.0 },
-        "Callao": { lat: -12.06, lon: -77.12, r: 0.2 },
-        "Cusco": { lat: -13.53, lon: -71.96, r: 1.0 },
-        "Huancavelica": { lat: -12.79, lon: -74.97, r: 0.8 },
-        "Huánuco": { lat: -9.93, lon: -76.24, r: 0.8 },
-        "Ica": { lat: -14.06, lon: -75.73, r: 0.8 },
-        "Junín": { lat: -11.15, lon: -75.99, r: 1.0 },
-        "La Libertad": { lat: -8.11, lon: -79.03, r: 1.0 },
-        "Lambayeque": { lat: -6.77, lon: -79.84, r: 0.8 },
-        "Lima": { lat: -11.80, lon: -76.50, r: 1.5 },
-        "Loreto": { lat: -4.00, lon: -74.00, r: 2.5 }, // Radio inmenso para abarcar la selva norte
-        "Madre de Dios": { lat: -12.60, lon: -69.17, r: 1.5 },
-        "Moquegua": { lat: -17.20, lon: -70.93, r: 0.8 },
-        "Pasco": { lat: -10.67, lon: -76.26, r: 0.8 },
-        "Piura": { lat: -5.20, lon: -80.63, r: 1.0 },
-        "Puno": { lat: -15.84, lon: -70.02, r: 1.0 },
-        "San Martín": { lat: -6.48, lon: -76.36, r: 1.0 },
-        "Tacna": { lat: -18.01, lon: -70.25, r: 0.5 },
-        "Tumbes": { lat: -3.57, lon: -80.46, r: 0.5 },
-        "Ucayali": { lat: -8.38, lon: -74.53, r: 1.5 }
+        "VRAEM": { lat: -12.50, lon: -73.80, r: 0.15 },
+        "Lima": { lat: -12.04, lon: -77.03, r: 0.3 },
+        "Cusco": { lat: -13.53, lon: -71.96, r: 0.2 },
+        "Arequipa": { lat: -16.40, lon: -71.53, r: 0.2 },
+        "Huancayo": { lat: -12.06, lon: -75.20, r: 0.2 }
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
