@@ -48,17 +48,6 @@
         }
         @keyframes rotate3d { 0%, 100% { transform: perspective(500px) rotateY(0deg); } 50% { transform: perspective(500px) rotateY(30deg); } }
 
-        /* BOTÓN DE CHAT PRIVADO EXTERNO */
-        .btn-mensajes-privados {
-            position: fixed; right: 20px; bottom: 120px; background: white; padding: 12px 20px;
-            border-radius: 30px; box-shadow: var(--premium-shadow); display: flex; align-items: center; gap: 10px;
-            text-decoration: none; color: var(--oscuro); font-weight: 800; font-size: 14px; z-index: 2500;
-            border: 2px solid var(--azul-glow); transition: 0.3s;
-        }
-        .btn-mensajes-privados:active { transform: scale(0.9); }
-        .dot-online { width: 10px; height: 10px; background: var(--azul); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
-
         /* --- BÚSQUEDA Y FILTROS --- */
         .search-container { padding: 0 20px; margin-top: 15px; }
         .search-wrapper { position: relative; display: flex; align-items: center; }
@@ -75,7 +64,7 @@
         .active-city { opacity: 1; border-color: var(--azul); }
 
         /* --- VISTAS --- */
-        .view { display: none; padding: 0; animation: slideUp 0.5s ease; } /* padding ajustado para limpieza */
+        .view { display: none; padding: 0; animation: slideUp 0.5s ease; }
         .view-active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -139,7 +128,7 @@
         .btn-contact-mini:active { transform: scale(0.95); }
 
         /* --- STUDIO SUBIDA --- */
-        .view-padding-inner { padding: 0 20px; } /* Clase auxiliar para mantener padding en vistas */
+        .view-padding-inner { padding: 0 20px; }
         .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
         .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
         .cat-btn { background: rgba(255,255,255,0.07); padding: 20px 10px; border-radius: 25px; cursor: pointer; font-size: 10px; font-weight: 800; transition: 0.2s;}
@@ -159,7 +148,7 @@
         .chat-box-ui { 
             background: #e8f0fe; 
             border-radius: 35px; 
-            height: calc(100vh - 210px); /* Optimizado para verse como WhatsApp ocupando el espacio libre */
+            height: calc(100vh - 210px); 
             display: flex; 
             flex-direction: column; 
             box-shadow: var(--premium-shadow); 
@@ -168,17 +157,21 @@
             margin: 10px 20px 0 20px;
         }
         
+        /* CABECERA CON ESPACIO PARA FOTO DEL GRUPO (PEDIDO EXTRA) */
         .chat-header-pro {
             background: linear-gradient(135deg, var(--azul), #1e40af);
-            padding: 20px;
+            padding: 15px 20px;
             color: white;
-            text-align: center;
             box-shadow: 0 4px 15px rgba(37,99,235,0.2);
             position: relative;
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
         .chat-header-pro h2 { margin: 0; font-weight: 900; font-size: 20px; letter-spacing: 0.5px; }
-        .chat-subtitle { display: block; font-size: 11px; opacity: 0.8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
+        .chat-subtitle { display: block; font-size: 11px; opacity: 0.8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
         .msg-area { flex: 1; padding: 20px 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         
@@ -213,11 +206,6 @@
     <div class="gps-loader" id="gps-loader"></div>
     <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--azul);">Iniciando satélites...</p>
 </div>
-
-<a href="chat_privado.html" class="btn-mensajes-privados">
-    <span class="dot-online"></span>
-    💬 MIS CHATS
-</a>
 
 <header class="header">
     <div style="display:flex; align-items:center; gap:18px;">
@@ -292,8 +280,11 @@
 <section id="view-chat" class="view">
     <div class="chat-box-ui">
         <div class="chat-header-pro">
-            <h2 id="zone-chat-label">SALA REGIONAL</h2>
-            <span class="chat-subtitle">📍 Comunidad Activa • Auto-Limpieza 24H</span>
+            <img id="group-profile-pic" src="https://via.placeholder.com/100/2563eb/ffffff?text=R%26R" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" alt="Foto del Grupo">
+            <div style="text-align: left;">
+                <h2 id="zone-chat-label">SALA REGIONAL</h2>
+                <span class="chat-subtitle">📍 Comunidad Activa • Auto-Limpieza 24H</span>
+            </div>
         </div>
         
         <div class="msg-area" id="group-msgs"></div>
@@ -312,7 +303,6 @@
 </nav>
 
 <script type="module">
-    // MEJORA: Función para limpiar texto y evitar Hackeos por Inyección HTML (XSS)
     window.escapeHTML = function(str) {
         if (typeof str !== 'string') return '';
         return str.replace(/[&<>'"]/g, tag => ({
@@ -326,11 +316,9 @@
     window.selectedCityFilter = "Todas";
     window.adminClicks = 0;
     
-    // --- CONEXIÓN REAL-TIME CON EL PERFIL DE REGISTRO ---
     window.currentUser = localStorage.getItem('rantiy_userName'); 
     window.currentPhone = localStorage.getItem('rantiy_userPhone') || "000000000";
 
-    // Bloqueo de seguridad si no hay perfil
     if (!window.currentUser) {
          window.location.href = 'registro_entrada.html'; 
     }
@@ -367,7 +355,6 @@
     window.dbLocal = { contacts: [], inventory: [] };
     window.tempProdImg = "";
 
-    // --- MODO DIOS ---
     window.checkAdminAccess = function() {
         window.adminClicks++;
         if(window.adminClicks >= 5) {
@@ -455,7 +442,6 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
         if(t === 'home') window.renderFeed();
-        // Optimización visual extra: Scrollear hacia abajo si entra al chat
         if(t === 'chat') {
             setTimeout(() => {
                 const box = document.getElementById('group-msgs');
@@ -464,12 +450,18 @@
         }
     }
 
+    // --- ENRUTAMIENTO WHATSAPP DIRECTO ---
     window.irAChatPrivado = function(nombre, telefono) {
         if(nombre === window.currentUser) {
-            alert("No puedes chatear contigo mismo.");
+            alert("Esta es tu propia publicación. ¡No puedes contactarte a ti mismo! 😅");
             return;
         }
-        window.location.href = `chat_privado.html?name=${encodeURIComponent(nombre)}&phone=${encodeURIComponent(telefono)}`;
+        let telLimpio = telefono.replace(/\D/g, '');
+        if(telLimpio.length === 9) {
+            telLimpio = "51" + telLimpio;
+        }
+        const mensaje = encodeURIComponent(`¡Hola ${nombre}! Vi tu publicación en Rantiy y Rantikuy y estoy interesado.`);
+        window.open(`https://wa.me/${telLimpio}?text=${mensaje}`, '_blank');
     }
 
     window.filterByCat = function(cat, el) {
@@ -499,7 +491,6 @@
         }
     }
 
-    // --- RENDERIZADO VITRINA ---
     window.renderFeed = function() {
         const container = document.getElementById('feed-container');
         if(!container) return;
@@ -542,7 +533,7 @@
         }).join('');
     }
 
-    // --- RENDERIZADO CHAT GRUPAL ---
+    // --- CHAT GRUPAL REALTIME (SIN JODER NADA, SOLO AÑADIDO LINK A WHATSAPP) ---
     const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"));
     onSnapshot(qChat, (snapshot) => {
         const box = document.getElementById('group-msgs');
@@ -563,10 +554,11 @@
                 const isAdmin = data.sender === "ADMINISTRADOR";
                 const senderName = window.escapeHTML(isAdmin ? '👑 ADMIN' : data.sender);
                 const safeText = window.escapeHTML(data.text);
+                const safePhone = window.escapeHTML(data.phone || '000000000'); 
                 
                 msgsHTML += `
                     <div style="display:flex; flex-direction:column; align-items: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 2px;">
-                        ${!isMe ? `<span style="font-size:11px; color:#64748b; margin-bottom:4px; margin-left:12px; font-weight:700;">${senderName}</span>` : ''}
+                        ${!isMe ? `<span onclick="window.irAChatPrivado('${senderName}', '${safePhone}')" style="font-size:11px; color:#25D366; margin-bottom:4px; margin-left:12px; font-weight:700; cursor:pointer;" title="Contactar por WhatsApp">💬 ${senderName}</span>` : ''}
                         
                         <div style="display:flex; align-items:center; gap:8px; flex-direction: ${isMe ? 'row-reverse' : 'row'};">
                             <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}" style="${isAdmin ? 'background: #f59e0b; color: white;' : ''}">
@@ -597,7 +589,6 @@
         } catch(e) { alert("Error al enviar."); }
     }
 
-    // --- SUBIDA DE POSTS ---
     window.startStudio = function(cat, emoji) {
         window.activeCat = cat;
         document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + window.escapeHTML(cat);
