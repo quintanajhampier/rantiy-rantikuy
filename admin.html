@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control - Modo Dios</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="seguridad/firewall.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background-color: #0f172a; color: white; display: flex; height: 100vh; overflow: hidden;}
         
         /* Sidebar */
-        .sidebar { width: 250px; background-color: #1e293b; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #334155; }
+        .sidebar { width: 250px; background-color: #1e293b; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #334155; z-index: 10; }
         .logo-admin { background: linear-gradient(135deg, #22c55e, #15803d); padding: 15px; border-radius: 15px; text-align: center; font-weight: 900; font-size: 20px; margin-bottom: 30px; letter-spacing: 1px; }
         .nav-btn { background: none; border: none; color: #cbd5e1; text-align: left; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-bottom: 10px; transition: 0.3s;}
         .nav-btn:hover, .nav-btn.active { background: #334155; color: white; }
@@ -17,6 +18,8 @@
 
         /* Main Content */
         .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .seccion-admin { display: none; } /* Ocultar secciones por defecto */
+        .seccion-admin.activa { display: block; }
         h1 { margin-top: 0; font-weight: 800; border-bottom: 2px solid #334155; padding-bottom: 10px; }
         
         /* Tablas */
@@ -25,61 +28,107 @@
         th { background-color: #0f172a; color: #94a3b8; font-size: 12px; text-transform: uppercase; }
         td { font-size: 14px; }
         
-        .btn-action { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .btn-action { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; text-decoration: none; display: inline-block;}
         .btn-delete { background: #fee2e2; color: #ef4444; }
-        .btn-ban { background: #fef3c7; color: #d97706; margin-left: 5px; }
+        .btn-contact { background: #dcfce7; color: #16a34a; margin-right: 5px; }
 
         .stat-cards { display: flex; gap: 20px; margin-bottom: 30px; }
         .card { background: #1e293b; padding: 20px; border-radius: 15px; flex: 1; border: 1px solid #334155; }
         .card h3 { margin: 0; color: #94a3b8; font-size: 14px; }
         .card .number { font-size: 30px; font-weight: 900; color: #22c55e; margin-top: 10px; }
+
+        /* Formularios internos */
+        .form-box { background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 20px;}
+        .form-box input, .form-box textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius: 5px; border: none; background: #0f172a; color: white; margin-bottom: 10px;}
+        .btn-submit { background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;}
     </style>
 </head>
 <body>
 
     <script>
+        // Doble verificación de seguridad
         if (localStorage.getItem('admin_session') !== "ADMIN_SUPREMO") {
-            window.location.href = 'index.html'; // Lo expulsa si no es admin
+            window.location.href = 'index.html'; 
         }
     </script>
 
     <div class="sidebar">
         <div class="logo-admin">PANEL R&R</div>
-        <button class="nav-btn active">📊 Vitrina (Posts)</button>
+        <button class="nav-btn active" onclick="cambiarTab('vitrina', this)">📊 Vitrina (Posts)</button>
+        <button class="nav-btn" onclick="cambiarTab('mensajes', this)">📢 Mensaje Global</button>
+        <button class="nav-btn" onclick="cambiarTab('grupos', this)">🖼️ Fotos de Grupos</button>
+        <button class="nav-btn" onclick="cambiarTab('baneos', this)">🔨 Moderación (Baneos)</button>
         <button class="nav-btn btn-logout" onclick="cerrarSesionAdmin()">🚪 Salir del Panel</button>
     </div>
 
     <div class="main-content">
         <h1>Centro de Control Global</h1>
         
-        <div class="stat-cards">
-            <div class="card">
-                <h3>Total Publicaciones Activas</h3>
-                <div class="number" id="stat-posts">0</div>
+        <div id="tab-vitrina" class="seccion-admin activa">
+            <div class="stat-cards">
+                <div class="card">
+                    <h3>Total Publicaciones Activas</h3>
+                    <div class="number" id="stat-posts">0</div>
+                </div>
+            </div>
+            <h3>Gestión de Publicaciones</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Vendedor</th>
+                        <th>Producto</th>
+                        <th>Zona</th>
+                        <th>Fecha</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-posts">
+                    <tr><td colspan="6" style="text-align: center;">Cargando base de datos...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="tab-mensajes" class="seccion-admin">
+            <div class="form-box">
+                <h3>📢 Difusión Global a todos los Grupos</h3>
+                <p style="font-size: 13px; color: #94a3b8;">Este mensaje aparecerá en TODAS las salas de chat como un anuncio oficial.</p>
+                <textarea id="msg-global" rows="4" placeholder="Escribe el anuncio oficial aquí..."></textarea>
+                <button class="btn-submit" onclick="enviarMensajeMasivo()">Enviar a todas las salas 🚀</button>
             </div>
         </div>
 
-        <h3>Gestión de Publicaciones</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Foto</th>
-                    <th>Vendedor</th>
-                    <th>Producto</th>
-                    <th>Zona</th>
-                    <th>Fecha</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="tabla-posts">
-                <tr><td colspan="6" style="text-align: center;">Cargando base de datos...</td></tr>
-            </tbody>
-        </table>
+        <div id="tab-grupos" class="seccion-admin">
+            <div class="form-box">
+                <h3>🖼️ Cambiar Foto de un Grupo</h3>
+                <input type="text" id="grupo-nombre" placeholder="Nombre de la zona (Ej: HUANCAYO)">
+                <input type="text" id="grupo-foto" placeholder="URL de la imagen (Link)">
+                <button class="btn-submit" onclick="actualizarFotoGrupo()">Actualizar Foto</button>
+            </div>
+            <div id="lista-grupos" style="margin-top: 20px;">
+                </div>
+        </div>
+
+        <div id="tab-baneos" class="seccion-admin">
+            <div class="form-box">
+                <h3>🔨 Añadir a la Lista Negra</h3>
+                <p style="font-size: 13px; color: #ef4444;">El usuario bloqueado no podrá entrar a la app.</p>
+                <input type="number" id="ban-phone" placeholder="Número de Celular del usuario">
+                <input type="text" id="ban-motivo" placeholder="Motivo del baneo (Opcional)">
+                <button class="btn-submit" style="background: #ef4444;" onclick="banearUsuario()">Bloquear Usuario</button>
+            </div>
+            <h3>Usuarios Baneados</h3>
+            <table>
+                <thead><tr><th>Celular</th><th>Motivo</th><th>Acción</th></tr></thead>
+                <tbody id="tabla-baneos"></tbody>
+            </table>
+        </div>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, deleteDoc, orderBy, query, addDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
@@ -93,22 +142,30 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Cargar Publicaciones
+        // --- SISTEMA DE PESTAÑAS ---
+        window.cambiarTab = function(tabId, elemento) {
+            document.querySelectorAll('.seccion-admin').forEach(s => s.classList.remove('activa'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('activa');
+            elemento.classList.add('active');
+        }
+
+        // --- CARGAR VITRINA ---
         const qPosts = query(collection(db, "inventory"), orderBy("timestamp", "desc"));
         onSnapshot(qPosts, (snapshot) => {
             const tbody = document.getElementById('tabla-posts');
             document.getElementById('stat-posts').innerText = snapshot.size;
-            
             if (snapshot.empty) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay publicaciones en el sistema.</td></tr>';
-                return;
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay publicaciones.</td></tr>'; return;
             }
-
             let html = '';
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
                 const fecha = new Date(data.timestamp).toLocaleDateString();
                 const imgSrc = (data.img && data.img.startsWith('data:image')) ? data.img : 'https://via.placeholder.com/50';
+                
+                // Prefijo +51 asumiendo Perú, ajústalo si es necesario
+                const wsLink = `https://wa.me/51${data.sellerPhone}`; 
 
                 html += `
                 <tr>
@@ -118,17 +175,89 @@
                     <td>${data.loc}</td>
                     <td>${fecha}</td>
                     <td>
-                        <button class="btn-action btn-delete" onclick="window.borrarPost('${docSnap.id}')">Eliminar</button>
+                        <a href="${wsLink}" target="_blank" class="btn-action btn-contact">WhatsApp</a>
+                        <button class="btn-action btn-delete" onclick="window.borrarPost('${docSnap.id}')">Borrar</button>
                     </td>
                 </tr>`;
             });
             tbody.innerHTML = html;
         });
 
-        // Funciones Globales del Admin
+        // --- FUNCIONES DEL ADMINISTRADOR ---
         window.borrarPost = async function(id) {
-            if(confirm("¿Estás seguro de que quieres eliminar esta publicación permanentemente?")) {
+            if(confirm("¿Eliminar publicación permanentemente?")) {
                 await deleteDoc(doc(db, "inventory", id));
+            }
+        };
+
+        window.enviarMensajeMasivo = async function() {
+            const texto = document.getElementById('msg-global').value;
+            if(!texto) return alert("Escribe un mensaje");
+            
+            try {
+                await addDoc(collection(db, "chats_zonas"), {
+                    sender: "ADMINISTRADOR",
+                    text: texto,
+                    zone: "GLOBAL", // Tu código de index.html ya detecta la zona GLOBAL
+                    timestamp: Date.now()
+                });
+                alert("Mensaje enviado a todos los grupos.");
+                document.getElementById('msg-global').value = '';
+            } catch(e) { alert("Error al enviar."); }
+        };
+
+        window.actualizarFotoGrupo = async function() {
+            const zona = document.getElementById('grupo-nombre').value.toUpperCase();
+            const urlFoto = document.getElementById('grupo-foto').value;
+            if(!zona || !urlFoto) return alert("Llena ambos campos");
+
+            try {
+                // Guardamos la foto en una colección de metadatos de grupos
+                await setDoc(doc(db, "zonas_metadata", zona), {
+                    fotoUrl: urlFoto,
+                    actualizado: Date.now()
+                });
+                alert(`Foto actualizada para la sala ${zona}`);
+            } catch(e) { alert("Error al guardar la foto."); }
+        };
+
+        window.banearUsuario = async function() {
+            const phone = document.getElementById('ban-phone').value;
+            const motivo = document.getElementById('ban-motivo').value || "Infracción de normas";
+            if(!phone) return alert("Ingresa un número de celular");
+
+            try {
+                await setDoc(doc(db, "usuarios_baneados", phone), {
+                    phone: phone,
+                    motivo: motivo,
+                    fecha: Date.now()
+                });
+                alert("Usuario bloqueado.");
+                document.getElementById('ban-phone').value = '';
+                document.getElementById('ban-motivo').value = '';
+            } catch(e) { alert("Error al banear."); }
+        };
+
+        // --- CARGAR USUARIOS BANEADOS ---
+        onSnapshot(collection(db, "usuarios_baneados"), (snapshot) => {
+            const tbody = document.getElementById('tabla-baneos');
+            if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="3">No hay baneados.</td></tr>'; return; }
+            let html = '';
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                html += `
+                <tr>
+                    <td>${data.phone}</td>
+                    <td>${data.motivo}</td>
+                    <td><button class="btn-action btn-contact" onclick="window.desbanearUsuario('${docSnap.id}')">Perdonar (Desbanear)</button></td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        });
+
+        window.desbanearUsuario = async function(id) {
+            if(confirm("¿Quitar de la lista negra?")) {
+                await deleteDoc(doc(db, "usuarios_baneados", id));
             }
         };
 
