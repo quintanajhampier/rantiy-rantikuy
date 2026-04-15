@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rantiy y Rantikuy - Vitrina</title>
     
     <meta property="og:title" content="Rantiy y Rantikuy">
     <meta property="og:description" content="Tu mercado y comunidad local. Compra, vende y chatea.">
     <meta property="og:type" content="website">
+
+    <script src="seguridad/firewall.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,10 +19,8 @@
     
     <style>
         :root {
-            /* Colores Base */
             --azul: #2563eb; --azul-glow: #dbeafe;
             --naranja: #f97316; --oscuro: #1e293b;
-            --chat-green: #dcf8c6;
             --glass: rgba(255, 255, 255, 0.96);
             --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
@@ -34,124 +34,128 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- HEADER --- */
-        .header {
-            background: var(--glass); backdrop-filter: blur(25px); padding: 18px 25px;
-            display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .logo-rr {
-            width: 62px; height: 62px; background: linear-gradient(135deg, var(--azul), #1e40af);
-            border-radius: 22px; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 900; font-size: 24px; cursor: pointer;
-            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
-        }
+        .header { background: var(--glass); backdrop-filter: blur(25px); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .logo-rr { width: 50px; height: 50px; background: linear-gradient(135deg, var(--azul), #1e40af); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 20px; cursor: pointer; }
 
         /* --- BÚSQUEDA Y FILTROS --- */
         .search-container { padding: 0 20px; margin-top: 15px; }
         .search-wrapper { position: relative; display: flex; align-items: center; }
-        .search-input { width: 100%; padding: 15px 25px 15px 55px; border-radius: 25px; border: none; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.03); font-weight: 700; }
-        .search-icon { position: absolute; left: 20px; font-size: 20px; }
+        .search-input { width: 100%; padding: 12px 20px 12px 45px; border-radius: 20px; border: none; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.03); font-weight: 600; font-size: 14px;}
+        .search-icon { position: absolute; left: 15px; font-size: 18px; }
 
-        .filter-bar { padding: 15px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
-        .filter-chip { padding: 10px 20px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
+        .filter-bar { padding: 12px 20px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+        .filter-chip { padding: 8px 16px; background: white; border-radius: 15px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
         .filter-active { background: var(--azul-glow); border-color: var(--azul); color: var(--azul); }
 
         /* --- CIUDADES --- */
-        .city-bar { padding: 10px 20px 20px 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
-        .city-card { background: white; min-width: max-content; padding: 10px 20px; border-radius: 20px; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.7; transition: 0.3s; }
+        .city-bar { padding: 5px 20px 15px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+        .city-card { background: white; min-width: max-content; padding: 8px 15px; border-radius: 15px; display: flex; align-items: center; gap: 6px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); cursor: pointer; border: 2px solid transparent; opacity: 0.7; transition: 0.3s; }
         .active-city { opacity: 1; border-color: var(--azul); }
 
         /* --- VISTAS --- */
-        .view { display: none; padding: 0; animation: slideUp 0.4s ease; flex: 1; overflow-y: auto; }
+        .view { display: none; padding: 0; animation: slideUp 0.3s ease; flex: 1; overflow-y: auto; }
         .view-active { display: flex; flex-direction: column; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- VITRINA / CARDS --- */
-        #feed-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 20px 20px 20px; }
-        .post-card { background: white; border-radius: 15px; padding: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; justify-content: space-between; }
-        .post-card-img-wrapper { width: 100%; height: 100px; border-radius: 10px; overflow: hidden; margin-bottom: 8px; background: #f1f5f9; }
+        #feed-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 20px 20px 20px; }
+        .post-card { background: white; border-radius: 12px; padding: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        .post-card-img-wrapper { width: 100%; height: 90px; border-radius: 8px; overflow: hidden; margin-bottom: 6px; background: #f1f5f9; }
         .post-card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        .post-card-title { font-size: 11px; font-weight: 800; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .post-card-price { color: var(--azul); font-weight: 900; font-size: 13px; margin-bottom: 8px; }
-        .btn-contact-mini { background: var(--oscuro); color: white; border: none; padding: 8px; border-radius: 10px; font-weight: 800; font-size: 10px; width: 100%; cursor: pointer; transition: 0.2s; }
-        .btn-contact-mini:active { transform: scale(0.95); }
-        .load-more-btn { background: var(--azul-glow); color: var(--azul); border: none; padding: 15px; border-radius: 20px; font-weight: 800; font-size: 12px; margin: 0 20px 30px 20px; cursor: pointer; display: none; }
+        .post-card-title { font-size: 10px; font-weight: 800; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .post-card-price { color: var(--azul); font-weight: 900; font-size: 12px; margin-bottom: 6px; }
+        .btn-contact-mini { background: var(--oscuro); color: white; border: none; padding: 6px; border-radius: 8px; font-weight: 800; font-size: 10px; width: 100%; cursor: pointer; }
+        .load-more-btn { background: var(--azul-glow); color: var(--azul); border: none; padding: 12px; border-radius: 15px; font-weight: 800; font-size: 12px; margin: 0 20px 20px 20px; cursor: pointer; display: none; }
 
         /* --- STUDIO SUBIDA --- */
         .view-padding-inner { padding: 0 20px 30px 20px; }
-        .camera-hub { background: var(--oscuro); border-radius: 35px; padding: 40px 20px; color: white; text-align: center; margin-top: 10px; }
-        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 25px; }
-        .cat-btn { background: rgba(255,255,255,0.07); padding: 15px 10px; border-radius: 20px; cursor: pointer; font-size: 10px; font-weight: 800; transition: 0.2s;}
+        .camera-hub { background: var(--oscuro); border-radius: 25px; padding: 30px 15px; color: white; text-align: center; margin-top: 10px; }
+        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .cat-btn { background: rgba(255,255,255,0.07); padding: 12px 5px; border-radius: 15px; cursor: pointer; font-size: 10px; font-weight: 800; transition: 0.2s;}
         .cat-btn:active { background: var(--azul); }
         
-        #upload-studio { background: white; border-radius: 35px; padding: 25px; margin-top: 15px; display: none; box-shadow: var(--premium-shadow); }
-        .rr-field { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; font-size: 13px; }
+        #upload-studio { background: white; border-radius: 25px; padding: 20px; margin-top: 15px; display: none; box-shadow: var(--premium-shadow); }
+        .rr-field { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 10px; font-size: 12px; }
         .rr-field:focus { border-color: var(--azul); }
-        .form-section-title { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
+        .form-section-title { font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 6px; text-transform: uppercase; }
         
-        .file-upload-wrapper { position: relative; width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 20px; display: flex; align-items: center; justify-content: center; background: #f8fafc; margin-bottom: 15px; cursor: pointer; overflow: hidden; }
+        .file-upload-wrapper { position: relative; width: 100%; height: 100px; border: 2px dashed #cbd5e1; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: #f8fafc; margin-bottom: 15px; cursor: pointer; overflow: hidden; }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .file-upload-text { color: #64748b; font-weight: 800; font-size: 14px; pointer-events: none; z-index: 1; }
+        .file-upload-text { color: #64748b; font-weight: 800; font-size: 12px; pointer-events: none; z-index: 1; }
         #img-preview { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-size: cover; background-position: center; display: none; z-index: 2; }
 
-        /* --- SISTEMA DE CHATS (OPTIMIZADO WHATSAPP STYLE) --- */
-        #view-chat { display: none; flex-direction: column; height: 100%; overflow: hidden; padding: 0; }
+        /* --- CHAT ESTILO WHATSAPP (COMPACTO Y PROFESIONAL) --- */
+        #view-chat { display: none; flex-direction: column; height: 100%; overflow: hidden; padding: 0; background-color: #efeae2; /* Color de fondo WhatsApp */ }
         #view-chat.view-active { display: flex; }
-        .chat-box-ui { flex: 1; display: flex; flex-direction: column; background: #e8f0fe; position: relative; }
+        .chat-box-ui { flex: 1; display: flex; flex-direction: column; position: relative; height: 100%; }
         
-        .chat-header-pro { background: linear-gradient(135deg, var(--azul), #1e40af); padding: 12px 20px; color: white; display: flex; align-items: center; gap: 15px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .chat-header-pro h2 { margin: 0; font-weight: 900; font-size: 18px; }
-        .chat-subtitle { font-size: 10px; opacity: 0.8; font-weight: 700; text-transform: uppercase; }
+        .chat-header-pro { background: #075e54; /* Verde WhatsApp oscuro */ padding: 10px 15px; color: white; display: flex; align-items: center; gap: 12px; z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .chat-header-pro h2 { margin: 0; font-weight: 600; font-size: 16px; font-family: Arial, sans-serif; }
+        .chat-subtitle { font-size: 11px; opacity: 0.9; font-weight: 400; font-family: Arial, sans-serif; }
 
-        /* Corrección de mensajes deformados */
-        .msg-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
-        .bubble-wrapper { display: flex; flex-direction: column; max-width: 85%; }
-        .bubble-wrapper.me { align-self: flex-end; align-items: flex-end; }
-        .bubble-wrapper.other { align-self: flex-start; align-items: flex-start; }
+        /* Área de mensajes compacta */
+        .msg-area { flex: 1; padding: 10px 5%; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; scroll-behavior: smooth; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: contain; background-blend-mode: multiply; }
         
+        .bubble-wrapper { display: flex; flex-direction: column; width: 100%; margin-bottom: 2px; }
+        .bubble-wrapper.me { align-items: flex-end; }
+        .bubble-wrapper.other { align-items: flex-start; }
+        
+        /* Burbujas tipo WhatsApp */
         .bubble { 
-            padding: 10px 14px; 
-            border-radius: 18px; 
-            font-size: 14px; 
-            font-weight: 500; 
-            line-height: 1.4;
-            word-wrap: break-word; /* Rompe palabras largas si es necesario */
-            word-break: normal; /* Evita que las letras se separen verticalmente */
-            white-space: pre-wrap; /* Respeta saltos de línea */
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            display: inline-block;
-            min-width: 40px;
-            text-align: left;
+            position: relative;
+            padding: 6px 7px 8px 9px; 
+            border-radius: 8px; 
+            max-width: 80%; 
+            font-size: 14.2px; 
+            line-height: 19px; 
+            color: #111b21;
+            box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
+            font-family: Arial, sans-serif;
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
-        .bubble-in { background: white; color: #1e293b; border-top-left-radius: 4px; }
-        .bubble-out { background: var(--chat-green); color: #1e293b; border-top-right-radius: 4px; }
+        .bubble-in { background: #ffffff; border-top-left-radius: 0; }
+        .bubble-out { background: #d9fdd3; border-top-right-radius: 0; }
         
-        .chat-input-area { padding: 10px 15px; background: white; display: flex; gap: 10px; border-top: 1px solid #e2e8f0; align-items: center; margin-bottom: 80px; /* Espacio para el nav */ }
-        .chat-input-area input { flex: 1; border: 1px solid #cbd5e1; border-radius: 25px; padding: 12px 18px; font-size: 14px; margin: 0; }
-        .chat-input-area button { background: var(--azul); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 10px rgba(37,99,235,0.3); }
+        .sender-name { font-size: 12.8px; font-weight: 600; margin-bottom: 2px; display: block; cursor: pointer; }
+        /* Colores aleatorios para nombres tipo WP */
+        .c1 { color: #35cd96; } .c2 { color: #6bcbef; } .c3 { color: #e542a3; } .c4 { color: #91ab01; } .c5 { color: #ffa925; }
+
+        .msg-time { font-size: 11px; color: #667781; float: right; margin: 10px 0 -5px 10px; }
+        .chat-img-attachment { width: 100%; max-width: 250px; border-radius: 6px; margin-bottom: 4px; display: block; }
+        
+        /* Input area estilo WhatsApp */
+        .chat-input-area { padding: 8px 10px; background: #f0f2f5; display: flex; gap: 8px; align-items: flex-end; margin-bottom: 75px; }
+        .chat-input-wrapper { flex: 1; background: white; border-radius: 20px; display: flex; align-items: flex-end; padding: 2px; box-shadow: 0 1px 1px rgba(0,0,0,0.05); }
+        
+        /* Botón de clip para fotos */
+        .btn-clip { background: none; border: none; font-size: 20px; padding: 8px 12px; color: #54656f; cursor: pointer; }
+        
+        .chat-input-area input[type="text"] { flex: 1; border: none; padding: 10px 5px; font-size: 15px; background: transparent; font-family: Arial, sans-serif; }
+        .chat-input-area .btn-send { background: #00a884; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.2); margin-bottom: 2px;}
 
         /* --- NAV ISLAND --- */
-        .nav-island { position: fixed; bottom: 20px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 40px; display: flex; justify-content: space-around; padding: 15px; z-index: 3000; box-shadow: var(--premium-shadow); }
-        .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; padding: 5px 10px; border-radius: 15px; transition: 0.3s; }
+        .nav-island { position: fixed; bottom: 15px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 30px; display: flex; justify-content: space-around; padding: 10px; z-index: 3000; box-shadow: var(--premium-shadow); }
+        .nav-btn { color: #64748b; text-align: center; font-size: 9px; font-weight: 800; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.3s; }
         .nav-btn.active { color: white; background: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
 <div id="gps-screen">
-    <div class="logo-rr" style="width:100px; height:100px; font-size:40px; margin-bottom:20px;">R&R</div>
-    <h1 style="font-weight:900; margin-bottom:5px;">Rantiy y Rantikuy</h1>
-    <p style="opacity:0.6; margin-bottom:30px;">Detectando tu ubicación real en el mapa...</p>
+    <div class="logo-rr" style="width:80px; height:80px; font-size:30px; margin-bottom:20px;">R&R</div>
+    <h1 style="font-weight:900; margin-bottom:5px; font-size: 22px;">Rantiy y Rantikuy</h1>
+    <p style="opacity:0.6; margin-bottom:30px; font-size: 14px;">Detectando tu ubicación...</p>
     <div class="gps-loader" id="gps-loader"></div>
-    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--azul);">Iniciando satélites...</p>
+    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--azul); font-size: 12px;">Iniciando satélites...</p>
 </div>
 
 <header class="header">
-    <div style="display:flex; align-items:center; gap:15px;">
+    <div style="display:flex; align-items:center; gap:12px;">
         <div class="logo-rr" onclick="window.checkAdminAccess()">R&R</div>
         <div>
-            <div style="font-weight: 900; font-size: 18px;">Rantiy y Rantikuy</div>
-            <div id="user-tag" style="font-size: 10px; color: var(--azul); font-weight: 800;">CIUDADANO: CARGANDO...</div>
+            <div style="font-weight: 900; font-size: 16px;">Rantiy y Rantikuy</div>
+            <div id="user-tag" style="font-size: 9px; color: var(--azul); font-weight: 800;">CIUDADANO: CARGANDO...</div>
         </div>
     </div>
 </header>
@@ -181,8 +185,8 @@
 <section id="view-camera" class="view">
     <div class="view-padding-inner">
         <div class="camera-hub" id="main-hub">
-            <h2 style="font-weight:900; margin-top:0;">Publicar en <span id="current-zone-text">...</span></h2>
-            <p style="font-size: 12px; opacity: 0.8;">Selecciona una categoría para continuar</p>
+            <h2 style="font-weight:900; margin-top:0; font-size: 18px;">Publicar en <span id="current-zone-text">...</span></h2>
+            <p style="font-size: 11px; opacity: 0.8;">Selecciona una categoría</p>
             <div class="category-grid">
                 <div class="cat-btn" onclick="window.startStudio('Venta', '🛍️')">💰<br>VENTA</div>
                 <div class="cat-btn" onclick="window.startStudio('Comida', '🍲')">🥘<br>COMIDA</div>
@@ -194,12 +198,12 @@
         </div>
 
         <div id="upload-studio">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
-                <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px; font-weight:bold; color:var(--oscuro);">✕</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 id="studio-tag" style="margin:0; font-weight:900; font-size: 16px;">Nuevo Post</h3>
+                <button onclick="window.exitStudio()" style="background:none; border:none; font-size:18px; font-weight:bold; color:var(--oscuro);">✕</button>
             </div>
             
-            <div class="form-section-title">1. Sube una imagen (Opcional)</div>
+            <div class="form-section-title">1. Sube una imagen</div>
             <div class="file-upload-wrapper">
                 <span class="file-upload-text">📸 Toca para subir foto</span>
                 <input type="file" id="in-photo" accept="image/*" onchange="window.previewImage(event)">
@@ -210,10 +214,10 @@
             <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces o buscas?">
             <input type="number" id="in-price" class="rr-field" placeholder="Precio en S/ (Opcional)">
 
-            <div class="form-section-title">3. Detalles (Opcionales)</div>
+            <div class="form-section-title">3. Detalles</div>
             <div id="dynamic-fields-container"></div>
 
-            <button onclick="window.uploadToEmpire()" style="width:100%; padding:18px; background:var(--azul); color:white; border:none; border-radius:20px; font-weight:900; margin-top:10px;">PUBLICAR EN RANTIKUY 🚀</button>
+            <button onclick="window.uploadToEmpire()" style="width:100%; padding:15px; background:var(--azul); color:white; border:none; border-radius:15px; font-weight:900; margin-top:10px;">PUBLICAR EN RANTIKUY 🚀</button>
         </div>
     </div>
 </section>
@@ -221,18 +225,22 @@
 <section id="view-chat" class="view">
     <div class="chat-box-ui">
         <div class="chat-header-pro">
-            <img id="group-profile-pic" src="https://via.placeholder.com/100/2563eb/ffffff?text=R%26R" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid white;" alt="Grupo">
+            <img id="group-profile-pic" src="https://via.placeholder.com/100/075e54/ffffff?text=R%26R" style="width: 38px; height: 38px; border-radius: 50%;" alt="Grupo">
             <div>
                 <h2 id="zone-chat-label">SALA REGIONAL</h2>
-                <span class="chat-subtitle">📍 Comunidad Activa • Limpieza 24H</span>
+                <span class="chat-subtitle">Comunidad Rantiy • Limpieza 24H</span>
             </div>
         </div>
         
         <div class="msg-area" id="group-msgs"></div>
         
         <div class="chat-input-area">
-            <input type="text" id="group-input" placeholder="Escribe un mensaje..." autocomplete="off">
-            <button onclick="window.sendGroupMsg()">✈️</button>
+            <div class="chat-input-wrapper">
+                <button class="btn-clip" onclick="document.getElementById('chat-img-upload').click()">📎</button>
+                <input type="file" id="chat-img-upload" accept="image/*" style="display:none;" onchange="window.sendChatImage(event)">
+                <input type="text" id="group-input" placeholder="Mensaje" autocomplete="off">
+            </div>
+            <button class="btn-send" onclick="window.sendGroupMsg()">➤</button>
         </div>
     </div>
 </section>
@@ -250,6 +258,21 @@
             '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
         }[tag] || tag));
     };
+
+    // Función para obtener color aleatorio para nombres estilo wp
+    window.getColorForName = function(name) {
+        let sum = 0;
+        for(let i=0; i<name.length; i++) sum += name.charCodeAt(i);
+        const colors = ['c1', 'c2', 'c3', 'c4', 'c5'];
+        return colors[sum % colors.length];
+    }
+
+    // Función para dar formato a la hora (HH:MM)
+    window.formatTime = function(timestamp) {
+        const d = new Date(timestamp);
+        let h = d.getHours(); let m = d.getMinutes();
+        return (h<10?'0':'') + h + ':' + (m<10?'0':'') + m;
+    }
 
     window.activeLoc = ""; 
     window.activeCat = ""; 
@@ -296,7 +319,7 @@
     window.dbLocal = { inventory: [] };
     window.tempProdImg = "";
     
-    // VARIABLES PARA PAGINACIÓN Y AHORRO DE RECURSOS
+    // SISTEMA DE AHORRO DE RECURSOS INTACTO
     window.postLimit = 15;
     window.feedListener = null;
 
@@ -312,9 +335,8 @@
         }
     }
 
-    // CARGA DE POSTS PAGINADA (Ahorra Firebase)
     window.listenToFeed = function() {
-        if(window.feedListener) window.feedListener(); // Desuscribirse del anterior
+        if(window.feedListener) window.feedListener();
         const q = query(collection(db, "inventory"), orderBy("timestamp", "desc"), limit(window.postLimit));
         window.feedListener = onSnapshot(q, (snapshot) => {
             window.dbLocal.inventory = [];
@@ -425,12 +447,6 @@
             try { await deleteDoc(doc(db, "inventory", id)); } catch(error) { alert("Hubo un error."); }
         }
     }
-    
-    window.deleteGroupMsg = async function(id) {
-        if(confirm('¿Deseas eliminar este mensaje para todos?')) {
-            try { await deleteDoc(doc(db, "chats_zonas", id)); } catch(error) {}
-        }
-    }
 
     window.renderFeed = function() {
         const container = document.getElementById('feed-container');
@@ -458,14 +474,14 @@
                     ${imgSrc ? `<img src="${imgSrc}" loading="lazy">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
                 </div>
                 <h3 class="post-card-title">${safeName}</h3>
-                <div style="font-size: 10px; color: #64748b; margin-bottom: 2px; font-weight: 700;">📍 ${safeLoc}</div>
+                <div style="font-size: 9px; color: #64748b; margin-bottom: 2px; font-weight: 700;">📍 ${safeLoc}</div>
                 <div class="post-card-price">${p.price > 0 ? 'S/ ' + safePrice : 'Consultar'}</div>
                 <button onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')" class="btn-contact-mini">Contactar</button>
             </div>`;
         }).join('');
     }
 
-    // --- CHAT GRUPAL REALTIME (CORREGIDO DEFORMACIONES) ---
+    // --- CHAT GRUPAL REALTIME ESTILO WHATSAPP ---
     const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"), limit(80));
     onSnapshot(qChat, (snapshot) => {
         const box = document.getElementById('group-msgs');
@@ -485,18 +501,25 @@
                 const isMe = data.sender === window.currentUser;
                 const isAdmin = data.sender === "ADMINISTRADOR";
                 const senderName = window.escapeHTML(isAdmin ? '👑 ADMIN' : data.sender);
-                const safeText = window.escapeHTML(data.text);
+                const safeText = window.escapeHTML(data.text || '');
                 const safePhone = window.escapeHTML(data.phone || '000000000'); 
+                const timeStr = window.formatTime(data.timestamp);
+                const nameColor = window.getColorForName(senderName);
                 
+                let contentHTML = '';
+                if(data.img) {
+                    contentHTML += `<img src="${window.escapeHTML(data.img)}" class="chat-img-attachment" loading="lazy">`;
+                }
+                if(safeText) {
+                    contentHTML += `<span>${safeText}</span>`;
+                }
+
                 msgsHTML += `
                     <div class="bubble-wrapper ${isMe ? 'me' : 'other'}">
-                        ${!isMe ? `<span onclick="window.irAChatPrivado('${senderName}', '${safePhone}')" style="font-size:11px; color:#15803d; margin-bottom:2px; margin-left:10px; font-weight:800; cursor:pointer;" title="Contactar">~ ${senderName}</span>` : ''}
-                        
-                        <div style="display:flex; align-items:center; gap:5px; flex-direction: ${isMe ? 'row-reverse' : 'row'};">
-                            <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}" style="${isAdmin ? 'background: #f59e0b; color: white;' : ''}">
-                                ${safeText}
-                            </div>
-                            ${isMe ? `<span onclick="window.deleteGroupMsg('${docSnap.id}')" style="cursor:pointer; font-size:12px; opacity:0.5;" title="Borrar">🗑️</span>` : ''}
+                        <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}">
+                            ${!isMe ? `<span class="sender-name ${nameColor}" onclick="window.irAChatPrivado('${senderName}', '${safePhone}')">~ ${senderName}</span>` : ''}
+                            ${contentHTML}
+                            <span class="msg-time">${timeStr}</span>
                         </div>
                     </div>`;
             }
@@ -505,15 +528,20 @@
         box.scrollTop = box.scrollHeight; 
     });
 
-    window.sendGroupMsg = async function() {
+    window.sendGroupMsg = async function(textOverride = null, imgBase64 = null) {
         const input = document.getElementById('group-input');
-        const text = input.value.trim();
-        if(!text) return;
+        const text = textOverride !== null ? textOverride : input.value.trim();
+        
+        if(!text && !imgBase64) return;
+        
         input.value = ""; input.focus();
         try {
-            await addDoc(collection(db, "chats_zonas"), {
+            let msgData = {
                 zone: window.activeLoc, sender: window.currentUser, phone: window.currentPhone, text: text, timestamp: Date.now()
-            });
+            };
+            if(imgBase64) msgData.img = imgBase64;
+
+            await addDoc(collection(db, "chats_zonas"), msgData);
             setTimeout(() => {
                 const box = document.getElementById('group-msgs');
                 if(box) box.scrollTop = box.scrollHeight;
@@ -521,32 +549,45 @@
         } catch(e) { alert("Error al enviar."); }
     }
 
+    // --- COMPRESIÓN DE FOTOS PARA EL CHAT (AHORRA RECURSOS) ---
+    window.sendChatImage = function(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 400; // Muy comprimida para chat
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                const compressedImg = canvas.toDataURL('image/jpeg', 0.5); 
+                window.sendGroupMsg("", compressedImg); // Enviar sin texto, solo imagen
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        event.target.value = ""; // Resetear input
+    }
+
     // --- FORMULARIOS DINÁMICOS POR CATEGORÍA ---
     window.startStudio = function(cat, emoji) {
         window.activeCat = cat;
-        document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + window.escapeHTML(cat);
+        document.getElementById('studio-tag').innerText = emoji + " " + window.escapeHTML(cat);
         const dynamicContainer = document.getElementById('dynamic-fields-container');
         let formHTML = '';
 
-        if(cat === 'Venta') {
-            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Estado (Ej: Nuevo, Usado 1 mes)">
-                        <input type="text" class="rr-field dyn-input" placeholder="Marca, Talla o Medidas">`;
-        } else if(cat === 'Comida') {
-            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="¿Haces Delivery? (Ej: Sí, a todo Huancayo)">
-                        <input type="text" class="rr-field dyn-input" placeholder="Tiempo de entrega / Horario">`;
-        } else if(cat === 'Taxi') {
-            formHTML = `<input type="number" class="rr-field dyn-input" placeholder="Tu edad (Opcional - da confianza)">
-                        <input type="number" class="rr-field dyn-input" placeholder="DNI (Opcional - da confianza al pasajero)">
-                        <input type="text" class="rr-field dyn-input" placeholder="Modelo del Vehículo (Ej: Yaris Blanco)">`;
-        } else if(cat === 'Empleo') {
-            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Horario de trabajo">
-                        <input type="text" class="rr-field dyn-input" placeholder="Salario aprox. (Ej: S/1200 al mes)">`;
-        } else if(cat === 'Servicio') {
-            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Experiencia (Ej: 3 años arreglando caños)">
-                        <input type="text" class="rr-field dyn-input" placeholder="Disponibilidad (Ej: Lunes a Viernes)">`;
-        } else {
-            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Detalle adicional (Opcional)">`;
-        }
+        if(cat === 'Venta') { formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Estado (Ej: Nuevo, Usado)"><input type="text" class="rr-field dyn-input" placeholder="Marca, Talla o Medidas">`; }
+        else if(cat === 'Comida') { formHTML = `<input type="text" class="rr-field dyn-input" placeholder="¿Haces Delivery?"><input type="text" class="rr-field dyn-input" placeholder="Tiempo de entrega / Horario">`; }
+        else if(cat === 'Taxi') { formHTML = `<input type="number" class="rr-field dyn-input" placeholder="Tu edad (Opcional)"><input type="number" class="rr-field dyn-input" placeholder="DNI (Opcional)"><input type="text" class="rr-field dyn-input" placeholder="Modelo del Vehículo (Ej: Yaris)">`; }
+        else if(cat === 'Empleo') { formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Horario de trabajo"><input type="text" class="rr-field dyn-input" placeholder="Salario aprox.">`; }
+        else if(cat === 'Servicio') { formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Experiencia"><input type="text" class="rr-field dyn-input" placeholder="Disponibilidad">`; }
+        else { formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Detalle adicional">`; }
 
         dynamicContainer.innerHTML = formHTML;
         document.getElementById('main-hub').style.display = 'none';
@@ -562,7 +603,7 @@
         document.getElementById('in-price').value = "";
     }
 
-    // --- COMPRESIÓN DE IMÁGENES (AHORRA BASE DE DATOS) ---
+    // --- COMPRESIÓN DE IMÁGENES VITRINA ---
     window.previewImage = function(event) {
         const file = event.target.files[0];
         if(!file) return;
@@ -572,14 +613,13 @@
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 500; // Reducimos el tamaño para ahorrar en Firebase
+                const MAX_WIDTH = 500; 
                 const scaleSize = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scaleSize;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // Comprime la imagen a JPEG calidad 0.6 (Reduce el peso drásticamente)
                 window.tempProdImg = canvas.toDataURL('image/jpeg', 0.6); 
                 
                 const preview = document.getElementById('img-preview');
@@ -595,9 +635,8 @@
         const title = document.getElementById('in-title').value.trim();
         const price = document.getElementById('in-price').value.trim();
         
-        if(!title) return alert("Por favor ingresa qué estás ofreciendo (Título).");
+        if(!title) return alert("Ingresa un Título.");
         
-        // Recopila los datos dinámicos generados
         let detalles = [];
         document.querySelectorAll('.dyn-input').forEach(input => {
             if(input.value.trim() !== '') detalles.push(input.value.trim());
@@ -606,18 +645,14 @@
         
         try {
             await addDoc(collection(db, "inventory"), {
-                name: title, price: price || "0", loc: window.activeLoc,
-                note: `[CAT:${window.activeCat}]`,
-                formDetails: dString,
-                sellerName: window.currentUser,
-                sellerPhone: window.currentPhone,
-                img: window.tempProdImg || 'https://via.placeholder.com/150',
-                timestamp: Date.now()
+                name: title, price: price || "0", loc: window.activeLoc, note: `[CAT:${window.activeCat}]`,
+                formDetails: dString, sellerName: window.currentUser, sellerPhone: window.currentPhone,
+                img: window.tempProdImg || 'https://via.placeholder.com/150', timestamp: Date.now()
             });
             confetti({ particleCount: 150 });
             window.exitStudio();
             window.tab('home', document.querySelector('.nav-btn'));
-        } catch (e) { alert("Error al subir. Intenta de nuevo."); }
+        } catch (e) { alert("Error al subir."); }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
