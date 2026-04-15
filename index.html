@@ -26,7 +26,7 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
-        body { background: #f8fafc; margin: 0; padding-bottom: 140px; overflow-x: hidden; color: var(--oscuro); }
+        body { background: #f8fafc; margin: 0; padding-bottom: 100px; overflow-x: hidden; color: var(--oscuro); height: 100vh; display: flex; flex-direction: column; }
 
         /* --- BLOQUEO GPS INICIAL --- */
         #gps-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
@@ -44,14 +44,12 @@
             border-radius: 22px; display: flex; align-items: center; justify-content: center;
             color: white; font-weight: 900; font-size: 24px; cursor: pointer;
             box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
-            animation: rotate3d 7s infinite ease-in-out; transform-style: preserve-3d;
         }
-        @keyframes rotate3d { 0%, 100% { transform: perspective(500px) rotateY(0deg); } 50% { transform: perspective(500px) rotateY(30deg); } }
 
         /* --- BÚSQUEDA Y FILTROS --- */
         .search-container { padding: 0 20px; margin-top: 15px; }
         .search-wrapper { position: relative; display: flex; align-items: center; }
-        .search-input { width: 100%; padding: 18px 25px 18px 55px; border-radius: 25px; border: none; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.03); font-weight: 700; }
+        .search-input { width: 100%; padding: 15px 25px 15px 55px; border-radius: 25px; border: none; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.03); font-weight: 700; }
         .search-icon { position: absolute; left: 20px; font-size: 20px; }
 
         .filter-bar { padding: 15px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
@@ -60,141 +58,82 @@
 
         /* --- CIUDADES --- */
         .city-bar { padding: 10px 20px 20px 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
-        .city-card { background: white; min-width: max-content; padding: 10px 20px; border-radius: 20px; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.7; pointer-events: auto; transition: 0.3s; }
+        .city-card { background: white; min-width: max-content; padding: 10px 20px; border-radius: 20px; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); cursor: pointer; border: 3px solid transparent; opacity: 0.7; transition: 0.3s; }
         .active-city { opacity: 1; border-color: var(--azul); }
 
         /* --- VISTAS --- */
-        .view { display: none; padding: 0; animation: slideUp 0.5s ease; }
-        .view-active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .view { display: none; padding: 0; animation: slideUp 0.4s ease; flex: 1; overflow-y: auto; }
+        .view-active { display: flex; flex-direction: column; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- VITRINA / CARDS --- */
-        #feed-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 0 20px 20px 20px;
-        }
-        
-        .post-card { 
-            background: white; 
-            border-radius: 20px; 
-            padding: 10px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06); 
-            position: relative; 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .post-card-img-wrapper {
-            width: 100%;
-            height: 100px;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 8px;
-            background: #f1f5f9;
-        }
-        .post-card-img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .post-card-title {
-            font-size: 11px;
-            font-weight: 800;
-            margin: 0 0 2px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .post-card-price {
-            color: var(--azul);
-            font-weight: 900;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-        .btn-contact-mini {
-            background: var(--oscuro);
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 10px;
-            width: 100%;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        #feed-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 20px 20px 20px; }
+        .post-card { background: white; border-radius: 15px; padding: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        .post-card-img-wrapper { width: 100%; height: 100px; border-radius: 10px; overflow: hidden; margin-bottom: 8px; background: #f1f5f9; }
+        .post-card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .post-card-title { font-size: 11px; font-weight: 800; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .post-card-price { color: var(--azul); font-weight: 900; font-size: 13px; margin-bottom: 8px; }
+        .btn-contact-mini { background: var(--oscuro); color: white; border: none; padding: 8px; border-radius: 10px; font-weight: 800; font-size: 10px; width: 100%; cursor: pointer; transition: 0.2s; }
         .btn-contact-mini:active { transform: scale(0.95); }
+        .load-more-btn { background: var(--azul-glow); color: var(--azul); border: none; padding: 15px; border-radius: 20px; font-weight: 800; font-size: 12px; margin: 0 20px 30px 20px; cursor: pointer; display: none; }
 
         /* --- STUDIO SUBIDA --- */
-        .view-padding-inner { padding: 0 20px; }
-        .camera-hub { background: var(--oscuro); border-radius: 55px; padding: 50px 30px; color: white; text-align: center; }
-        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
-        .cat-btn { background: rgba(255,255,255,0.07); padding: 20px 10px; border-radius: 25px; cursor: pointer; font-size: 10px; font-weight: 800; transition: 0.2s;}
+        .view-padding-inner { padding: 0 20px 30px 20px; }
+        .camera-hub { background: var(--oscuro); border-radius: 35px; padding: 40px 20px; color: white; text-align: center; margin-top: 10px; }
+        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 25px; }
+        .cat-btn { background: rgba(255,255,255,0.07); padding: 15px 10px; border-radius: 20px; cursor: pointer; font-size: 10px; font-weight: 800; transition: 0.2s;}
         .cat-btn:active { background: var(--azul); }
         
-        #upload-studio { background: white; border-radius: 45px; padding: 35px; margin-top: 25px; display: none; box-shadow: var(--premium-shadow); }
-        .rr-field { width: 100%; padding: 18px; border-radius: 20px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; transition: border-color 0.3s; }
+        #upload-studio { background: white; border-radius: 35px; padding: 25px; margin-top: 15px; display: none; box-shadow: var(--premium-shadow); }
+        .rr-field { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 12px; font-size: 13px; }
         .rr-field:focus { border-color: var(--azul); }
-        .form-section-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
+        .form-section-title { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
         
-        .file-upload-wrapper { position: relative; width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 25px; display: flex; align-items: center; justify-content: center; background: #f8fafc; margin-bottom: 15px; cursor: pointer; overflow: hidden; }
+        .file-upload-wrapper { position: relative; width: 100%; height: 120px; border: 3px dashed #cbd5e1; border-radius: 20px; display: flex; align-items: center; justify-content: center; background: #f8fafc; margin-bottom: 15px; cursor: pointer; overflow: hidden; }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         .file-upload-text { color: #64748b; font-weight: 800; font-size: 14px; pointer-events: none; z-index: 1; }
         #img-preview { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-size: cover; background-position: center; display: none; z-index: 2; }
 
-        /* --- SISTEMA DE CHATS --- */
-        .chat-box-ui { 
-            background: #e8f0fe; 
-            border-radius: 35px; 
-            height: calc(100vh - 210px); 
-            display: flex; 
-            flex-direction: column; 
-            box-shadow: var(--premium-shadow); 
-            overflow: hidden; 
-            border: 4px solid white;
-            margin: 10px 20px 0 20px;
-        }
+        /* --- SISTEMA DE CHATS (OPTIMIZADO WHATSAPP STYLE) --- */
+        #view-chat { display: none; flex-direction: column; height: 100%; overflow: hidden; padding: 0; }
+        #view-chat.view-active { display: flex; }
+        .chat-box-ui { flex: 1; display: flex; flex-direction: column; background: #e8f0fe; position: relative; }
         
-        /* CABECERA CON ESPACIO PARA FOTO DEL GRUPO (PEDIDO EXTRA) */
-        .chat-header-pro {
-            background: linear-gradient(135deg, var(--azul), #1e40af);
-            padding: 15px 20px;
-            color: white;
-            box-shadow: 0 4px 15px rgba(37,99,235,0.2);
-            position: relative;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        .chat-header-pro h2 { margin: 0; font-weight: 900; font-size: 20px; letter-spacing: 0.5px; }
-        .chat-subtitle { display: block; font-size: 11px; opacity: 0.8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+        .chat-header-pro { background: linear-gradient(135deg, var(--azul), #1e40af); padding: 12px 20px; color: white; display: flex; align-items: center; gap: 15px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .chat-header-pro h2 { margin: 0; font-weight: 900; font-size: 18px; }
+        .chat-subtitle { font-size: 10px; opacity: 0.8; font-weight: 700; text-transform: uppercase; }
 
-        .msg-area { flex: 1; padding: 20px 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        /* Corrección de mensajes deformados */
+        .msg-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+        .bubble-wrapper { display: flex; flex-direction: column; max-width: 85%; }
+        .bubble-wrapper.me { align-self: flex-end; align-items: flex-end; }
+        .bubble-wrapper.other { align-self: flex-start; align-items: flex-start; }
         
         .bubble { 
-            padding: 10px 16px; 
+            padding: 10px 14px; 
             border-radius: 18px; 
-            max-width: 80%; 
-            width: fit-content; 
-            font-size: 14.5px; 
+            font-size: 14px; 
             font-weight: 500; 
-            word-wrap: break-word; 
-            word-break: normal;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             line-height: 1.4;
+            word-wrap: break-word; /* Rompe palabras largas si es necesario */
+            word-break: normal; /* Evita que las letras se separen verticalmente */
+            white-space: pre-wrap; /* Respeta saltos de línea */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             display: inline-block;
+            min-width: 40px;
+            text-align: left;
         }
-        .bubble-in { background: white; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .bubble-out { background: var(--chat-green); color: #1e293b; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bubble-in { background: white; color: #1e293b; border-top-left-radius: 4px; }
+        .bubble-out { background: var(--chat-green); color: #1e293b; border-top-right-radius: 4px; }
+        
+        .chat-input-area { padding: 10px 15px; background: white; display: flex; gap: 10px; border-top: 1px solid #e2e8f0; align-items: center; margin-bottom: 80px; /* Espacio para el nav */ }
+        .chat-input-area input { flex: 1; border: 1px solid #cbd5e1; border-radius: 25px; padding: 12px 18px; font-size: 14px; margin: 0; }
+        .chat-input-area button { background: var(--azul); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 10px rgba(37,99,235,0.3); }
 
         /* --- NAV ISLAND --- */
-        .nav-island { position: fixed; bottom: 35px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 45px; display: flex; justify-content: space-around; padding: 22px; z-index: 3000; }
-        .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; }
-        .nav-btn.active { color: var(--azul); }
+        .nav-island { position: fixed; bottom: 20px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 40px; display: flex; justify-content: space-around; padding: 15px; z-index: 3000; box-shadow: var(--premium-shadow); }
+        .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; padding: 5px 10px; border-radius: 15px; transition: 0.3s; }
+        .nav-btn.active { color: white; background: rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
@@ -208,10 +147,10 @@
 </div>
 
 <header class="header">
-    <div style="display:flex; align-items:center; gap:18px;">
+    <div style="display:flex; align-items:center; gap:15px;">
         <div class="logo-rr" onclick="window.checkAdminAccess()">R&R</div>
         <div>
-            <div style="font-weight: 900; font-size: 20px;">Rantiy y Rantikuy</div>
+            <div style="font-weight: 900; font-size: 18px;">Rantiy y Rantikuy</div>
             <div id="user-tag" style="font-size: 10px; color: var(--azul); font-weight: 800;">CIUDADANO: CARGANDO...</div>
         </div>
     </div>
@@ -236,12 +175,14 @@
     <div class="city-bar" id="city-bar-container"></div>
 
     <div id="feed-container"></div>
+    <button id="btn-load-more" class="load-more-btn" onclick="window.loadMorePosts()">↓ Cargar Más Publicaciones</button>
 </main>
 
 <section id="view-camera" class="view">
     <div class="view-padding-inner">
         <div class="camera-hub" id="main-hub">
-            <h2 style="font-weight:900;">Publicar en <span id="current-zone-text">...</span></h2>
+            <h2 style="font-weight:900; margin-top:0;">Publicar en <span id="current-zone-text">...</span></h2>
+            <p style="font-size: 12px; opacity: 0.8;">Selecciona una categoría para continuar</p>
             <div class="category-grid">
                 <div class="cat-btn" onclick="window.startStudio('Venta', '🛍️')">💰<br>VENTA</div>
                 <div class="cat-btn" onclick="window.startStudio('Comida', '🍲')">🥘<br>COMIDA</div>
@@ -255,10 +196,10 @@
         <div id="upload-studio">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <h3 id="studio-tag" style="margin:0; font-weight:900;">Nuevo Post</h3>
-                <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px;">✕</button>
+                <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px; font-weight:bold; color:var(--oscuro);">✕</button>
             </div>
             
-            <div class="form-section-title">1. Sube una imagen</div>
+            <div class="form-section-title">1. Sube una imagen (Opcional)</div>
             <div class="file-upload-wrapper">
                 <span class="file-upload-text">📸 Toca para subir foto</span>
                 <input type="file" id="in-photo" accept="image/*" onchange="window.previewImage(event)">
@@ -266,13 +207,13 @@
             </div>
 
             <div class="form-section-title">2. Información Básica</div>
-            <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces? (Ej: Zapatillas Nike)">
-            <input type="number" id="in-price" class="rr-field" placeholder="Precio (S/)">
+            <input type="text" id="in-title" class="rr-field" placeholder="¿Qué ofreces o buscas?">
+            <input type="number" id="in-price" class="rr-field" placeholder="Precio en S/ (Opcional)">
 
-            <div class="form-section-title">3. Detalles Específicos</div>
+            <div class="form-section-title">3. Detalles (Opcionales)</div>
             <div id="dynamic-fields-container"></div>
 
-            <button onclick="window.uploadToEmpire()" style="width:100%; padding:20px; background:var(--azul); color:white; border:none; border-radius:25px; font-weight:900; margin-top:10px;">PUBLICAR EN RANTIKUY 🚀</button>
+            <button onclick="window.uploadToEmpire()" style="width:100%; padding:18px; background:var(--azul); color:white; border:none; border-radius:20px; font-weight:900; margin-top:10px;">PUBLICAR EN RANTIKUY 🚀</button>
         </div>
     </div>
 </section>
@@ -280,18 +221,18 @@
 <section id="view-chat" class="view">
     <div class="chat-box-ui">
         <div class="chat-header-pro">
-            <img id="group-profile-pic" src="https://via.placeholder.com/100/2563eb/ffffff?text=R%26R" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" alt="Foto del Grupo">
-            <div style="text-align: left;">
+            <img id="group-profile-pic" src="https://via.placeholder.com/100/2563eb/ffffff?text=R%26R" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid white;" alt="Grupo">
+            <div>
                 <h2 id="zone-chat-label">SALA REGIONAL</h2>
-                <span class="chat-subtitle">📍 Comunidad Activa • Auto-Limpieza 24H</span>
+                <span class="chat-subtitle">📍 Comunidad Activa • Limpieza 24H</span>
             </div>
         </div>
         
         <div class="msg-area" id="group-msgs"></div>
         
-        <div style="padding:15px; background:white; display:flex; gap:10px; border-top: 1px solid #f1f5f9;">
-            <input type="text" id="group-input" class="rr-field" style="margin:0; flex:1; border-radius:25px; padding:15px 20px;" placeholder="Escribe un mensaje...">
-            <button onclick="window.sendGroupMsg()" style="background:var(--azul); color:white; border:none; width:55px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">✈️</button>
+        <div class="chat-input-area">
+            <input type="text" id="group-input" placeholder="Escribe un mensaje..." autocomplete="off">
+            <button onclick="window.sendGroupMsg()">✈️</button>
         </div>
     </div>
 </section>
@@ -338,7 +279,7 @@
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
@@ -352,8 +293,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    window.dbLocal = { contacts: [], inventory: [] };
+    window.dbLocal = { inventory: [] };
     window.tempProdImg = "";
+    
+    // VARIABLES PARA PAGINACIÓN Y AHORRO DE RECURSOS
+    window.postLimit = 15;
+    window.feedListener = null;
 
     window.checkAdminAccess = function() {
         window.adminClicks++;
@@ -363,17 +308,32 @@
             if(pass === "RR2026") { 
                 localStorage.setItem("admin_session", "ADMIN_SUPREMO");
                 window.location.href = "admin.html";
-            } else {
-                alert("Clave incorrecta.");
-            }
+            } else { alert("Clave incorrecta."); }
         }
     }
 
-    onSnapshot(collection(db, "inventory"), (snapshot) => {
-        window.dbLocal.inventory = [];
-        snapshot.forEach((doc) => { window.dbLocal.inventory.push({ id: doc.id, ...doc.data() }); });
-        window.renderFeed();
-    });
+    // CARGA DE POSTS PAGINADA (Ahorra Firebase)
+    window.listenToFeed = function() {
+        if(window.feedListener) window.feedListener(); // Desuscribirse del anterior
+        const q = query(collection(db, "inventory"), orderBy("timestamp", "desc"), limit(window.postLimit));
+        window.feedListener = onSnapshot(q, (snapshot) => {
+            window.dbLocal.inventory = [];
+            snapshot.forEach((doc) => { window.dbLocal.inventory.push({ id: doc.id, ...doc.data() }); });
+            window.renderFeed();
+            
+            const btnMore = document.getElementById('btn-load-more');
+            if(snapshot.docs.length >= window.postLimit) {
+                btnMore.style.display = 'block';
+            } else {
+                btnMore.style.display = 'none';
+            }
+        });
+    }
+
+    window.loadMorePosts = function() {
+        window.postLimit += 15;
+        window.listenToFeed();
+    }
 
     window.init = function() {
         const userTag = document.getElementById('user-tag');
@@ -384,6 +344,7 @@
         } else {
             alert("Tu celular no soporta GPS.");
         }
+        window.listenToFeed();
     }
 
     window.renderCityFilters = function() {
@@ -407,16 +368,10 @@
         let lat = pos.coords.latitude;
         let lon = pos.coords.longitude;
         let found = false;
-
         for (let zone in ZONAS) {
             let d = Math.sqrt(Math.pow(lat - ZONAS[zone].lat, 2) + Math.pow(lon - ZONAS[zone].lon, 2));
-            if (d < ZONAS[zone].r) { 
-                window.activeLoc = zone;
-                found = true;
-                break;
-            }
+            if (d < ZONAS[zone].r) { window.activeLoc = zone; found = true; break; }
         }
-
         if (found) {
             document.getElementById('gps-screen').style.display = 'none';
             document.getElementById('current-zone-text').innerText = window.activeLoc;
@@ -450,16 +405,10 @@
         }
     }
 
-    // --- ENRUTAMIENTO WHATSAPP DIRECTO ---
     window.irAChatPrivado = function(nombre, telefono) {
-        if(nombre === window.currentUser) {
-            alert("Esta es tu propia publicación. ¡No puedes contactarte a ti mismo! 😅");
-            return;
-        }
+        if(nombre === window.currentUser) { alert("Esta es tu propia publicación. ¡No puedes contactarte a ti mismo! 😅"); return; }
         let telLimpio = telefono.replace(/\D/g, '');
-        if(telLimpio.length === 9) {
-            telLimpio = "51" + telLimpio;
-        }
+        if(telLimpio.length === 9) telLimpio = "51" + telLimpio;
         const mensaje = encodeURIComponent(`¡Hola ${nombre}! Vi tu publicación en Rantiy y Rantikuy y estoy interesado.`);
         window.open(`https://wa.me/${telLimpio}?text=${mensaje}`, '_blank');
     }
@@ -473,35 +422,23 @@
 
     window.deletePost = async function(id) {
         if(confirm('¿Estás seguro de que quieres borrar esta publicación?')) {
-            try {
-                await deleteDoc(doc(db, "inventory", id));
-            } catch(error) {
-                alert("Hubo un error al intentar borrar tu publicación.");
-            }
+            try { await deleteDoc(doc(db, "inventory", id)); } catch(error) { alert("Hubo un error."); }
         }
     }
-
+    
     window.deleteGroupMsg = async function(id) {
         if(confirm('¿Deseas eliminar este mensaje para todos?')) {
-            try {
-                await deleteDoc(doc(db, "chats_zonas", id));
-            } catch(error) {
-                alert("Hubo un error al intentar borrar el mensaje.");
-            }
+            try { await deleteDoc(doc(db, "chats_zonas", id)); } catch(error) {}
         }
     }
 
     window.renderFeed = function() {
         const container = document.getElementById('feed-container');
         if(!container) return;
-
         const search = document.getElementById('main-search') ? document.getElementById('main-search').value.toLowerCase() : "";
         let posts = window.dbLocal.inventory;
 
-        if(window.selectedCityFilter !== 'Todas') {
-            posts = posts.filter(p => p.loc === window.selectedCityFilter);
-        }
-
+        if(window.selectedCityFilter !== 'Todas') posts = posts.filter(p => p.loc === window.selectedCityFilter);
         if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
         if(search) posts = posts.filter(p => p.name && p.name.toLowerCase().includes(search));
 
@@ -517,24 +454,19 @@
             return `
             <div class="post-card">
                 ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.9); border:none; border-radius:50%; width:22px; height:22px; font-size:10px; cursor:pointer; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">🗑️</button>` : ''}
-                
                 <div class="post-card-img-wrapper" onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')">
                     ${imgSrc ? `<img src="${imgSrc}" loading="lazy">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
                 </div>
-                
                 <h3 class="post-card-title">${safeName}</h3>
                 <div style="font-size: 10px; color: #64748b; margin-bottom: 2px; font-weight: 700;">📍 ${safeLoc}</div>
-                <div class="post-card-price">S/ ${safePrice}</div>
-                
-                <button onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')" class="btn-contact-mini">
-                    Contactar
-                </button>
+                <div class="post-card-price">${p.price > 0 ? 'S/ ' + safePrice : 'Consultar'}</div>
+                <button onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')" class="btn-contact-mini">Contactar</button>
             </div>`;
         }).join('');
     }
 
-    // --- CHAT GRUPAL REALTIME (SIN JODER NADA, SOLO AÑADIDO LINK A WHATSAPP) ---
-    const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"));
+    // --- CHAT GRUPAL REALTIME (CORREGIDO DEFORMACIONES) ---
+    const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"), limit(80));
     onSnapshot(qChat, (snapshot) => {
         const box = document.getElementById('group-msgs');
         if(!box || !window.activeLoc) return;
@@ -557,14 +489,14 @@
                 const safePhone = window.escapeHTML(data.phone || '000000000'); 
                 
                 msgsHTML += `
-                    <div style="display:flex; flex-direction:column; align-items: ${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 2px;">
-                        ${!isMe ? `<span onclick="window.irAChatPrivado('${senderName}', '${safePhone}')" style="font-size:11px; color:#25D366; margin-bottom:4px; margin-left:12px; font-weight:700; cursor:pointer;" title="Contactar por WhatsApp">💬 ${senderName}</span>` : ''}
+                    <div class="bubble-wrapper ${isMe ? 'me' : 'other'}">
+                        ${!isMe ? `<span onclick="window.irAChatPrivado('${senderName}', '${safePhone}')" style="font-size:11px; color:#15803d; margin-bottom:2px; margin-left:10px; font-weight:800; cursor:pointer;" title="Contactar">~ ${senderName}</span>` : ''}
                         
-                        <div style="display:flex; align-items:center; gap:8px; flex-direction: ${isMe ? 'row-reverse' : 'row'};">
+                        <div style="display:flex; align-items:center; gap:5px; flex-direction: ${isMe ? 'row-reverse' : 'row'};">
                             <div class="bubble ${isMe ? 'bubble-out' : 'bubble-in'}" style="${isAdmin ? 'background: #f59e0b; color: white;' : ''}">
                                 ${safeText}
                             </div>
-                            ${isMe ? `<span onclick="window.deleteGroupMsg('${docSnap.id}')" style="cursor:pointer; font-size:14px; opacity:0.6;" title="Borrar mensaje">🗑️</span>` : ''}
+                            ${isMe ? `<span onclick="window.deleteGroupMsg('${docSnap.id}')" style="cursor:pointer; font-size:12px; opacity:0.5;" title="Borrar">🗑️</span>` : ''}
                         </div>
                     </div>`;
             }
@@ -580,21 +512,42 @@
         input.value = ""; input.focus();
         try {
             await addDoc(collection(db, "chats_zonas"), {
-                zone: window.activeLoc,
-                sender: window.currentUser,
-                phone: window.currentPhone,
-                text: text,
-                timestamp: Date.now()
+                zone: window.activeLoc, sender: window.currentUser, phone: window.currentPhone, text: text, timestamp: Date.now()
             });
+            setTimeout(() => {
+                const box = document.getElementById('group-msgs');
+                if(box) box.scrollTop = box.scrollHeight;
+            }, 100);
         } catch(e) { alert("Error al enviar."); }
     }
 
+    // --- FORMULARIOS DINÁMICOS POR CATEGORÍA ---
     window.startStudio = function(cat, emoji) {
         window.activeCat = cat;
         document.getElementById('studio-tag').innerText = emoji + " Nuevo Post: " + window.escapeHTML(cat);
         const dynamicContainer = document.getElementById('dynamic-fields-container');
-        let formHTML = `<input type="text" id="dyn-1" class="rr-field" placeholder="Detalle 1 (Ej: Marca o Talla)">
-                        <input type="text" id="dyn-2" class="rr-field" placeholder="Detalle 2 (Ej: Estado)">`;
+        let formHTML = '';
+
+        if(cat === 'Venta') {
+            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Estado (Ej: Nuevo, Usado 1 mes)">
+                        <input type="text" class="rr-field dyn-input" placeholder="Marca, Talla o Medidas">`;
+        } else if(cat === 'Comida') {
+            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="¿Haces Delivery? (Ej: Sí, a todo Huancayo)">
+                        <input type="text" class="rr-field dyn-input" placeholder="Tiempo de entrega / Horario">`;
+        } else if(cat === 'Taxi') {
+            formHTML = `<input type="number" class="rr-field dyn-input" placeholder="Tu edad (Opcional - da confianza)">
+                        <input type="number" class="rr-field dyn-input" placeholder="DNI (Opcional - da confianza al pasajero)">
+                        <input type="text" class="rr-field dyn-input" placeholder="Modelo del Vehículo (Ej: Yaris Blanco)">`;
+        } else if(cat === 'Empleo') {
+            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Horario de trabajo">
+                        <input type="text" class="rr-field dyn-input" placeholder="Salario aprox. (Ej: S/1200 al mes)">`;
+        } else if(cat === 'Servicio') {
+            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Experiencia (Ej: 3 años arreglando caños)">
+                        <input type="text" class="rr-field dyn-input" placeholder="Disponibilidad (Ej: Lunes a Viernes)">`;
+        } else {
+            formHTML = `<input type="text" class="rr-field dyn-input" placeholder="Detalle adicional (Opcional)">`;
+        }
+
         dynamicContainer.innerHTML = formHTML;
         document.getElementById('main-hub').style.display = 'none';
         document.getElementById('upload-studio').style.display = 'block';
@@ -603,17 +556,37 @@
     window.exitStudio = function() {
         document.getElementById('main-hub').style.display = 'block';
         document.getElementById('upload-studio').style.display = 'none';
+        window.tempProdImg = "";
+        document.getElementById('img-preview').style.display = 'none';
+        document.getElementById('in-title').value = "";
+        document.getElementById('in-price').value = "";
     }
 
+    // --- COMPRESIÓN DE IMÁGENES (AHORRA BASE DE DATOS) ---
     window.previewImage = function(event) {
         const file = event.target.files[0];
         if(!file) return;
+        
         const reader = new FileReader();
         reader.onload = (e) => {
-            window.tempProdImg = e.target.result;
-            const preview = document.getElementById('img-preview');
-            preview.style.display = 'block';
-            preview.style.backgroundImage = `url(${e.target.result})`;
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 500; // Reducimos el tamaño para ahorrar en Firebase
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Comprime la imagen a JPEG calidad 0.6 (Reduce el peso drásticamente)
+                window.tempProdImg = canvas.toDataURL('image/jpeg', 0.6); 
+                
+                const preview = document.getElementById('img-preview');
+                preview.style.display = 'block';
+                preview.style.backgroundImage = `url(${window.tempProdImg})`;
+            };
+            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     }
@@ -621,16 +594,21 @@
     window.uploadToEmpire = async function() {
         const title = document.getElementById('in-title').value.trim();
         const price = document.getElementById('in-price').value.trim();
-        const d1 = document.getElementById('dyn-1')?.value || "";
-        const d2 = document.getElementById('dyn-2')?.value || "";
-
-        if(!title) return alert("Título obligatorio.");
+        
+        if(!title) return alert("Por favor ingresa qué estás ofreciendo (Título).");
+        
+        // Recopila los datos dinámicos generados
+        let detalles = [];
+        document.querySelectorAll('.dyn-input').forEach(input => {
+            if(input.value.trim() !== '') detalles.push(input.value.trim());
+        });
+        const dString = detalles.join(' | ');
         
         try {
             await addDoc(collection(db, "inventory"), {
                 name: title, price: price || "0", loc: window.activeLoc,
                 note: `[CAT:${window.activeCat}]`,
-                formDetails: `${d1} | ${d2}`,
+                formDetails: dString,
                 sellerName: window.currentUser,
                 sellerPhone: window.currentPhone,
                 img: window.tempProdImg || 'https://via.placeholder.com/150',
@@ -639,7 +617,7 @@
             confetti({ particleCount: 150 });
             window.exitStudio();
             window.tab('home', document.querySelector('.nav-btn'));
-        } catch (e) { alert("Error al subir."); }
+        } catch (e) { alert("Error al subir. Intenta de nuevo."); }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
