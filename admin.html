@@ -3,171 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control - Modo Dios</title>
+    <title>Panel R&R - Modo Dios</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <script src="seguridad/firewall.js"></script>
     <style>
-        /* PANTALLA DE LOGIN (SE MUESTRA SI NO HAY SESIÓN) */
-        #login-overlay {
+        /* Pantalla de bloqueo total */
+        #bloqueo-seguridad {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0f172a; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 9999;
+            background: #0f172a; display: flex; justify-content: center; align-items: center; z-index: 10000;
         }
-        .login-box {
-            background: #1e293b; padding: 40px; border-radius: 20px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.5); text-align: center;
-            border: 2px solid #22c55e; width: 300px;
+        .caja-login {
+            background: #1e293b; padding: 30px; border-radius: 20px; border: 2px solid #22c55e;
+            text-align: center; width: 90%; max-width: 320px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        .login-box h2 { color: #22c55e; margin-bottom: 20px; }
-        .login-box input {
-            width: 100%; padding: 12px; margin-bottom: 20px;
-            border-radius: 10px; border: none; background: #0f172a;
-            color: white; font-size: 16px; text-align: center;
-        }
-        .login-box button {
-            background: #22c55e; color: white; border: none;
-            padding: 12px 25px; border-radius: 10px; font-weight: bold;
-            cursor: pointer; width: 100%;
-        }
-
-        /* ESTILO DEL PANEL (IGUAL AL ANTERIOR) */
-        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background-color: #0f172a; color: white; display: flex; height: 100vh; overflow: hidden;}
-        .sidebar { width: 250px; background-color: #1e293b; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #334155; }
-        .logo-admin { background: linear-gradient(135deg, #22c55e, #15803d); padding: 15px; border-radius: 15px; text-align: center; font-weight: 900; font-size: 20px; margin-bottom: 30px; }
-        .nav-btn { background: none; border: none; color: #cbd5e1; text-align: left; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-bottom: 10px; transition: 0.3s;}
-        .nav-btn:hover, .nav-btn.active { background: #334155; color: white; }
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
-        .seccion-admin { display: none; }
-        .seccion-admin.activa { display: block; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #1e293b; border-radius: 10px; overflow: hidden; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; }
-        .btn-action { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .btn-delete { background: #fee2e2; color: #ef4444; }
-        .btn-contact { background: #dcfce7; color: #16a34a; }
-        .badge-on { background: #dcfce7; color: #16a34a; padding: 4px 8px; border-radius: 12px; font-size: 11px; }
-        .badge-off { background: #fee2e2; color: #ef4444; padding: 4px 8px; border-radius: 12px; font-size: 11px; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: none; background: #0f172a; color: white; text-align: center; font-size: 18px; }
+        button { background: #22c55e; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; }
+        
+        /* El panel se oculta si no hay sesión */
+        #panel-real { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay">
-        <div class="login-box">
-            <h2>Modo Dios ⚡</h2>
-            <input type="password" id="pass-input" placeholder="Contraseña Maestra">
-            <button onclick="validarAcceso()">ENTRAR AL IMPERIO</button>
-            <p id="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 10px; display: none;">Contraseña incorrecta</p>
+    <div id="bloqueo-seguridad">
+        <div class="caja-login">
+            <h2 style="color: #22c55e; margin: 0;">Rantiy Control ⚡</h2>
+            <p style="color: #94a3b8; font-size: 12px;">Acceso exclusivo para fundadores</p>
+            <input type="password" id="claveMaestra" placeholder="••••••••">
+            <button onclick="intentarEntrar()">DESBLOQUEAR PANEL</button>
+            <p id="error" style="color: #ef4444; font-size: 12px; margin-top: 10px; display: none;">Clave incorrecta</p>
         </div>
     </div>
 
-    <div class="sidebar">
-        <div class="logo-admin">PANEL R&R</div>
-        <button class="nav-btn active" onclick="cambiarTab('vitrina', this)">📊 Vitrina (Posts)</button>
-        <button class="nav-btn" onclick="cambiarTab('usuarios', this)">💰 Clientes / Vitrinas</button>
-        <button class="nav-btn" onclick="cambiarTab('mensajes', this)">📢 Mensaje Global</button>
-        <button class="nav-btn" onclick="cerrarSesionAdmin()" style="margin-top:auto; background:#ef4444; color:white; border-radius:10px; padding:10px;">🚪 Salir</button>
-    </div>
-
-    <div class="main-content">
-        <h1>Centro de Control Global</h1>
-        
-        <div id="tab-vitrina" class="seccion-admin activa">
-            <h3>Gestión de Publicaciones</h3>
-            <table>
-                <thead><tr><th>Foto</th><th>Vendedor</th><th>Producto</th><th>Zona</th><th>Acción</th></tr></thead>
-                <tbody id="tabla-posts"></tbody>
-            </table>
+    <div id="panel-real">
+        <h1 style="color: white; padding: 20px;">Bienvenido al Modo Dios, Jefe.</h1>
         </div>
 
-        <div id="tab-usuarios" class="seccion-admin">
-            <h3>Control de Cobros (Vitrinas)</h3>
-            <table>
-                <thead><tr><th>Nombre</th><th>Celular</th><th>Estado Vitrina</th><th>Acción</th></tr></thead>
-                <tbody id="tabla-usuarios"></tbody>
-            </table>
-        </div>
-        
-        <div id="tab-mensajes" class="seccion-admin">
-            <h3>📢 Enviar Anuncio Global</h3>
-            <textarea id="msg-global" style="width:100%; height:100px; background:#0f172a; color:white; border-radius:10px; padding:10px;"></textarea>
-            <button class="btn-action btn-contact" style="margin-top:10px; width:100%; padding:15px;" onclick="enviarMensajeMasivo()">Lanzar a todos los grupos</button>
-        </div>
-    </div>
-
-    <script type="module">
-        import { db, collection, onSnapshot, doc, deleteDoc, orderBy, query, addDoc, updateDoc } from "./firebase-engine.js";
-
-        // --- LÓGICA DE ACCESO ---
-        window.validarAcceso = function() {
-            const pass = document.getElementById('pass-input').value;
-            // CONTRASEÑA AQUÍ
-            if (pass.trim() === "Rantiy2026") {
+    <script>
+        // La clave es Rantiy2026 (ojo con la R mayúscula)
+        function intentarEntrar() {
+            const clave = document.getElementById('claveMaestra').value;
+            if (clave === "Rantiy2026") {
                 localStorage.setItem('admin_session', 'ADMIN_SUPREMO');
-                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('bloqueo-seguridad').style.display = 'none';
+                document.getElementById('panel-real').style.display = 'block';
             } else {
-                document.getElementById('error-msg').style.display = 'block';
+                document.getElementById('error').style.display = 'block';
             }
         }
 
-        // Verificar si ya está logueado al cargar
+        // Si ya entró antes, saltar el login
         if (localStorage.getItem('admin_session') === "ADMIN_SUPREMO") {
-            document.getElementById('login-overlay').style.display = 'none';
-        }
-
-        // --- FUNCIONES DEL PANEL ---
-        window.cambiarTab = function(tabId, elemento) {
-            document.querySelectorAll('.seccion-admin').forEach(s => s.classList.remove('activa'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('activa');
-            elemento.classList.add('active');
-        }
-
-        // Cargar Vitrina
-        onSnapshot(query(collection(db, "inventory"), orderBy("timestamp", "desc")), (snapshot) => {
-            let html = '';
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                html += `<tr>
-                    <td><img src="${data.img}" style="width:40px; border-radius:5px;"></td>
-                    <td>${data.sellerName}</td>
-                    <td>${data.name}</td>
-                    <td>${data.loc}</td>
-                    <td><button class="btn-action btn-delete" onclick="borrarPost('${docSnap.id}')">Eliminar</button></td>
-                </tr>`;
-            });
-            document.getElementById('tabla-posts').innerHTML = html;
-        });
-
-        // Cargar Usuarios y su Vitrina
-        onSnapshot(collection(db, "Usuarios"), (snapshot) => {
-            let html = '';
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const activa = data.vitrinaActiva === true;
-                html += `<tr>
-                    <td>${data.nombre}</td>
-                    <td>${data.telefono}</td>
-                    <td>${activa ? '<span class="badge-on">Habilitado</span>' : '<span class="badge-off">Pausado</span>'}</td>
-                    <td>
-                        <button class="btn-action btn-contact" onclick="toggleVitrina('${docSnap.id}', ${!activa})">
-                            ${activa ? 'Desactivar' : 'Activar Pago'}
-                        </button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById('tabla-usuarios').innerHTML = html;
-        });
-
-        window.toggleVitrina = async (id, estado) => {
-            await updateDoc(doc(db, "Usuarios", id), { vitrinaActiva: estado });
-        }
-
-        window.borrarPost = async (id) => {
-            if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "inventory", id));
-        }
-
-        window.cerrarSesionAdmin = () => {
-            localStorage.removeItem('admin_session');
-            location.reload();
+            document.getElementById('bloqueo-seguridad').style.display = 'none';
+            document.getElementById('panel-real').style.display = 'block';
         }
     </script>
 </body>
