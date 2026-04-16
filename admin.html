@@ -7,143 +7,113 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="seguridad/firewall.js"></script>
     <style>
+        /* PANTALLA DE LOGIN (SE MUESTRA SI NO HAY SESIÓN) */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f172a; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+        }
+        .login-box {
+            background: #1e293b; padding: 40px; border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5); text-align: center;
+            border: 2px solid #22c55e; width: 300px;
+        }
+        .login-box h2 { color: #22c55e; margin-bottom: 20px; }
+        .login-box input {
+            width: 100%; padding: 12px; margin-bottom: 20px;
+            border-radius: 10px; border: none; background: #0f172a;
+            color: white; font-size: 16px; text-align: center;
+        }
+        .login-box button {
+            background: #22c55e; color: white; border: none;
+            padding: 12px 25px; border-radius: 10px; font-weight: bold;
+            cursor: pointer; width: 100%;
+        }
+
+        /* ESTILO DEL PANEL (IGUAL AL ANTERIOR) */
         body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background-color: #0f172a; color: white; display: flex; height: 100vh; overflow: hidden;}
-        
-        /* Sidebar */
-        .sidebar { width: 250px; background-color: #1e293b; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #334155; z-index: 10; }
-        .logo-admin { background: linear-gradient(135deg, #22c55e, #15803d); padding: 15px; border-radius: 15px; text-align: center; font-weight: 900; font-size: 20px; margin-bottom: 30px; letter-spacing: 1px; }
+        .sidebar { width: 250px; background-color: #1e293b; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #334155; }
+        .logo-admin { background: linear-gradient(135deg, #22c55e, #15803d); padding: 15px; border-radius: 15px; text-align: center; font-weight: 900; font-size: 20px; margin-bottom: 30px; }
         .nav-btn { background: none; border: none; color: #cbd5e1; text-align: left; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-bottom: 10px; transition: 0.3s;}
         .nav-btn:hover, .nav-btn.active { background: #334155; color: white; }
-        .btn-logout { margin-top: auto; background: #ef4444; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-
-        /* Main Content */
         .main-content { flex: 1; padding: 30px; overflow-y: auto; }
         .seccion-admin { display: none; }
         .seccion-admin.activa { display: block; }
-        h1 { margin-top: 0; font-weight: 800; border-bottom: 2px solid #334155; padding-bottom: 10px; }
-        
-        /* Tablas */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #1e293b; border-radius: 10px; overflow: hidden; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; }
-        th { background-color: #0f172a; color: #94a3b8; font-size: 12px; text-transform: uppercase; }
-        td { font-size: 14px; }
-        
-        .btn-action { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; text-decoration: none; display: inline-block;}
+        .btn-action { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .btn-delete { background: #fee2e2; color: #ef4444; }
-        .btn-contact { background: #dcfce7; color: #16a34a; margin-right: 5px; }
-        .btn-warning { background: #fef08a; color: #854d0e; margin-right: 5px; }
-
-        .stat-cards { display: flex; gap: 20px; margin-bottom: 30px; }
-        .card { background: #1e293b; padding: 20px; border-radius: 15px; flex: 1; border: 1px solid #334155; }
-        .card h3 { margin: 0; color: #94a3b8; font-size: 14px; }
-        .card .number { font-size: 30px; font-weight: 900; color: #22c55e; margin-top: 10px; }
-
-        /* Formularios internos */
-        .form-box { background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 20px;}
-        .form-box input, .form-box textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius: 5px; border: none; background: #0f172a; color: white; margin-bottom: 10px;}
-        .btn-submit { background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;}
-        
-        .badge-on { background: #dcfce7; color: #16a34a; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
-        .badge-off { background: #fee2e2; color: #ef4444; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .btn-contact { background: #dcfce7; color: #16a34a; }
+        .badge-on { background: #dcfce7; color: #16a34a; padding: 4px 8px; border-radius: 12px; font-size: 11px; }
+        .badge-off { background: #fee2e2; color: #ef4444; padding: 4px 8px; border-radius: 12px; font-size: 11px; }
     </style>
 </head>
 <body>
 
-    <script>
-        // --- SISTEMA DE LOGIN INTEGRADO ---
-        if (localStorage.getItem('admin_session') !== "ADMIN_SUPREMO") {
-            const password = prompt("🔒 Ingresa la contraseña de Modo Dios:");
-            
-            // AQUÍ PUEDES CAMBIAR TU CONTRASEÑA
-            if (password === "Rantiy2026") { 
-                localStorage.setItem('admin_session', 'ADMIN_SUPREMO');
-                alert("Acceso Concedido. Bienvenido, Jefe.");
-            } else {
-                alert("Contraseña incorrecta. Intruso detectado.");
-                window.location.href = 'index.html'; 
-            }
-        }
-    </script>
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>Modo Dios ⚡</h2>
+            <input type="password" id="pass-input" placeholder="Contraseña Maestra">
+            <button onclick="validarAcceso()">ENTRAR AL IMPERIO</button>
+            <p id="error-msg" style="color: #ef4444; font-size: 12px; margin-top: 10px; display: none;">Contraseña incorrecta</p>
+        </div>
+    </div>
 
     <div class="sidebar">
         <div class="logo-admin">PANEL R&R</div>
         <button class="nav-btn active" onclick="cambiarTab('vitrina', this)">📊 Vitrina (Posts)</button>
         <button class="nav-btn" onclick="cambiarTab('usuarios', this)">💰 Clientes / Vitrinas</button>
         <button class="nav-btn" onclick="cambiarTab('mensajes', this)">📢 Mensaje Global</button>
-        <button class="nav-btn" onclick="cambiarTab('grupos', this)">🖼️ Fotos de Grupos</button>
-        <button class="nav-btn" onclick="cambiarTab('baneos', this)">🔨 Moderación (Baneos)</button>
-        <button class="nav-btn btn-logout" onclick="cerrarSesionAdmin()">🚪 Salir del Panel</button>
+        <button class="nav-btn" onclick="cerrarSesionAdmin()" style="margin-top:auto; background:#ef4444; color:white; border-radius:10px; padding:10px;">🚪 Salir</button>
     </div>
 
     <div class="main-content">
         <h1>Centro de Control Global</h1>
         
         <div id="tab-vitrina" class="seccion-admin activa">
-            <div class="stat-cards">
-                <div class="card">
-                    <h3>Total Publicaciones Activas</h3>
-                    <div class="number" id="stat-posts">0</div>
-                </div>
-                <div class="card">
-                    <h3>Chat General</h3>
-                    <button class="btn-submit" style="background:#ef4444; margin-top:10px;" onclick="window.limpiarChatsViejos()">🧹 Forzar Limpieza 24h</button>
-                </div>
-            </div>
             <h3>Gestión de Publicaciones</h3>
             <table>
-                <thead>
-                    <tr><th>Foto</th><th>Vendedor</th><th>Producto</th><th>Zona</th><th>Fecha</th><th>Acción</th></tr>
-                </thead>
-                <tbody id="tabla-posts"><tr><td colspan="6" style="text-align: center;">Cargando...</td></tr></tbody>
+                <thead><tr><th>Foto</th><th>Vendedor</th><th>Producto</th><th>Zona</th><th>Acción</th></tr></thead>
+                <tbody id="tabla-posts"></tbody>
             </table>
         </div>
 
         <div id="tab-usuarios" class="seccion-admin">
-            <h3>Gestión de Clientes y Cobros</h3>
-            <p style="color: #94a3b8; font-size: 14px;">Aquí decides quién puede publicar en la vitrina. Si está en rojo, les pedirá que te paguen.</p>
+            <h3>Control de Cobros (Vitrinas)</h3>
             <table>
-                <thead>
-                    <tr><th>Nombre</th><th>Celular</th><th>Registro</th><th>Estado Vitrina</th><th>Acción</th></tr>
-                </thead>
-                <tbody id="tabla-usuarios"><tr><td colspan="5" style="text-align: center;">Cargando usuarios...</td></tr></tbody>
+                <thead><tr><th>Nombre</th><th>Celular</th><th>Estado Vitrina</th><th>Acción</th></tr></thead>
+                <tbody id="tabla-usuarios"></tbody>
             </table>
         </div>
-
+        
         <div id="tab-mensajes" class="seccion-admin">
-            <div class="form-box">
-                <h3>📢 Difusión Global a todos los Grupos</h3>
-                <textarea id="msg-global" rows="4" placeholder="Escribe el anuncio oficial aquí..."></textarea>
-                <button class="btn-submit" onclick="enviarMensajeMasivo()">Enviar a todas las salas 🚀</button>
-            </div>
-        </div>
-
-        <div id="tab-grupos" class="seccion-admin">
-            <div class="form-box">
-                <h3>🖼️ Cambiar Foto de un Grupo</h3>
-                <input type="text" id="grupo-nombre" placeholder="Nombre de la zona (Ej: HUANCAYO)">
-                <input type="text" id="grupo-foto" placeholder="URL de la imagen (Link)">
-                <button class="btn-submit" onclick="actualizarFotoGrupo()">Actualizar Foto</button>
-            </div>
-        </div>
-
-        <div id="tab-baneos" class="seccion-admin">
-            <div class="form-box">
-                <h3>🔨 Añadir a la Lista Negra</h3>
-                <input type="number" id="ban-phone" placeholder="Número de Celular del usuario">
-                <input type="text" id="ban-motivo" placeholder="Motivo del baneo (Opcional)">
-                <button class="btn-submit" style="background: #ef4444;" onclick="banearUsuario()">Bloquear Usuario</button>
-            </div>
-            <table>
-                <thead><tr><th>Celular</th><th>Motivo</th><th>Acción</th></tr></thead>
-                <tbody id="tabla-baneos"></tbody>
-            </table>
+            <h3>📢 Enviar Anuncio Global</h3>
+            <textarea id="msg-global" style="width:100%; height:100px; background:#0f172a; color:white; border-radius:10px; padding:10px;"></textarea>
+            <button class="btn-action btn-contact" style="margin-top:10px; width:100%; padding:15px;" onclick="enviarMensajeMasivo()">Lanzar a todos los grupos</button>
         </div>
     </div>
 
     <script type="module">
-        import { db, collection, onSnapshot, doc, deleteDoc, orderBy, query, addDoc, setDoc, updateDoc, getDocs } from "./firebase-engine.js";
+        import { db, collection, onSnapshot, doc, deleteDoc, orderBy, query, addDoc, updateDoc } from "./firebase-engine.js";
 
-        // --- SISTEMA DE PESTAÑAS ---
+        // --- LÓGICA DE ACCESO ---
+        window.validarAcceso = function() {
+            const pass = document.getElementById('pass-input').value;
+            // CONTRASEÑA AQUÍ
+            if (pass.trim() === "Rantiy2026") {
+                localStorage.setItem('admin_session', 'ADMIN_SUPREMO');
+                document.getElementById('login-overlay').style.display = 'none';
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+
+        // Verificar si ya está logueado al cargar
+        if (localStorage.getItem('admin_session') === "ADMIN_SUPREMO") {
+            document.getElementById('login-overlay').style.display = 'none';
+        }
+
+        // --- FUNCIONES DEL PANEL ---
         window.cambiarTab = function(tabId, elemento) {
             document.querySelectorAll('.seccion-admin').forEach(s => s.classList.remove('activa'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -151,144 +121,54 @@
             elemento.classList.add('active');
         }
 
-        // --- CARGAR VITRINA ---
-        const qPosts = query(collection(db, "inventory"), orderBy("timestamp", "desc"));
-        onSnapshot(qPosts, (snapshot) => {
-            const tbody = document.getElementById('tabla-posts');
-            document.getElementById('stat-posts').innerText = snapshot.size;
-            if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay publicaciones.</td></tr>'; return; }
+        // Cargar Vitrina
+        onSnapshot(query(collection(db, "inventory"), orderBy("timestamp", "desc")), (snapshot) => {
             let html = '';
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
-                const fecha = new Date(data.timestamp).toLocaleDateString();
-                const imgSrc = (data.img && data.img.startsWith('data:image')) ? data.img : 'https://via.placeholder.com/50';
-                const wsLink = `https://wa.me/51${data.sellerPhone}`; 
-                html += `
-                <tr>
-                    <td><img src="${imgSrc}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;"></td>
-                    <td><b>${data.sellerName}</b><br><span style="font-size:11px; color:#94a3b8;">${data.sellerPhone}</span></td>
-                    <td>${data.name}<br><span style="color:#22c55e; font-weight:bold;">S/ ${data.price}</span></td>
-                    <td>${data.loc}</td><td>${fecha}</td>
-                    <td>
-                        <a href="${wsLink}" target="_blank" class="btn-action btn-contact">WhatsApp</a>
-                        <button class="btn-action btn-delete" onclick="window.borrarPost('${docSnap.id}')">Borrar</button>
-                    </td>
+                html += `<tr>
+                    <td><img src="${data.img}" style="width:40px; border-radius:5px;"></td>
+                    <td>${data.sellerName}</td>
+                    <td>${data.name}</td>
+                    <td>${data.loc}</td>
+                    <td><button class="btn-action btn-delete" onclick="borrarPost('${docSnap.id}')">Eliminar</button></td>
                 </tr>`;
             });
-            tbody.innerHTML = html;
+            document.getElementById('tabla-posts').innerHTML = html;
         });
 
-        // --- CARGAR USUARIOS PARA COBRAR / HABILITAR VITRINA ---
-        const qUsers = query(collection(db, "Usuarios"));
-        onSnapshot(qUsers, (snapshot) => {
-            const tbody = document.getElementById('tabla-usuarios');
-            if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay clientes registrados.</td></tr>'; return; }
+        // Cargar Usuarios y su Vitrina
+        onSnapshot(collection(db, "Usuarios"), (snapshot) => {
             let html = '';
             snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
-                const vitrinaActiva = data.vitrinaActiva === true; 
-                const wsLink = `https://wa.me/51${data.telefono}?text=Hola%20${data.nombre},%20sobre%20tu%20vitrina%20en%20Rantiy...`; 
-                
-                html += `
-                <tr>
-                    <td><b>${data.nombre}</b></td>
+                const activa = data.vitrinaActiva === true;
+                html += `<tr>
+                    <td>${data.nombre}</td>
                     <td>${data.telefono}</td>
-                    <td style="font-size:12px; color:#94a3b8;">${data.fechaRegistro || 'N/A'}</td>
-                    <td>${vitrinaActiva ? '<span class="badge-on">✅ Habilitado</span>' : '<span class="badge-off">❌ Pausado (Debe Pagar)</span>'}</td>
+                    <td>${activa ? '<span class="badge-on">Habilitado</span>' : '<span class="badge-off">Pausado</span>'}</td>
                     <td>
-                        <button class="btn-action ${vitrinaActiva ? 'btn-delete' : 'btn-contact'}" 
-                                onclick="window.toggleVitrina('${docSnap.id}', ${!vitrinaActiva})">
-                            ${vitrinaActiva ? 'Pausar Vitrina' : 'Activar Vitrina'}
+                        <button class="btn-action btn-contact" onclick="toggleVitrina('${docSnap.id}', ${!activa})">
+                            ${activa ? 'Desactivar' : 'Activar Pago'}
                         </button>
-                        <a href="${wsLink}" target="_blank" class="btn-action btn-warning">Hablar</a>
                     </td>
                 </tr>`;
             });
-            tbody.innerHTML = html;
+            document.getElementById('tabla-usuarios').innerHTML = html;
         });
 
-        // --- FUNCIÓN PARA ACTIVAR/DESACTIVAR VITRINA AL USUARIO ---
-        window.toggleVitrina = async function(userId, nuevoEstado) {
-            try {
-                await updateDoc(doc(db, "Usuarios", userId), { vitrinaActiva: nuevoEstado });
-            } catch (e) { alert("Error al actualizar la vitrina del usuario."); }
-        };
+        window.toggleVitrina = async (id, estado) => {
+            await updateDoc(doc(db, "Usuarios", id), { vitrinaActiva: estado });
+        }
 
-        // --- FORZAR LIMPIEZA DE CHATS VIEJOS (24h) ---
-        window.limpiarChatsViejos = async function() {
-            if(!confirm("¿Deseas borrar los mensajes con más de 24 horas en todas las zonas?")) return;
-            try {
-                const ahora = Date.now();
-                const unDia = 24 * 60 * 60 * 1000;
-                const chatsRef = collection(db, "chats_zonas");
-                const snapshot = await getDocs(chatsRef);
-                let borrados = 0;
-                
-                snapshot.forEach(async (docSnap) => {
-                    const data = docSnap.data();
-                    if (data.timestamp && (ahora - data.timestamp > unDia)) {
-                        await deleteDoc(doc(db, "chats_zonas", docSnap.id));
-                        borrados++;
-                    }
-                });
-                alert(`Limpieza terminada. Mensajes eliminados: ${borrados}`);
-            } catch (error) { alert("Error durante la limpieza."); }
-        };
+        window.borrarPost = async (id) => {
+            if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "inventory", id));
+        }
 
-        // --- DEMÁS FUNCIONES ORIGINALES ---
-        window.borrarPost = async function(id) {
-            if(confirm("¿Eliminar publicación permanentemente?")) { await deleteDoc(doc(db, "inventory", id)); }
-        };
-
-        window.enviarMensajeMasivo = async function() {
-            const texto = document.getElementById('msg-global').value;
-            if(!texto) return alert("Escribe un mensaje");
-            try {
-                await addDoc(collection(db, "chats_zonas"), {
-                    sender: "ADMINISTRADOR", text: texto, zone: "GLOBAL", timestamp: Date.now()
-                });
-                alert("Mensaje enviado."); document.getElementById('msg-global').value = '';
-            } catch(e) { alert("Error al enviar."); }
-        };
-
-        window.actualizarFotoGrupo = async function() {
-            const zona = document.getElementById('grupo-nombre').value.toUpperCase();
-            const urlFoto = document.getElementById('grupo-foto').value;
-            if(!zona || !urlFoto) return alert("Llena ambos campos");
-            try {
-                await setDoc(doc(db, "zonas_metadata", zona), { fotoUrl: urlFoto, actualizado: Date.now() });
-                alert(`Foto actualizada para ${zona}`);
-            } catch(e) { alert("Error al guardar."); }
-        };
-
-        window.banearUsuario = async function() {
-            const phone = document.getElementById('ban-phone').value;
-            const motivo = document.getElementById('ban-motivo').value || "Infracción de normas";
-            if(!phone) return alert("Ingresa un número");
-            try {
-                await setDoc(doc(db, "usuarios_baneados", phone), { phone: phone, motivo: motivo, fecha: Date.now() });
-                alert("Usuario bloqueado.");
-            } catch(e) { alert("Error al banear."); }
-        };
-
-        onSnapshot(collection(db, "usuarios_baneados"), (snapshot) => {
-            const tbody = document.getElementById('tabla-baneos');
-            if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="3">No hay baneados.</td></tr>'; return; }
-            let html = '';
-            snapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                html += `<tr><td>${data.phone}</td><td>${data.motivo}</td><td><button class="btn-action btn-contact" onclick="window.desbanearUsuario('${docSnap.id}')">Perdonar</button></td></tr>`;
-            });
-            tbody.innerHTML = html;
-        });
-
-        window.desbanearUsuario = async function(id) {
-            if(confirm("¿Quitar de la lista negra?")) { await deleteDoc(doc(db, "usuarios_baneados", id)); }
-        };
-
-        window.cerrarSesionAdmin = function() {
-            localStorage.removeItem('admin_session'); window.location.href = 'index.html';
-        };
+        window.cerrarSesionAdmin = () => {
+            localStorage.removeItem('admin_session');
+            location.reload();
+        }
     </script>
 </body>
 </html>
