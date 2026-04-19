@@ -70,7 +70,8 @@
     <div class="sidebar">
         <div class="logo-admin">MODO DIOS 👑</div>
         <button class="nav-btn active" onclick="cambiarPestana('posts', this)">📊 Control de Posts</button>
-        <button class="nav-btn" onclick="cambiarPestana('chats', this)">👁️ Grupos y Chats</button>
+        <button class="nav-btn" onclick="cambiarPestana('chats', this)">👁️ Monitor de Chats</button>
+        <button class="nav-btn" onclick="cambiarPestana('grupos', this)" style="color:#22c55e;">🖼️ Gestión de Grupos</button>
         <button class="nav-btn" onclick="cambiarPestana('usuarios', this)">👥 Miembros Activos</button>
         <button class="nav-btn" onclick="cambiarPestana('adminpost', this)">🛍️ Publicar Anclado</button>
         <button class="nav-btn" onclick="cambiarPestana('global', this)">📢 Alerta Global</button>
@@ -97,9 +98,26 @@
             </table>
         </div>
 
+        <div id="panel-grupos" class="section-panel">
+            <h1>Gestión de Grupos y Fotos</h1>
+            <p style="color:#94a3b8; font-size:14px;">Sube una foto de perfil personalizada para cada grupo. Esto hará que la app luzca mucho más profesional.</p>
+            
+            <div class="form-box">
+                <input type="text" id="group-name-pic" class="rr-field" placeholder="Nombre exacto del Grupo (Ej: Huancayo o GLOBAL)">
+                <label style="color:#94a3b8; font-size:12px; margin-bottom:5px; display:block;">Seleccionar Foto de Perfil:</label>
+                <input type="file" id="group-pic-upload" class="rr-field" accept="image/*">
+                <button class="btn-action btn-success" style="width:100%;" onclick="updateGroupPic()">AÑADIR / ACTUALIZAR FOTO DE GRUPO</button>
+            </div>
+
+            <h3 style="margin-top: 30px;">Tabla de Grupos Configurados</h3>
+            <table>
+                <thead><tr><th>Foto de Perfil</th><th>Nombre del Grupo</th><th>Acciones</th></tr></thead>
+                <tbody id="tabla-grupos"><tr><td colspan="3">Cargando grupos...</td></tr></tbody>
+            </table>
+        </div>
+
         <div id="panel-usuarios" class="section-panel">
             <h1>Radar de Miembros Activos</h1>
-            <p style="color:#94a3b8; font-size:14px;">Usuarios detectados recientemente publicando o chateando en la app.</p>
             <div class="stat-grid">
                 <div class="card" style="border-top-color: #22c55e;"><div class="label">Usuarios Detectados</div><div class="number" id="stat-users">0</div></div>
             </div>
@@ -111,7 +129,6 @@
 
         <div id="panel-adminpost" class="section-panel">
             <h1>Crear Publicación ANCLADA Y LLAMATIVA</h1>
-            <p style="color:#94a3b8; font-size:14px;">Estas publicaciones aparecerán PRIMERO y brillarán en la pantalla principal.</p>
             <div class="form-box">
                 <input type="text" id="ap-title" class="rr-field" placeholder="Título Impactante">
                 <label style="color:#94a3b8; font-size:12px; margin-bottom:5px; display:block;">Subir Imagen (Recomendado):</label>
@@ -141,14 +158,6 @@
                     <button class="btn-action btn-success" onclick="setPaywall(false)">MODO GRATUITO 🔓</button>
                 </div>
                 <div id="paywall-status" style="margin-top: 15px; font-weight: 900; font-size: 14px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">ESTADO: Cargando...</div>
-            </div>
-
-            <div class="card" style="border-top-color: #3b82f6; max-width: 600px; margin-top: 20px;">
-                <h3>🖼️ Modificar Foto de un Grupo</h3>
-                <p style="color:#94a3b8; font-size:13px;">Escribe el nombre exacto de la sala y sube la nueva imagen que verán todos.</p>
-                <input type="text" id="group-name-pic" class="rr-field" placeholder="Nombre de la Sala (Ej: Huancayo o GLOBAL)">
-                <input type="file" id="group-pic-upload" class="rr-field" accept="image/*">
-                <button class="btn-action btn-primary" onclick="updateGroupPic()">ACTUALIZAR FOTO DE GRUPO</button>
             </div>
         </div>
 
@@ -237,6 +246,23 @@
                 }
             });
 
+            // TABLA DE GRUPOS CONFIGURADOS
+            onSnapshot(collection(db, "zonas_config"), (snapshot) => {
+                let html = '';
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const groupName = docSnap.id; 
+                    html += `<tr>
+                        <td><img src="${escapeHTML(data.profilePic || 'https://via.placeholder.com/150/334155/ffffff?text=Grupo')}" style="border-radius:50%; width:60px; height:60px; border: 2px solid #3b82f6;"></td>
+                        <td style="font-size: 16px; font-weight: 800; color: #f8fafc;">${escapeHTML(groupName)}</td>
+                        <td>
+                            <button class="btn-action btn-delete" onclick="borrarRegistro('zonas_config', '${groupName}')">Eliminar Foto</button>
+                        </td>
+                    </tr>`;
+                });
+                document.getElementById('tabla-grupos').innerHTML = html || '<tr><td colspan="3">Aún no hay fotos de grupos configuradas.</td></tr>';
+            });
+
             // POSTS
             onSnapshot(query(collection(db, "inventory"), orderBy("timestamp", "desc")), (snapshot) => {
                 let html = '';
@@ -321,26 +347,27 @@
 
         window.borrarRegistro = async function(col, id) { if(confirm('¿Eliminar?')) await deleteDoc(doc(db, col, id)); };
         
-        // --- NUEVAS FUNCIONALIDADES DE ADMIN ---
+        // --- FUNCIONES NUEVAS Y GESTIÓN DE GRUPOS ---
+
+        window.updateGroupPic = function() {
+            const zone = document.getElementById('group-name-pic').value.trim().toUpperCase();
+            const file = document.getElementById('group-pic-upload').files[0];
+            if(!zone || !file) return alert("Por favor escribe el nombre exacto de la sala y selecciona una imagen.");
+            
+            procesarImagenBase64(file, async (base64) => {
+                // Se guarda en la colección "zonas_config" donde el ID del documento es el nombre del grupo
+                await setDoc(doc(db, "zonas_config", zone), { profilePic: base64 }, { merge: true });
+                alert(`¡Foto de perfil guardada exitosamente para el grupo: ${zone}!`);
+                document.getElementById('group-name-pic').value = "";
+                document.getElementById('group-pic-upload').value = "";
+            });
+        };
 
         window.setPaywall = async function(estado) {
             if(confirm(`¿Estás seguro de ${estado ? 'ACTIVAR los cobros' : 'DESACTIVAR los cobros y ponerlo gratis'}?`)) {
                 await setDoc(doc(db, "system", "config"), { paywallActive: estado }, { merge: true });
                 alert("Configuración actualizada.");
             }
-        };
-
-        window.updateGroupPic = function() {
-            const zone = document.getElementById('group-name-pic').value.trim().toUpperCase();
-            const file = document.getElementById('group-pic-upload').files[0];
-            if(!zone || !file) return alert("Por favor escribe el nombre de la sala y selecciona una imagen.");
-            
-            procesarImagenBase64(file, async (base64) => {
-                await setDoc(doc(db, "zonas_config", zone), { profilePic: base64 }, { merge: true });
-                alert(`¡Foto de perfil actualizada para la sala: ${zone}!`);
-                document.getElementById('group-name-pic').value = "";
-                document.getElementById('group-pic-upload').value = "";
-            });
         };
 
         window.enviarMensajeMasivo = function() {
@@ -369,7 +396,7 @@
                 const finalImg = base64 || 'https://via.placeholder.com/150/f59e0b/ffffff?text=OFICIAL';
                 await addDoc(collection(db, "inventory"), {
                     name: "🔥 " + title, price: "GRATIS", loc: "Todas", note: `[CAT:Aviso]`, formDetails: "OFICIAL", sellerName: "RANTIY OFICIAL", sellerPhone: "CENTRAL", img: finalImg,
-                    timestamp: Date.now() + 9999999999 // Este timestamp gigante lo ancla para siempre arriba
+                    timestamp: Date.now() + 9999999999 
                 });
                 alert("¡Post anclado creado exitosamente!"); 
                 document.getElementById('ap-title').value = "";
@@ -396,7 +423,7 @@
 
         window.copiarBan = function(tel) {
             document.getElementById('ban-phone').value = tel.replace(/\D/g, '');
-            cambiarPestana('banned', document.querySelectorAll('.nav-btn')[6]); // Indice 6 porque agregamos boton de Sistema
+            cambiarPestana('banned', document.querySelectorAll('.nav-btn')[7]); 
         };
 
         if (localStorage.getItem('admin_session') === "ADMIN_SUPREMO") {
