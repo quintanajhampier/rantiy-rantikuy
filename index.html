@@ -36,7 +36,7 @@
 
         /* --- HEADER --- */
         .header { background: var(--glass); backdrop-filter: blur(25px); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .logo-rr { width: 50px; height: 50px; background: linear-gradient(135deg, var(--azul), #1e40af); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 20px; cursor: pointer; }
+        .logo-rr { width: 50px; height: 50px; background: linear-gradient(135deg, var(--azul), #1e40af); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 20px; cursor: pointer; user-select: none; }
 
         /* --- BÚSQUEDA Y FILTROS --- */
         .search-container { padding: 0 20px; margin-top: 15px; }
@@ -67,6 +67,35 @@
         .post-card-price { color: var(--azul); font-weight: 900; font-size: 12px; margin-bottom: 6px; }
         .btn-contact-mini { background: var(--oscuro); color: white; border: none; padding: 6px; border-radius: 8px; font-weight: 800; font-size: 10px; width: 100%; cursor: pointer; }
         .load-more-btn { background: var(--azul-glow); color: var(--azul); border: none; padding: 12px; border-radius: 15px; font-weight: 800; font-size: 12px; margin: 0 20px 20px 20px; cursor: pointer; display: none; }
+
+        /* --- MODO DIOS / ADMIN POSTS --- */
+        .post-card.admin-post {
+            border: 2px solid #fbbf24;
+            background: linear-gradient(to bottom right, #fffbeb, #ffffff);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+        }
+        .admin-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 900;
+            z-index: 20;
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+            white-space: nowrap;
+            letter-spacing: 1px;
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
 
         /* --- STUDIO SUBIDA --- */
         .view-padding-inner { padding: 0 20px 30px 20px; }
@@ -235,6 +264,17 @@
 </nav>
 
 <script type="module">
+    // --- SEGURIDAD ANTI-INSPECCIÓN DE CÓDIGO ---
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('keydown', event => {
+        if (event.keyCode === 123 || 
+           (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 74 || event.keyCode === 67)) || 
+           (event.ctrlKey && event.keyCode === 85)) {
+            event.preventDefault();
+            return false;
+        }
+    });
+
     window.escapeHTML = function(str) {
         if (typeof str !== 'string') return '';
         return str.replace(/[&<>'"]/g, tag => ({
@@ -291,7 +331,7 @@
 
     window.checkAdminAccess = function() {
         window.adminClicks++;
-        if(window.adminClicks >= 5) {
+        if(window.adminClicks >= 10) { // Clicks requeridos cambiados a 10
             window.adminClicks = 0;
             let pass = prompt("MODO DIOS: Ingresa la clave de fundador:");
             if(pass === "R@ntiyZ3us!99X") { 
@@ -392,10 +432,9 @@
         el.classList.add('active');
         if(t === 'home') window.renderFeed();
         if(t === 'chat') {
-            setTimeout(() => {
-                const box = document.getElementById('group-msgs');
-                if(box) box.scrollTop = box.scrollHeight;
-            }, 100);
+            // Forzamos el scroll varias veces para garantizar que cargue y baje en la interfaz
+            setTimeout(() => { const box = document.getElementById('group-msgs'); if(box) box.scrollTop = box.scrollHeight; }, 50);
+            setTimeout(() => { const box = document.getElementById('group-msgs'); if(box) box.scrollTop = box.scrollHeight; }, 300);
         }
     }
 
@@ -430,8 +469,14 @@
         if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
         if(search) posts = posts.filter(p => p.name && p.name.toLowerCase().includes(search));
 
-        container.innerHTML = posts.map(p => {
-            const isMyPost = p.sellerName === window.currentUser;
+        // Separar posts del ADMIN para anclarlos arriba
+        const adminPosts = posts.filter(p => p.sellerName === 'ADMINISTRADOR');
+        const normalPosts = posts.filter(p => p.sellerName !== 'ADMINISTRADOR');
+        const sortedPosts = [...adminPosts, ...normalPosts];
+
+        container.innerHTML = sortedPosts.map(p => {
+            const isAdmin = p.sellerName === 'ADMINISTRADOR';
+            const isMyPost = p.sellerName === window.currentUser && !isAdmin; // Nadie puede borrar post del admin excepto él desde panel
             const imgSrc = (p.img && p.img !== 'https://via.placeholder.com/150') ? window.escapeHTML(p.img) : '';
             const safeName = window.escapeHTML(p.name);
             const safeLoc = window.escapeHTML(p.loc || 'Global');
@@ -440,7 +485,8 @@
             const safePhone = window.escapeHTML(p.sellerPhone || '000000000');
 
             return `
-            <div class="post-card">
+            <div class="post-card ${isAdmin ? 'admin-post' : ''}">
+                ${isAdmin ? `<div class="admin-badge">🚨 ANUNCIO OFICIAL</div>` : ''}
                 ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.9); border:none; border-radius:50%; width:22px; height:22px; font-size:10px; cursor:pointer; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">🗑️</button>` : ''}
                 <div class="post-card-img-wrapper" onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')">
                     ${imgSrc ? `<img src="${imgSrc}" loading="lazy">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
@@ -496,7 +542,8 @@
             }
         });
         box.innerHTML = msgsHTML;
-        box.scrollTop = box.scrollHeight; 
+        // Forzamos la actualización visual del scroll al recibir un mensaje
+        setTimeout(() => { box.scrollTop = box.scrollHeight; }, 100);
     });
 
     window.sendGroupMsg = async function(textOverride = null, imgBase64 = null) {
