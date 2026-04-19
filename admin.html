@@ -15,7 +15,7 @@
         .login-box button { background: #ef4444; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%; font-size: 16px; transition: 0.3s; }
         .login-box button:hover { background: #dc2626; }
         
-        .sidebar { width: 260px; background-color: #1e293b; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #334155; }
+        .sidebar { width: 260px; background-color: #1e293b; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #334155; overflow-y: auto;}
         .logo-admin { background: linear-gradient(135deg, #ef4444, #991b1b); padding: 15px; border-radius: 15px; text-align: center; font-weight: 900; font-size: 22px; margin-bottom: 30px; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
         .nav-btn { background: none; border: none; color: #cbd5e1; text-align: left; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: 800; margin-bottom: 10px; font-size: 14px; transition: 0.2s; display:flex; align-items:center; gap:10px;}
         .nav-btn:hover { background: rgba(255,255,255,0.05); }
@@ -48,11 +48,10 @@
 
         .form-box { background: #1e293b; padding: 30px; border-radius: 15px; border: 1px solid #334155; max-width: 600px; margin-bottom: 20px;}
         .rr-field { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 15px; font-family: inherit; box-sizing: border-box; }
-        .rr-field:focus { outline: none; border-color: #3b82f6; }
         
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; }
         .badge-zone { background: #334155; color: #cbd5e1; }
-        .badge-admin { background: #ef4444; color: white; }
+        .badge-admin { background: linear-gradient(45deg, #ef4444, #f59e0b); color: white; box-shadow: 0 0 10px rgba(239,68,68,0.5); }
     </style>
 </head>
 <body>
@@ -60,7 +59,6 @@
     <div id="login-overlay">
         <div class="login-box">
             <h2>ACCESO RESTRINGIDO</h2>
-            <p style="font-size:12px; color:#94a3b8;">Identificación requerida</p>
             <input type="password" id="passInput" placeholder="Contraseña Maestra">
             <button onclick="validarEntrada()">INICIAR SISTEMA</button>
             <p id="error-msg" style="color:#ef4444; display:none; margin-top:15px; font-weight:bold; font-size:14px;">Acceso Denegado</p>
@@ -70,84 +68,72 @@
     <div class="sidebar">
         <div class="logo-admin">MODO DIOS 👑</div>
         <button class="nav-btn active" onclick="cambiarPestana('posts', this)">📊 Control de Posts</button>
-        <button class="nav-btn" onclick="cambiarPestana('chats', this)">👁️ Espiar Chats</button>
-        <button class="nav-btn" onclick="cambiarPestana('adminpost', this)">🛍️ Publicar Oficial</button>
-        <button class="nav-btn" onclick="cambiarPestana('global', this)">📢 Transmisión</button>
-        <button class="nav-btn" onclick="cambiarPestana('banned', this)" style="color:#fca5a5;">🚫 Lista Negra</button>
+        <button class="nav-btn" onclick="cambiarPestana('chats', this)">👁️ Grupos y Chats</button>
+        <button class="nav-btn" onclick="cambiarPestana('usuarios', this)">👥 Miembros Activos</button>
+        <button class="nav-btn" onclick="cambiarPestana('adminpost', this)">🛍️ Publicar Anclado</button>
+        <button class="nav-btn" onclick="cambiarPestana('global', this)">📢 Alerta Global</button>
+        <button class="nav-btn" onclick="cambiarPestana('banned', this)" style="color:#fca5a5;">🚫 Lista Negra (Baneos)</button>
         <button class="nav-btn btn-logout" onclick="cerrarSesionAdmin()">🚪 Desconectar</button>
     </div>
 
     <div class="main-content">
         
         <div id="panel-posts" class="section-panel active">
-            <h1>Inventario Global <button class="btn-action btn-nuke" onclick="limpiarTodoInventario()">Borrar TODO (Reset)</button></h1>
-            <div class="stat-grid">
-                <div class="card"><div class="label">Publicaciones Activas</div><div class="number" id="stat-posts">0</div></div>
-            </div>
+            <h1>Inventario Global</h1>
             <table>
                 <thead><tr><th>Foto</th><th>Vendedor</th><th>Producto</th><th>Zona</th><th>Acciones</th></tr></thead>
-                <tbody id="tabla-posts"><tr><td colspan="5" style="text-align: center; color:#94a3b8;">Cargando base de datos...</td></tr></tbody>
+                <tbody id="tabla-posts"><tr><td colspan="5">Cargando...</td></tr></tbody>
             </table>
         </div>
 
         <div id="panel-chats" class="section-panel">
-            <h1>Comunicaciones en Vivo <button class="btn-action btn-nuke" onclick="bombaNuclearChat()">💣 Limpiar una Sala</button></h1>
+            <h1>Monitor de Salas (Chats) <button class="btn-action btn-nuke" onclick="bombaNuclearChat()">💣 Limpiar una Sala</button></h1>
+            <table>
+                <thead><tr><th>Fecha</th><th>Sala/Grupo</th><th>Usuario</th><th>Mensaje</th><th>Acciones</th></tr></thead>
+                <tbody id="tabla-chats"><tr><td colspan="5">Cargando...</td></tr></tbody>
+            </table>
+        </div>
+
+        <div id="panel-usuarios" class="section-panel">
+            <h1>Radar de Miembros Activos</h1>
+            <p style="color:#94a3b8; font-size:14px;">Usuarios detectados recientemente publicando o chateando en la app.</p>
             <div class="stat-grid">
-                <div class="card" style="border-top-color: #3b82f6;"><div class="label">Mensajes Interceptados</div><div class="number" id="stat-chats">0</div></div>
+                <div class="card" style="border-top-color: #22c55e;"><div class="label">Usuarios Detectados</div><div class="number" id="stat-users">0</div></div>
             </div>
             <table>
-                <thead><tr><th>Fecha</th><th>Zona</th><th>Usuario / Tel.</th><th>Mensaje</th><th>Acciones</th></tr></thead>
-                <tbody id="tabla-chats"><tr><td colspan="5" style="text-align: center; color:#94a3b8;">Conectando a satélites...</td></tr></tbody>
+                <thead><tr><th>Nombre Registrado</th><th>Teléfono</th><th>Última Actividad</th><th>Acciones Rápidas</th></tr></thead>
+                <tbody id="tabla-usuarios"><tr><td colspan="4">Escaneando sistema...</td></tr></tbody>
             </table>
         </div>
 
         <div id="panel-adminpost" class="section-panel">
-            <h1>Crear Publicación Oficial</h1>
-            <p style="color:#94a3b8; font-size:14px;">Publica un producto, servicio o anuncio fijado que aparecerá a nombre de Ranti y Rantikuy Oficial.</p>
+            <h1>Crear Publicación ANCLADA Y LLAMATIVA</h1>
+            <p style="color:#94a3b8; font-size:14px;">Estas publicaciones aparecerán PRIMERO y brillarán en la pantalla principal.</p>
             <div class="form-box">
-                <input type="text" id="ap-title" class="rr-field" placeholder="Título de la publicación">
-                <input type="number" id="ap-price" class="rr-field" placeholder="Precio (Opcional)">
-                <select id="ap-cat" class="rr-field">
-                    <option value="Servicio">Categoría: Servicio</option>
-                    <option value="Venta">Categoría: Venta</option>
-                    <option value="Comida">Categoría: Comida</option>
-                    <option value="Taxi">Categoría: Taxi</option>
-                    <option value="Otros">Categoría: Otros</option>
-                </select>
-                <select id="ap-loc" class="rr-field">
-                    <option value="Todas">Global (Todas las ciudades)</option>
-                    <option value="Huancayo">Huancayo</option>
-                    <option value="El Tambo">El Tambo</option>
-                    <option value="Chilca">Chilca</option>
-                    <option value="Pilcomayo">Pilcomayo</option>
-                </select>
-                <input type="text" id="ap-img" class="rr-field" placeholder="URL de la Imagen (opcional)">
-                <button class="btn-action btn-primary" style="width:100%;" onclick="crearPostOficial()">PUBLICAR COMO RANTIY 👑</button>
+                <input type="text" id="ap-title" class="rr-field" placeholder="Título Impactante">
+                <input type="text" id="ap-img" class="rr-field" placeholder="URL de la Imagen (Opcional)">
+                <button class="btn-action btn-primary" style="width:100%;" onclick="crearPostOficial()">PUBLICAR COMO DIOS 👑</button>
             </div>
         </div>
 
         <div id="panel-global" class="section-panel">
-            <h1>Transmisión Global</h1>
-            <p style="color:#94a3b8; font-size:14px;">Envía un mensaje a TODAS las salas de chat instantáneamente.</p>
+            <h1>Alerta Global a todos los Grupos</h1>
             <div class="form-box">
-                <textarea id="msg-masivo" class="rr-field" style="height: 150px; resize: none;" placeholder="Ej: 📢 ATENCIÓN: Mantenimiento del servidor..."></textarea>
-                <button class="btn-action btn-primary" style="width:100%;" onclick="enviarMensajeMasivo()">ENVIAR ALERTA GLOBAL 🚀</button>
+                <textarea id="msg-masivo" class="rr-field" style="height: 100px;" placeholder="Mensaje para todos..."></textarea>
+                <button class="btn-action btn-primary" style="width:100%;" onclick="enviarMensajeMasivo()">ENVIAR ALERTA 🚀</button>
             </div>
         </div>
 
         <div id="panel-banned" class="section-panel">
-            <h1 style="color:#fca5a5;">Lista Negra (Usuarios Bloqueados)</h1>
-            <p style="color:#94a3b8; font-size:14px;">Registra el número de teléfono de infractores. (Nota: Se requerirá actualizar el index.html para aplicar el bloqueo real).</p>
-            
+            <h1 style="color:#fca5a5;">Lista Negra (Usuarios Expulsados)</h1>
             <div class="form-box" style="display:flex; gap:10px;">
-                <input type="number" id="ban-phone" class="rr-field" style="margin-bottom:0;" placeholder="Ej: 999888777">
-                <input type="text" id="ban-reason" class="rr-field" style="margin-bottom:0;" placeholder="Motivo (Opcional)">
+                <input type="number" id="ban-phone" class="rr-field" placeholder="Ej: 999888777">
+                <input type="text" id="ban-reason" class="rr-field" placeholder="Motivo">
                 <button class="btn-action btn-nuke" style="padding: 12px 20px;" onclick="banearUsuario()">BLOQUEAR 🚫</button>
             </div>
-
             <table>
-                <thead><tr><th>Teléfono Baneado</th><th>Motivo</th><th>Fecha</th><th>Acción</th></tr></thead>
-                <tbody id="tabla-banned"><tr><td colspan="4" style="text-align: center; color:#94a3b8;">Cargando lista negra...</td></tr></tbody>
+                <thead><tr><th>Teléfono Baneado</th><th>Motivo</th><th>Acción</th></tr></thead>
+                <tbody id="tabla-banned"><tr><td colspan="3">Cargando...</td></tr></tbody>
             </table>
         </div>
 
@@ -170,198 +156,145 @@
             } else { document.getElementById('error-msg').style.display = 'block'; }
         }
 
-        document.getElementById('passInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') validarEntrada();
-        });
+        document.getElementById('passInput').addEventListener('keypress', function (e) { if (e.key === 'Enter') validarEntrada(); });
 
-        window.cerrarSesionAdmin = function() {
-            localStorage.removeItem('admin_session');
-            window.location.reload();
-        };
+        window.cerrarSesionAdmin = function() { localStorage.removeItem('admin_session'); window.location.reload(); };
 
-        function formatearFecha(ts) {
-            if(!ts) return "N/A";
-            const d = new Date(ts);
-            return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }
-        
-        function escapeHTML(str) {
-            if (typeof str !== 'string') return '';
-            return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
-        }
+        function escapeHTML(str) { return typeof str === 'string' ? str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)) : ''; }
     </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, doc, deleteDoc, addDoc, orderBy, query, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
-            authDomain: "rantiy-y-rantikuy.firebaseapp.com",
-            projectId: "rantiy-y-rantikuy",
-            storageBucket: "rantiy-y-rantikuy.firebasestorage.app",
-            messagingSenderId: "49676513708",
-            appId: "1:49676513708:web:943ad781c98cb7bac78a09"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw", authDomain: "rantiy-y-rantikuy.firebaseapp.com", projectId: "rantiy-y-rantikuy", storageBucket: "rantiy-y-rantikuy.firebasestorage.app", messagingSenderId: "49676513708", appId: "1:49676513708:web:943ad781c98cb7bac78a09" };
+        const app = initializeApp(firebaseConfig); const db = getFirestore(app);
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Exponer a global para botones HTML
         window.db = db; window.deleteDoc = deleteDoc; window.doc = doc; window.addDoc = addDoc; window.collection = collection; window.getDocs = getDocs; window.query = query; window.where = where;
 
         window.iniciarFirebase = function() {
-            // 1. POSTS
-            const qPosts = query(collection(db, "inventory"), orderBy("timestamp", "desc"));
-            onSnapshot(qPosts, (snapshot) => {
-                const tbody = document.getElementById('tabla-posts');
-                document.getElementById('stat-posts').innerText = snapshot.size;
-                if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay publicaciones.</td></tr>'; return; }
+            let activeUsers = new Map(); // Para rastrear usuarios únicos
+
+            // POSTS
+            onSnapshot(query(collection(db, "inventory"), orderBy("timestamp", "desc")), (snapshot) => {
                 let html = '';
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const esAdmin = data.sellerName === "RANTIY OFICIAL";
-                    html += `
-                    <tr style="${esAdmin ? 'background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6;' : ''}">
-                        <td><img src="${escapeHTML(data.img || 'https://via.placeholder.com/50')}"></td>
-                        <td><b>${escapeHTML(data.sellerName)}</b> ${esAdmin ? '<span class="badge badge-admin">OFICIAL</span>' : ''}<br><span style="color:#94a3b8; font-size:11px;">${escapeHTML(data.sellerPhone || '')}</span></td>
-                        <td>${escapeHTML(data.name)}<br><span style="color:#22c55e; font-weight:bold;">S/ ${data.price}</span></td>
+                    
+                    if(!esAdmin && data.sellerPhone) {
+                        activeUsers.set(data.sellerPhone, { name: data.sellerName, phone: data.sellerPhone, type: 'Publicó algo' });
+                    }
+
+                    html += `<tr style="${esAdmin ? 'background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b;' : ''}">
+                        <td><img src="${escapeHTML(data.img)}"></td>
+                        <td><b>${escapeHTML(data.sellerName)}</b> ${esAdmin ? '<span class="badge badge-admin">ANCLADO</span>' : ''}<br><span style="color:#94a3b8; font-size:11px;">${escapeHTML(data.sellerPhone || '')}</span></td>
+                        <td>${escapeHTML(data.name)}</td>
                         <td><span class="badge badge-zone">${escapeHTML(data.loc)}</span></td>
                         <td>
-                            <button class="btn-action btn-delete" onclick="borrarRegistro('inventory', '${docSnap.id}')">Borrar</button>
-                            ${!esAdmin ? `<button class="btn-action btn-ban" onclick="copiarBan('${escapeHTML(data.sellerPhone)}')">Banear Num</button>` : ''}
+                            <button class="btn-action btn-delete" onclick="borrarRegistro('inventory', '${docSnap.id}')">X</button>
+                            ${!esAdmin ? `<button class="btn-action btn-ban" onclick="copiarBan('${escapeHTML(data.sellerPhone)}')">Ban</button>` : ''}
                         </td>
                     </tr>`;
                 });
-                tbody.innerHTML = html;
+                document.getElementById('tabla-posts').innerHTML = html || '<tr><td colspan="5">Vacio</td></tr>';
+                renderizarUsuarios(activeUsers);
             });
 
-            // 2. CHATS
-            const qChats = query(collection(db, "chats_zonas"), orderBy("timestamp", "desc"), limit(200));
-            onSnapshot(qChats, (snapshot) => {
-                const tbody = document.getElementById('tabla-chats');
-                document.getElementById('stat-chats').innerText = snapshot.size;
-                if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay mensajes.</td></tr>'; return; }
+            // CHATS
+            onSnapshot(query(collection(db, "chats_zonas"), orderBy("timestamp", "desc"), limit(200)), (snapshot) => {
                 let html = '';
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     const esAdmin = data.sender === "ADMINISTRADOR";
-                    html += `
-                    <tr style="${esAdmin ? 'background: rgba(239, 68, 68, 0.1);' : ''}">
-                        <td style="color:#94a3b8; font-size:11px;">${formatearFecha(data.timestamp)}</td>
-                        <td><span class="badge badge-zone" style="${data.zone==='GLOBAL' ? 'background:#ef4444; color:white;' : ''}">${escapeHTML(data.zone)}</span></td>
+                    
+                    if(!esAdmin && data.phone && data.phone !== "CENTRAL") {
+                        activeUsers.set(data.phone, { name: data.sender, phone: data.phone, type: 'Enviando mensajes' });
+                    }
+
+                    html += `<tr style="${esAdmin ? 'background: rgba(239, 68, 68, 0.1);' : ''}">
+                        <td><span class="badge badge-zone">${escapeHTML(data.zone)}</span></td>
                         <td><b>${escapeHTML(data.sender)}</b><br><span style="color:#94a3b8; font-size:11px;">${escapeHTML(data.phone || '')}</span></td>
-                        <td style="max-width: 250px; word-wrap: break-word;">${data.img ? `<span style="color:#22c55e; font-size:11px;">[IMG]</span> ` : ''}${escapeHTML(data.text || '')}</td>
+                        <td style="max-width: 250px;">${escapeHTML(data.text || '')}</td>
                         <td>
                             <button class="btn-action btn-delete" onclick="borrarRegistro('chats_zonas', '${docSnap.id}')">X</button>
                             ${!esAdmin ? `<button class="btn-action btn-ban" onclick="copiarBan('${escapeHTML(data.phone)}')">Ban</button>` : ''}
                         </td>
                     </tr>`;
                 });
-                tbody.innerHTML = html;
+                document.getElementById('tabla-chats').innerHTML = html || '<tr><td colspan="5">Vacio</td></tr>';
+                renderizarUsuarios(activeUsers);
             });
 
-            // 3. LISTA NEGRA (BANEADOS)
-            const qBanned = query(collection(db, "banned_users"), orderBy("timestamp", "desc"));
-            onSnapshot(qBanned, (snapshot) => {
-                const tbody = document.getElementById('tabla-banned');
-                if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nadie en la lista negra.</td></tr>'; return; }
+            // BANEADOS (LISTA NEGRA)
+            onSnapshot(query(collection(db, "banned_users"), orderBy("timestamp", "desc")), (snapshot) => {
                 let html = '';
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    html += `
-                    <tr>
+                    html += `<tr>
                         <td style="color:#fca5a5; font-weight:bold; font-size:16px;">${escapeHTML(data.phone)}</td>
-                        <td>${escapeHTML(data.reason || 'Sin motivo')}</td>
-                        <td style="color:#94a3b8; font-size:11px;">${formatearFecha(data.timestamp)}</td>
+                        <td>${escapeHTML(data.reason)}</td>
                         <td><button class="btn-action btn-delete" onclick="borrarRegistro('banned_users', '${docSnap.id}')">Perdonar (Desbanear)</button></td>
                     </tr>`;
                 });
-                tbody.innerHTML = html;
+                document.getElementById('tabla-banned').innerHTML = html || '<tr><td colspan="3">Vacio</td></tr>';
             });
         };
 
-        // --- SUPERPODERES --- //
-        
-        window.borrarRegistro = async function(coleccion, id) {
-            if(confirm(`¿Eliminar este registro permanentemente?`)) { 
-                try { await deleteDoc(doc(db, coleccion, id)); } catch(e) { alert("Error: " + e.message); }
-            }
-        };
+        function renderizarUsuarios(mapa) {
+            let html = '';
+            document.getElementById('stat-users').innerText = mapa.size;
+            mapa.forEach(user => {
+                html += `<tr>
+                    <td><b>${escapeHTML(user.name)}</b></td>
+                    <td style="color:#3b82f6; font-weight:bold;">${escapeHTML(user.phone)}</td>
+                    <td><span class="badge badge-zone">${user.type}</span></td>
+                    <td><button class="btn-action btn-ban" onclick="copiarBan('${escapeHTML(user.phone)}')">Bloquear</button></td>
+                </tr>`;
+            });
+            document.getElementById('tabla-usuarios').innerHTML = html || '<tr><td colspan="4">Sin usuarios activos</td></tr>';
+        }
 
+        window.borrarRegistro = async function(col, id) { if(confirm('¿Eliminar?')) await deleteDoc(doc(db, col, id)); };
+        
         window.enviarMensajeMasivo = async function() {
-            const texto = document.getElementById('msg-masivo').value.trim();
-            if(!texto) return alert("Escribe un mensaje.");
-            if(!confirm("📢 ¿Enviar alerta GLOBAL a todos los chats?")) return;
-            try {
-                await addDoc(collection(db, "chats_zonas"), { zone: "GLOBAL", sender: "ADMINISTRADOR", phone: "CENTRAL OFICIAL", text: "🚨 " + texto, timestamp: Date.now() });
-                alert("Enviado con éxito."); document.getElementById('msg-masivo').value = "";
-            } catch(e) { alert("Error: " + e.message); }
+            const t = document.getElementById('msg-masivo').value.trim();
+            if(!t) return;
+            await addDoc(collection(db, "chats_zonas"), { zone: "GLOBAL", sender: "ADMINISTRADOR", phone: "CENTRAL", text: "🚨 " + t, timestamp: Date.now() });
+            alert("Alerta enviada!"); document.getElementById('msg-masivo').value = "";
         };
 
         window.crearPostOficial = async function() {
             const title = document.getElementById('ap-title').value.trim();
-            const price = document.getElementById('ap-price').value.trim();
-            const cat = document.getElementById('ap-cat').value;
-            const loc = document.getElementById('ap-loc').value;
             const img = document.getElementById('ap-img').value.trim();
-
-            if(!title) return alert("El título es obligatorio.");
-            if(!confirm(`¿Publicar "${title}" como Cuenta Oficial?`)) return;
-
-            try {
-                await addDoc(collection(db, "inventory"), {
-                    name: "📌 " + title, price: price || "0", loc: loc, note: `[CAT:${cat}]`,
-                    formDetails: "Publicación Oficial Verificada", sellerName: "RANTIY OFICIAL", sellerPhone: "CENTRAL",
-                    img: img || 'https://via.placeholder.com/150/ef4444/ffffff?text=OFICIAL', timestamp: Date.now() + 9999999 // timestamp alto para que quede arriba (opcional)
-                });
-                alert("¡Publicación Oficial lanzada!");
-                document.getElementById('ap-title').value = ""; document.getElementById('ap-price').value = ""; document.getElementById('ap-img').value = "";
-            } catch(e) { alert("Error: " + e.message); }
+            if(!title) return;
+            await addDoc(collection(db, "inventory"), {
+                name: "🔥 " + title, price: "GRATIS", loc: "Todas", note: `[CAT:Aviso]`, formDetails: "OFICIAL", sellerName: "RANTIY OFICIAL", sellerPhone: "CENTRAL", img: img || 'https://via.placeholder.com/150/f59e0b/ffffff?text=OFICIAL',
+                timestamp: Date.now() + 9999999999 // Este timestamp gigante lo ancla para siempre arriba
+            });
+            alert("Post anclado creado!"); document.getElementById('ap-title').value = "";
         };
 
         window.bombaNuclearChat = async function() {
-            const zona = prompt("BOMBA NUCLEAR DE CHAT 💣\nEscribe el nombre EXACTO de la sala que quieres vaciar (Ej: Huancayo):");
-            if(!zona) return;
-            if(!confirm(`⚠️ PELIGRO ⚠️\n¿Estás 100% seguro de borrar TODOS los mensajes de ${zona}? Esta acción es irreversible.`)) return;
-
-            try {
-                const q = query(collection(db, "chats_zonas"), where("zone", "==", zona));
-                const querySnapshot = await getDocs(q);
-                let borrados = 0;
-                querySnapshot.forEach((docSnap) => {
-                    deleteDoc(doc(db, "chats_zonas", docSnap.id));
-                    borrados++;
-                });
-                alert(`💥 ¡BUM! Se eliminaron ${borrados} mensajes de la sala ${zona}.`);
-            } catch(e) { alert("Error al detonar: " + e.message); }
-        };
-
-        window.limpiarTodoInventario = async function() {
-            const clave = prompt("RESETEO GLOBAL DE VITRINA 🚨\nPara confirmar que quieres borrar ABSOLUTAMENTE TODOS LOS PRODUCTOS de la app, escribe la palabra: RESETEAR");
-            if(clave !== "RESETEAR") return alert("Abortado.");
-            try {
-                const querySnapshot = await getDocs(collection(db, "inventory"));
-                querySnapshot.forEach((docSnap) => { deleteDoc(doc(db, "inventory", docSnap.id)); });
-                alert("Vitrina reseteada por completo.");
-            } catch(e) { alert("Error: " + e.message); }
+            const z = prompt("Escribe la sala a vaciar (Ej: Huancayo):");
+            if(!z) return;
+            const q = query(collection(db, "chats_zonas"), where("zone", "==", z));
+            const qs = await getDocs(q);
+            qs.forEach((d) => deleteDoc(doc(db, "chats_zonas", d.id)));
+            alert(`Sala ${z} limpiada.`);
         };
 
         window.banearUsuario = async function() {
             const tel = document.getElementById('ban-phone').value.trim();
-            const motivo = document.getElementById('ban-reason').value.trim();
-            if(tel.length < 9) return alert("Ingresa un celular válido de 9 dígitos.");
-            try {
-                await addDoc(collection(db, "banned_users"), { phone: tel, reason: motivo || "Comportamiento inadecuado", timestamp: Date.now() });
-                alert(`Número ${tel} añadido a la Lista Negra.`);
-                document.getElementById('ban-phone').value = ""; document.getElementById('ban-reason').value = "";
-            } catch(e) { alert("Error: " + e.message); }
+            const mot = document.getElementById('ban-reason').value.trim();
+            if(tel.length < 9) return;
+            await addDoc(collection(db, "banned_users"), { phone: tel, reason: mot || "Admin Ban", timestamp: Date.now() });
+            document.getElementById('ban-phone').value = ""; document.getElementById('ban-reason').value = "";
         };
 
         window.copiarBan = function(tel) {
-            document.getElementById('ban-phone').value = tel.replace(/\D/g, ''); // Deja solo números
-            cambiarPestana('banned', document.querySelectorAll('.nav-btn')[4]);
-            setTimeout(() => document.getElementById('ban-reason').focus(), 300);
+            document.getElementById('ban-phone').value = tel.replace(/\D/g, '');
+            cambiarPestana('banned', document.querySelectorAll('.nav-btn')[5]);
         };
 
         if (localStorage.getItem('admin_session') === "ADMIN_SUPREMO") {
