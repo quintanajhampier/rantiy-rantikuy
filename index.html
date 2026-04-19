@@ -20,10 +20,14 @@
     
     <style>
         :root {
-            --azul: #2563eb; --azul-glow: #dbeafe;
-            --naranja: #f97316; --oscuro: #1e293b;
-            --glass: rgba(255, 255, 255, 0.96);
-            --premium-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            /* Colores más vibrantes e impactantes */
+            --azul: #1d4ed8; 
+            --azul-glow: #eff6ff;
+            --azul-admin: #0ea5e9;
+            --naranja: #f97316; 
+            --oscuro: #0f172a;
+            --glass: rgba(255, 255, 255, 0.98);
+            --premium-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
@@ -31,87 +35,80 @@
 
         /* --- BLOQUEO GPS INICIAL --- */
         #gps-screen { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-        .gps-loader { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--azul); border-radius: 50%; animation: spin 1s linear infinite; }
+        .gps-loader { width: 80px; height: 80px; border: 8px solid #f1f5f9; border-top: 8px solid var(--azul); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- HEADER --- */
-        .header { background: var(--glass); backdrop-filter: blur(25px); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .logo-rr { width: 50px; height: 50px; background: linear-gradient(135deg, var(--azul), #1e40af); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 20px; cursor: pointer; user-select: none; }
+        .header { background: var(--glass); backdrop-filter: blur(20px); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .logo-rr { width: 50px; height: 50px; background: var(--azul); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 20px; cursor: pointer; user-select: none; box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3); }
 
         /* --- BÚSQUEDA Y FILTROS --- */
         .search-container { padding: 0 20px; margin-top: 15px; }
         .search-wrapper { position: relative; display: flex; align-items: center; }
-        .search-input { width: 100%; padding: 12px 20px 12px 45px; border-radius: 20px; border: none; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.03); font-weight: 600; font-size: 14px;}
-        .search-icon { position: absolute; left: 15px; font-size: 18px; }
+        .search-input { width: 100%; padding: 14px 20px 14px 45px; border-radius: 20px; border: 2px solid transparent; background: white; box-shadow: var(--premium-shadow); font-weight: 600; font-size: 14px; transition: 0.3s;}
+        .search-input:focus { border-color: var(--azul); }
+        .search-icon { position: absolute; left: 18px; font-size: 18px; color: #64748b; }
 
-        .filter-bar { padding: 12px 20px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
-        .filter-chip { padding: 8px 16px; background: white; border-radius: 15px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; }
-        .filter-active { background: var(--azul-glow); border-color: var(--azul); color: var(--azul); }
+        .filter-bar { padding: 15px 20px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+        .filter-chip { padding: 10px 18px; background: white; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; border: 2px solid transparent; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .filter-active { background: var(--azul); color: white; border-color: var(--azul); box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3); }
 
         /* --- CIUDADES --- */
-        .city-bar { padding: 5px 20px 15px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
-        .city-card { background: white; min-width: max-content; padding: 8px 15px; border-radius: 15px; display: flex; align-items: center; gap: 6px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); cursor: pointer; border: 2px solid transparent; opacity: 0.7; transition: 0.3s; }
-        .active-city { opacity: 1; border-color: var(--azul); }
+        .city-bar { padding: 0 20px 15px 20px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+        .city-card { background: white; min-width: max-content; padding: 10px 18px; border-radius: 18px; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: 0.3s; font-weight: 700; font-size: 13px; }
+        .active-city { opacity: 1; border-color: var(--azul); color: var(--azul); background: var(--azul-glow); }
 
         /* --- VISTAS --- */
         .view { display: none; padding: 0; animation: slideUp 0.3s ease; flex: 1; overflow-y: auto; padding-bottom: 100px; }
         .view-active { display: flex; flex-direction: column; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- VITRINA / CARDS --- */
-        #feed-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 20px 20px 20px; }
-        .post-card { background: white; border-radius: 12px; padding: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); position: relative; display: flex; flex-direction: column; justify-content: space-between; }
-        .post-card-img-wrapper { width: 100%; height: 90px; border-radius: 8px; overflow: hidden; margin-bottom: 6px; background: #f1f5f9; }
+        #feed-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 20px 20px 20px; }
+        .post-card { background: white; border-radius: 16px; padding: 8px; box-shadow: var(--premium-shadow); position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.02); }
+        .post-card-img-wrapper { width: 100%; height: 100px; border-radius: 10px; overflow: hidden; margin-bottom: 8px; background: #f1f5f9; cursor: pointer; }
         .post-card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        .post-card-title { font-size: 10px; font-weight: 800; margin: 0 0 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .post-card-price { color: var(--azul); font-weight: 900; font-size: 12px; margin-bottom: 6px; }
-        .btn-contact-mini { background: var(--oscuro); color: white; border: none; padding: 6px; border-radius: 8px; font-weight: 800; font-size: 10px; width: 100%; cursor: pointer; }
-        .load-more-btn { background: var(--azul-glow); color: var(--azul); border: none; padding: 12px; border-radius: 15px; font-weight: 800; font-size: 12px; margin: 0 20px 20px 20px; cursor: pointer; display: none; }
+        .post-card-title { font-size: 11px; font-weight: 800; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--oscuro); }
+        .post-card-price { color: var(--azul); font-weight: 900; font-size: 13px; margin-bottom: 8px; }
+        .btn-contact-mini { background: var(--oscuro); color: white; border: none; padding: 8px; border-radius: 10px; font-weight: 800; font-size: 11px; width: 100%; cursor: pointer; transition: 0.2s; }
+        .btn-contact-mini:active { transform: scale(0.95); }
+        .load-more-btn { background: var(--azul-glow); color: var(--azul); border: none; padding: 15px; border-radius: 15px; font-weight: 800; font-size: 13px; margin: 0 20px 20px 20px; cursor: pointer; display: none; }
 
         /* --- MODO DIOS / ADMIN POSTS --- */
         .post-card.admin-post {
-            border: 2px solid #fbbf24;
-            background: linear-gradient(to bottom right, #fffbeb, #ffffff);
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            border: 2px solid var(--azul-admin);
+            background: #f0f9ff;
         }
         .admin-badge {
             position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+            top: -8px;
+            left: 10px;
+            background: var(--azul-admin);
             color: white;
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 9px;
             font-weight: 900;
             z-index: 20;
-            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
-            white-space: nowrap;
-            letter-spacing: 1px;
-            animation: pulse-red 2s infinite;
-        }
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.4);
+            letter-spacing: 0.5px;
         }
 
         /* --- STUDIO SUBIDA --- */
         .view-padding-inner { padding: 0 20px 30px 20px; }
-        .camera-hub { background: var(--oscuro); border-radius: 25px; padding: 30px 15px; color: white; text-align: center; margin-top: 10px; }
+        .camera-hub { background: var(--oscuro); border-radius: 25px; padding: 30px 15px; color: white; text-align: center; margin-top: 10px; box-shadow: var(--premium-shadow); }
         .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-        .cat-btn { background: rgba(255,255,255,0.07); padding: 12px 5px; border-radius: 15px; cursor: pointer; font-size: 10px; font-weight: 800; transition: 0.2s;}
+        .cat-btn { background: rgba(255,255,255,0.08); padding: 15px 5px; border-radius: 15px; cursor: pointer; font-size: 11px; font-weight: 800; transition: 0.2s;}
         .cat-btn:active { background: var(--azul); }
         
-        #upload-studio { background: white; border-radius: 25px; padding: 20px; margin-top: 15px; display: none; box-shadow: var(--premium-shadow); }
-        .rr-field { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #f1f5f9; font-weight: 700; margin-bottom: 10px; font-size: 12px; }
-        .rr-field:focus { border-color: var(--azul); }
-        .form-section-title { font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 6px; text-transform: uppercase; }
+        #upload-studio { background: white; border-radius: 25px; padding: 20px; margin-top: 15px; display: none; box-shadow: var(--premium-shadow); border: 1px solid rgba(0,0,0,0.05); }
+        .rr-field { width: 100%; padding: 14px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 700; margin-bottom: 12px; font-size: 13px; background: #f8fafc; transition: 0.3s;}
+        .rr-field:focus { border-color: var(--azul); background: white; }
+        .form-section-title { font-size: 11px; font-weight: 900; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .file-upload-wrapper { position: relative; width: 100%; height: 100px; border: 2px dashed #cbd5e1; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: #f8fafc; margin-bottom: 15px; cursor: pointer; overflow: hidden; }
+        .file-upload-wrapper { position: relative; width: 100%; height: 120px; border: 2px dashed #cbd5e1; border-radius: 15px; display: flex; align-items: center; justify-content: center; background: #f8fafc; margin-bottom: 20px; cursor: pointer; overflow: hidden; }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .file-upload-text { color: #64748b; font-weight: 800; font-size: 12px; pointer-events: none; z-index: 1; }
+        .file-upload-text { color: #64748b; font-weight: 800; font-size: 13px; pointer-events: none; z-index: 1; }
         #img-preview { width: 100%; height: 100%; position: absolute; top: 0; left: 0; background-size: cover; background-position: center; display: none; z-index: 2; }
 
         /* --- CHAT ESTILO WHATSAPP --- */
@@ -119,55 +116,55 @@
         #view-chat.view-active { display: flex; }
         .chat-box-ui { flex: 1; display: flex; flex-direction: column; position: relative; height: 100%; }
         
-        .chat-header-pro { background: #075e54; padding: 10px 15px; color: white; display: flex; align-items: center; gap: 12px; z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-        .chat-header-pro h2 { margin: 0; font-weight: 600; font-size: 16px; font-family: Arial, sans-serif; }
-        .chat-subtitle { font-size: 11px; opacity: 0.9; font-weight: 400; font-family: Arial, sans-serif; }
+        .chat-header-pro { background: #075e54; padding: 12px 20px; color: white; display: flex; align-items: center; gap: 12px; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .chat-header-pro h2 { margin: 0; font-weight: 700; font-size: 16px; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .chat-subtitle { font-size: 11px; opacity: 0.9; font-weight: 500; }
 
-        .msg-area { flex: 1; padding: 10px 5%; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; scroll-behavior: smooth; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: contain; background-blend-mode: multiply; }
+        .msg-area { flex: 1; padding: 15px 5%; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; scroll-behavior: smooth; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: contain; background-blend-mode: multiply; }
         
-        .bubble-wrapper { display: flex; flex-direction: column; width: 100%; margin-bottom: 2px; }
+        .bubble-wrapper { display: flex; flex-direction: column; width: 100%; margin-bottom: 4px; }
         .bubble-wrapper.me { align-items: flex-end; }
         .bubble-wrapper.other { align-items: flex-start; }
         
-        .bubble { position: relative; padding: 5px 8px; border-radius: 8px; max-width: 80%; width: fit-content; font-size: 14.5px; line-height: 1.3; color: #111b21; box-shadow: 0 1px 0.5px rgba(11,20,26,.13); font-family: Arial, sans-serif; display: flex; flex-direction: column; }
+        .bubble { position: relative; padding: 6px 10px; border-radius: 12px; max-width: 80%; width: fit-content; font-size: 14.5px; line-height: 1.4; color: #111b21; box-shadow: 0 1px 2px rgba(11,20,26,.1); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; flex-direction: column; font-weight: 500; }
         .bubble-in { background: #ffffff; border-top-left-radius: 0; }
         .bubble-out { background: #d9fdd3; border-top-right-radius: 0; }
         
-        .sender-name { font-size: 12px; font-weight: 600; margin-bottom: 3px; display: block; cursor: pointer; }
+        .sender-name { font-size: 12px; font-weight: 800; margin-bottom: 4px; display: block; cursor: pointer; }
         .c1 { color: #35cd96; } .c2 { color: #6bcbef; } .c3 { color: #e542a3; } .c4 { color: #91ab01; } .c5 { color: #ffa925; }
 
         .msg-text-content { white-space: pre-wrap; word-wrap: break-word; margin-bottom: 2px; }
-        .msg-time { font-size: 10px; color: #667781; align-self: flex-end; margin-top: -2px; margin-left: 10px;}
-        .chat-img-attachment { width: 100%; max-width: 220px; max-height: 250px; object-fit: contain; border-radius: 6px; margin-bottom: 4px; display: block; background: rgba(0,0,0,0.03); }
+        .msg-time { font-size: 10px; color: #667781; align-self: flex-end; margin-top: -2px; margin-left: 10px; font-weight: 600;}
+        .chat-img-attachment { width: 100%; max-width: 240px; max-height: 250px; object-fit: contain; border-radius: 8px; margin-bottom: 6px; display: block; background: rgba(0,0,0,0.03); }
         
-        .chat-input-area { padding: 10px 10px 80px 10px; background: #f0f2f5; display: flex; gap: 8px; align-items: flex-end; margin-bottom: 0; }
-        .chat-input-wrapper { flex: 1; background: white; border-radius: 20px; display: flex; align-items: flex-end; padding: 2px; box-shadow: 0 1px 1px rgba(0,0,0,0.05); }
-        .btn-clip { background: none; border: none; font-size: 20px; padding: 8px 12px; color: #54656f; cursor: pointer; }
-        .chat-input-area input[type="text"] { flex: 1; border: none; padding: 10px 5px; font-size: 15px; background: transparent; font-family: Arial, sans-serif; }
-        .chat-input-area .btn-send { background: #00a884; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.2); margin-bottom: 2px;}
+        .chat-input-area { padding: 10px 15px 85px 15px; background: #f0f2f5; display: flex; gap: 8px; align-items: flex-end; margin-bottom: 0; }
+        .chat-input-wrapper { flex: 1; background: white; border-radius: 24px; display: flex; align-items: flex-end; padding: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .btn-clip { background: none; border: none; font-size: 22px; padding: 8px 12px; color: #54656f; cursor: pointer; }
+        .chat-input-area input[type="text"] { flex: 1; border: none; padding: 12px 5px; font-size: 15px; background: transparent; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; }
+        .chat-input-area .btn-send { background: #00a884; color: white; border: none; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 2px;}
 
         /* --- NAV ISLAND --- */
-        .nav-island { position: fixed; bottom: 15px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 30px; display: flex; justify-content: space-around; padding: 10px; z-index: 3000; box-shadow: var(--premium-shadow); }
-        .nav-btn { color: #64748b; text-align: center; font-size: 9px; font-weight: 800; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.3s; }
-        .nav-btn.active { color: white; background: rgba(255,255,255,0.1); }
+        .nav-island { position: fixed; bottom: 20px; left: 5%; width: 90%; background: var(--oscuro); border-radius: 30px; display: flex; justify-content: space-around; padding: 12px; z-index: 3000; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); }
+        .nav-btn { color: #64748b; text-align: center; font-size: 10px; font-weight: 800; cursor: pointer; padding: 8px 15px; border-radius: 18px; transition: 0.3s; }
+        .nav-btn.active { color: white; background: rgba(255,255,255,0.15); }
     </style>
 </head>
 <body>
 
 <div id="gps-screen">
-    <div class="logo-rr" style="width:80px; height:80px; font-size:30px; margin-bottom:20px;">R&R</div>
-    <h1 style="font-weight:900; margin-bottom:5px; font-size: 22px;">Rantiy y Rantikuy</h1>
-    <p style="opacity:0.6; margin-bottom:30px; font-size: 14px;">Detectando tu ubicación...</p>
+    <div class="logo-rr" style="width:90px; height:90px; font-size:35px; margin-bottom:20px; border-radius: 25px;">R&R</div>
+    <h1 style="font-weight:900; margin-bottom:5px; font-size: 24px; color: var(--oscuro);">Rantiy y Rantikuy</h1>
+    <p style="opacity:0.6; margin-bottom:30px; font-size: 15px; font-weight: 600;">Detectando tu ubicación...</p>
     <div class="gps-loader" id="gps-loader"></div>
-    <p id="gps-msg" style="margin-top:20px; font-weight:700; color:var(--azul); font-size: 12px;">Iniciando satélites...</p>
+    <p id="gps-msg" style="margin-top:25px; font-weight:800; color:var(--azul); font-size: 13px;">Iniciando satélites...</p>
 </div>
 
 <header class="header">
-    <div style="display:flex; align-items:center; gap:12px;">
+    <div style="display:flex; align-items:center; gap:15px;">
         <div class="logo-rr" onclick="window.checkAdminAccess()">R&R</div>
         <div>
-            <div style="font-weight: 900; font-size: 16px;">Rantiy y Rantikuy</div>
-            <div id="user-tag" style="font-size: 9px; color: var(--azul); font-weight: 800;">CIUDADANO: CARGANDO...</div>
+            <div style="font-weight: 900; font-size: 18px; color: var(--oscuro);">Rantiy y Rantikuy</div>
+            <div id="user-tag" style="font-size: 10px; color: var(--azul); font-weight: 900; letter-spacing: 0.5px;">CIUDADANO: CARGANDO...</div>
         </div>
     </div>
 </header>
@@ -176,7 +173,7 @@
     <div class="search-container">
         <div class="search-wrapper">
             <span class="search-icon">🔍</span>
-            <input type="text" id="main-search" class="search-input" placeholder="¿Qué buscas?" oninput="window.renderFeed()">
+            <input type="text" id="main-search" class="search-input" placeholder="¿Qué estás buscando hoy?" oninput="window.renderFeed()">
         </div>
     </div>
 
@@ -197,8 +194,8 @@
 <section id="view-camera" class="view">
     <div class="view-padding-inner">
         <div class="camera-hub" id="main-hub">
-            <h2 style="font-weight:900; margin-top:0; font-size: 18px;">Publicar en <span id="current-zone-text">...</span></h2>
-            <p style="font-size: 11px; opacity: 0.8;">Selecciona una categoría</p>
+            <h2 style="font-weight:900; margin-top:0; font-size: 20px;">Publicar en <span id="current-zone-text" style="color:var(--azul-glow);">...</span></h2>
+            <p style="font-size: 12px; opacity: 0.8; font-weight: 600;">Selecciona una categoría</p>
             <div class="category-grid">
                 <div class="cat-btn" onclick="window.startStudio('Venta', '🛍️')">💰<br>VENTA</div>
                 <div class="cat-btn" onclick="window.startStudio('Comida', '🍲')">🥘<br>COMIDA</div>
@@ -211,8 +208,8 @@
 
         <div id="upload-studio">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 id="studio-tag" style="margin:0; font-weight:900; font-size: 16px;">Nuevo Post</h3>
-                <button onclick="window.exitStudio()" style="background:none; border:none; font-size:18px; font-weight:bold; color:var(--oscuro);">✕</button>
+                <h3 id="studio-tag" style="margin:0; font-weight:900; font-size: 18px; color: var(--oscuro);">Nuevo Post</h3>
+                <button onclick="window.exitStudio()" style="background:none; border:none; font-size:20px; font-weight:bold; color:var(--oscuro); cursor:pointer;">✕</button>
             </div>
             
             <div class="form-section-title">1. Sube una imagen</div>
@@ -229,7 +226,7 @@
             <div class="form-section-title">3. Detalles</div>
             <div id="dynamic-fields-container"></div>
 
-            <button onclick="window.uploadToEmpire()" style="width:100%; padding:15px; background:var(--azul); color:white; border:none; border-radius:15px; font-weight:900; margin-top:10px;">PUBLICAR EN RANTIKUY 🚀</button>
+            <button onclick="window.uploadToEmpire()" style="width:100%; padding:16px; background:var(--azul); color:white; border:none; border-radius:18px; font-weight:900; margin-top:10px; cursor:pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4);">PUBLICAR EN RANTIKUY 🚀</button>
         </div>
     </div>
 </section>
@@ -237,7 +234,7 @@
 <section id="view-chat" class="view">
     <div class="chat-box-ui">
         <div class="chat-header-pro">
-            <img id="group-profile-pic" src="https://via.placeholder.com/100/075e54/ffffff?text=R%26R" style="width: 38px; height: 38px; border-radius: 50%;" alt="Grupo">
+            <img id="group-profile-pic" src="https://via.placeholder.com/100/075e54/ffffff?text=R%26R" style="width: 42px; height: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2);" alt="Grupo">
             <div>
                 <h2 id="zone-chat-label">SALA REGIONAL</h2>
                 <span class="chat-subtitle">Comunidad Rantiy • Limpieza 24H</span>
@@ -264,16 +261,19 @@
 </nav>
 
 <script type="module">
-    // --- SEGURIDAD ANTI-INSPECCIÓN DE CÓDIGO ---
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    document.addEventListener('keydown', event => {
-        if (event.keyCode === 123 || 
-           (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 74 || event.keyCode === 67)) || 
-           (event.ctrlKey && event.keyCode === 85)) {
-            event.preventDefault();
+    // --- SEGURIDAD AVANZADA ANTI-INSPECCIÓN ---
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        // Bloquear F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
+        if (e.key === 'F12' || 
+           (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) || 
+           (e.ctrlKey && e.key === 'U')) {
+            e.preventDefault();
             return false;
         }
     });
+    // Limpieza constante de consola por si logran abrirla
+    setInterval(() => { console.clear(); }, 1000);
 
     window.escapeHTML = function(str) {
         if (typeof str !== 'string') return '';
@@ -331,7 +331,7 @@
 
     window.checkAdminAccess = function() {
         window.adminClicks++;
-        if(window.adminClicks >= 10) { // Clicks requeridos cambiados a 10
+        if(window.adminClicks >= 10) { 
             window.adminClicks = 0;
             let pass = prompt("MODO DIOS: Ingresa la clave de fundador:");
             if(pass === "R@ntiyZ3us!99X") { 
@@ -378,10 +378,10 @@
     window.renderCityFilters = function() {
         const container = document.getElementById('city-bar-container');
         if(!container) return;
-        let html = `<div class="city-card active-city" onclick="window.filterByCity('Todas', this)"><span>🌎</span><label style="cursor:pointer; font-weight:800; font-size:12px;">Todas</label></div>`;
+        let html = `<div class="city-card active-city" onclick="window.filterByCity('Todas', this)"><span>🌎</span><label style="cursor:pointer;">Todas</label></div>`;
         if (window.ZONAS) {
             for (let z in window.ZONAS) {
-                html += `<div class="city-card" onclick="window.filterByCity('${z}', this)"><span>📍</span><label style="cursor:pointer; font-weight:800; font-size:12px;">${z}</label></div>`;
+                html += `<div class="city-card" onclick="window.filterByCity('${z}', this)"><span>📍</span><label style="cursor:pointer;">${z}</label></div>`;
             }
         }
         container.innerHTML = html;
@@ -432,9 +432,16 @@
         el.classList.add('active');
         if(t === 'home') window.renderFeed();
         if(t === 'chat') {
-            // Forzamos el scroll varias veces para garantizar que cargue y baje en la interfaz
-            setTimeout(() => { const box = document.getElementById('group-msgs'); if(box) box.scrollTop = box.scrollHeight; }, 50);
-            setTimeout(() => { const box = document.getElementById('group-msgs'); if(box) box.scrollTop = box.scrollHeight; }, 300);
+            // Forzar renderizado y scroll inmediato cuando se abre la pestaña
+            const box = document.getElementById('group-msgs');
+            if(box) {
+                requestAnimationFrame(() => {
+                    box.scrollTop = box.scrollHeight;
+                });
+                // Respaldo de tiempo por si la altura de los mensajes tarda en calcularse
+                setTimeout(() => { box.scrollTop = box.scrollHeight; }, 10);
+                setTimeout(() => { box.scrollTop = box.scrollHeight; }, 100);
+            }
         }
     }
 
@@ -469,14 +476,13 @@
         if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
         if(search) posts = posts.filter(p => p.name && p.name.toLowerCase().includes(search));
 
-        // Separar posts del ADMIN para anclarlos arriba
         const adminPosts = posts.filter(p => p.sellerName === 'ADMINISTRADOR');
         const normalPosts = posts.filter(p => p.sellerName !== 'ADMINISTRADOR');
         const sortedPosts = [...adminPosts, ...normalPosts];
 
         container.innerHTML = sortedPosts.map(p => {
             const isAdmin = p.sellerName === 'ADMINISTRADOR';
-            const isMyPost = p.sellerName === window.currentUser && !isAdmin; // Nadie puede borrar post del admin excepto él desde panel
+            const isMyPost = p.sellerName === window.currentUser && !isAdmin; 
             const imgSrc = (p.img && p.img !== 'https://via.placeholder.com/150') ? window.escapeHTML(p.img) : '';
             const safeName = window.escapeHTML(p.name);
             const safeLoc = window.escapeHTML(p.loc || 'Global');
@@ -486,13 +492,13 @@
 
             return `
             <div class="post-card ${isAdmin ? 'admin-post' : ''}">
-                ${isAdmin ? `<div class="admin-badge">🚨 ANUNCIO OFICIAL</div>` : ''}
-                ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.9); border:none; border-radius:50%; width:22px; height:22px; font-size:10px; cursor:pointer; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">🗑️</button>` : ''}
+                ${isAdmin ? `<div class="admin-badge">👑 OFICIAL</div>` : ''}
+                ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.95); border:1px solid #e2e8f0; border-radius:50%; width:24px; height:24px; font-size:10px; cursor:pointer; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">🗑️</button>` : ''}
                 <div class="post-card-img-wrapper" onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')">
                     ${imgSrc ? `<img src="${imgSrc}" loading="lazy">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
                 </div>
                 <h3 class="post-card-title">${safeName}</h3>
-                <div style="font-size: 9px; color: #64748b; margin-bottom: 2px; font-weight: 700;">📍 ${safeLoc}</div>
+                <div style="font-size: 10px; color: #64748b; margin-bottom: 3px; font-weight: 700;">📍 ${safeLoc}</div>
                 <div class="post-card-price">${p.price > 0 ? 'S/ ' + safePrice : 'Consultar'}</div>
                 <button onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')" class="btn-contact-mini">Contactar</button>
             </div>`;
@@ -541,9 +547,13 @@
                     </div>`;
             }
         });
+        
         box.innerHTML = msgsHTML;
-        // Forzamos la actualización visual del scroll al recibir un mensaje
-        setTimeout(() => { box.scrollTop = box.scrollHeight; }, 100);
+        // Forzar el auto-scroll inmediatamente después de inyectar el HTML
+        box.scrollTop = box.scrollHeight;
+        
+        // Un respaldo por si las imágenes tardan unos milisegundos en calcular su alto
+        setTimeout(() => { box.scrollTop = box.scrollHeight; }, 50);
     });
 
     window.sendGroupMsg = async function(textOverride = null, imgBase64 = null) {
@@ -560,10 +570,12 @@
             if(imgBase64) msgData.img = imgBase64;
 
             await addDoc(collection(db, "chats_zonas"), msgData);
+            
+            // Forzar el scroll tras enviar
             setTimeout(() => {
                 const box = document.getElementById('group-msgs');
                 if(box) box.scrollTop = box.scrollHeight;
-            }, 100);
+            }, 50);
         } catch(e) { alert("Error al enviar."); }
     }
 
