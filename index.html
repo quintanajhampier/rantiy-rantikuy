@@ -20,14 +20,14 @@
     
     <style>
         :root {
-            /* Colores más vibrantes e impactantes */
-            --azul: #1d4ed8; 
+            var(--azul): #1d4ed8; 
             --azul-glow: #eff6ff;
             --azul-admin: #0ea5e9;
             --naranja: #f97316; 
             --oscuro: #0f172a;
             --glass: rgba(255, 255, 255, 0.98);
             --premium-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --azul: #1d4ed8;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
@@ -72,7 +72,6 @@
         .post-card-price { color: var(--azul); font-weight: 900; font-size: 13px; margin-bottom: 8px; }
         .btn-contact-mini { background: var(--oscuro); color: white; border: none; padding: 8px; border-radius: 10px; font-weight: 800; font-size: 11px; width: 100%; cursor: pointer; transition: 0.2s; }
         .btn-contact-mini:active { transform: scale(0.95); }
-        .load-more-btn { background: var(--azul-glow); color: var(--azul); border: none; padding: 15px; border-radius: 15px; font-weight: 800; font-size: 13px; margin: 0 20px 20px 20px; cursor: pointer; display: none; }
 
         /* --- MODO DIOS / ADMIN POSTS --- */
         .post-card.admin-post {
@@ -93,6 +92,9 @@
             box-shadow: 0 4px 8px rgba(14, 165, 233, 0.4);
             letter-spacing: 0.5px;
         }
+
+        /* --- SENTINEL SCROLL INFINITO --- */
+        #scroll-sentinel { text-align: center; padding: 20px; color: #64748b; font-weight: 700; font-size: 12px; display: none; }
 
         /* --- STUDIO SUBIDA --- */
         .view-padding-inner { padding: 0 20px 30px 20px; }
@@ -188,7 +190,7 @@
     <div class="city-bar" id="city-bar-container"></div>
 
     <div id="feed-container"></div>
-    <button id="btn-load-more" class="load-more-btn" onclick="window.loadMorePosts()">↓ Cargar Más Publicaciones</button>
+    <div id="scroll-sentinel">↓ Desliza para cargar más...</div>
 </main>
 
 <section id="view-camera" class="view">
@@ -264,15 +266,12 @@
     // --- SEGURIDAD AVANZADA ANTI-INSPECCIÓN ---
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
-        // Bloquear F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
         if (e.key === 'F12' || 
            (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) || 
            (e.ctrlKey && e.key === 'U')) {
-            e.preventDefault();
-            return false;
+            e.preventDefault(); return false;
         }
     });
-    // Limpieza constante de consola por si logran abrirla
     setInterval(() => { console.clear(); }, 1000);
 
     window.escapeHTML = function(str) {
@@ -304,12 +303,10 @@
     window.currentUser = localStorage.getItem('rantiy_userName'); 
     window.currentPhone = localStorage.getItem('rantiy_userPhone') || "000000000";
 
-    if (!window.currentUser) {
-         window.location.href = 'registro_entrada.html'; 
-    }
+    if (!window.currentUser) { window.location.href = 'registro_entrada.html'; }
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy, limit, getDocs, startAfter } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
@@ -326,41 +323,67 @@
     window.dbLocal = { inventory: [] };
     window.tempProdImg = "";
     
-    window.postLimit = 15;
-    window.feedListener = null;
+    // --- VARIABLES SCROLL INFINITO (OPTIMIZACIÓN FIREBASE) ---
+    window.lastVisiblePost = null;
+    window.isLoadingPosts = false;
+    window.hasMorePosts = true;
 
     window.checkAdminAccess = function() {
         window.adminClicks++;
         if(window.adminClicks >= 10) { 
             window.adminClicks = 0;
-            let pass = prompt("MODO DIOS: Ingresa la clave de fundador:");
+            let pass = prompt("MODO DIOS: Ingresa clave:");
             if(pass === "R@ntiyZ3us!99X") { 
                 localStorage.setItem("admin_session", "ADMIN_SUPREMO");
                 window.location.href = "admin.html";
-            } else { alert("Clave incorrecta."); }
+            }
         }
     }
 
-    window.listenToFeed = function() {
-        if(window.feedListener) window.feedListener();
-        const q = query(collection(db, "inventory"), orderBy("timestamp", "desc"), limit(window.postLimit));
-        window.feedListener = onSnapshot(q, (snapshot) => {
-            window.dbLocal.inventory = [];
-            snapshot.forEach((doc) => { window.dbLocal.inventory.push({ id: doc.id, ...doc.data() }); });
-            window.renderFeed();
-            
-            const btnMore = document.getElementById('btn-load-more');
-            if(snapshot.docs.length >= window.postLimit) {
-                btnMore.style.display = 'block';
+    // --- CARGA DE POSTS PAGINADA (AHORRA LECTURAS) ---
+    window.fetchPosts = async function(isInitial = false) {
+        if(window.isLoadingPosts || (!isInitial && !window.hasMorePosts)) return;
+        window.isLoadingPosts = true;
+
+        const sentinel = document.getElementById('scroll-sentinel');
+        if(sentinel) sentinel.style.display = 'block';
+
+        try {
+            let q;
+            if(isInitial) {
+                window.dbLocal.inventory = [];
+                window.hasMorePosts = true;
+                q = query(collection(db, "inventory"), orderBy("timestamp", "desc"), limit(15));
             } else {
-                btnMore.style.display = 'none';
+                q = query(collection(db, "inventory"), orderBy("timestamp", "desc"), startAfter(window.lastVisiblePost), limit(15));
             }
-        });
+
+            const snapshot = await getDocs(q);
+            
+            if(snapshot.empty) {
+                window.hasMorePosts = false;
+                if(sentinel) sentinel.innerText = "No hay más publicaciones ✨";
+            } else {
+                window.lastVisiblePost = snapshot.docs[snapshot.docs.length - 1];
+                snapshot.forEach(doc => { window.dbLocal.inventory.push({ id: doc.id, ...doc.data() }); });
+                window.renderFeed();
+                if(sentinel) sentinel.innerText = "↓ Desliza para cargar más...";
+            }
+        } catch (e) { console.error("Error al cargar data", e); }
+
+        window.isLoadingPosts = false;
     }
 
-    window.loadMorePosts = function() {
-        window.postLimit += 15;
-        window.listenToFeed();
+    // --- ACTIVAR DETECTOR DE SCROLL ---
+    window.setupInfiniteScroll = function() {
+        const observer = new IntersectionObserver((entries) => {
+            if(entries[0].isIntersecting && window.hasMorePosts) {
+                window.fetchPosts(false);
+            }
+        }, { rootMargin: "150px" }); // Empieza a cargar antes de llegar al fondo
+
+        const sentinel = document.getElementById('scroll-sentinel');
+        if(sentinel) observer.observe(sentinel);
     }
 
     window.init = function() {
@@ -369,10 +392,10 @@
 
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
-        } else {
-            alert("Tu celular no soporta GPS.");
-        }
-        window.listenToFeed();
+        } else { alert("Tu celular no soporta GPS."); }
+        
+        window.fetchPosts(true); // Carga inicial
+        window.setupInfiniteScroll(); // Activa el observador
     }
 
     window.renderCityFilters = function() {
@@ -414,15 +437,13 @@
         } else {
             document.getElementById('gps-loader').style.display = 'none';
             const gpsMsg = document.getElementById('gps-msg');
-            gpsMsg.innerText = "FUERA DE COBERTURA. Rantiy llegará pronto aquí.";
-            gpsMsg.style.color = "red";
+            gpsMsg.innerText = "FUERA DE COBERTURA."; gpsMsg.style.color = "red";
         }
     }
 
     window.errorGPS = function() {
         document.getElementById('gps-loader').style.display = 'none';
-        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS para usar Rantiy.";
-        document.getElementById('gps-msg').style.color = "red";
+        document.getElementById('gps-msg').innerText = "ERROR: Activa el GPS."; document.getElementById('gps-msg').style.color = "red";
     }
 
     window.tab = function(t, el) {
@@ -432,24 +453,19 @@
         el.classList.add('active');
         if(t === 'home') window.renderFeed();
         if(t === 'chat') {
-            // Forzar renderizado y scroll inmediato cuando se abre la pestaña
             const box = document.getElementById('group-msgs');
             if(box) {
-                requestAnimationFrame(() => {
-                    box.scrollTop = box.scrollHeight;
-                });
-                // Respaldo de tiempo por si la altura de los mensajes tarda en calcularse
-                setTimeout(() => { box.scrollTop = box.scrollHeight; }, 10);
-                setTimeout(() => { box.scrollTop = box.scrollHeight; }, 100);
+                requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
+                setTimeout(() => { box.scrollTop = box.scrollHeight; }, 50);
             }
         }
     }
 
     window.irAChatPrivado = function(nombre, telefono) {
-        if(nombre === window.currentUser) { alert("Esta es tu propia publicación. ¡No puedes contactarte a ti mismo! 😅"); return; }
+        if(nombre === window.currentUser) { alert("¡Esta es tu propia publicación! 😅"); return; }
         let telLimpio = telefono.replace(/\D/g, '');
         if(telLimpio.length === 9) telLimpio = "51" + telLimpio;
-        const mensaje = encodeURIComponent(`¡Hola ${nombre}! Vi tu publicación en Rantiy y Rantikuy y estoy interesado.`);
+        const mensaje = encodeURIComponent(`¡Hola ${nombre}! Vi tu publicación en Rantiy y estoy interesado.`);
         window.open(`https://wa.me/${telLimpio}?text=${mensaje}`, '_blank');
     }
 
@@ -461,8 +477,12 @@
     }
 
     window.deletePost = async function(id) {
-        if(confirm('¿Estás seguro de que quieres borrar esta publicación?')) {
-            try { await deleteDoc(doc(db, "inventory", id)); } catch(error) { alert("Hubo un error."); }
+        if(confirm('¿Borrar esta publicación?')) {
+            try { 
+                await deleteDoc(doc(db, "inventory", id)); 
+                window.dbLocal.inventory = window.dbLocal.inventory.filter(p => p.id !== id);
+                window.renderFeed();
+            } catch(error) { alert("Hubo un error."); }
         }
     }
 
@@ -472,6 +492,7 @@
         const search = document.getElementById('main-search') ? document.getElementById('main-search').value.toLowerCase() : "";
         let posts = window.dbLocal.inventory;
 
+        // Filtros en entorno local para no pedir índices complejos a Firebase
         if(window.selectedCityFilter !== 'Todas') posts = posts.filter(p => p.loc === window.selectedCityFilter);
         if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
         if(search) posts = posts.filter(p => p.name && p.name.toLowerCase().includes(search));
@@ -493,7 +514,7 @@
             return `
             <div class="post-card ${isAdmin ? 'admin-post' : ''}">
                 ${isAdmin ? `<div class="admin-badge">👑 OFICIAL</div>` : ''}
-                ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.95); border:1px solid #e2e8f0; border-radius:50%; width:24px; height:24px; font-size:10px; cursor:pointer; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.1);">🗑️</button>` : ''}
+                ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.95); border:1px solid #e2e8f0; border-radius:50%; width:24px; height:24px; font-size:10px; cursor:pointer; z-index:10;">🗑️</button>` : ''}
                 <div class="post-card-img-wrapper" onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')">
                     ${imgSrc ? `<img src="${imgSrc}" loading="lazy">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
                 </div>
@@ -505,6 +526,7 @@
         }).join('');
     }
 
+    // Chat usa onSnapshot porque necesita ser en Tiempo Real
     const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"), limit(80));
     onSnapshot(qChat, (snapshot) => {
         const box = document.getElementById('group-msgs');
@@ -530,12 +552,8 @@
                 const nameColor = window.getColorForName(senderName);
                 
                 let contentHTML = '';
-                if(data.img) {
-                    contentHTML += `<img src="${window.escapeHTML(data.img)}" class="chat-img-attachment" loading="lazy">`;
-                }
-                if(safeText) {
-                    contentHTML += `<div class="msg-text-content">${safeText}</div>`;
-                }
+                if(data.img) contentHTML += `<img src="${window.escapeHTML(data.img)}" class="chat-img-attachment" loading="lazy">`;
+                if(safeText) contentHTML += `<div class="msg-text-content">${safeText}</div>`;
 
                 msgsHTML += `
                     <div class="bubble-wrapper ${isMe ? 'me' : 'other'}">
@@ -549,10 +567,7 @@
         });
         
         box.innerHTML = msgsHTML;
-        // Forzar el auto-scroll inmediatamente después de inyectar el HTML
         box.scrollTop = box.scrollHeight;
-        
-        // Un respaldo por si las imágenes tardan unos milisegundos en calcular su alto
         setTimeout(() => { box.scrollTop = box.scrollHeight; }, 50);
     });
 
@@ -568,17 +583,11 @@
                 zone: window.activeLoc, sender: window.currentUser, phone: window.currentPhone, text: text, timestamp: Date.now()
             };
             if(imgBase64) msgData.img = imgBase64;
-
             await addDoc(collection(db, "chats_zonas"), msgData);
-            
-            // Forzar el scroll tras enviar
-            setTimeout(() => {
-                const box = document.getElementById('group-msgs');
-                if(box) box.scrollTop = box.scrollHeight;
-            }, 50);
         } catch(e) { alert("Error al enviar."); }
     }
 
+    // --- COMPRESOR DE IMÁGENES WEBP (CHAT) ---
     window.sendChatImage = function(event) {
         const file = event.target.files[0];
         if(!file) return;
@@ -595,7 +604,8 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                const compressedImg = canvas.toDataURL('image/jpeg', 0.5); 
+                // Compresión WEBP para máximo ahorro en Firebase
+                const compressedImg = canvas.toDataURL('image/webp', 0.5); 
                 window.sendGroupMsg("", compressedImg); 
             };
             img.src = e.target.result;
@@ -631,6 +641,7 @@
         document.getElementById('in-price').value = "";
     }
 
+    // --- COMPRESOR DE IMÁGENES WEBP (POSTS) ---
     window.previewImage = function(event) {
         const file = event.target.files[0];
         if(!file) return;
@@ -647,7 +658,8 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                window.tempProdImg = canvas.toDataURL('image/jpeg', 0.6); 
+                // Usando WEBP al 50% de calidad. Mejor compresión que JPEG.
+                window.tempProdImg = canvas.toDataURL('image/webp', 0.5); 
                 
                 const preview = document.getElementById('img-preview');
                 preview.style.display = 'block';
@@ -678,6 +690,9 @@
             });
             confetti({ particleCount: 150 });
             window.exitStudio();
+            
+            // Recargar la vitrina para que el usuario vea su post inmediatamente
+            window.fetchPosts(true);
             window.tab('home', document.querySelector('.nav-btn'));
         } catch (e) { alert("Error al subir."); }
     }
