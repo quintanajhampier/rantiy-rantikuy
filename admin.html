@@ -86,24 +86,8 @@
     <script>
         // Lógica de acceso
         function validarEntrada() {
-            const clave = document.getElementById('passInput').value;
-            if (clave === "Rantiy2026") {
-                localStorage.setItem('admin_session', 'ADMIN_SUPREMO');
-                document.getElementById('login-overlay').style.display = 'none';
-                location.reload(); // Recarga para activar Firebase
-            } else {
-                document.getElementById('error-msg').style.display = 'block';
-            }
-        }
-
-        // Si ya está logueado, ocultar el overlay
-        if (localStorage.getItem('admin_session') === "ADMIN_SUPREMO") {
-            document.getElementById('login-overlay').style.display = 'none';
-        }
- <script>
-        // Lógica de acceso
-        function validarEntrada() {
-            const clave = document.getElementById('passInput').value;
+            // .trim() soluciona el problema de espacios ocultos
+            const clave = document.getElementById('passInput').value.trim();
             if (clave === "Rantiy2026") {
                 localStorage.setItem('admin_session', 'ADMIN_SUPREMO');
                 document.getElementById('login-overlay').style.display = 'none';
@@ -124,6 +108,60 @@
         if (localStorage.getItem('admin_session') === "ADMIN_SUPREMO") {
             document.getElementById('login-overlay').style.display = 'none';
         }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYF0A8d5pyS-HpbqAADi-TTu_BeRoG3jw",
+            authDomain: "rantiy-y-rantikuy.firebaseapp.com",
+            projectId: "rantiy-y-rantikuy",
+            storageBucket: "rantiy-y-rantikuy.firebasestorage.app",
+            messagingSenderId: "49676513708",
+            appId: "1:49676513708:web:943ad781c98cb7bac78a09"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Solo cargar datos si es Admin
+        if (localStorage.getItem('admin_session') === "ADMIN_SUPREMO") {
+            const qPosts = query(collection(db, "inventory"), orderBy("timestamp", "desc"));
+            onSnapshot(qPosts, (snapshot) => {
+                const tbody = document.getElementById('tabla-posts');
+                document.getElementById('stat-posts').innerText = snapshot.size;
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay publicaciones.</td></tr>';
+                    return;
+                }
+                let html = '';
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const fecha = new Date(data.timestamp).toLocaleDateString();
+                    html += `
+                    <tr>
+                        <td><img src="${data.img || ''}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;"></td>
+                        <td><b>${data.sellerName}</b></td>
+                        <td>${data.name}</td>
+                        <td>${data.loc}</td>
+                        <td>${fecha}</td>
+                        <td><button class="btn-action btn-delete" onclick="window.borrarPost('${docSnap.id}')">Eliminar</button></td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            });
+        }
+
+        window.borrarPost = async function(id) {
+            if(confirm("¿Borrar permanentemente?")) { await deleteDoc(doc(db, "inventory", id)); }
+        };
+
+        window.cerrarSesionAdmin = function() {
+            localStorage.removeItem('admin_session');
+            window.location.href = 'index.html';
+        };
     </script>
 </body>
 </html>
