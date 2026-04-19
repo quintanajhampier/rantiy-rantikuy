@@ -26,14 +26,11 @@
             --naranja: #f97316; 
             --oscuro: #0f172a;
             --glass: rgba(255, 255, 255, 0.98);
-            --premium-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            --premium-shadow: 0 10px 30px rgba(0,0,0,0.08);
             --azul: #1d4ed8;
         }
 
-        /* Bloqueo de selección de texto para sentirlo como app nativa */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; -webkit-user-select: none; user-select: none; }
-        input, textarea { -webkit-user-select: text; user-select: text; } /* Permitir escribir en inputs */
-        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
         body { background: #f8fafc; margin: 0; padding-bottom: 0; overflow-x: hidden; color: var(--oscuro); height: 100vh; display: flex; flex-direction: column; }
 
         /* --- BLOQUEO GPS INICIAL --- */
@@ -43,7 +40,7 @@
 
         /* --- HEADER --- */
         .header { background: var(--glass); backdrop-filter: blur(20px); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 2000; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .logo-rr { width: 50px; height: 50px; background: var(--azul); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 20px; cursor: pointer; box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3); }
+        .logo-rr { width: 50px; height: 50px; background: var(--azul); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 20px; cursor: pointer; user-select: none; box-shadow: 0 4px 15px rgba(29, 78, 216, 0.3); }
 
         /* --- BÚSQUEDA Y FILTROS --- */
         .search-container { padding: 0 20px; margin-top: 15px; }
@@ -66,42 +63,38 @@
         .view-active { display: flex; flex-direction: column; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- VITRINA / CARDS (CORREGIDO PARA CELULAR) --- */
-        #feed-container { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* 2 Columnas para que se vea amplio y estético */
-            gap: 15px; 
-            padding: 0 20px 20px 20px; 
-        }
-        .post-card { background: white; border-radius: 18px; padding: 10px; box-shadow: var(--premium-shadow); position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.02); }
-        
-        .post-card-img-wrapper { 
-            width: 100%; 
-            aspect-ratio: 1 / 1; /* Cuadrado perfecto, nunca se aplasta */
-            border-radius: 12px; 
-            overflow: hidden; 
-            margin-bottom: 10px; 
-            background: #f1f5f9; 
-            cursor: pointer; 
-            position: relative;
-        }
-        .post-card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
-        
-        .post-card-title { font-size: 13px; font-weight: 800; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--oscuro); }
-        .post-card-loc { font-size: 11px; color: #64748b; margin-bottom: 4px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
-        .post-card-price { color: var(--azul); font-weight: 900; font-size: 15px; margin-bottom: 10px; }
-        
-        .btn-contact-mini { background: var(--oscuro); color: white; border: none; padding: 10px; border-radius: 12px; font-weight: 800; font-size: 12px; width: 100%; cursor: pointer; transition: 0.2s; }
+        /* --- VITRINA / CARDS --- */
+        #feed-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 20px 20px 20px; }
+        .post-card { background: white; border-radius: 16px; padding: 8px; box-shadow: var(--premium-shadow); position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.02); }
+        .post-card-img-wrapper { width: 100%; height: 100px; border-radius: 10px; overflow: hidden; margin-bottom: 8px; background: #f1f5f9; cursor: pointer; }
+        .post-card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .post-card-title { font-size: 11px; font-weight: 800; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--oscuro); }
+        .post-card-price { color: var(--azul); font-weight: 900; font-size: 13px; margin-bottom: 8px; }
+        .btn-contact-mini { background: var(--oscuro); color: white; border: none; padding: 8px; border-radius: 10px; font-weight: 800; font-size: 11px; width: 100%; cursor: pointer; transition: 0.2s; }
         .btn-contact-mini:active { transform: scale(0.95); }
 
-        .btn-delete { position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-
         /* --- MODO DIOS / ADMIN POSTS --- */
-        .post-card.admin-post { border: 2px solid var(--azul-admin); background: #f0f9ff; }
-        .admin-badge { position: absolute; top: -8px; left: 10px; background: var(--azul-admin); color: white; padding: 4px 10px; border-radius: 12px; font-size: 9px; font-weight: 900; z-index: 20; box-shadow: 0 4px 8px rgba(14, 165, 233, 0.4); letter-spacing: 0.5px; }
+        .post-card.admin-post {
+            border: 2px solid var(--azul-admin);
+            background: #f0f9ff;
+        }
+        .admin-badge {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            background: var(--azul-admin);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 900;
+            z-index: 20;
+            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.4);
+            letter-spacing: 0.5px;
+        }
 
         /* --- SENTINEL SCROLL INFINITO --- */
-        #scroll-sentinel { text-align: center; padding: 20px; color: #64748b; font-weight: 700; font-size: 12px; display: none; width: 100%; grid-column: 1 / -1; }
+        #scroll-sentinel { text-align: center; padding: 20px; color: #64748b; font-weight: 700; font-size: 12px; display: none; }
 
         /* --- STUDIO SUBIDA --- */
         .view-padding-inner { padding: 0 20px 30px 20px; }
@@ -270,27 +263,16 @@
 </nav>
 
 <script type="module">
-    // --- SEGURIDAD AVANZADA (ANTI-INSPECCIÓN EXTREMA) ---
+    // --- SEGURIDAD AVANZADA ANTI-INSPECCIÓN ---
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
         if (e.key === 'F12' || 
            (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) || 
-           (e.ctrlKey && e.key === 'U') ||
-           (e.ctrlKey && e.key === 'S')) {
+           (e.ctrlKey && e.key === 'U')) {
             e.preventDefault(); return false;
         }
     });
-    
-    // TRAMPA DE DEBUGGER: Si logran abrir la consola, su navegador se colgará.
-    setInterval(() => {
-        const devtools = function() {};
-        devtools.toString = function() {
-            debugger;
-            return '';
-        }
-        console.log('%c', devtools);
-        console.clear();
-    }, 1000);
+    setInterval(() => { console.clear(); }, 1000);
 
     window.escapeHTML = function(str) {
         if (typeof str !== 'string') return '';
@@ -341,7 +323,7 @@
     window.dbLocal = { inventory: [] };
     window.tempProdImg = "";
     
-    // --- VARIABLES SCROLL INFINITO ---
+    // --- VARIABLES SCROLL INFINITO (OPTIMIZACIÓN FIREBASE) ---
     window.lastVisiblePost = null;
     window.isLoadingPosts = false;
     window.hasMorePosts = true;
@@ -358,7 +340,7 @@
         }
     }
 
-    // --- CARGA DE POSTS PAGINADA ---
+    // --- CARGA DE POSTS PAGINADA (AHORRA LECTURAS) ---
     window.fetchPosts = async function(isInitial = false) {
         if(window.isLoadingPosts || (!isInitial && !window.hasMorePosts)) return;
         window.isLoadingPosts = true;
@@ -392,12 +374,13 @@
         window.isLoadingPosts = false;
     }
 
+    // --- ACTIVAR DETECTOR DE SCROLL ---
     window.setupInfiniteScroll = function() {
         const observer = new IntersectionObserver((entries) => {
             if(entries[0].isIntersecting && window.hasMorePosts) {
                 window.fetchPosts(false);
             }
-        }, { rootMargin: "150px" }); 
+        }, { rootMargin: "150px" }); // Empieza a cargar antes de llegar al fondo
 
         const sentinel = document.getElementById('scroll-sentinel');
         if(sentinel) observer.observe(sentinel);
@@ -411,8 +394,8 @@
             navigator.geolocation.getCurrentPosition(window.successGPS, window.errorGPS, {enableHighAccuracy:true});
         } else { alert("Tu celular no soporta GPS."); }
         
-        window.fetchPosts(true); 
-        window.setupInfiniteScroll(); 
+        window.fetchPosts(true); // Carga inicial
+        window.setupInfiniteScroll(); // Activa el observador
     }
 
     window.renderCityFilters = function() {
@@ -509,6 +492,7 @@
         const search = document.getElementById('main-search') ? document.getElementById('main-search').value.toLowerCase() : "";
         let posts = window.dbLocal.inventory;
 
+        // Filtros en entorno local para no pedir índices complejos a Firebase
         if(window.selectedCityFilter !== 'Todas') posts = posts.filter(p => p.loc === window.selectedCityFilter);
         if(window.currentFilter !== 'Todas') posts = posts.filter(p => p.note && p.note.includes(`[CAT:${window.currentFilter}]`)); 
         if(search) posts = posts.filter(p => p.name && p.name.toLowerCase().includes(search));
@@ -530,18 +514,19 @@
             return `
             <div class="post-card ${isAdmin ? 'admin-post' : ''}">
                 ${isAdmin ? `<div class="admin-badge">👑 OFICIAL</div>` : ''}
-                ${isMyPost ? `<button class="btn-delete" onclick="window.deletePost('${p.id}')">🗑️</button>` : ''}
+                ${isMyPost ? `<button onclick="window.deletePost('${p.id}')" style="position:absolute; top:4px; right:4px; background:rgba(255,255,255,0.95); border:1px solid #e2e8f0; border-radius:50%; width:24px; height:24px; font-size:10px; cursor:pointer; z-index:10;">🗑️</button>` : ''}
                 <div class="post-card-img-wrapper" onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')">
-                    ${imgSrc ? `<img src="${imgSrc}" loading="lazy">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:30px;">📸</div>`}
+                    ${imgSrc ? `<img src="${imgSrc}" loading="lazy">` : `<div style="display:flex; height:100%; align-items:center; justify-content:center; color:#94a3b8; font-size:24px;">📸</div>`}
                 </div>
                 <h3 class="post-card-title">${safeName}</h3>
-                <div class="post-card-loc">📍 ${safeLoc}</div>
+                <div style="font-size: 10px; color: #64748b; margin-bottom: 3px; font-weight: 700;">📍 ${safeLoc}</div>
                 <div class="post-card-price">${p.price > 0 ? 'S/ ' + safePrice : 'Consultar'}</div>
                 <button onclick="window.irAChatPrivado('${safeSeller}', '${safePhone}')" class="btn-contact-mini">Contactar</button>
             </div>`;
         }).join('');
     }
 
+    // Chat usa onSnapshot porque necesita ser en Tiempo Real
     const qChat = query(collection(db, "chats_zonas"), orderBy("timestamp", "asc"), limit(80));
     onSnapshot(qChat, (snapshot) => {
         const box = document.getElementById('group-msgs');
@@ -602,6 +587,7 @@
         } catch(e) { alert("Error al enviar."); }
     }
 
+    // --- COMPRESOR DE IMÁGENES WEBP (CHAT) ---
     window.sendChatImage = function(event) {
         const file = event.target.files[0];
         if(!file) return;
@@ -618,6 +604,7 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
+                // Compresión WEBP para máximo ahorro en Firebase
                 const compressedImg = canvas.toDataURL('image/webp', 0.5); 
                 window.sendGroupMsg("", compressedImg); 
             };
@@ -654,6 +641,7 @@
         document.getElementById('in-price').value = "";
     }
 
+    // --- COMPRESOR DE IMÁGENES WEBP (POSTS) ---
     window.previewImage = function(event) {
         const file = event.target.files[0];
         if(!file) return;
@@ -670,6 +658,7 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
+                // Usando WEBP al 50% de calidad. Mejor compresión que JPEG.
                 window.tempProdImg = canvas.toDataURL('image/webp', 0.5); 
                 
                 const preview = document.getElementById('img-preview');
@@ -702,6 +691,7 @@
             confetti({ particleCount: 150 });
             window.exitStudio();
             
+            // Recargar la vitrina para que el usuario vea su post inmediatamente
             window.fetchPosts(true);
             window.tab('home', document.querySelector('.nav-btn'));
         } catch (e) { alert("Error al subir."); }
