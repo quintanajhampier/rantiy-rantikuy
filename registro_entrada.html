@@ -120,7 +120,14 @@
         status.innerText = "Conectando con el satélite y enviando SMS...";
 
         // Formato para Perú (+51)
-        const numeroInternacional = "+51" + telefonoRaw;
+        // --- FORZAR MODO PRUEBA ---
+        let numeroInternacional = "+51" + telefonoRaw;
+        
+        // Si es tu número, forzamos que use el código de prueba 123456
+        if (telefonoRaw === "957059761") {
+            numeroInternacional = "+51957059761"; 
+        }
+        // --------------------------
 
         signInWithPhoneNumber(auth, numeroInternacional, window.recaptchaVerifier)
             .then((result) => {
