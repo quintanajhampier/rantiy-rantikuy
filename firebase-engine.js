@@ -14,8 +14,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Exportamos 'app' para que el sistema de SMS (Auth) pueda usarlo
 export { 
-    db, collection, addDoc, onSnapshot, doc, 
+    app, db, collection, addDoc, onSnapshot, doc, 
     updateDoc, deleteDoc, query, where, orderBy, 
     arrayUnion, getDocs 
-};    
+};
