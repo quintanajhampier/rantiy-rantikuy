@@ -30,6 +30,8 @@
         #recaptcha-container { margin-top: 10px; display: flex; justify-content: center; }
         
         .paso-oculto { display: none; }
+        
+        .modo-prueba { background: #e0f2fe; border: 2px dashed #0284c7; padding: 10px; margin-top: 10px; border-radius: 8px; font-size: 11px; color: #0c4a6e; text-align: center; }
     </style>
 </head>
 <body>
@@ -60,6 +62,10 @@
 
         <div id="recaptcha-container"></div>
         <button id="btnEnviarSMS" class="btn-ingresar">ENVIAR CÓDIGO SMS</button>
+        
+        <div id="modoLlamada" class="modo-prueba">
+            ⚡ Si no llega el SMS, usa el código <b>123456</b> después de tocar "Enviar"
+        </div>
     </div>
 
     <div id="paso-2" class="paso-oculto">
@@ -93,6 +99,7 @@
     const btnVerificar = document.getElementById('btnVerificar');
     const status = document.getElementById('status');
     let confirmationResult = null; // Aquí guardaremos la sesión del SMS
+    let esModoPrueba = false; // Bandera para modo prueba
 
     // 1. CONFIGURAR EL RECAPTCHA DE GOOGLE
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
@@ -120,18 +127,24 @@
         status.innerText = "Conectando con el satélite y enviando SMS...";
 
         // Formato para Perú (+51)
-        // --- FORZAR MODO PRUEBA ---
         let numeroInternacional = "+51" + telefonoRaw;
         
-        // Si es tu número, forzamos que use el código de prueba 123456
+        // SI ES TU NÚMERO, MODO PRUEBA (SIN SMS REAL)
         if (telefonoRaw === "957059761") {
-            numeroInternacional = "+51957059761"; 
+            esModoPrueba = true;
+            // Simulamos que el SMS fue enviado sin hacer llamada real a Firebase
+            document.getElementById('paso-1').classList.add('paso-oculto');
+            document.getElementById('paso-2').classList.remove('paso-oculto');
+            status.innerText = "✅ Código de prueba enviado (usa: 123456)";
+            status.style.color = "#16a34a";
+            return;
         }
-        // --------------------------
 
+        // PARA OTROS NÚMEROS, ENVÍO REAL DE SMS
         signInWithPhoneNumber(auth, numeroInternacional, window.recaptchaVerifier)
             .then((result) => {
                 // SMS Enviado con éxito
+                esModoPrueba = false;
                 confirmationResult = result;
                 document.getElementById('paso-1').classList.add('paso-oculto');
                 document.getElementById('paso-2').classList.remove('paso-oculto');
@@ -161,49 +174,29 @@
         status.style.color = "#2d6a4f";
         status.innerText = "Verificando código...";
 
+        // SI ES MODO PRUEBA, VERIFICACIÓN RÁPIDA
+        if (esModoPrueba) {
+            if (codigo === "123456") {
+                status.innerText = "✅ Código correcto! Obteniendo tu GPS...";
+                // Simulamos un usuario
+                const usuarioSimulado = {
+                    uid: "prueba_" + Date.now()
+                };
+                procesarIngreso(usuarioSimulado);
+            } else {
+                status.style.color = "#dc2626";
+                status.innerText = "❌ Código incorrecto. Intenta de nuevo.";
+                btnVerificar.disabled = false;
+            }
+            return;
+        }
+
+        // PARA NÚMEROS REALES, VERIFICACIÓN EN FIREBASE
         confirmationResult.confirm(codigo).then((result) => {
             // CÓDIGO CORRECTO - USUARIO REAL CONFIRMADO
             const user = result.user;
             status.innerText = "¡Número verificado! Obteniendo tu GPS...";
-
-            // AHORA pedimos el GPS para guardarlo en la Base de Datos
-            navigator.geolocation.getCurrentPosition(
-                async (pos) => {
-                    status.innerText = "¡Ubicación Verificada! Creando perfil...";
-                    try {
-                        const nombre = document.getElementById('nombre').value.trim();
-                        const telefono = document.getElementById('telefono').value.trim();
-
-                        // Guardamos en Firestore
-                        const docRef = await addDoc(collection(db, "Usuarios"), {
-                            uid: user.uid, // ID ultra seguro de Firebase Auth
-                            nombre: nombre,
-                            telefono: telefono,
-                            coordenadas: { lat: pos.coords.latitude, lon: pos.coords.longitude },
-                            fechaRegistro: new Date().toLocaleString(),
-                            estado: "activo"
-                        });
-
-                        // Guardamos localmente para acceso rápido
-                        localStorage.setItem('rantiy_userId', user.uid);
-                        localStorage.setItem('rantiy_userName', nombre);
-                        localStorage.setItem('rantiy_userPhone', telefono);
-
-                        status.innerText = "¡Bienvenido al Imperio Rantiy!";
-                        setTimeout(() => { window.location.href = "index.html"; }, 1500);
-
-                    } catch (error) {
-                        status.style.color = "#dc2626";
-                        status.innerText = "Error al crear perfil en la base de datos.";
-                        btnVerificar.disabled = false;
-                    }
-                },
-                (err) => {
-                    status.style.color = "#dc2626";
-                    status.innerText = "GPS obligatorio para evitar estafas. Por favor, actívalo y recarga la página.";
-                },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-            );
+            procesarIngreso(user);
 
         }).catch((error) => {
             status.style.color = "#dc2626";
@@ -211,6 +204,51 @@
             btnVerificar.disabled = false;
         });
     });
+
+    // FUNCIÓN PARA PROCESAR EL INGRESO (IGUAL PARA PRUEBA Y REAL)
+    async function procesarIngreso(user) {
+        // AHORA pedimos el GPS para guardarlo en la Base de Datos
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                status.innerText = "¡Ubicación Verificada! Creando perfil...";
+                try {
+                    const nombre = document.getElementById('nombre').value.trim();
+                    const telefono = document.getElementById('telefono').value.trim();
+
+                    // Guardamos en Firestore
+                    const docRef = await addDoc(collection(db, "Usuarios"), {
+                        uid: user.uid, // ID ultra seguro de Firebase Auth
+                        nombre: nombre,
+                        telefono: telefono,
+                        coordenadas: { lat: pos.coords.latitude, lon: pos.coords.longitude },
+                        fechaRegistro: new Date().toLocaleString(),
+                        estado: "activo"
+                    });
+
+                    // Guardamos localmente para acceso rápido
+                    localStorage.setItem('rantiy_userId', user.uid);
+                    localStorage.setItem('rantiy_userName', nombre);
+                    localStorage.setItem('rantiy_userPhone', telefono);
+
+                    status.innerText = "¡Bienvenido al Imperio Rantiy!";
+                    status.style.color = "#16a34a";
+                    setTimeout(() => { window.location.href = "index.html"; }, 1500);
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    status.style.color = "#dc2626";
+                    status.innerText = "Error al crear perfil en la base de datos.";
+                    btnVerificar.disabled = false;
+                }
+            },
+            (err) => {
+                status.style.color = "#dc2626";
+                status.innerText = "GPS obligatorio para evitar estafas. Por favor, actívalo y recarga la página.";
+                btnVerificar.disabled = false;
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
+    }
 </script>
 </body>
 </html>
